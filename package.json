@@ -1,0 +1,12 @@
+{
+  "name": "gopinyin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gopinyin — học gõ Pinyin, nhận mặt chữ Hán & luyện phát âm tiếng Trung",
+  "scripts": {
+    "start": "node server/serve.js",
+    "serve": "node server/serve.js --no-open",
+    "test": "node tests/pronounce.js"
+  },
+  "license": "UNLICENSED"
+}

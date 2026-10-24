@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoPinyin — Luyện gõ chữ Hán, AI sinh câu &amp; game bắn chữ</title>
+<meta name="description" content="GoPinyin — nền tảng luyện gõ chữ Hán, từ vựng HSK 1–9 cho người Việt. Nhìn nghĩa tiếng Việt, gõ chữ Hán của cả câu, AI sinh câu theo chủ đề và game bắn chữ." />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+<link rel="mask-icon" href="assets/logo-mark.png" color="#0BA488" />
+<link rel="manifest" href="assets/site.webmanifest" />
+<meta name="theme-color" content="#0BA488" />
+<meta name="apple-mobile-web-app-title" content="GoPinyin" />
+<meta name="application-name" content="GoPinyin" />
+<meta property="og:site_name" content="GoPinyin" />
+<meta property="og:title" content="GoPinyin — Luyện gõ chữ Hán, AI sinh câu &amp; game bắn chữ" />
+<meta property="og:description" content="Luyện gõ chữ Hán với 4.969 câu HSK 1–9, 206 chủ đề từ vựng và game bắn chữ." />
+<meta property="og:image" content="https://gopinyin.app/assets/icon-512.png" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+/* Áp theme ngay từ đầu để tránh nhấp nháy (FOUC) */
+(function(){try{var t=localStorage.getItem('cts:theme');if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}document.documentElement.setAttribute('data-theme',t)}catch(e){}})();
+</script>
+<script src="assets/config.js"></script>
+<script>
+/* ★ NHẬP DỮ LIỆU khi chuyển từ bản chạy file:// sang http://localhost.
+   localStorage gắn theo origin nên đổi địa chỉ là mất tài khoản + tiến độ.
+   Trang file:// đã POST dữ liệu lên /__import và chuyển sang ?import=<token>.
+   Đoạn này chạy ĐỒNG BỘ trước mọi script khác để app đọc đúng dữ liệu ngay. */
+(function(){
+  try{
+    var m=/[?&]import=([^&]+)/.exec(location.search);
+    if(!m) return;
+    var token=decodeURIComponent(m[1]);
+    var xhr=new XMLHttpRequest();
+    xhr.open('GET','/__import?token='+encodeURIComponent(token),false);
+    xhr.send(null);
+    if(xhr.status===200){
+      var d={};try{d=JSON.parse(xhr.responseText||'{}')}catch(e){d={}}
+      var data=(d&&d.data)||{};
+      for(var k in data){
+        if(Object.prototype.hasOwnProperty.call(data,k)){
+          try{localStorage.setItem(k,String(data[k]))}catch(e){}
+        }
+      }
+    }
+    try{history.replaceState(null,'',location.pathname)}catch(e){}
+  }catch(e){}
+})();
+</script>
+<link rel="stylesheet" href="assets/style.css?v=20251024b" />
+</head>
+<body id="top">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LANDING — trang giới thiệu công khai
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="landing" class="landing">
+  <!-- Nền động: núi non · rừng trúc · sương mù -->
+  <div class="lp-bg" aria-hidden="true">
+    <div class="lp-blob b1"></div>
+    <div class="lp-blob b2"></div>
+    <div class="lp-blob b3"></div>
+    <div class="lp-grid"></div>
+    <svg class="lp-scenery" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+      <defs>
+        <path id="bLeaf" d="M0 0C15 -11 42 -15 62 -7C40 3 15 7 0 0Z"/>
+      </defs>
+      <circle class="scSun" cx="742" cy="576" r="50"/>
+      <circle class="scSunGlow" cx="742" cy="576" r="150"/>
+      <g class="scRidge scFar"><path d="M-30 660 C40 640 70 570 100 470 C122 400 142 320 176 292 C212 262 228 356 252 430 C276 504 302 566 342 606 C382 646 422 604 452 522 C482 440 502 338 542 298 C582 258 602 352 627 432 C652 512 677 582 717 617 C757 652 802 600 832 520 C862 440 882 348 922 313 C962 278 982 370 1007 450 C1032 530 1057 600 1097 630 C1137 660 1182 610 1212 540 C1242 470 1262 378 1302 348 C1342 318 1362 412 1387 482 C1412 552 1432 612 1470 642 L1470 920 L-30 920 Z"/></g>
+      <g class="scRidge scMid"><path d="M-30 730 C50 710 92 656 132 604 C172 552 202 502 242 497 C282 492 302 548 337 592 C372 636 412 662 452 642 C492 622 522 558 562 532 C602 506 627 562 662 606 C697 650 737 682 782 666 C827 650 852 592 892 566 C932 540 957 602 992 642 C1027 682 1067 702 1107 682 C1147 662 1172 602 1212 576 C1252 550 1277 606 1312 646 C1347 686 1387 706 1470 700 L1470 920 L-30 920 Z"/></g>
+      <g class="scBamboo">
+        <path class="bStalk" d="M44.0 920.0 C54.0 692.2 47.5 437.6 53.0 250.0" stroke-width="17"/>
+        <path class="bNode" d="M36.8 820.7 L57.9 821.3" stroke-width="2.7"/>
+        <path class="bNode" d="M38.7 720.2 L59.7 720.5" stroke-width="2.7"/>
+        <path class="bNode" d="M39.5 619.7 L60.5 619.8" stroke-width="2.7"/>
+        <path class="bNode" d="M39.8 520.7 L60.8 520.8" stroke-width="2.7"/>
+        <path class="bNode" d="M40.0 425.0 L61.1 425.1" stroke-width="2.7"/>
+        <path class="bNode" d="M40.8 334.1 L61.8 334.4" stroke-width="2.7"/>
+        <use href="#bLeaf" transform="translate(43.6 240.2) rotate(-133.9) scale(0.844)"/>
+        <use href="#bLeaf" transform="translate(49.9 240.4) rotate(-107.9) scale(0.969)"/>
+        <use href="#bLeaf" transform="translate(55.4 238.4) rotate(-78.3) scale(1.063)"/>
+        <use href="#bLeaf" transform="translate(61.6 239.5) rotate(-50.6) scale(0.904)"/>
+        <use href="#bLeaf" transform="translate(68.4 246.4) rotate(-13.1) scale(1.135)"/>
+        <use href="#bLeaf" transform="translate(41.7 309.6) rotate(-132.4) scale(1.098)"/>
+        <use href="#bLeaf" transform="translate(53.7 310.0) rotate(-78.1) scale(1.213)"/>
+        <use href="#bLeaf" transform="translate(56.8 316.9) rotate(-32.9) scale(1.179)"/>
+        <use href="#bLeaf" transform="translate(42.3 395.2) rotate(-122.5) scale(0.919)"/>
+        <use href="#bLeaf" transform="translate(54.3 395.4) rotate(-74.0) scale(1.233)"/>
+        <use href="#bLeaf" transform="translate(61.4 402.8) rotate(-26.7) scale(1.148)"/>
+        <path class="bStalk" d="M108.0 920.0 C100.0 664.3 105.2 378.6 100.8 168.0" stroke-width="13"/>
+        <path class="bNode" d="M97.3 809.0 L113.4 808.7" stroke-width="2.1"/>
+        <path class="bNode" d="M95.8 696.0 L111.9 695.9" stroke-width="2.1"/>
+        <path class="bNode" d="M95.1 583.0 L111.3 583.0" stroke-width="2.1"/>
+        <path class="bNode" d="M94.9 471.9 L111.0 471.9" stroke-width="2.1"/>
+        <path class="bNode" d="M94.7 364.5 L110.8 364.4" stroke-width="2.1"/>
+        <path class="bNode" d="M94.1 262.6 L110.2 262.5" stroke-width="2.1"/>
+        <use href="#bLeaf" transform="translate(95.0 163.2) rotate(-140.1) scale(0.869)"/>
+        <use href="#bLeaf" transform="translate(97.9 158.8) rotate(-107.6) scale(0.781)"/>
+        <use href="#bLeaf" transform="translate(102.0 157.7) rotate(-83.6) scale(0.701)"/>
+        <use href="#bLeaf" transform="translate(110.2 157.2) rotate(-48.9) scale(0.745)"/>
+        <use href="#bLeaf" transform="translate(115.6 163.6) rotate(-16.5) scale(0.927)"/>
+        <use href="#bLeaf" transform="translate(91.7 235.1) rotate(-131.3) scale(0.976)"/>
+        <use href="#bLeaf" transform="translate(103.0 238.5) rotate(-83.0) scale(1.168)"/>
+        <use href="#bLeaf" transform="translate(111.5 242.2) rotate(-26.3) scale(1.052)"/>
+        <use href="#bLeaf" transform="translate(96.6 338.0) rotate(-128.4) scale(1.165)"/>
+        <use href="#bLeaf" transform="translate(103.9 334.7) rotate(-83.9) scale(1.247)"/>
+        <use href="#bLeaf" transform="translate(113.5 340.0) rotate(-27.3) scale(0.990)"/>
+        <path class="bStalk" d="M162.0 920.0 C168.0 719.4 164.1 495.2 167.4 330.0" stroke-width="10"/>
+        <path class="bNode" d="M158.1 818.0 L170.5 818.2" stroke-width="2.0"/>
+        <path class="bNode" d="M159.1 714.6 L171.5 714.6" stroke-width="2.0"/>
+        <path class="bNode" d="M159.5 611.7 L171.9 611.7" stroke-width="2.0"/>
+        <path class="bNode" d="M159.7 511.8 L172.1 511.8" stroke-width="2.0"/>
+        <path class="bNode" d="M160.1 417.1 L172.5 417.2" stroke-width="2.0"/>
+        <use href="#bLeaf" transform="translate(157.0 322.1) rotate(-142.7) scale(1.087)"/>
+        <use href="#bLeaf" transform="translate(164.4 322.0) rotate(-110.7) scale(1.045)"/>
+        <use href="#bLeaf" transform="translate(169.5 317.3) rotate(-80.4) scale(0.955)"/>
+        <use href="#bLeaf" transform="translate(172.4 323.5) rotate(-52.6) scale(1.021)"/>
+        <use href="#bLeaf" transform="translate(180.5 325.0) rotate(-20.9) scale(0.883)"/>
+        <use href="#bLeaf" transform="translate(163.2 386.7) rotate(-122.4) scale(1.059)"/>
+        <use href="#bLeaf" transform="translate(168.4 386.0) rotate(-72.2) scale(1.273)"/>
+        <use href="#bLeaf" transform="translate(181.1 385.4) rotate(-23.7) scale(0.931)"/>
+        <use href="#bLeaf" transform="translate(159.1 461.1) rotate(-129.7) scale(1.170)"/>
+        <use href="#bLeaf" transform="translate(168.4 457.0) rotate(-79.1) scale(1.156)"/>
+        <use href="#bLeaf" transform="translate(173.5 464.3) rotate(-33.9) scale(1.045)"/>
+        <path class="bStalk" d="M1298.0 920.0 C1289.0 676.9 1294.9 405.2 1289.9 205.0" stroke-width="15"/>
+        <path class="bNode" d="M1285.7 814.6 L1304.3 814.2" stroke-width="2.4"/>
+        <path class="bNode" d="M1284.0 707.1 L1302.6 706.9" stroke-width="2.4"/>
+        <path class="bNode" d="M1283.3 599.6 L1301.9 599.5" stroke-width="2.4"/>
+        <path class="bNode" d="M1283.0 493.9 L1301.6 493.9" stroke-width="2.4"/>
+        <path class="bNode" d="M1282.8 391.8 L1301.4 391.7" stroke-width="2.4"/>
+        <path class="bNode" d="M1282.1 295.0 L1300.7 294.8" stroke-width="2.4"/>
+        <use href="#bLeaf" transform="translate(1277.4 201.9) rotate(-166.0) scale(0.966)"/>
+        <use href="#bLeaf" transform="translate(1280.0 195.2) rotate(-135.4) scale(1.032)"/>
+        <use href="#bLeaf" transform="translate(1288.2 196.8) rotate(-101.9) scale(0.736)"/>
+        <use href="#bLeaf" transform="translate(1292.1 198.7) rotate(-71.0) scale(0.953)"/>
+        <use href="#bLeaf" transform="translate(1294.4 200.4) rotate(-45.2) scale(1.158)"/>
+        <use href="#bLeaf" transform="translate(1285.1 275.9) rotate(-146.5) scale(1.002)"/>
+        <use href="#bLeaf" transform="translate(1289.3 273.1) rotate(-105.8) scale(1.084)"/>
+        <use href="#bLeaf" transform="translate(1296.9 273.9) rotate(-47.3) scale(1.189)"/>
+        <use href="#bLeaf" transform="translate(1279.0 365.4) rotate(-146.9) scale(1.245)"/>
+        <use href="#bLeaf" transform="translate(1290.1 363.8) rotate(-100.9) scale(1.119)"/>
+        <use href="#bLeaf" transform="translate(1297.9 365.3) rotate(-55.7) scale(1.088)"/>
+        <path class="bStalk" d="M1362.0 920.0 C1369.0 709.2 1364.5 473.6 1368.3 300.0" stroke-width="12"/>
+        <path class="bNode" d="M1357.2 812.8 L1372.1 813.1" stroke-width="2.0"/>
+        <path class="bNode" d="M1358.4 704.1 L1373.3 704.2" stroke-width="2.0"/>
+        <path class="bNode" d="M1358.9 596.0 L1373.8 596.1" stroke-width="2.0"/>
+        <path class="bNode" d="M1359.1 491.0 L1374.0 491.1" stroke-width="2.0"/>
+        <path class="bNode" d="M1359.5 391.5 L1374.4 391.6" stroke-width="2.0"/>
+        <use href="#bLeaf" transform="translate(1361.2 298.3) rotate(-166.6) scale(0.879)"/>
+        <use href="#bLeaf" transform="translate(1360.6 292.7) rotate(-136.4) scale(0.833)"/>
+        <use href="#bLeaf" transform="translate(1365.0 286.0) rotate(-103.3) scale(0.740)"/>
+        <use href="#bLeaf" transform="translate(1370.1 291.8) rotate(-77.7) scale(0.890)"/>
+        <use href="#bLeaf" transform="translate(1379.7 288.9) rotate(-44.2) scale(0.887)"/>
+        <use href="#bLeaf" transform="translate(1358.9 360.5) rotate(-151.4) scale(1.138)"/>
+        <use href="#bLeaf" transform="translate(1365.3 355.8) rotate(-101.9) scale(1.165)"/>
+        <use href="#bLeaf" transform="translate(1373.0 356.3) rotate(-56.8) scale(0.928)"/>
+        <use href="#bLeaf" transform="translate(1358.8 442.2) rotate(-151.5) scale(1.057)"/>
+        <use href="#bLeaf" transform="translate(1364.4 438.2) rotate(-105.5) scale(1.220)"/>
+        <use href="#bLeaf" transform="translate(1374.0 438.8) rotate(-46.1) scale(1.620)"/>
+        <path class="bStalk" d="M1236.0 920.0 C1231.0 733.7 1234.2 525.4 1231.5 372.0" stroke-width="9"/>
+        <path class="bNode" d="M1228.3 806.3 L1239.5 806.1" stroke-width="2.0"/>
+        <path class="bNode" d="M1227.5 690.8 L1238.6 690.8" stroke-width="2.0"/>
+        <path class="bNode" d="M1227.3 577.5 L1238.4 577.5" stroke-width="2.0"/>
+        <path class="bNode" d="M1227.0 470.1 L1238.1 470.0" stroke-width="2.0"/>
+        <use href="#bLeaf" transform="translate(1218.7 367.7) rotate(-161.4) scale(1.103)"/>
+        <use href="#bLeaf" transform="translate(1220.5 360.8) rotate(-134.6) scale(1.009)"/>
+        <use href="#bLeaf" transform="translate(1229.1 356.9) rotate(-98.9) scale(0.822)"/>
+        <use href="#bLeaf" transform="translate(1235.7 360.9) rotate(-69.4) scale(0.974)"/>
+        <use href="#bLeaf" transform="translate(1236.4 368.4) rotate(-36.5) scale(0.968)"/>
+        <use href="#bLeaf" transform="translate(1218.0 422.5) rotate(-154.1) scale(1.381)"/>
+        <use href="#bLeaf" transform="translate(1230.1 414.9) rotate(-98.5) scale(0.908)"/>
+        <use href="#bLeaf" transform="translate(1239.9 418.6) rotate(-55.0) scale(1.061)"/>
+        <use href="#bLeaf" transform="translate(1226.7 498.0) rotate(-149.8) scale(1.386)"/>
+        <use href="#bLeaf" transform="translate(1231.1 490.4) rotate(-98.0) scale(1.237)"/>
+        <use href="#bLeaf" transform="translate(1237.1 495.9) rotate(-51.7) scale(1.336)"/>
+      </g>
+      <g class="scRidge scNear"><path d="M-30 812 C110 782 232 800 356 810 C480 820 604 790 726 795 C848 800 968 822 1088 816 C1208 810 1350 786 1470 800 L1470 920 L-30 920 Z"/></g>
+      <g class="scBirds"><path d="M905 232 q7 -6 13 0 q6 -6 13 0" stroke-width="2.2" transform="rotate(-6 905 232)"/><path d="M948 205 q5.6 -4.8 10.4 0 q4.8 -4.8 10.4 0" stroke-width="1.8" transform="rotate(-6 948 205)"/><path d="M982 240 q6.3 -5.4 11.7 0 q5.4 -5.4 11.7 0" stroke-width="2" transform="rotate(-6 982 240)"/><path d="M1010 212 q4.9 -4.2 9.1 0 q4.2 -4.2 9.1 0" stroke-width="1.5" transform="rotate(-6 1010 212)"/></g>
+    </svg>
+    <div class="lp-mist m1"></div>
+    <div class="lp-mist m2"></div>
+    <div class="lp-vignette"></div>
+    <div class="lp-chars" id="lpChars"></div>
+  </div>
+
+  <!-- Thanh điều hướng -->
+  <header class="lp-nav" id="lpNav">
+    <a class="lp-brand" href="#top" aria-label="GoPinyin — về đầu trang">
+      <span class="brandLockup">
+        <img class="brandLockup-light" src="assets/logo-full.png" alt="GoPinyin" width="149" height="38" decoding="async" />
+        <img class="brandLockup-dark" src="assets/logo-full-dark.png" alt="" aria-hidden="true" width="149" height="38" decoding="async" />
+      </span>
+    </a>
+    <nav class="lp-links">
+      <a href="#features">Tính năng</a>
+      <a href="#modules">Học gì?</a>
+      <a href="#pricing">Bảng giá</a>
+      <a href="#faq">Hỏi đáp</a>
+    </nav>
+    <div class="lp-actions">
+      <button class="lp-btn ghost" id="lpThemeBtn" type="button" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện">🌙</button>
+      <button class="lp-btn ghost" id="lpLoginBtn" type="button">Đăng nhập</button>
+      <button class="lp-btn primary" id="lpCtaBtn" type="button">Dùng thử miễn phí</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="lp-hero">
+    <div class="lp-heroCopy">
+      <div class="lp-badge"><span class="lp-badgeDot"></span>Nền tảng học tiếng Trung cho người Việt</div>
+      <h1 class="lp-title">
+        Gõ <span class="lp-grad">chữ Hán</span> thành thạo,<br />
+        nhớ mãi <span class="lp-grad2">mặt chữ</span>.
+      </h1>
+      <p class="lp-sub">
+        GoPinyin giúp bạn luyện gõ chữ Hán theo từng câu — nhìn nghĩa tiếng Việt, gõ chữ Hán của cả câu,
+        app tự chấm và tô đỏ chữ sai. Thuộc nhanh từ vựng qua 4.969 câu HSK 1–9, kèm AI sinh câu
+        theo chủ đề và game bắn chữ. Mọi thứ chạy ngay trên trình duyệt.
+      </p>
+      <div class="lp-ctaRow">
+        <button class="lp-btn primary lg" id="heroStartBtn" type="button">🚀 Bắt đầu học miễn phí</button>
+        <button class="lp-btn outline lg" id="heroProBtn" type="button">⭐ Xem bảng Pro</button>
+      </div>
+      <div class="lp-stats">
+        <div class="lp-stat"><b data-count="4969">0</b><span>câu HSK 1–9</span></div>
+        <div class="lp-stat"><b data-count="206">0</b><span>chủ đề từ vựng</span></div>
+        <div class="lp-stat"><b data-count="41621">0</b><span>từ có nghĩa Việt</span></div>
+        <div class="lp-stat"><b>100%</b><span>kho câu chạy offline</span></div>
+      </div>
+    </div>
+    <div class="lp-heroArt" aria-hidden="true">
+      <div class="lp-mock">
+        <div class="lp-mockBar"><i></i><i></i><i></i><span>gopinyin.app/luyen-go</span></div>
+        <div class="lp-mockBody">
+          <div class="lp-mockLabel">Tiếng Việt</div>
+          <div class="lp-mockVi">Xin chào, rất vui được gặp bạn!</div>
+          <div class="lp-mockLabel">Chữ Hán</div>
+          <div class="lp-mockHan"><span class="on">你</span><span class="on">好</span>，<span class="cur">很</span><span class="cur">高</span><span class="cur">兴</span><span>认</span><span>识</span><span>你</span>。</div>
+          <div class="lp-mockInput"><span class="lp-mockCaret"></span><span class="lp-mockTyped">你好很高</span></div>
+          <div class="lp-mockRow"><span class="lp-chip ok">✓ Chính xác 100%</span><span class="lp-chip">🔥 Combo 12</span></div>
+        </div>
+      </div>
+      <div class="lp-floatCard f1">字<span>chữ Hán</span></div>
+      <div class="lp-floatCard f2">拼<span>luyện gõ</span></div>
+      <div class="lp-floatCard f3">词<span>từ vựng</span></div>
+    </div>
+  </section>
+
+  <!-- Tính năng -->
+  <section class="lp-section" id="features">
+    <div class="lp-sectionHead">
+      <div class="lp-kicker">Tính năng</div>
+      <h2>Một app, đủ mọi đường để thuộc chữ Hán</h2>
+      <p>Từ luyện gõ chữ Hán theo từng câu đến từ vựng, AI sinh câu và game bắn chữ — tất cả trong một nền tảng.</p>
+    </div>
+    <div class="lp-featureGrid">
+      <article class="lp-feature reveal">
+        <div class="lp-featureIcon" style="--ic:linear-gradient(135deg,#1F8A6B,#5CC9A1)">⌨️</div>
+        <h3>Gõ chữ Hán thông minh</h3>
+        <p>Nhìn nghĩa tiếng Việt rồi gõ chữ Hán của cả câu — app tự chấm ngay, chữ sai tô đỏ đúng chỗ, không phải gõ lại từ đầu.</p>
+      </article>
+      <article class="lp-feature reveal">
+        <div class="lp-featureIcon" style="--ic:linear-gradient(135deg,#10b981,#34d399)">📖</div>
+        <h3>Từ vựng &amp; câu HSK</h3>
+        <p>4.969 câu hoàn chỉnh HSK 1–9 theo chuẩn HSK 3.0, phủ 1.910 chữ Hán khác nhau, nhúng sẵn trong app — không cần mạng.</p>
+      </article>
+      <article class="lp-feature reveal">
+        <div class="lp-featureIcon" style="--ic:linear-gradient(135deg,#06B6D4,#5CC9A1)">🤖</div>
+        <h3>AI sinh câu theo chủ đề</h3>
+        <p>Muốn học câu về chủ đề gì cũng được: AI viết câu mới kèm pinyin và nghĩa, sắp hết câu lại viết tiếp.</p>
+      </article>
+      <article class="lp-feature reveal">
+        <div class="lp-featureIcon" style="--ic:linear-gradient(135deg,#FF8A5B,#FFB347)">🎮</div>
+        <h3>Game từ vựng</h3>
+        <p>Sảnh game với nhiều trò chơi luyện chữ Hán — bắt đầu với Game bắn chữ: chữ Hán rơi từ trên xuống, gõ đúng Pinyin để nổ tung, cộng điểm theo combo.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Các mục học -->
+  <section class="lp-section" id="modules">
+    <div class="lp-sectionHead">
+      <div class="lp-kicker">Học thế nào?</div>
+      <h2>Bốn mục học, một lộ trình rõ ràng</h2>
+      <p>Bố cục được sắp xếp lại: gõ → từ vựng → AI sinh câu → game củng cố.</p>
+    </div>
+    <div class="lp-moduleGrid">
+      <button type="button" class="lp-module reveal" data-goto="typing">
+        <div class="lp-moduleTop"><span class="lp-moduleIcon">⌨️</span><span class="lp-moduleTag">Mục 1</span></div>
+        <h3>Luyện gõ</h3>
+        <p>Thư viện 4.969 câu HSK, gõ chữ Hán theo từng câu, đọc to tiếng Trung, lưu tiến độ từng bộ.</p>
+        <span class="lp-moduleGo">Vào học →</span>
+      </button>
+      <button type="button" class="lp-module reveal" data-goto="vocab">
+        <div class="lp-moduleTop"><span class="lp-moduleIcon">📖</span><span class="lp-moduleTag">Mục 2</span></div>
+        <h3>Từ vựng theo chủ đề</h3>
+        <p>206 chủ đề từ gia đình, trường học đến công sở, du lịch — mỗi chủ đề tự tạo bộ luyện gõ riêng.</p>
+        <span class="lp-moduleGo">Vào học →</span>
+      </button>
+      <button type="button" class="lp-module reveal" data-goto="ai">
+        <div class="lp-moduleTop"><span class="lp-moduleIcon">🤖</span><span class="lp-moduleTag">Mục 3 · Pro</span></div>
+        <h3>AI sinh câu</h3>
+        <p>Muốn học chủ đề gì cũng được: AI viết câu mới kèm pinyin và nghĩa, sắp hết lại viết tiếp.</p>
+        <span class="lp-moduleGo">Vào học →</span>
+      </button>
+      <button type="button" class="lp-module reveal" data-goto="games">
+        <div class="lp-moduleTop"><span class="lp-moduleIcon">🎮</span><span class="lp-moduleTag">Mục 4</span></div>
+        <h3>Game từ vựng</h3>
+        <p>Sảnh game từ vựng — hiện có <b>Game bắn chữ</b>: chữ rơi, gõ pinyin để nổ. Gõ sai trừ điểm, để rơi quá vạch đỏ mất combo.</p>
+        <span class="lp-moduleGo">Vào học →</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Bảng giá -->
+  <section class="lp-section" id="pricing">
+    <div class="lp-sectionHead">
+      <div class="lp-kicker">Bảng giá</div>
+      <h2>Học miễn phí mãi mãi — Pro để đi sâu hơn</h2>
+      <p>Kho câu HSK 1–3, 206 chủ đề từ vựng và game miễn phí trọn đời. Pro mở khoá AI sinh câu và toàn bộ cấp HSK 4–9.</p>
+    </div>
+    <div class="lp-priceGrid">
+      <article class="lp-price reveal">
+        <h3>Miễn phí</h3>
+        <div class="lp-priceNum">0đ<span>/mãi mãi</span></div>
+        <ul>
+          <li>✓ Kho câu HSK 1–3 luyện gõ (miễn phí trọn đời)</li>
+          <li>✓ 206 chủ đề từ vựng</li>
+          <li>✓ Game bắn chữ HSK 1–3</li>
+          <li>✓ Lưu tiến độ trên máy bạn</li>
+          <li class="off">✕ AI sinh câu theo chủ đề</li>
+          <li class="off">✕ Kho câu HSK 4–9</li>
+        </ul>
+        <button type="button" class="lp-btn outline lg full" data-open="auth">Bắt đầu ngay</button>
+      </article>
+      <article class="lp-price pro reveal">
+        <div class="lp-ribbon">Phổ biến nhất</div>
+        <h3>Pro</h3>
+        <!-- ★ Chọn gói ngay trên landing: Gói tháng / Gói năm -->
+        <div class="lp-planSwitch" role="group" aria-label="Chọn gói Pro">
+          <button class="lp-planBtn active" type="button" data-lp-plan="month" aria-pressed="true">Gói tháng</button>
+          <button class="lp-planBtn" type="button" data-lp-plan="year" aria-pressed="false">Gói năm</button>
+        </div>
+        <div class="lp-priceNum" id="lpProPrice" data-price-slot="month">39.000đ<span>/tháng</span></div>
+        <div class="lp-priceSave" id="lpProSave">Tiết kiệm hơn khi chọn gói năm</div>
+        <ul>
+          <li>✓ Toàn bộ tính năng miễn phí</li>
+          <li>✓ AI sinh câu không giới hạn chủ đề</li>
+          <li>✓ Câu AI kèm pinyin &amp; nghĩa Việt chuẩn</li>
+          <li>✓ Mở khoá HSK 4–9</li>
+          <li>✓ Ưu tiên cập nhật bộ câu mới</li>
+          <li>✓ Hỗ trợ qua email, phản hồi trong 24h</li>
+        </ul>
+        <button type="button" class="lp-btn primary lg full" id="lpPriceProBtn">⭐ Nâng cấp Pro</button>
+        <div class="lp-priceNote">🎁 Tặng <b>1 tuần dùng thử Pro</b> ngay khi tạo tài khoản.</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="lp-section" id="faq">
+    <div class="lp-sectionHead">
+      <div class="lp-kicker">Hỏi đáp</div>
+      <h2>Câu hỏi thường gặp</h2>
+    </div>
+    <div class="lp-faq">
+      <details class="lp-faqItem reveal"><summary>Tôi chưa biết gì về tiếng Trung, học được không?</summary><p>Được. Bạn bắt đầu từ tab “Câu theo cấp HSK” ở mục Luyện gõ: hệ thống hiện nghĩa tiếng Việt và chữ Hán mẫu, bạn gõ lại chữ Hán của cả câu (dùng bộ gõ tiếng Trung của máy hoặc bàn phím ảo của app), app tự chấm và tô đỏ chữ sai. Cứ từng câu một, có nghe to và gợi ý pinyin khi cần.</p></details>
+      <details class="lp-faqItem reveal"><summary>Dữ liệu của tôi có bị gửi đi đâu không?</summary><p>Toàn bộ bộ câu nhúng sẵn và chạy ngay trên trình duyệt của bạn. Tiến độ học lưu bằng IndexedDB/localStorage trên máy bạn, không gửi lên server trừ khi bạn chủ động bật tính năng AI hoặc tra từ online.</p></details>
+      <details class="lp-faqItem reveal"><summary>Pro mở gì thêm so với bản miễn phí?</summary><p>Bản miễn phí đã đủ để luyện gõ <b>HSK 1–3</b>, dùng trọn <b>206 chủ đề từ vựng (41.621 từ)</b> và chơi game bắn chữ ở cấp 1–3. Pro mở thêm: AI sinh câu theo bất kỳ chủ đề nào (dùng API key của bạn hoặc gói dùng chung) và toàn bộ kho câu <b>HSK 4–9</b> cùng cấp <b>HSK 4–6</b> trong game bắn chữ.</p></details>
+      <details class="lp-faqItem reveal"><summary>Thanh toán Pro bằng cách nào?</summary><p>Mở cửa sổ <b>Nâng cấp Pro</b> rồi quét mã <b>VietQR</b> bằng app ngân hàng — mã đã điền sẵn số tiền và <b>nội dung riêng của bạn</b>. Hệ thống tự đối soát giao dịch và mở khoá Pro trong 1–2 phút, bạn không phải nhập gì thêm.</p></details>
+      <details class="lp-faqItem reveal"><summary>Dùng trên điện thoại được không?</summary><p>Được. GoPinyin là ứng dụng web responsive, chạy tốt trên mọi trình duyệt hiện đại và có thể thêm vào màn hình chính như một app thật.</p></details>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="lp-footer">
+    <div class="lp-footerTop">
+      <div class="lp-footerBrand">
+        <span class="brandLockup brandLockup-sm">
+          <img class="brandLockup-light" src="assets/logo-full.png" alt="GoPinyin" width="126" height="32" decoding="async" />
+          <img class="brandLockup-dark" src="assets/logo-full-dark.png" alt="" aria-hidden="true" width="126" height="32" decoding="async" />
+        </span>
+        <p>Góp pinyin thành chữ Hán — học tiếng Trung theo cách của người Việt.</p>
+      </div>
+      <nav class="lp-footerCols" aria-label="Liên kết chân trang">
+        <div class="lp-footerCol">
+          <b>Học</b>
+          <a href="#modules">Bốn mục học</a>
+          <a href="#features">Tính năng</a>
+          <a href="#faq">Hỏi đáp</a>
+        </div>
+        <div class="lp-footerCol">
+          <b>Gói</b>
+          <a href="#pricing">Miễn phí &amp; Pro</a>
+          <a href="#pricing">Học thử 7 ngày</a>
+          <a href="#pricing">Thanh toán VietQR</a>
+        </div>
+        <div class="lp-footerCol">
+          <b>Liên hệ</b>
+          <a href="mailto:hotro@gopinyin.app">hotro@gopinyin.app</a>
+          <a href="mailto:hotro@gopinyin.app?subject=GoPinyin%20—%20báo%20lỗi">Báo lỗi</a>
+          <a href="mailto:hotro@gopinyin.app?subject=GoPinyin%20—%20hợp%20tác">Hợp tác</a>
+        </div>
+      </nav>
+    </div>
+    <div class="lp-footerBottom">
+      <span>© <span id="lpYear">2026</span> GoPinyin. Dữ liệu HSK 3.0 chuẩn GF0025-2021.</span>
+      <span>Hỗ trợ: <a href="mailto:hotro@gopinyin.app">hotro@gopinyin.app</a> · Phản hồi trong 24h</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     WORKSPACE — không gian học (cần đăng nhập)
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="workspace" class="workspace hidden">
+  <!-- Thanh bên -->
+  <aside class="ws-side">
+    <div class="ws-sideBrand">
+      <img class="ws-sideMark" src="assets/logo-icon.png" alt="GoPinyin" width="36" height="36" decoding="async" />
+      <span class="brandLockup brandLockup-xs">
+        <img class="brandLockup-light" src="assets/logo-full.png" alt="GoPinyin" width="118" height="30" decoding="async" />
+        <img class="brandLockup-dark" src="assets/logo-full-dark.png" alt="" aria-hidden="true" width="118" height="30" decoding="async" />
+      </span>
+      <span class="ws-proBadge hidden" id="wsProBadge">PRO</span>
+    </div>
+    <nav class="ws-nav" aria-label="Điều hướng chính">
+      <button class="ws-navItem active" type="button" data-view="dash"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="ws-navLabel">Bảng điều khiển</span></button>
+      <button class="ws-navItem" type="button" data-view="library"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9.5 14h5"/></svg></span><span class="ws-navLabel">Luyện gõ</span></button>
+      <button class="ws-navItem" type="button" data-view="pron"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1"/><path d="M12 18v3.5"/><path d="M8.5 21.5h7"/></svg></span><span class="ws-navLabel">Luyện phát âm</span></button>
+      <button class="ws-navItem" type="button" data-view="rank"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M17 5h2.5a1.5 1.5 0 0 1 0 3H17M7 5H4.5a1.5 1.5 0 0 0 0 3H7"/></svg></span><span class="ws-navLabel">Bảng xếp hạng</span></button>
+      <button class="ws-navItem" type="button" data-view="ai"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/><path d="M5 3l.7 1.8L7.5 5.5l-1.8.7L5 8l-.7-1.8L2.5 5.5l1.8-.7z"/></svg></span><span class="ws-navLabel">AI sinh câu</span><span class="ws-lock" title="Pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></button>
+      <button class="ws-navItem" type="button" data-view="games"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="7" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="11" y2="12"/><line x1="15" y1="12" x2="15" y2="12"/><path d="M6 10.5v3M4.5 12h3"/></svg></span><span class="ws-navLabel">Game từ vựng</span></button>
+    </nav>
+    <div class="ws-sideFoot">
+      <button class="ws-upgradeBtn" id="wsUpgradeBtn" type="button">
+        <span class="ws-upgradeIcon">⭐</span>
+        <span><b>Nâng cấp Pro</b><small>Mở AI &amp; HSK 4–9</small></span>
+      </button>
+      <div class="ws-userChip" id="wsUserChip">
+        <span class="ws-avatar" id="wsAvatar">K</span>
+        <span class="ws-userInfo"><b id="wsUserName">Khách</b><small id="wsUserPlan">Gói miễn phí</small></span>
+        <button class="ws-logoutBtn" id="wsLogoutBtn" type="button" title="Đăng xuất">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Nội dung chính -->
+  <div class="ws-main">
+
+    <!-- Cảnh nền rừng trúc cho toàn bộ không gian học -->
+    <div class="ws-scenery" aria-hidden="true">
+      <div class="ws-sceneryGlow"></div>
+      <svg class="ws-scenerySvg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+        <defs>
+          <path id="bLeafWs" d="M0 0C15 -11 42 -15 62 -7C40 3 15 7 0 0Z"/>
+        </defs>
+        
+        
+        <g class="scRidge scFar"><path d="M-30 660 C40 640 70 570 100 470 C122 400 142 320 176 292 C212 262 228 356 252 430 C276 504 302 566 342 606 C382 646 422 604 452 522 C482 440 502 338 542 298 C582 258 602 352 627 432 C652 512 677 582 717 617 C757 652 802 600 832 520 C862 440 882 348 922 313 C962 278 982 370 1007 450 C1032 530 1057 600 1097 630 C1137 660 1182 610 1212 540 C1242 470 1262 378 1302 348 C1342 318 1362 412 1387 482 C1412 552 1432 612 1470 642 L1470 920 L-30 920 Z"/></g>
+        <g class="scRidge scMid"><path d="M-30 730 C50 710 92 656 132 604 C172 552 202 502 242 497 C282 492 302 548 337 592 C372 636 412 662 452 642 C492 622 522 558 562 532 C602 506 627 562 662 606 C697 650 737 682 782 666 C827 650 852 592 892 566 C932 540 957 602 992 642 C1027 682 1067 702 1107 682 C1147 662 1172 602 1212 576 C1252 550 1277 606 1312 646 C1347 686 1387 706 1470 700 L1470 920 L-30 920 Z"/></g>
+        <g class="scBamboo">
+          <path class="bStalk" d="M44.0 920.0 C54.0 692.2 47.5 437.6 53.0 250.0" stroke-width="17"/>
+          <path class="bNode" d="M36.8 820.7 L57.9 821.3" stroke-width="2.7"/>
+          <path class="bNode" d="M38.7 720.2 L59.7 720.5" stroke-width="2.7"/>
+          <path class="bNode" d="M39.5 619.7 L60.5 619.8" stroke-width="2.7"/>
+          <path class="bNode" d="M39.8 520.7 L60.8 520.8" stroke-width="2.7"/>
+          <path class="bNode" d="M40.0 425.0 L61.1 425.1" stroke-width="2.7"/>
+          <path class="bNode" d="M40.8 334.1 L61.8 334.4" stroke-width="2.7"/>
+          <use href="#bLeafWs" transform="translate(43.6 240.2) rotate(-133.9) scale(0.844)"/>
+          <use href="#bLeafWs" transform="translate(49.9 240.4) rotate(-107.9) scale(0.969)"/>
+          <use href="#bLeafWs" transform="translate(55.4 238.4) rotate(-78.3) scale(1.063)"/>
+          <use href="#bLeafWs" transform="translate(61.6 239.5) rotate(-50.6) scale(0.904)"/>
+          <use href="#bLeafWs" transform="translate(68.4 246.4) rotate(-13.1) scale(1.135)"/>
+          <use href="#bLeafWs" transform="translate(41.7 309.6) rotate(-132.4) scale(1.098)"/>
+          <use href="#bLeafWs" transform="translate(53.7 310.0) rotate(-78.1) scale(1.213)"/>
+          <use href="#bLeafWs" transform="translate(56.8 316.9) rotate(-32.9) scale(1.179)"/>
+          <use href="#bLeafWs" transform="translate(42.3 395.2) rotate(-122.5) scale(0.919)"/>
+          <use href="#bLeafWs" transform="translate(54.3 395.4) rotate(-74.0) scale(1.233)"/>
+          <use href="#bLeafWs" transform="translate(61.4 402.8) rotate(-26.7) scale(1.148)"/>
+          <path class="bStalk" d="M108.0 920.0 C100.0 664.3 105.2 378.6 100.8 168.0" stroke-width="13"/>
+          <path class="bNode" d="M97.3 809.0 L113.4 808.7" stroke-width="2.1"/>
+          <path class="bNode" d="M95.8 696.0 L111.9 695.9" stroke-width="2.1"/>
+          <path class="bNode" d="M95.1 583.0 L111.3 583.0" stroke-width="2.1"/>
+          <path class="bNode" d="M94.9 471.9 L111.0 471.9" stroke-width="2.1"/>
+          <path class="bNode" d="M94.7 364.5 L110.8 364.4" stroke-width="2.1"/>
+          <path class="bNode" d="M94.1 262.6 L110.2 262.5" stroke-width="2.1"/>
+          <use href="#bLeafWs" transform="translate(95.0 163.2) rotate(-140.1) scale(0.869)"/>
+          <use href="#bLeafWs" transform="translate(97.9 158.8) rotate(-107.6) scale(0.781)"/>
+          <use href="#bLeafWs" transform="translate(102.0 157.7) rotate(-83.6) scale(0.701)"/>
+          <use href="#bLeafWs" transform="translate(110.2 157.2) rotate(-48.9) scale(0.745)"/>
+          <use href="#bLeafWs" transform="translate(115.6 163.6) rotate(-16.5) scale(0.927)"/>
+          <use href="#bLeafWs" transform="translate(91.7 235.1) rotate(-131.3) scale(0.976)"/>
+          <use href="#bLeafWs" transform="translate(103.0 238.5) rotate(-83.0) scale(1.168)"/>
+          <use href="#bLeafWs" transform="translate(111.5 242.2) rotate(-26.3) scale(1.052)"/>
+          <use href="#bLeafWs" transform="translate(96.6 338.0) rotate(-128.4) scale(1.165)"/>
+          <use href="#bLeafWs" transform="translate(103.9 334.7) rotate(-83.9) scale(1.247)"/>
+          <use href="#bLeafWs" transform="translate(113.5 340.0) rotate(-27.3) scale(0.990)"/>
+          <path class="bStalk" d="M162.0 920.0 C168.0 719.4 164.1 495.2 167.4 330.0" stroke-width="10"/>
+          <path class="bNode" d="M158.1 818.0 L170.5 818.2" stroke-width="2.0"/>
+          <path class="bNode" d="M159.1 714.6 L171.5 714.6" stroke-width="2.0"/>
+          <path class="bNode" d="M159.5 611.7 L171.9 611.7" stroke-width="2.0"/>
+          <path class="bNode" d="M159.7 511.8 L172.1 511.8" stroke-width="2.0"/>
+          <path class="bNode" d="M160.1 417.1 L172.5 417.2" stroke-width="2.0"/>
+          <use href="#bLeafWs" transform="translate(157.0 322.1) rotate(-142.7) scale(1.087)"/>
+          <use href="#bLeafWs" transform="translate(164.4 322.0) rotate(-110.7) scale(1.045)"/>
+          <use href="#bLeafWs" transform="translate(169.5 317.3) rotate(-80.4) scale(0.955)"/>
+          <use href="#bLeafWs" transform="translate(172.4 323.5) rotate(-52.6) scale(1.021)"/>
+          <use href="#bLeafWs" transform="translate(180.5 325.0) rotate(-20.9) scale(0.883)"/>
+          <use href="#bLeafWs" transform="translate(163.2 386.7) rotate(-122.4) scale(1.059)"/>
+          <use href="#bLeafWs" transform="translate(168.4 386.0) rotate(-72.2) scale(1.273)"/>
+          <use href="#bLeafWs" transform="translate(181.1 385.4) rotate(-23.7) scale(0.931)"/>
+          <use href="#bLeafWs" transform="translate(159.1 461.1) rotate(-129.7) scale(1.170)"/>
+          <use href="#bLeafWs" transform="translate(168.4 457.0) rotate(-79.1) scale(1.156)"/>
+          <use href="#bLeafWs" transform="translate(173.5 464.3) rotate(-33.9) scale(1.045)"/>
+          <path class="bStalk" d="M1298.0 920.0 C1289.0 676.9 1294.9 405.2 1289.9 205.0" stroke-width="15"/>
+          <path class="bNode" d="M1285.7 814.6 L1304.3 814.2" stroke-width="2.4"/>
+          <path class="bNode" d="M1284.0 707.1 L1302.6 706.9" stroke-width="2.4"/>
+          <path class="bNode" d="M1283.3 599.6 L1301.9 599.5" stroke-width="2.4"/>
+          <path class="bNode" d="M1283.0 493.9 L1301.6 493.9" stroke-width="2.4"/>
+          <path class="bNode" d="M1282.8 391.8 L1301.4 391.7" stroke-width="2.4"/>
+          <path class="bNode" d="M1282.1 295.0 L1300.7 294.8" stroke-width="2.4"/>
+          <use href="#bLeafWs" transform="translate(1277.4 201.9) rotate(-166.0) scale(0.966)"/>
+          <use href="#bLeafWs" transform="translate(1280.0 195.2) rotate(-135.4) scale(1.032)"/>
+          <use href="#bLeafWs" transform="translate(1288.2 196.8) rotate(-101.9) scale(0.736)"/>
+          <use href="#bLeafWs" transform="translate(1292.1 198.7) rotate(-71.0) scale(0.953)"/>
+          <use href="#bLeafWs" transform="translate(1294.4 200.4) rotate(-45.2) scale(1.158)"/>
+          <use href="#bLeafWs" transform="translate(1285.1 275.9) rotate(-146.5) scale(1.002)"/>
+          <use href="#bLeafWs" transform="translate(1289.3 273.1) rotate(-105.8) scale(1.084)"/>
+          <use href="#bLeafWs" transform="translate(1296.9 273.9) rotate(-47.3) scale(1.189)"/>
+          <use href="#bLeafWs" transform="translate(1279.0 365.4) rotate(-146.9) scale(1.245)"/>
+          <use href="#bLeafWs" transform="translate(1290.1 363.8) rotate(-100.9) scale(1.119)"/>
+          <use href="#bLeafWs" transform="translate(1297.9 365.3) rotate(-55.7) scale(1.088)"/>
+          <path class="bStalk" d="M1362.0 920.0 C1369.0 709.2 1364.5 473.6 1368.3 300.0" stroke-width="12"/>
+          <path class="bNode" d="M1357.2 812.8 L1372.1 813.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1358.4 704.1 L1373.3 704.2" stroke-width="2.0"/>
+          <path class="bNode" d="M1358.9 596.0 L1373.8 596.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1359.1 491.0 L1374.0 491.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1359.5 391.5 L1374.4 391.6" stroke-width="2.0"/>
+          <use href="#bLeafWs" transform="translate(1361.2 298.3) rotate(-166.6) scale(0.879)"/>
+          <use href="#bLeafWs" transform="translate(1360.6 292.7) rotate(-136.4) scale(0.833)"/>
+          <use href="#bLeafWs" transform="translate(1365.0 286.0) rotate(-103.3) scale(0.740)"/>
+          <use href="#bLeafWs" transform="translate(1370.1 291.8) rotate(-77.7) scale(0.890)"/>
+          <use href="#bLeafWs" transform="translate(1379.7 288.9) rotate(-44.2) scale(0.887)"/>
+          <use href="#bLeafWs" transform="translate(1358.9 360.5) rotate(-151.4) scale(1.138)"/>
+          <use href="#bLeafWs" transform="translate(1365.3 355.8) rotate(-101.9) scale(1.165)"/>
+          <use href="#bLeafWs" transform="translate(1373.0 356.3) rotate(-56.8) scale(0.928)"/>
+          <use href="#bLeafWs" transform="translate(1358.8 442.2) rotate(-151.5) scale(1.057)"/>
+          <use href="#bLeafWs" transform="translate(1364.4 438.2) rotate(-105.5) scale(1.220)"/>
+          <use href="#bLeafWs" transform="translate(1374.0 438.8) rotate(-46.1) scale(1.620)"/>
+          <path class="bStalk" d="M1236.0 920.0 C1231.0 733.7 1234.2 525.4 1231.5 372.0" stroke-width="9"/>
+          <path class="bNode" d="M1228.3 806.3 L1239.5 806.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1227.5 690.8 L1238.6 690.8" stroke-width="2.0"/>
+          <path class="bNode" d="M1227.3 577.5 L1238.4 577.5" stroke-width="2.0"/>
+          <path class="bNode" d="M1227.0 470.1 L1238.1 470.0" stroke-width="2.0"/>
+          <use href="#bLeafWs" transform="translate(1218.7 367.7) rotate(-161.4) scale(1.103)"/>
+          <use href="#bLeafWs" transform="translate(1220.5 360.8) rotate(-134.6) scale(1.009)"/>
+          <use href="#bLeafWs" transform="translate(1229.1 356.9) rotate(-98.9) scale(0.822)"/>
+          <use href="#bLeafWs" transform="translate(1235.7 360.9) rotate(-69.4) scale(0.974)"/>
+          <use href="#bLeafWs" transform="translate(1236.4 368.4) rotate(-36.5) scale(0.968)"/>
+          <use href="#bLeafWs" transform="translate(1218.0 422.5) rotate(-154.1) scale(1.381)"/>
+          <use href="#bLeafWs" transform="translate(1230.1 414.9) rotate(-98.5) scale(0.908)"/>
+          <use href="#bLeafWs" transform="translate(1239.9 418.6) rotate(-55.0) scale(1.061)"/>
+          <use href="#bLeafWs" transform="translate(1226.7 498.0) rotate(-149.8) scale(1.386)"/>
+          <use href="#bLeafWs" transform="translate(1231.1 490.4) rotate(-98.0) scale(1.237)"/>
+          <use href="#bLeafWs" transform="translate(1237.1 495.9) rotate(-51.7) scale(1.336)"/>
+        </g>
+        <g class="scRidge scNear"><path d="M-30 812 C110 782 232 800 356 810 C480 820 604 790 726 795 C848 800 968 822 1088 816 C1208 810 1350 786 1470 800 L1470 920 L-30 920 Z"/></g>
+        
+      </svg>
+    </div>
+
+    <div class="top" id="topBar">
+      <div class="brand">
+        <div class="brandMini"><img src="assets/logo-icon.png" alt="" width="26" height="26" /></div>
+        <div class="brand-text">
+          <div class="title" id="wsViewTitle">Bảng điều khiển</div>
+          <div class="sub" id="wsViewSub">Tổng quan hành trình học tập của bạn</div>
+        </div>
+      </div>
+      <div class="topActions">
+        <span class="ws-streakChip hidden" id="wsStreakChip">🔥 <b id="wsStreakNum">0</b> ngày</span>
+        <button id="themeToggle" class="btn secondary iconBtn" type="button" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng tối" aria-pressed="false">🌙</button>
+        <button type="button" id="backLibrary" class="btn secondary backBtn hidden">← Game từ vựng</button>
+      </div>
+    </div>
+
+    <!-- ═══ Bảng điều khiển (mới) ═══ -->
+    <section id="dashView" class="dash">
+      <div class="dashHero">
+        <div class="dashHello">
+          <h2>Xin chào, <span id="dashName">bạn</span> 👋</h2>
+          <p>Hôm nay luyện gõ một chút là nhớ chữ Hán mãi. Chọn một mục bên dưới để bắt đầu.</p>
+        </div>
+        <div class="dashGoal">
+          <svg viewBox="0 0 120 120" class="dashRing" aria-hidden="true"><defs><linearGradient id="dashGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC9A1"/><stop offset="1" stop-color="#2A8770"/></linearGradient></defs>
+            <circle class="dashRingBg" cx="60" cy="60" r="52" />
+            <circle class="dashRingFg" id="dashRingFg" cx="60" cy="60" r="52" />
+          </svg>
+          <div class="dashGoalInfo"><b id="dashGoalNum">0/20</b><span>mục tiêu hôm nay</span></div>
+        </div>
+      </div>
+
+      <!-- ★ Băng dùng thử Pro (tự hiện trong 7 ngày đầu sau khi đăng ký) -->
+      <div class="trialBanner hidden" id="trialBanner">
+        <div class="trialBannerIcon" aria-hidden="true">🎁</div>
+        <div class="trialBannerMain">
+          <b>Bạn đang dùng thử <span class="trialPro">Pro</span> miễn phí</b>
+          <span id="trialBannerSub">Còn 7 ngày — hết hạn sẽ khoá lại AI sinh câu và HSK 4–9.</span>
+          <div class="trialBannerBar"><i id="trialBarFill" style="width:100%"></i></div>
+        </div>
+        <button class="trialBannerBtn" id="trialUpgradeBtn" type="button">Nâng cấp giữ Pro</button>
+      </div>
+
+      <div class="dashStats" id="dashStats">
+        <div class="dashStat"><div class="dashStatIcon" style="--ic:linear-gradient(135deg,#1F8A6B,#5CC9A1)">📚</div><div><b id="dashLearned">0</b><span>câu đã học</span></div></div>
+        <div class="dashStat"><div class="dashStatIcon" style="--ic:linear-gradient(135deg,#10B981,#34D399)">🎯</div><div><b id="dashAcc">—</b><span>độ chính xác</span></div></div>
+        <div class="dashStat"><div class="dashStatIcon" style="--ic:linear-gradient(135deg,#FF8A5B,#FFB347)">🔥</div><div><b id="dashCombo">0</b><span>combo cao nhất</span></div></div>
+        <div class="dashStat"><div class="dashStatIcon" style="--ic:linear-gradient(135deg,#06B6D4,#5CC9A1)">🏆</div><div><b id="dashBest">0</b><span>điểm game cao nhất</span></div></div>
+      </div>
+
+      <!-- Hai mục nổi bật: Game bắn chữ & AI sinh câu -->
+      <div class="dashFeatured">
+        <button class="dashFeature featureGame" type="button" data-view="games">
+          <span class="dfBadge">Vừa chơi vừa nhớ</span>
+          <span class="dfIcon">🎮</span>
+          <b>Game từ vựng</b>
+          <small>Tập hợp các trò chơi luyện chữ Hán — bắt đầu bằng Game bắn chữ.</small>
+          <span class="dfGo">Vào sảnh game →</span>
+        </button>
+        <button class="dashFeature featureAi" type="button" data-view="ai">
+          <span class="dfBadge">Pro · Mở khoá</span>
+          <span class="dfIcon">🤖</span>
+          <b>AI sinh câu</b>
+          <small>Muốn học chủ đề gì cũng có câu mới kèm pinyin &amp; nghĩa Việt.</small>
+          <span class="dfGo">Tạo câu ngay →</span>
+        </button>
+      </div>
+
+      <div class="dashGrid">
+        <button type="button" class="dashCard" data-view="library">
+          <span class="dashCardIcon" style="--ic:linear-gradient(135deg,#1F8A6B,#5CC9A1)">⌨️</span>
+          <b>Luyện gõ</b>
+          <small>Vào thư viện 4.969 câu HSK và luyện gõ ngay</small>
+        </button>
+        <button type="button" class="dashCard" data-view="library" data-vtab="topic">
+          <span class="dashCardIcon" style="--ic:linear-gradient(135deg,#06B6D4,#5CC9A1)">🗂️</span>
+          <b>Từ vựng theo chủ đề</b>
+          <small>206 chủ đề · 41.621 từ kèm pinyin và nghĩa Việt</small>
+        </button>
+        <button type="button" class="dashCard" data-view="rank">
+          <span class="dashCardIcon" style="--ic:linear-gradient(135deg,#FF8A5B,#FFB347)">🏆</span>
+          <b>Bảng xếp hạng</b>
+          <small>Xem số câu bạn đã luyện hôm nay và tuần này</small>
+        </button>
+      </div>
+    </section>
+
+      <section id="libraryCard" class="card">
+    <div class="libraryHead">
+      <div>
+        <h2>📚 Thư viện</h2>
+        <div class="small">Chọn kho từ vựng có sẵn (HSK / chủ đề) hoặc dùng bộ câu của bạn.</div>
+      </div>
+      <div class="libraryHeadActions">
+        <button id="exportProgressBtn" class="btn secondary" type="button" title="Xuất toàn bộ tiến độ ra file JSON">⭳ Xuất tiến độ</button>
+        <button id="importProgressBtn" class="btn secondary" type="button" title="Nhập tiến độ từ file JSON">⭱ Nhập tiến độ</button>
+        <input id="progressFileInput" type="file" accept=".json,application/json" hidden />
+      </div>
+    </div>
+
+    <div id="storageWarn" class="storageWarn hidden" role="alert">
+      ⚠️ <span><b>Trình duyệt đang chặn lưu trữ cục bộ (IndexedDB).</b> Bộ câu bạn thêm chỉ được giữ tạm trong phiên này và sẽ mất khi tải lại.
+      Hãy <b>đóng các tab/khung xem trước khác</b> của app rồi tải lại trang để lưu được bình thường.</span>
+    </div>
+
+    <!-- ★ Đã bỏ mục "📖 Bộ câu của bạn (đã học)": tiến độ nay hiện NGAY TRÊN
+         từng thẻ cấp HSK / chủ đề bên dưới → giao diện gọn hơn nhiều. -->
+
+    <div class="segmented vocabTabs" role="group" aria-label="Nhóm câu giao tiếp">
+      <button class="modeBtn active" data-vtab="hsk" type="button" aria-pressed="true">🎓 Câu theo cấp HSK</button>
+      <button class="modeBtn" data-vtab="other" type="button" aria-pressed="false">Hội thoại &amp; Mẫu câu</button>
+      <button class="modeBtn" data-vtab="tone" type="button" aria-pressed="false">🎵 Cặp thanh điệu</button>
+      <button class="modeBtn" data-vtab="topic" type="button" aria-pressed="false">Từ vựng theo chủ đề</button>
+    </div>
+    <input id="vocabSearch" class="librarySearch" type="search" placeholder="🔍 Tìm tình huống / chủ đề..." aria-label="Tìm chủ đề" />
+    <div id="vocabList" class="vocabGrid"></div>
+    <div class="vocabNote">
+      💡 Bấm vào một cấp để hệ thống <b>tự tạo bộ luyện</b> gồm câu tiếng Trung + pinyin + nghĩa tiếng Việt.
+      Tab <b>🎓 Câu theo cấp HSK</b> gồm <b>4.969 câu hoàn chỉnh</b> từ HSK 1 đến HSK 9 — <b>chỉ có câu, không có từ đơn lẻ</b>.
+      Dữ liệu theo chuẩn HSK 3.0 chính thức, nhúng sẵn trong app nên <b>không cần mạng</b>.
+      <br>📚 <b>HSK 1–3 miễn phí</b> · <b>HSK 4–9</b> và <b>AI sinh câu</b> thuộc gói Pro (mỗi tài khoản được dùng thử 7 ngày).
+      <br>🗂️ Tab <b>Từ vựng theo chủ đề</b> có <b>206 chủ đề · 41.621 từ</b> kèm pinyin và nghĩa tiếng Việt, cũng dùng được <b>offline</b>.
+      <br>📖 Bạn đã học tới đâu? Nhìn <b>thanh tiến độ ngay trên mỗi thẻ</b> — thẻ ghi <b>số câu đã học / tổng số câu</b> và <b>%</b>; bấm vào thẻ là <b>học tiếp đúng chỗ đang dở</b>. Xem <b>🏆 Bảng xếp hạng</b> ở thanh bên để theo dõi số câu đã luyện.
+      </div>
+  </section>
+
+      <!-- Mục "Bộ câu cá nhân" đã được gỡ bỏ theo yêu cầu người dùng -->
+
+      <section id="aiCard" class="card hidden aiView">
+    <div class="aiViewHead">
+      <div>
+        <h2>🤖 AI sinh câu</h2>
+        <div class="small">Viết chủ đề bạn muốn học → AI tạo câu mới kèm pinyin &amp; nghĩa tiếng Việt. Tính năng dành cho hội viên Pro.</div>
+      </div>
+    </div>
+<div id="aiPane">
+      <div class="aiBox">
+        <label class="aiLabel" for="aiPrompt">
+          <span id="aiPromptLabelText">Bạn muốn học câu tiếng Trung về chủ đề gì?</span>
+          <small id="aiPromptSub">AI sẽ viết câu hoàn chỉnh kèm pinyin &amp; nghĩa tiếng Việt.</small>
+        </label>
+        <textarea id="aiPrompt" class="aiPrompt" rows="3" placeholder="Ví dụ: hội thoại khi đi mua đồ ở chợ, nói thẳng, dùng được ngày mai"></textarea>
+        <div class="aiControls">
+          <label class="aiField">Học gì
+            <select id="aiKind" class="select" aria-describedby="aiKindHint">
+              <option value="sentence" selected>📝 Câu hoàn chỉnh</option>
+              <option value="word">🔤 Từ vựng</option>
+              <option value="both">📝🔤 Cả câu và từ vựng</option>
+            </select>
+          </label>
+          <label class="aiField">Mỗi lần sinh
+            <select id="aiBatch" class="select">
+              <option value="3">3 câu</option>
+              <option value="5" selected>5 câu</option>
+              <option value="10">10 câu</option>
+            </select>
+          </label>
+          <label class="aiField">Trình độ
+            <select id="aiLevel" class="select">
+              <option value="">Không cần</option>
+              <option value="HSK 1">HSK 1</option>
+              <option value="HSK 2">HSK 2</option>
+              <option value="HSK 3">HSK 3</option>
+              <option value="HSK 4">HSK 4</option>
+              <option value="HSK 5">HSK 5</option>
+              <option value="HSK 6">HSK 6</option>
+              <option value="HSK 7">HSK 7</option>
+              <option value="HSK 8">HSK 8</option>
+              <option value="HSK 9">HSK 9</option>
+            </select>
+          </label>
+        </div>
+        <div id="aiKindHint" class="aiKindHint"></div>
+        <div class="aiControls">
+          <button id="aiStartBtn" class="btn primary" type="button">🚀 Viết prompt rồi học ngay</button>
+        </div>
+        <details class="aiDetails">
+          <summary>Tuỳ chọn nâng cao</summary>
+          <div class="aiControls">
+            <label class="aiField">Nhà cung cấp AI
+              <select id="aiProvider" class="select">
+                <option value="gemini">Google Gemini — API key miễn phí (khuyên dùng)</option>
+                <option value="openrouter">OpenRouter — model miễn phí, cần API key</option>
+              </select>
+            </label>
+            <input id="aiKey" class="aiKey" type="password" placeholder="Dán API key vào đây (chỉ lưu trên máy bạn)" aria-label="API key" />
+            <!-- ★ Nhiều người KHÔNG BIẾT lấy API key ở đâu → nút dẫn thẳng tới trang lấy key
+                 của nhà cung cấp đang chọn (link + chữ đổi theo nhà cung cấp) -->
+            <div id="keyHelpRow" class="aiControls">
+              <a id="keyHelpLink" class="miniBtn primary" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">🔑 Lấy API key Gemini (miễn phí)</a>
+              <span id="keyHelpHint" class="aiStatus">Bấm nút trên → đăng nhập tài khoản Google → bấm <b>“Create API key”</b> → <b>sao chép</b> key rồi dán vào ô “API key” phía trên. Key chỉ lưu trên máy bạn.</span>
+            </div>
+          </div>
+          <label class="aiCheck" for="aiVerify" title="AI tự dịch lại chữ Hán rồi so với nghĩa tiếng Việt đã tạo; nghĩa nào lệch sẽ được sửa. Tốn thêm 1 lượt gọi AI mỗi đợt.">
+            <input type="checkbox" id="aiVerify" checked />
+            <span>🔍 <b>Soát lại nghĩa Việt ↔ chữ Hán</b> sau khi tạo <small>(khuyên bật — tốn thêm 1 lượt gọi AI)</small></span>
+          </label>
+          <div class="aiHint"><b>Cách dùng:</b> chọn <b>“Học gì”</b> (Câu hoàn chỉnh / Từ vựng / Cả hai) → viết chủ đề → bấm “học ngay”. AI viết đợt đầu, rồi <b>hỏi bạn có lưu lại không</b>:<br />• <b>💾 Lưu lại</b> → đặt tên → bộ nằm trong <b>“Bộ AI đã lưu”</b> ngay bên dưới; lần sau bấm <b>“Học tiếp”</b> là vào <b>đúng chỗ bạn đang học dở</b>.<br />• <b>Không lưu</b> → chỉ học tạm lần này, thoát ra là hết, không ghi gì vào máy.<br />Khi đang học, <b>sắp hết là AI tự viết tiếp</b> — nội dung mới được cộng dồn vào bộ đã lưu. Nội dung AI tạo ra <b>không bao giờ lặp lại</b> nhau trong cùng chủ đề.<br /><br /><b>Gemini (khuyên dùng):</b> ổn định, chất lượng cao — bấm <b>“🔑 Lấy API key Gemini (miễn phí)”</b> để mở trang lấy key, dán key vào ô <b>API key</b> là dùng được. Key <b>miễn phí</b>, chỉ lưu trên máy bạn.<br /><b>OpenRouter:</b> dự phòng khi Gemini hết hạn mức — bấm <b>“🔑 Lấy API key OpenRouter”</b>, tạo key miễn phí rồi dán vào ô API key.</div>
+        </details>
+        <div id="aiStatus" class="aiStatus" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <!-- ★ BỘ CÂU AI ĐÃ LƯU — nằm ngay dưới khung tạo prompt.
+         Bấm "Học tiếp" là vào đúng câu đang học dở của bộ đó. -->
+    <div id="aiSetsWrap" class="aiSetsWrap">
+      <div class="aiSetsHead">
+        <h3>📚 Bộ AI đã lưu</h3>
+        <span class="small">Bấm “Học tiếp” để làm tiếp đúng chỗ bạn đang dở.</span>
+      </div>
+      <div id="aiSets" class="libraryGrid aiSetsGrid"></div>
+    </div>
+  </section>
+
+      <!-- ═══ ★ LUYỆN PHÁT ÂM — 1) CHỌN BỘ CÂU (vào trước, giống Thư viện) ═══ -->
+      <section id="pronLibCard" class="card hidden pronLibView">
+        <div class="fileWarn hidden" data-filewarn role="alert">
+          <span class="fileWarnIco" aria-hidden="true">⚠️</span>
+          <span class="fileWarnTxt">Bạn đang mở app bằng <b>file://</b> — Chrome <b>không ghi nhớ quyền micro</b> cho địa chỉ này, nên mỗi lần bấm nói đều phải cấp quyền lại. <b>Mở thư mục gopinyin → nháy đúp file <code>start.bat</code></b> → trình duyệt tự mở đúng địa chỉ → chỉ hỏi quyền micro <b>một lần</b>.</span>
+          <span class="fileWarnActs">
+            <button type="button" class="btn primary btnSm" data-filewarn-go>Chuyển sang localhost</button>
+            <button type="button" class="btn secondary btnSm" data-filewarn-hide>Ẩn</button>
+          </span>
+        </div>
+        <div class="libraryHead">
+          <div>
+            <h2>🎙 Luyện phát âm</h2>
+            <div class="small">Chọn bộ câu để luyện nói. <b>Dùng chung kho câu với Luyện gõ</b>, nhưng <b>tiến độ luyện nói tính riêng</b> — không ảnh hưởng tiến độ gõ.</div>
+          </div>
+        </div>
+        <!-- ★ Đã bỏ mục "Bộ câu của bạn (đã học)" và "Các câu đã làm":
+             tiến độ nay hiện NGAY TRÊN thẻ HSK bên dưới. -->
+        <div class="sectionTitle">🎓 Câu theo cấp HSK <span class="muted">— chọn một cấp để bắt đầu</span></div>
+        <div id="pronLibHsk" class="vocabGrid pronLibGrid"></div>
+        <div class="vocabNote">
+          💡 Mỗi cấp dùng đúng bộ câu của màn <b>Luyện gõ</b> — chung kho câu, nhưng <b>tiến độ luyện nói tách riêng</b> (luyện nói không làm thay đổi tiến độ gõ, và ngược lại).
+          <br>📖 <b>Thanh tiến độ trên mỗi thẻ</b> cho biết bạn đã luyện nói bao nhiêu câu (<b>x/N</b> + <b>%</b>) và bao nhiêu câu <b>đạt</b>; bấm vào thẻ là <b>vào đúng câu đang dở</b>.
+          <br>📚 <b>HSK 1–3 miễn phí</b> · <b>HSK 4–9</b> thuộc gói Pro (mỗi tài khoản được dùng thử 7 ngày).
+          <br>🎙 Cần micro và trình duyệt <b>Chrome / Edge</b>. Micro chỉ bật khi bạn bấm nút nói — không thu âm ngầm.
+        </div>
+      </section>
+
+      <!-- ═══ ★ LUYỆN PHÁT ÂM — 2) MÀN LUYỆN (vừa đúng 1 màn hình) ═══ -->
+      <section id="pronCard" class="card studyShell hidden pronView">
+        <div class="fileWarn hidden" data-filewarn role="alert">
+          <span class="fileWarnIco" aria-hidden="true">⚠️</span>
+          <span class="fileWarnTxt">Đang mở bằng <b>file://</b> → Chrome hỏi lại quyền micro <b>mỗi lần nói</b>. <b>Nháy đúp <code>start.bat</code></b> trong thư mục gopinyin → trình duyệt tự mở đúng địa chỉ → chỉ hỏi quyền <b>một lần</b>.</span>
+          <span class="fileWarnActs">
+            <button type="button" class="btn primary btnSm" data-filewarn-go>Chuyển sang localhost</button>
+            <button type="button" class="btn secondary btnSm" data-filewarn-hide>Ẩn</button>
+          </span>
+        </div>
+        <!-- ★ ĐẦU THẺ — thống kê + thanh tiến độ (cùng bộ khung với màn Luyện gõ) -->
+        <div class="studyHead">
+          <div class="stats">
+            <div class="stat"><b id="pronProg">0/0</b><span>Tiến độ</span></div>
+            <div class="stat" data-kind="ok"><b id="pronGood">0</b><span>Phát âm tốt</span></div>
+            <div class="stat" data-kind="bad"><b id="pronNeed">0</b><span>Cần cải thiện</span></div>
+            <div class="stat" data-kind="combo"><b id="pronStreak">0</b><span>Chuỗi tốt</span></div>
+            <div class="stat"><b id="pronAvg">—</b><span>Điểm TB</span></div>
+            <div class="stat" data-kind="speed"><b id="pronTries">0</b><span>Lượt nói</span></div>
+          </div>
+          <div class="progress"><div id="pronBar" class="bar"></div></div>
+        </div>
+
+        <!-- Thanh công cụ — 3 nhóm, giống hệt màn luyện gõ -->
+        <div class="studyControls pronControls">
+          <div class="ctrlZone" role="group" aria-label="Nội dung">
+            <button id="pronBackBtn" class="btn secondary btnSm" type="button" title="Quay lại chọn bộ câu khác">← Bộ khác</button>
+            <span class="ctrlZoneLabel">📚 Nội dung</span>
+            <select id="pronSource" class="select selectVoice" aria-label="Chọn bộ nội dung" title="Chọn bộ nội dung để luyện"></select>
+            <select id="pronFilter" class="select" aria-label="Lọc câu" title="Lọc câu">
+              <option value="all">Tất cả câu</option>
+              <option value="new">Chưa luyện</option>
+              <option value="redo">Cần luyện lại</option>
+              <option value="done">Đã đạt mục tiêu</option>
+            </select>
+          </div>
+          <div class="ctrlZone" role="group" aria-label="Âm thanh mẫu">
+            <span class="ctrlZoneLabel">🔊 Giọng mẫu</span>
+            <select id="pronRate" class="select" aria-label="Tốc độ đọc mẫu" title="Tốc độ đọc mẫu (không ảnh hưởng việc chấm điểm)">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1.0×</option>
+              <option value="1.25">1.25×</option>
+            </select>
+            <select id="pronVoice" class="select selectVoice" aria-label="Giọng đọc mẫu" title="Giọng đọc mẫu"><option value="">Giọng tự động</option></select>
+            <button id="pronAutoSample" class="toggleBtn off" type="button" aria-pressed="false" title="Tự phát câu mẫu khi chuyển câu">
+              <span class="tgIco" aria-hidden="true">🔊</span><span class="tgTxt">Tự nghe mẫu</span>
+            </button>
+          </div>
+          <div class="ctrlZone" role="group" aria-label="Hiển thị">
+            <span class="ctrlZoneLabel">👁 Hiển thị</span>
+            <button id="pronPyToggle" class="toggleBtn" type="button" aria-pressed="true" title="Ẩn/hiện pinyin">
+              <span class="tgIco" aria-hidden="true">🅿️</span><span class="tgTxt">Pinyin</span>
+            </button>
+            <button id="pronHanToggle" class="toggleBtn" type="button" aria-pressed="true" title="Ẩn/hiện chữ Hán">
+              <span class="tgIco" aria-hidden="true">🀄</span><span class="tgTxt">Chữ Hán</span>
+            </button>
+            <button id="pronViToggle" class="toggleBtn" type="button" aria-pressed="true" title="Ẩn/hiện nghĩa tiếng Việt">
+              <span class="tgIco" aria-hidden="true">👁️</span><span class="tgTxt">Nghĩa</span>
+            </button>
+            <button id="pronAutoNext" class="toggleBtn off" type="button" aria-pressed="false" title="Tự sang câu tiếp sau khi xem kết quả">
+              <span class="tgIco" aria-hidden="true">⏭</span><span class="tgTxt">Tự sang câu</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="studyBody" id="pronBody">
+          <div id="pronArea" class="studyArea">
+            <div class="questionBox pronBox">
+              <div class="qbRow" id="pronViLine">
+                <div class="label">Tiếng Việt</div>
+                <div id="pronVi" class="prompt"></div>
+              </div>
+              <div class="qbRow" id="pronHanLine">
+                <div class="label">Chữ Hán <span class="pronHanHint">— bấm vào từng chữ để xem chi tiết</span></div>
+                <div id="pronHanzi" class="hanzi pronHanzi"></div>
+              </div>
+              <div class="qbRow" id="pronPyLine">
+                <div class="label">Pinyin</div>
+                <div id="pronPy" class="pronPy"></div>
+              </div>
+
+              <!-- Vùng luyện nói -->
+              <div class="pronStage">
+                <button id="pronMicBtn" class="pronMic" type="button" aria-label="Bắt đầu nói">
+                  <span class="pronMicRing" aria-hidden="true"></span>
+                  <span class="pronMicIco" aria-hidden="true">🎤</span>
+                  <span class="pronMicTxt">Nhấn để bắt đầu nói</span>
+                  <span class="pronMicSub">hoặc nhấn <b>Enter</b></span>
+                </button>
+                <div class="pronMeter" aria-hidden="true">
+                  <canvas id="pronWave" width="720" height="72"></canvas>
+                  <span id="pronTimer" class="pronTimer hidden">0.0s</span>
+                </div>
+              </div>
+
+              <div id="pronStatus" class="pronStatus" role="status" aria-live="polite" aria-atomic="true"></div>
+
+              <div class="audioRow">
+                <button id="pronSampleBtn" class="audioBtn" type="button" title="Nghe phát âm chuẩn của câu (F1)">🔊 <span>Nghe phát âm mẫu</span></button>
+                <button id="pronPlayMineBtn" class="btn secondary btnSm" type="button" disabled title="Nghe lại bản ghi vừa nói">▶ Bản ghi của tôi</button>
+              </div>
+
+              <div class="kbdHint" id="pronKbdHint">
+                <span><span class="kbd">Enter</span> Bắt đầu / dừng nói</span>
+                <span><span class="kbd">Space</span> Câu tiếp</span>
+                <span><span class="kbd">F1</span> Nghe mẫu</span>
+              </div>
+            </div>
+
+            <!-- Kết quả chấm (cột phải trên máy tính, dưới thẻ trên điện thoại) -->
+            <div id="pronResult" class="pronResult hidden"></div>
+          </div>
+
+          <div id="pronComplete" class="complete hidden">
+            <div class="emoji">🎉</div>
+            <h2>Đã hết danh sách</h2>
+            <p id="pronCompleteMsg"></p>
+            <button type="button" id="pronRestartBtn" class="btn primary">Luyện lại từ đầu</button>
+          </div>
+        </div><!-- /.studyBody -->
+
+        <!-- ═══ CHÂN THẺ — nút điều hướng câu + thông tin bộ (giống màn Luyện gõ) ═══ -->
+        <div class="studyFoot">
+          <div class="actions pronActions">
+            <div class="actGroup">
+              <button id="pronPrevBtn" class="btn secondary" type="button" title="Quay lại câu trước">◀ Câu trước</button>
+              <button id="pronRetryBtn" class="btn secondary" type="button" title="Nói lại câu này (tạo lượt mới)">↺ Nói lại</button>
+              <button id="pronSkipBtn" class="btn secondary" type="button" title="Bỏ qua câu này (không tính là đã luyện xong)">Bỏ qua ▶</button>
+            </div>
+            <span class="actDivider" aria-hidden="true"></span>
+            <div class="actGroup">
+              <button id="pronNextBtn" class="btn primary" type="button" title="Sang câu tiếp theo">Câu tiếp ▶</button>
+            </div>
+          </div>
+          <div class="studyFootRight pronFootRight">
+            <span id="pronInfo" class="fileinfo"></span>
+            <button type="button" id="pronResetBtn" class="btn danger btnSm" title="Xóa tiến độ luyện phát âm của bộ này">Xóa tiến độ</button>
+          </div>
+        </div>
+
+        <!-- Popover chi tiết từng chữ -->
+        <div id="pronDetail" class="pronDetail hidden" role="dialog" aria-modal="false" aria-label="Chi tiết phát âm của chữ"></div>
+      </section>
+
+      <section id="appCard" class="card studyShell hidden">
+    <!-- ★ ĐẦU THẺ — thống kê + thanh tiến độ.
+         Cùng một bộ khung .studyHead với màn Luyện phát âm. -->
+    <div class="studyHead">
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat"><b id="progressText">0/0</b><span>Tiến độ</span></div>
+      <div class="stat" data-kind="ok"><b id="correctText">0</b><span>Đúng</span></div>
+      <div class="stat" data-kind="bad"><b id="wrongText">0</b><span>Sai</span></div>
+      <div class="stat" data-kind="combo"><b id="comboText">0</b><span>Combo</span></div>
+      <div class="stat"><b id="accuracyText">100%</b><span>Chính xác</span></div>
+      <div class="stat" data-kind="speed"><b id="cpmText">—</b><span>Tốc độ (CPM)</span></div>
+    </div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    </div><!-- /.studyHead -->
+
+    <!-- Controls — 3 NHÓM giống hệt màn Luyện phát âm:
+         Nội dung · Âm thanh · Hiển thị.
+         Nhóm "Nội dung" cho đổi bộ câu ngay tại chỗ, không phải quay ra thư viện. -->
+    <div class="studyControls">
+      <!-- Nhóm 1: nội dung (bộ đang học · đổi bộ khác) -->
+      <div class="ctrlZone" role="group" aria-label="Nội dung">
+        <button id="appBackBtn" class="btn secondary btnSm" type="button" title="Quay lại chọn bộ câu khác">← Bộ khác</button>
+        <span class="ctrlZoneLabel">📚 Nội dung</span>
+        <select id="appSource" class="select selectVoice" aria-label="Chọn bộ nội dung" title="Chọn bộ nội dung để luyện"></select>
+      </div>
+
+      <!-- Nhóm 2: âm thanh (tốc độ · giọng · tự đọc) -->
+      <div class="ctrlZone" role="group" aria-label="Âm thanh">
+        <span class="ctrlZoneLabel">🔊 Âm thanh</span>
+        <select id="rateSelect" class="select" aria-label="Tốc độ đọc" title="Tốc độ đọc">
+          <option value="0.6">0.6×</option>
+          <option value="0.8" selected>0.8×</option>
+          <option value="1">1.0×</option>
+          <option value="1.2">1.2×</option>
+        </select>
+        <select id="voiceSelect" class="select selectVoice" aria-label="Giọng đọc" title="Giọng đọc"><option value="">Giọng tự động</option></select>
+        <button id="soundToggle" class="toggleBtn" type="button" aria-pressed="true" title="Tự động đọc câu khi chuyển câu">
+          <span class="tgIco" aria-hidden="true">🔊</span><span class="tgTxt">Tự đọc</span>
+        </button>
+        <button id="readTypeToggle" class="toggleBtn" type="button" aria-pressed="true" title="Đọc chữ Hán ngay sau mỗi chữ gõ đúng (gõ 2–3 chữ một lúc sẽ đọc gộp 1 lần)">
+          <span class="tgIco" aria-hidden="true">🔈</span><span class="tgTxt">Đọc khi gõ</span>
+        </button>
+      </div>
+
+      <!-- Nhóm 3: hiển thị (nghĩa · chữ Hán) — 2 công tắc cùng loại nằm cạnh nhau -->
+      <div class="ctrlZone" role="group" aria-label="Hiển thị">
+        <span class="ctrlZoneLabel">👁 Hiển thị</span>
+        <button id="viToggle" class="toggleBtn" type="button" title="Ẩn/hiện dòng nghĩa tiếng Việt" aria-pressed="true">
+          <span class="tgIco" aria-hidden="true">👁️</span><span class="tgTxt">Nghĩa</span>
+        </button>
+        <button id="hanToggle" class="toggleBtn" type="button" title="Ẩn/hiện dòng chữ Hán" aria-pressed="true">
+          <span class="tgIco" aria-hidden="true">🀄</span><span class="tgTxt">Chữ Hán</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ THÂN THẺ — đây là phần KHÁC nhau giữa 2 màn:
+         Luyện gõ = ô gõ chữ Hán · Luyện phát âm = nút micro + sóng âm.
+         Phần khung (đầu thẻ, thanh công cụ, chân thẻ) thì giống hệt nhau. ═══ -->
+    <div class="studyBody" id="appBody">
+    <!-- Quiz Area (căn giữa) -->
+    <div id="quizArea" class="studyArea">
+      <div class="questionBox">
+        <!-- ★ Cảnh rừng trúc vẽ ngay trong thẻ câu hỏi: màn gõ luôn có nền
+             núi non – trúc – sương, không chỉ ở landing page. -->
+        <svg class="qbScenery" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
+          <g class="qbCanopy"><path class="qbStalk" d="M-26 -24C16 58 8 152 44 258" stroke-width="9"/><path class="qbStalk" d="M28 -32C64 38 54 122 88 214" stroke-width="5.2"/><path class="qbStalk" d="M80 -26C102 28 98 80 120 134" stroke-width="3.6"/><path class="qbNode" d="M-5 62L11 59" stroke-width="2" transform="rotate(-8 2 62)"/><path class="qbNode" d="M3 120L19 117" stroke-width="2" transform="rotate(-4 10 120)"/><path class="qbNode" d="M15 180L31 177" stroke-width="2" transform="rotate(2 22 180)"/><path class="qbNode" d="M27 232L43 229" stroke-width="2" transform="rotate(8 34 232)"/><path class="qbBranch" d="M18 78C46 68 74 78 96 96" stroke-width="3.2"/><path class="qbBranch" d="M56 112C84 102 112 112 136 130" stroke-width="3.2"/><path class="qbBranch" d="M28 168C58 158 86 168 110 186" stroke-width="3.2"/><path class="qbBranch" d="M76 176C104 166 132 176 156 194" stroke-width="3.2"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(22) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(-14) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(56) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(30) scale(1.55)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(-6) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(66) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(26) scale(1.45)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(-16) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(62) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(34) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(0) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(12 6) rotate(104) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(48 24) rotate(118) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(74) scale(1.4)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(30) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(88 214) rotate(58) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(120 134) rotate(40) scale(1.1)"/></g>
+          <g class="qbCanopy" transform="translate(1200,0) scale(-1,1)"><path class="qbStalk" d="M-26 -24C16 58 8 152 44 258" stroke-width="9"/><path class="qbStalk" d="M28 -32C64 38 54 122 88 214" stroke-width="5.2"/><path class="qbStalk" d="M80 -26C102 28 98 80 120 134" stroke-width="3.6"/><path class="qbNode" d="M-5 62L11 59" stroke-width="2" transform="rotate(-8 2 62)"/><path class="qbNode" d="M3 120L19 117" stroke-width="2" transform="rotate(-4 10 120)"/><path class="qbNode" d="M15 180L31 177" stroke-width="2" transform="rotate(2 22 180)"/><path class="qbNode" d="M27 232L43 229" stroke-width="2" transform="rotate(8 34 232)"/><path class="qbBranch" d="M18 78C46 68 74 78 96 96" stroke-width="3.2"/><path class="qbBranch" d="M56 112C84 102 112 112 136 130" stroke-width="3.2"/><path class="qbBranch" d="M28 168C58 158 86 168 110 186" stroke-width="3.2"/><path class="qbBranch" d="M76 176C104 166 132 176 156 194" stroke-width="3.2"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(22) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(-14) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(56) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(30) scale(1.55)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(-6) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(66) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(26) scale(1.45)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(-16) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(62) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(34) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(0) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(12 6) rotate(104) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(48 24) rotate(118) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(74) scale(1.4)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(30) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(88 214) rotate(58) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(120 134) rotate(40) scale(1.1)"/></g>
+        </svg>
+        <div class="qbRow" id="viLine">
+          <div class="label">Tiếng Việt</div>
+          <div id="vietnamese" class="prompt"></div>
+        </div>
+          <div class="qbRow" id="hanLine">
+            <div class="label">Chữ Hán <span class="pronHanHint">— bấm vào từng chữ để tra nghĩa</span></div>
+            <div id="chinese" class="hanzi"></div>
+          </div>
+          <div class="quizEmptyHint" id="quizEmptyHint" hidden>🔒 Đang ẩn cả nghĩa và chữ Hán — nhấn <b>F1</b> để nghe rồi gõ theo trí nhớ</div>
+        <div class="inputWrap">
+          <label id="typingLabel" class="label" for="pinyinInput">Gõ chữ Hán</label>
+          <div class="typingStage">
+            <input id="pinyinInput" class="input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Gõ chữ Hán của cả câu — gõ đúng là tự báo Đúng" />
+            <button class="vkToggleBtn" id="vkBtn" type="button" title="Bật bàn phím ảo" aria-pressed="false" aria-label="Bật/tắt bàn phím ảo">⌨️</button>
+          </div>
+        </div>
+        <!-- ★ Feedback đặt NGAY DƯỚI ô gõ (trong cùng thẻ câu): đáp án diff
+             (đỏ/vàng) + hướng dẫn sửa phải hiện trước hàng nút. -->
+        <div id="feedback" class="feedback hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div class="audioRow">
+          <button id="audioBtn" class="audioBtn" type="button" title="Nghe câu tiếng Trung">🔊 <span>Nghe câu tiếng Trung</span></button>
+        </div>
+        <div class="kbdHint" id="kbdHint">
+          <span><span class="kbd">Space</span> <span id="kbdNextLabel">Sang câu</span></span>
+          <span><span class="kbd">Enter</span> Ẩn/hiện Pinyin</span>
+          <span><span class="kbd">F1</span> Nghe lại</span>
+        </div>
+      </div><!-- /.questionBox -->
+    </div><!-- /.studyArea -->
+
+    <!-- Complete — anh em với #quizArea (ẩn/hiện thay nhau), giống #pronComplete -->
+    <div id="completeArea" class="complete hidden">
+      <div class="emoji">🎉</div>
+      <h2>Hoàn thành!</h2>
+      <p>Bạn đã trả lời đúng toàn bộ câu trong file.</p>
+      <button type="button" id="restartBtn" class="btn primary">Luyện lại từ đầu</button>
+    </div>
+    </div><!-- /.studyBody -->
+
+    <div id="aiGenBar" class="aiGenBar hidden" role="status" aria-live="polite"></div>
+
+    <!-- ═══ CHÂN THẺ — nút điều hướng câu + thông tin bộ (giống màn Luyện phát âm) ═══ -->
+    <div class="studyFoot">
+      <div class="actions">
+        <!-- Nhóm 1: điều hướng câu (dùng nhiều nhất) -->
+        <div class="actGroup">
+          <button id="prevSentenceBtn" class="btn secondary" type="button" title="Quay lại câu trước (Backspace khi vừa gõ xong)">◀ Câu trước</button>
+          <button id="retrySentenceBtn" class="btn secondary" type="button" title="Xóa nội dung vừa gõ, làm lại câu này">↺ Làm lại</button>
+          <button id="skipBtn" class="btn secondary" type="button" title="Bỏ qua câu này (tính là sai)">Bỏ qua ▶</button>
+        </div>
+        <span class="actDivider" aria-hidden="true"></span>
+        <!-- Nhóm 2: công cụ hỗ trợ -->
+        <div class="actGroup">
+          <button type="button" id="hintBtn" class="btn secondary" title="Pinyin mặc định ẩn — bấm để hiện gợi ý phía trên chữ Hán">💡 Hiện Pinyin</button>
+          <button id="historyBtn" class="btn secondary" type="button" title="Xem danh sách các câu đã làm (đúng / sai / điểm yếu)">📜 Đã làm <span id="historyCount" class="histCount">0</span></button>
+          <button id="helpBtn" class="btn secondary" type="button" title="Giải thích toàn bộ cơ chế gõ cùng các phím tắt">ⓘ Phím tắt</button>
+        </div>
+      </div>
+      <div class="studyFootRight">
+        <span id="fileInfo" class="fileinfo"></span>
+        <button type="button" id="resetBtn" class="btn danger btnSm" title="Xóa tiến độ của bộ này">Xóa tiến độ</button>
+      </div>
+    </div>
+  </section>
+
+      <!-- ★ Bảng xếp hạng Luyện gõ — mục riêng trên thanh bên (chỉ tính số câu luyện được) -->
+      <section id="rankCard" class="card hidden rankView">
+        <div class="libRankHead">
+          <h2>🏆 Bảng xếp hạng Luyện gõ</h2>
+          <span class="small">Số câu bạn đã luyện — cập nhật theo ngày / tuần</span>
+        </div>
+        <div class="rankTabs" role="tablist" aria-label="Khoảng thời gian xếp hạng luyện gõ">
+          <button class="rankTab studyRankTab active" type="button" role="tab" data-rank="day" aria-selected="true">📅 Hôm nay</button>
+          <button class="rankTab studyRankTab" type="button" role="tab" data-rank="week" aria-selected="false">🗓 Tuần này</button>
+        </div>
+        <div class="gaLbScroll">
+          <div class="rankPodium" id="studyRankPodium"></div>
+          <div class="rankTable" id="studyRankTable">
+            <div class="rankTableHead" aria-hidden="true">
+              <span>#</span><span>Người học</span><span>Câu luyện</span>
+            </div>
+            <div class="rankList" id="studyRankList" role="list"></div>
+          </div>
+          <div class="rankMe hidden" id="studyRankMe"></div>
+          <div class="rankFoot">
+            <span class="rankFootDot" aria-hidden="true"></span>
+            <span id="studyRankScopeNote"></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="gamesCard" class="card hidden gameHub">
+    <div class="gameHubHead">
+      <div>
+        <h2>🎲 Game từ vựng</h2>
+        <div class="small">Chọn một trò chơi để vừa chơi vừa nhớ chữ Hán. Mỗi game một cách luyện khác nhau — bạn sẽ tự thêm các game mới vào đây sau này.</div>
+      </div>
+    </div>
+    <div class="gameGrid">
+      <!-- ★ Game bắn chữ (đã có) — thẻ có ảnh đại diện SVG riêng -->
+      <button type="button" class="gameTile" data-view="game" aria-label="Mở Game bắn chữ">
+        <div class="gameTileArt">
+          <svg viewBox="0 0 320 180" class="gameTileSvg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Ảnh đại diện Game bắn chữ: tàu vũ trụ bắn nổ các thẻ chữ Hán rơi xuống">
+            <defs>
+              <linearGradient id="gtSky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#070d1c"/>
+                <stop offset="0.5" stop-color="#0f2748"/>
+                <stop offset="1" stop-color="#1d3f74"/>
+              </linearGradient>
+              <linearGradient id="gtShip" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#93c5fd"/>
+                <stop offset="1" stop-color="#1e3a8a"/>
+              </linearGradient>
+              <radialGradient id="gtBoom" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff7ae"/>
+                <stop offset="0.45" stop-color="#fbbf24"/>
+                <stop offset="0.75" stop-color="#fb923c" stop-opacity="0.65"/>
+                <stop offset="1" stop-color="#fb923c" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="gtBullet" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stop-color="#a5f3fc" stop-opacity="0"/>
+                <stop offset="1" stop-color="#e0f7ff"/>
+              </linearGradient>
+            </defs>
+
+            <rect x="0" y="0" width="320" height="180" fill="url(#gtSky)"/>
+            <!-- sao nền -->
+            <g fill="#cbd5e1">
+              <circle cx="28" cy="20" r="1.3" opacity=".85"/><circle cx="74" cy="46" r="1" opacity=".7"/>
+              <circle cx="124" cy="16" r="1.5" opacity=".9"/><circle cx="176" cy="40" r="1" opacity=".6"/>
+              <circle cx="228" cy="22" r="1.2" opacity=".8"/><circle cx="286" cy="44" r="1.4" opacity=".85"/>
+              <circle cx="46" cy="92" r="1" opacity=".55"/><circle cx="292" cy="104" r="1" opacity=".6"/>
+              <circle cx="100" cy="120" r="1.1" opacity=".5"/><circle cx="250" cy="76" r="1" opacity=".55"/>
+            </g>
+
+            <!-- Thẻ chữ Hán rơi xuống (góc trên bên phải, chừa chỗ cho nhãn "Đang mở") -->
+            <g font-family="'Noto Sans CJK SC','Microsoft YaHei','PingFang SC',sans-serif" text-anchor="middle">
+              <g transform="translate(196,34)">
+                <rect x="-25" y="-21" width="50" height="42" rx="11" fill="rgba(255,255,255,.12)" stroke="#5eead4" stroke-width="1.5"/>
+                <text x="0" y="9" font-size="25" font-weight="700" fill="#e2e8f0">学</text>
+                <text x="0" y="33" font-size="10.5" font-weight="600" fill="#5eead4">xué</text>
+              </g>
+              <g transform="translate(262,40)">
+                <rect x="-25" y="-21" width="50" height="42" rx="11" fill="rgba(255,255,255,.12)" stroke="#fca5a5" stroke-width="1.5"/>
+                <text x="0" y="9" font-size="25" font-weight="700" fill="#e2e8f0">中</text>
+                <text x="0" y="33" font-size="10.5" font-weight="600" fill="#fca5a5">zhōng</text>
+              </g>
+              <g transform="translate(228,96)">
+                <rect x="-25" y="-21" width="50" height="42" rx="11" fill="rgba(255,255,255,.12)" stroke="#fcd34d" stroke-width="1.5"/>
+                <text x="0" y="9" font-size="25" font-weight="700" fill="#e2e8f0">文</text>
+                <text x="0" y="33" font-size="10.5" font-weight="600" fill="#fcd34d">wén</text>
+              </g>
+            </g>
+            <!-- vụ nổ ở thẻ "中" -->
+            <circle cx="262" cy="34" r="26" fill="url(#gtBoom)"/>
+
+            <!-- Đạn bay lên từ nòng pháo -->
+            <g stroke="url(#gtBullet)" stroke-width="3.2" stroke-linecap="round">
+              <line x1="86" y1="146" x2="80" y2="116"/>
+              <line x1="86" y1="146" x2="86" y2="106"/>
+              <line x1="86" y1="146" x2="92" y2="118"/>
+            </g>
+
+            <!-- Tàu vũ trụ (giống hình trong game) -->
+            <g transform="translate(86,146) scale(0.92)">
+              <rect x="-2.5" y="-26" width="5" height="13" rx="2.5" fill="#9ad8ff"/>
+              <rect x="-0.7" y="-26" width="1.4" height="13" rx=".7" fill="#e0f2fe" opacity=".9"/>
+              <path d="M0 -20 L-14 -7 L-13 6 Q-12 17 0 17 Q12 17 13 6 L14 -7 Z" fill="url(#gtShip)" stroke="#9ad8ff" stroke-width="1.4"/>
+              <circle cx="0" cy="2" r="5" fill="#bfdbfe" stroke="#9ad8ff" stroke-width="1.2"/>
+              <path d="M-14 3 L-21 11 L-14 10 Z" fill="#1e3a8a"/><path d="M14 3 L21 11 L14 10 Z" fill="#1e3a8a"/>
+            </g>
+
+            <!-- vạch đích + nền chân trời -->
+            <rect x="0" y="163" width="320" height="3" fill="rgba(148,163,184,.35)"/>
+            <rect x="0" y="166" width="320" height="14" fill="rgba(2,6,23,.55)"/>
+          </svg>
+          <span class="gameTileBadge">Đang mở</span>
+        </div>
+        <div class="gameTileBody">
+          <h3>🚀 Game bắn chữ</h3>
+          <p>Chữ Hán rơi xuống — gõ đúng pinyin để bắn nổ, cộng điểm theo combo.</p>
+          <span class="gameTilePlay">Chơi ngay →</span>
+        </div>
+      </button>
+
+      <!-- ★ Các game sắp ra mắt (placeholder — để sẵn chỗ cho 2–3 game sau này) -->
+      <article class="gameTile gameTileSoon" aria-disabled="true">
+        <div class="gameTileArt gameTileArtSoon"><span class="soonEmoji">🧩</span></div>
+        <div class="gameTileBody">
+          <h3>Game ghép từ</h3>
+          <p>Kéo – thả ghép chữ Hán thành câu đúng nghĩa.</p>
+          <span class="gameTileSoonTag">Sắp ra mắt</span>
+        </div>
+      </article>
+      <article class="gameTile gameTileSoon" aria-disabled="true">
+        <div class="gameTileArt gameTileArtSoon"><span class="soonEmoji">⚡</span></div>
+        <div class="gameTileBody">
+          <h3>Game tốc độ 60s</h3>
+          <p>Đọc nhanh – gõ nhanh trong 60 giây, phá kỷ lục của bạn.</p>
+          <span class="gameTileSoonTag">Sắp ra mắt</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+      <section id="gameCard" class="card hidden gameArena">
+    <div class="gaHud">
+      <div class="gaHudLeft">
+        <span class="gaTrophy" aria-hidden="true">🏆</span>
+        <span class="gaScoreNum" id="gaScoreNum">0</span>
+      </div>
+      <div class="gaHudCenter" id="gaProgress">
+        <span class="gaDot" aria-hidden="true"></span>
+        <span class="gaStageChip" id="gaStageChip">Chặng 1 · 0/30</span>
+        Mốc <b id="gaMoc">1/14</b> · <b id="gaUnit">HSK 2</b>
+      </div>
+      <div class="gaHudRight">
+        <div class="gaHearts" id="gaHearts" title="Mạng">♥♥♥♡♡</div>
+      </div>
+    </div>
+    <!-- Thanh điều khiển: nằm TRÊN sân chơi nên không che chữ đang rơi -->
+    <div class="gaBar">
+      <div class="gaSettings" id="gaSettings">
+        <div class="gaSetRow">
+          <span class="gaSetLabel">Cấp HSK</span>
+          <div class="gaLevels" id="gaLevels" role="group" aria-label="Chọn cấp HSK">
+            <button class="gaLevelBtn" data-glevel="1" type="button" aria-pressed="false">1</button>
+            <button class="gaLevelBtn active" data-glevel="2" type="button" aria-pressed="true">2</button>
+            <button class="gaLevelBtn" data-glevel="3" type="button" aria-pressed="false">3</button>
+            <button class="gaLevelBtn" data-glevel="4" type="button" aria-pressed="false">4</button>
+            <button class="gaLevelBtn" data-glevel="5" type="button" aria-pressed="false">5</button>
+            <button class="gaLevelBtn" data-glevel="6" type="button" aria-pressed="false">6</button>
+          </div>
+        </div>
+        <div class="gaSetRow">
+          <label class="gaSetLabel" for="gaSpeed">Tốc độ</label>
+          <input id="gaSpeed" type="range" min="1" max="10" step="1" value="3" aria-label="Tốc độ rơi" />
+          <span class="gaSpeedTag" id="gaSpeedTag">Chậm</span>
+        </div>
+        <div class="gaSetRow">
+          <label class="gaSetLabel" for="gaDensity">Số thẻ</label>
+          <select id="gaDensity" class="gaSelect" aria-label="Số thẻ rơi cùng lúc">
+            <option value="1">1 thẻ</option>
+            <option value="2">2 thẻ</option>
+            <option value="3" selected>3 thẻ</option>
+            <option value="4">4 thẻ</option>
+            <option value="5">5 thẻ</option>
+          </select>
+        </div>
+      </div>
+      <div class="gaTools" role="toolbar" aria-label="Điều khiển game">
+        <button class="gaIconBtn" id="gaCloseBtn" type="button" title="Đóng (ván sẽ được giữ lại)">✕</button>
+        <button class="gaIconBtn" id="gaPauseBtn" type="button" title="Tạm dừng">⏸</button>
+        <button class="gaIconBtn" id="gaSoundBtn" type="button" title="Âm thanh">🔊</button>
+        <button class="gaIconBtn" id="gaKbdBtn" type="button" title="Bật bàn phím ảo" aria-pressed="false">⌨️</button>
+        <button class="gaIconBtn" id="gaPyBtn" type="button" title="Đang ẩn Pinyin — bấm hoặc Enter để xem gợi ý" aria-pressed="false">🔒</button>
+        <button class="gaIconBtn" id="gaFsBtn" type="button" title="Chơi toàn màn hình" aria-pressed="false">⛶</button>
+      </div>
+    </div>
+
+    <!-- Sân chơi: canvas + tàu + vạch đích + lớp phủ -->
+    <div class="gaStage" id="gaStage">
+      <canvas id="gaCanvas" class="gaCanvas" aria-label="Sân chơi bắn chữ"></canvas>
+      <div class="gaPlayer" id="gaPlayer" aria-hidden="true">
+        <svg id="gaShipSvg" viewBox="0 0 50 50" width="46" height="46">
+          <defs>
+            <linearGradient id="plG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#93c5fd"/><stop offset="1" stop-color="#1e3a8a"/>
+            </linearGradient>
+          </defs>
+          <!-- nòng pháo: chỉ rõ hướng ngắm -->
+          <rect x="22.5" y="1" width="5" height="13" rx="2.5" fill="#9ad8ff"/>
+          <rect x="23.8" y="1" width="1.4" height="13" rx=".7" fill="#e0f2fe" opacity=".9"/>
+          <!-- thân tàu, mũi nhọn hướng lên -->
+          <path d="M25 7 L11 20 L12 33 Q13 44 25 44 Q37 44 38 33 L39 20 Z" fill="url(#plG)" stroke="#9ad8ff" stroke-width="1.4"/>
+          <!-- buồng lái -->
+          <circle cx="25" cy="29" r="5" fill="#bfdbfe" stroke="#9ad8ff" stroke-width="1.2"/>
+          <!-- cánh hai bên -->
+          <path d="M11 30 L4 38 L11 37 Z" fill="#1e3a8a"/><path d="M39 30 L46 38 L39 37 Z" fill="#1e3a8a"/>
+        </svg>
+      </div>
+      <div class="gaFloor" aria-hidden="true"></div>
+      <div class="gaFloorLabel" id="gaFloorLabel">HSK 2 Vocabulary (3.0)</div>
+      <div class="gaOverlay" id="gaOverlay">
+        <div class="gaOverlayCard">
+          <div class="gaOverlayEmoji" id="gaOverlayEmoji">🎮</div>
+          <h2 id="gaOverlayTitle">Sẵn sàng?</h2>
+          <div class="gaStats hidden" id="gaOverlayStats"></div>
+          <div class="gaRules" id="gaOverlayMsg">
+            <div class="gaRule"><span class="gaRuleIco">🎯</span><span>Gõ <b>toàn bộ pinyin</b> của từ để <b>bắn nổ</b>.</span></div>
+            <div class="gaRule"><span class="gaRuleIco">💡</span><span><b>Enter</b> hiện/ẩn pinyin · <b>Backspace</b> đổi mục tiêu.</span></div>
+            <div class="gaRule"><span class="gaRuleIco">🔒</span><span>Gõ sai chỉ <b>mất combo</b> — không trừ điểm, không nhảy thẻ.</span></div>
+            <div class="gaRule"><span class="gaRuleIco">❤️</span><span><b>5 mạng</b>: thẻ qua vạch <b>−1</b> · thẻ <b style="color:#fb7185">♥</b> phá nổ <b>+1</b>.</span></div>
+          </div>
+          <div class="gaOverlayActions" id="gaOverlayActions">
+            <button class="gaBtn primary" id="gaStartBtn" type="button">▶ Bắt đầu</button>
+            <button class="gaBtn ghost hidden" id="gaNewBtn" type="button">↺ Ván mới</button>
+            <button class="gaBtn ghost" id="gaAdBtn" type="button">🎁 Nhận thêm 3 ♥</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bảng xếp hạng game đã được gỡ bỏ theo yêu cầu người dùng -->
+  </section>
+
+  <!-- ===== GAME KHU VƯỜN PINYIN & CUNG THỦ đã được gỡ bỏ theo yêu cầu người dùng ===== -->
+
+  </div>
+</div>
+
+<!-- Popup Google Dịch (của core) -->
+<div id="gtPopup" class="gtPopup" role="dialog" aria-hidden="true" aria-labelledby="gtPopup-title">
+  <div class="gtHeader">
+    <div class="gtHeader-logo">G</div>
+    <div id="gtPopup-title" class="gtHeader-title">Google Dịch</div>
+    <button id="gtClose" class="gtHeader-close" type="button" title="Đóng (Esc)" aria-label="Đóng">✕</button>
+  </div>
+  <div id="gtBody" class="gtBody">
+    <div class="gtEmpty">
+      <div class="gtEmpty-icon">👆</div>
+      <div class="gtEmpty-text">Bấm vào chữ Hán<br>để dịch sang tiếng Việt</div>
+      <div class="gtEmpty-sub">Bấm chữ Hán → hiện phía trên (tự tắt 5s)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast host (của core) -->
+<div id="toastHost" aria-live="polite" aria-atomic="true"></div>
+
+<!-- App modal (của core) -->
+<div id="appModal" class="appModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="appModalTitle">
+  <div class="appModalCard">
+    <h3 id="appModalTitle" class="appModalTitle"></h3>
+    <p id="appModalMsg" class="appModalMsg"></p>
+    <input id="appModalInput" class="appModalInput hidden" type="text" autocomplete="off" aria-label="Ô nhập" />
+    <div class="appModalActions">
+      <button id="appModalCancel" class="btn secondary" type="button">Hủy</button>
+      <button id="appModalOk" class="btn primary" type="button">Đồng ý</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL ĐĂNG NHẬP / ĐĂNG KÝ
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="authModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
+  <div class="modalBackdrop" data-close="auth"></div>
+  <div class="modalCard authCard">
+    <button class="modalClose" type="button" data-close="auth" aria-label="Đóng">✕</button>
+    <div class="authHead">
+      <img class="authLogo" src="assets/logo-icon.png" alt="GoPinyin" width="64" height="64" decoding="async" />
+      <h2 id="authTitle">Đăng nhập GoPinyin</h2>
+      <p id="authSubtitle">Đăng nhập để lưu tiến độ học và đồng bộ trên mọi thiết bị.</p>
+    </div>
+    <div class="authTabs" role="tablist">
+      <button class="authTab active" type="button" data-authtab="login" role="tab" aria-selected="true">Đăng nhập</button>
+      <button class="authTab" type="button" data-authtab="register" role="tab" aria-selected="false">Đăng ký</button>
+    </div>
+    <form id="authForm" class="authForm" novalidate>
+      <label class="authField" id="authNameField" hidden>
+        <span>Tên hiển thị</span>
+        <input id="authName" type="text" autocomplete="nickname" placeholder="Bạn tên gì?" />
+      </label>
+      <label class="authField">
+        <span>Email</span>
+        <input id="authEmail" type="email" autocomplete="email" placeholder="ban@email.com" required />
+      </label>
+      <label class="authField">
+        <span>Mật khẩu</span>
+        <input id="authPass" type="password" autocomplete="current-password" placeholder="Mật khẩu của bạn" required />
+      </label>
+      <div class="authError" id="authError" hidden></div>
+      <button class="authSubmit lp-btn primary lg full" id="authSubmit" type="submit">Đăng nhập</button>
+      <div class="authTrialNote">🎁 Tạo tài khoản là được <b>dùng thử Pro 7 ngày</b> miễn phí — không cần thẻ.</div>
+    </form>
+    <div class="authDivider"><span>hoặc</span></div>
+    <button class="authGoogle" id="authGoogleBtn" type="button">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.2-2.2H12v4.1h6.5c-.1 1.1-.8 2.7-2.4 3.8v3.1h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.9-3.1c-1 .7-2.4 1.2-4 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.2C3.3 21.4 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.3 14.2c-.2-.7-.4-1.5-.4-2.2s.1-1.5.4-2.2V6.6H1.3C.5 8.2 0 10 0 12s.5 3.8 1.3 5.4l4-3.2z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.5 1.7l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.3 2.6 1.3 6.6l4 3.2c.9-2.9 3.6-5 6.7-5z"/></svg>
+      Đăng nhập với Google
+    </button>
+    <button class="authGuest" id="authGuestBtn" type="button">Dùng thử không cần đăng nhập →</button>
+    <p class="authNote">Tiến độ học được lưu an toàn. Khi thương mại hoá, dữ liệu sẽ đồng bộ qua tài khoản GoPinyin.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL NÂNG CẤP PRO + THANH TOÁN VIETCOMBANK
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="proModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="proTitle" hidden>
+  <div class="modalBackdrop" data-close="pro"></div>
+  <div class="modalCard proCard">
+    <button class="modalClose" type="button" data-close="pro" aria-label="Đóng">✕</button>
+
+    <div class="proHero">
+      <div class="proHeroOrb proOrbA" aria-hidden="true"></div>
+      <div class="proHeroOrb proOrbB" aria-hidden="true"></div>
+      <span class="proBadge">⭐ GOPINYIN PRO</span>
+      <h2 id="proTitle">Học không giới hạn với Pro</h2>
+      <p>AI sinh câu theo bất kỳ chủ đề nào bạn muốn, cộng toàn bộ kho câu HSK 4–9. Mở khoá toàn bộ — dùng mỗi ngày.</p>
+      <div class="proHeroStats">
+        <div><b>4.969</b><span>câu HSK</span></div>
+        <div><b>∞</b><span>chủ đề AI</span></div>
+        <div><b>HSK 9</b><span>trọn lộ trình</span></div>
+      </div>
+    </div>
+
+    <!-- ★ Trạng thái dùng thử 7 ngày -->
+    <div class="proTrial hidden" id="proTrial">
+      <span class="proTrialIcon" aria-hidden="true">🎁</span>
+      <div class="proTrialText">
+        <b id="proTrialTitle">Bạn đang dùng thử Pro miễn phí</b>
+        <small id="proTrialSub">Còn 7 ngày</small>
+      </div>
+      <div class="proTrialBar"><i id="proTrialFill" style="width:100%"></i></div>
+    </div>
+
+    <div class="proPlans" role="tablist" aria-label="Chọn gói">
+      <button class="proPlan active" type="button" data-plan="month" aria-pressed="true">
+        <span class="proPlanTag">Linh hoạt</span>
+        <span class="proPlanName">Gói tháng</span>
+        <span class="proPlanPrice"><b data-pro-price="month">39.000đ</b><small>/tháng</small></span>
+        <span class="proPlanSub">Dùng thử dài hạn, huỷ bất cứ lúc nào</span>
+      </button>
+      <button class="proPlan" type="button" data-plan="year" aria-pressed="false">
+        <span class="proPlanTag best">Tiết kiệm nhất</span>
+        <span class="proPlanName">Gói năm</span>
+        <span class="proPlanPrice"><b data-pro-price="year">399.000đ</b><small>/năm</small></span>
+        <span class="proPlanSub">Trả 1 năm · tiết kiệm hơn</span>
+      </button>
+    </div>
+
+    <ul class="proBenefits">
+      <li><span>🤖</span><div><b>AI sinh câu không giới hạn</b><small>Tạo bộ câu theo mọi chủ đề — Gemini / OpenRouter</small></div></li>
+      <li><span>🎓</span><div><b>HSK 4–9 đầy đủ</b><small>Mở thêm 3.258 câu HSK 4–9 và cấp 4–6 trong game</small></div></li>
+      <li><span>🚀</span><div><b>Tính năng mới sớm nhất</b><small>Mọi module mới đều có trên Pro trước</small></div></li>
+      <li><span>💬</span><div><b>Hỗ trợ 1–1</b><small>Email hotro@gopinyin.app — phản hồi trong 24h</small></div></li>
+    </ul>
+
+    <div class="proPay">
+      <div class="proQrCard">
+        <div class="proQrFrame">
+          <img id="proQrImg" alt="Mã QR chuyển khoản" />
+          <div class="proQrFallback" id="proQrFallback" hidden>
+            <b>Không tải được mã QR</b>
+            <span>Dùng thông tin chuyển khoản bên cạnh.</span>
+          </div>
+          <div class="proQrScan" aria-hidden="true"></div>
+        </div>
+        <div class="proQrCaption">
+          <b id="proQrAmount">39.000đ</b>
+          <span>Quét bằng app ngân hàng — tự điền sẵn số tiền &amp; nội dung</span>
+        </div>
+      </div>
+
+      <div class="proPayInfo">
+        <div class="proPayRow"><span>Ngân hàng</span><b>Vietcombank</b></div>
+        <div class="proPayRow"><span>Chủ tài khoản</span><b>NGUYEN VAN LONG</b></div>
+        <div class="proPayRow"><span>Số tài khoản</span><b class="mono">9342383345</b><button class="proCopy" data-copy="9342383345" type="button" title="Sao chép số tài khoản">📋</button></div>
+        <div class="proPayRow"><span>Số tiền</span><b class="mono" id="proAmount">39.000đ</b><button class="proCopy" id="proCopyAmount" data-copy="39000" type="button" title="Sao chép số tiền">📋</button></div>
+        <div class="proPayRow"><span>Nội dung</span><b class="mono" id="proTransferNote">GOPINYIN khach</b><button class="proCopy" id="proCopyNote" data-copy="GOPINYIN khach" type="button" title="Sao chép nội dung">📋</button></div>
+        <p class="proPayHint">⚠️ Giữ <b>đúng nội dung</b> để hệ thống nhận diện. Pro tự mở trong 1–2 phút — quá 10 phút chưa thấy, gửi email kèm ảnh chuyển khoản tới <b>hotro@gopinyin.app</b>.</p>
+      </div>
+    </div>
+
+    <div class="proSteps">
+      <div class="proStep"><i>1</i><span>Quét QR và chuyển khoản</span></div>
+      <div class="proStep"><i>2</i><span>Giữ nguyên nội dung</span></div>
+      <div class="proStep"><i>3</i><span>Pro tự mở khoá</span></div>
+    </div>
+
+    <div class="proStatus" id="proStatus" hidden>
+      <span class="proStatusDot" aria-hidden="true"></span>
+      <span id="proStatusText">Đang chờ xác nhận giao dịch…</span>
+    </div>
+
+    <label class="proConfirm">
+      <input id="proConfirmChk" type="checkbox" />
+      <span>Tôi đã chuyển khoản <b id="proConfirmAmt">39.000đ</b> với nội dung <b id="proConfirmNote">GOPINYIN khach</b></span>
+    </label>
+    <button id="proActivateBtn" class="btn primary lg full" type="button" disabled>🔓 Tôi đã chuyển khoản — kích hoạt Pro</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL HƯỚNG DẪN — cơ chế gõ & phím tắt (nút 💡)
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="modalBackdrop" data-close="helpModal"></div>
+  <div class="modalCard helpCard">
+    <button class="modalClose" type="button" data-close="helpModal" aria-label="Đóng">✕</button>
+    <div class="helpHead">
+      <span class="helpBulb" aria-hidden="true">💡</span>
+      <div class="helpHeadText">
+        <h2 id="helpTitle">Cơ chế gõ &amp; phím tắt</h2>
+        <p><b>Tự chấm khi gõ</b>: gõ <b>trực tiếp chữ Hán</b> của cả câu — gõ đủ và đúng là app lập tức báo <b>✓ Đúng</b>, <b>không cần nhấn Enter kiểm tra</b>. Khi app báo <b>✓ Đúng</b> thì nhấn <span class="kbd">Space</span> để sang câu tiếp theo. <span class="kbd">Enter</span> = ẩn/hiện gợi ý pinyin.</p>
+      </div>
+    </div>
+
+    <section class="helpSection">
+      <h3>🀄 Cách gõ CHỮ HÁN</h3>
+      <ul class="helpList">
+        <li><b>Cách gõ:</b> nhìn nghĩa tiếng Việt (và/hoặc chữ Hán), gõ trực tiếp <b>chữ Hán của cả câu</b> — dùng IME tiếng Trung của máy hoặc bấm <b>⌨️</b> để mở bàn phím ảo của app. <b>Không cần gõ dấu câu</b>, cũng không cần bấm khoảng trắng.</li>
+        <li><b>Tự chấm:</b> gõ <b>đủ và đúng</b> cả câu → app lập tức báo <b>✓ Đúng</b> và đọc lại câu.</li>
+        <li><b>Gõ sai?</b> Chữ sai hiện <b style="color:#e11d48">đỏ</b> và <b>không sang câu được</b> cho đến khi sửa đúng (hoặc bấm <b>Bỏ qua</b> để xem đáp án rồi đi tiếp).</li>
+        <li class="helpWarn">⚠️ Hãy <b>tắt gõ tiếng Việt</b> (Telex / VNI / UniKey / Gboard) và chuyển bàn phím sang <b>tiếng Trung</b> trước khi gõ chữ Hán.</li>
+      </ul>
+    </section>
+
+    <section class="helpSection">
+      <h3>📖 Dùng chung &amp; phím tắt</h3>
+      <ul class="helpList">
+        <li><b>Phím tắt:</b> <span class="kbd">Space</span> sang câu/từ tiếp theo (chỉ khi đã gõ <b>Đúng</b>) · <span class="kbd">Enter</span> ẩn/hiện gợi ý Pinyin · <span class="kbd">F1</span> nghe lại câu.</li>
+        <li><b>🎯 Điểm yếu &amp; tốc độ:</b> nút <b>“📜 Câu đã làm”</b> mở <b>bảng lớn</b> liệt kê <b>tất cả câu bạn đã làm</b> — có tab <b>Đã làm</b> / <b>Sai</b> / <b>Điểm yếu</b> (những âm tiết bạn hay gõ sai), bấm vào 1 câu để làm lại, và nút <b>“Tạo bộ ôn điểm yếu”</b>. Ô <b>Tốc độ (CPM)</b> trên thanh thống kê đo số chữ gõ đúng mỗi phút.</li>
+        <li><b>Ẩn/hiện dòng:</b> nút <b>👁️ Nghĩa</b> và <b>🀄 Chữ Hán</b> — ẩn cả hai dòng để gõ theo trí nhớ, nhấn <span class="kbd">F1</span> để nghe lại câu.</li>
+        <li><b>Tiện ích khác:</b> <b>↺ Làm lại câu này</b> · <b>Bỏ qua</b> · <b>⌨️</b> bàn phím ảo · bấm vào chữ Hán để tra nghĩa online.</li>
+      </ul>
+    </section>
+
+    <button class="btn primary lg full helpGotIt" type="button" data-close="helpModal">Đã hiểu, bắt đầu gõ!</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BẢNG LỚN — tất cả các câu đã làm (mở bằng nút "📜 Câu đã làm")
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="histModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="histTitle" hidden>
+  <div class="modalBackdrop" data-close="histModal"></div>
+  <div class="modalCard histCard">
+    <button class="modalClose" type="button" data-close="histModal" aria-label="Đóng">✕</button>
+    <aside id="app-history-panel" class="appHistory" aria-label="Lịch sử gõ">
+      <div class="appHistoryHead">
+        <div>
+          <h3 class="appHistoryTitle" id="histTitle">📜 Các câu đã làm</h3>
+          <div class="appHistorySub">Bấm vào câu để làm lại</div>
+        </div>
+        <span class="appHistoryBadge" id="app-history-done">0 đã làm</span>
+      </div>
+      <div class="appHistoryTabs" role="tablist" aria-label="Bộ lọc lịch sử gõ">
+        <button class="appHistoryTab active" data-tab="done" type="button" role="tab" aria-selected="true">Đã làm<span class="tabCount" id="app-hist-cnt-done">0</span></button>
+        <button class="appHistoryTab" data-tab="wrong" type="button" role="tab" aria-selected="false">Sai<span class="tabCount" id="app-hist-cnt-wrong">0</span></button>
+        <button class="appHistoryTab" data-tab="weak" type="button" role="tab" aria-selected="false">Điểm yếu<span class="tabCount" id="app-hist-cnt-weak">0</span></button>
+      </div>
+      <div class="appHistoryList" id="app-history-list" role="list"></div>
+      <div class="appHistoryFoot">
+        <button id="weakBuildBtn" class="btn secondary weakBuildBtn" type="button" title="Tạo bộ luyện riêng từ những âm tiết bạn hay gõ sai">🎯 Tạo bộ ôn điểm yếu</button>
+        <div class="appHistorySaveNote">Lưu tự động trên trình duyệt</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Canvas pháo hoa (confetti) toàn màn hình -->
+<canvas id="confettiCanvas" class="confettiCanvas" aria-hidden="true"></canvas>
+
+<!-- Scripts — data.js phải load TRƯỚC app-core.js (app-core đọc VOCAB_GROUPS/HSK_DATA ở khối init) -->
+<script src="assets/data.js"></script>
+<script src="assets/app-core.js"></script>
+<script src="assets/gopinyin.js?v=20251024b"></script>
+<script src="assets/pronounce.js?v=20261023"></script>
+<script src="assets/vkbd.js"></script>
+</body>
+</html>
