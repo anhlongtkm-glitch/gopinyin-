@@ -1416,7 +1416,7 @@ async function aiCollect(provider,key,userText,target,level,seen,onProgress,kind
 function loadProgress(id){try{return JSON.parse(localStorage.getItem(progressKey(id))||'null')}catch{return null}}
 /* ★ Reset trạng thái runtime của phiên (mốc đo tốc độ CPM) */
 function resetSessionRuntime(){sentStartTs=0}
-function save(){if(!activeDataset)return;if(mode==='all'){mainOrder=[...order];mainIndex=index}localStorage.setItem(progressKey(activeDataset.id),JSON.stringify({mainOrder,mainIndex,stats,wrongIds:[...wrongIds],autoSound,speechRate,selectedVoiceName,showVietnamese,showHanzi,readOnType}))}
+function save(){if(!activeDataset)return;if(mode==='all'){mainOrder=[...order];mainIndex=index}localStorage.setItem(progressKey(activeDataset.id),JSON.stringify({mainOrder,mainIndex,stats,wrongIds:[...wrongIds],autoSound,speechRate,selectedVoiceName,showVietnamese,showHanzi,readOnType,lastStudiedAt:Date.now()}))}
 
 
 /* ── Export / Import tiến độ ── */
@@ -4943,6 +4943,33 @@ window.__gpBridge = {
   dbGetAll: () => dbGetAll(),
   /* tiến độ luyện gõ của 1 bộ — để màn Luyện phát âm biết bộ nào đã học */
   loadProgress: (id) => loadProgress(id),
+  continueDataset: async () => {
+    const sets = await dbGetAll();
+    const candidates = sets.map(ds => ({ ds, progress: loadProgress(ds.id) }))
+      .filter(({ progress }) => {
+        if (!progress || !Array.isArray(progress.mainOrder) || !progress.mainOrder.length) return false;
+        const index = Number(progress.mainIndex) || 0;
+        const attempts = Number(progress.stats?.attempts) || 0;
+        return index < progress.mainOrder.length && (index > 0 || attempts > 0);
+      })
+      .sort((a, b) =>
+        (Number(b.progress.lastStudiedAt) || Number(b.ds.updatedAt) || 0)
+        - (Number(a.progress.lastStudiedAt) || Number(a.ds.updatedAt) || 0)
+      );
+    const candidate = candidates[0];
+    if (!candidate) return null;
+    return {
+      id: candidate.ds.id,
+      name: candidate.ds.name,
+      completed: Math.max(0, Number(candidate.progress.mainIndex) || 0),
+      total: candidate.progress.mainOrder.length
+    };
+  },
+  resumeDataset: async (id) => {
+    const sets = await dbGetAll();
+    if (!sets.some(ds => ds.id === id)) throw new Error('Bộ học này không còn trong thư viện.');
+    await openDataset(id);
+  },
   /* tiện ích xử lý chữ Hán / pinyin — dùng lại, không viết bản sao */
   hanChars: (s) => hanChars(s),
   isHanChar: (c) => isHanChar(c),

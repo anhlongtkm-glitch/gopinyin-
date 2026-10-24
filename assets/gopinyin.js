@@ -859,7 +859,27 @@ $$('[data-goto]').forEach(a=>a.addEventListener('click',()=>{
     }
   },80);
 }));
-$$('.ws-navItem').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+$$('.ws-navItem').forEach(b=>{
+  const label=b.querySelector('.ws-navLabel')?.textContent.trim()||b.dataset.view;
+  b.setAttribute('aria-label',label+(b.dataset.view==='ai'?', Pro':''));
+  b.title=label+(b.dataset.view==='ai'?', Pro':'');
+  b.addEventListener('click',()=>showView(b.dataset.view));
+});
+$('dashContinueBtn').addEventListener('click',async()=>{
+  const button=$('dashContinueBtn');
+  const id=button.dataset.datasetId;
+  if(!id){showView('library');return}
+  button.disabled=true;
+  try{
+    showView('library');
+    await window.__gpBridge.resumeDataset(id);
+  }catch(error){
+    console.error('Không thể mở bộ học đang tiếp tục:',error);
+    toast('Không mở được bộ học này: '+error.message,'bad',5000);
+  }finally{
+    button.disabled=false;
+  }
+});
 /* ★ Thẻ game trong sảnh "Game từ vựng": bấm vào mở game tương ứng (data-view).
    Giữ nguyên mảng data-view ở trên; chỉ gắn thêm class .gameTile. */
 $$('.gameTile[data-view]').forEach(b=>{
@@ -904,6 +924,55 @@ function bumpDaily(){
   }
   return d.count;
 }
+let continueRequest=0;
+async function refreshDashContinue(){
+  const request=++continueRequest;
+  const button=$('dashContinueBtn');
+  if(!button)return;
+  try{
+    const next=window.__gpBridge&&await window.__gpBridge.continueDataset();
+    if(request!==continueRequest)return;
+    const eyebrow=$('dashContinueEyebrow');
+    const title=$('dashContinueTitle');
+    const sub=$('dashContinueSub');
+    const action=$('dashContinueAction');
+    const progress=$('dashContinueProgress');
+    const fill=$('dashContinueProgressFill');
+    if(!next){
+      button.dataset.datasetId='';
+      button.setAttribute('aria-label','Khám phá thư viện học tập');
+      eyebrow.textContent='Lộ trình học tập';
+      title.textContent='Chọn bài học đầu tiên';
+      sub.textContent='Khám phá thư viện HSK và chủ đề từ vựng để bắt đầu.';
+      action.firstChild.nodeValue='Khám phá thư viện ';
+      progress.hidden=true;
+      fill.style.width='0%';
+      progress.setAttribute('aria-valuenow','0');
+      return;
+    }
+    const completed=Math.min(next.completed,next.total);
+    const percent=next.total?Math.round(completed/next.total*100):0;
+    button.dataset.datasetId=next.id;
+    button.setAttribute('aria-label','Tiếp tục học '+next.name+', tiến độ '+completed+' trên '+next.total);
+    eyebrow.textContent='Đang học';
+    title.textContent=next.name;
+    sub.textContent=completed.toLocaleString('vi-VN')+' / '+next.total.toLocaleString('vi-VN')+' câu đã hoàn thành · '+percent+'%';
+    action.firstChild.nodeValue='Tiếp tục học ';
+    progress.hidden=false;
+    progress.setAttribute('aria-valuenow',String(percent));
+    fill.style.width=percent+'%';
+  }catch(error){
+    if(request!==continueRequest)return;
+    console.error('Không tải được bộ học tiếp tục:',error);
+    $('dashContinueEyebrow').textContent='Lộ trình học tập';
+    $('dashContinueTitle').textContent='Mở thư viện học tập';
+    $('dashContinueSub').textContent='Chưa tải được tiến độ gần đây. Bạn vẫn có thể mở thư viện để chọn bài học.';
+    $('dashContinueAction').firstChild.nodeValue='Mở thư viện ';
+    button.dataset.datasetId='';
+    button.setAttribute('aria-label','Mở thư viện học tập');
+    $('dashContinueProgress').hidden=true;
+  }
+}
 function refreshDash(){
   renderTrial();
   /* Gom tiến độ từ tất cả bộ câu (core lưu ở localStorage key cts:progress:<id>) */
@@ -940,6 +1009,7 @@ function refreshDash(){
   const chip=$('wsStreakChip');
   if(st.last===todayKey()&&st.days>0){chip.classList.remove('hidden');$('wsStreakNum').textContent=st.days}
   else chip.classList.add('hidden');
+  refreshDashContinue();
 }
 /* ★ Đếm số chạy lên cho các ô thống kê (chỉ chạy khi giá trị thay đổi) */
 const _countCache=new WeakMap();
