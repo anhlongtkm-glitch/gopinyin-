@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════
+   ★ CẢNH TRÚC TRONG THẺ CÂU HỎI (màn luyện gõ)
+   Tán trúc hai góc trên + dãy núi mờ dưới chân → màn gõ có cảnh,
+   nhưng nằm sau chữ (z-index 0) nên không cản việc đọc/gõ.
+   ═══════════════════════════════════════════════════════════════ */
+.questionBox{isolation:isolate}
+.qbScenery{
+  position:absolute;inset:0;z-index:0;width:100%;height:100%;
+  pointer-events:none;border-radius:inherit;overflow:hidden;
+  /* Mặt nạ NGANG: trúc hiện ở hai mép, trong lòng thẻ để trống cho chữ */
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.88) 10%,rgba(0,0,0,0) 33%,
+    rgba(0,0,0,0) 67%,rgba(0,0,0,.88) 90%,#000 100%);
+  mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.88) 10%,rgba(0,0,0,0) 33%,
+    rgba(0,0,0,0) 67%,rgba(0,0,0,.88) 90%,#000 100%);
+}
+/* Trúc "dưới trăng": sáng hơn nền thẻ một chút mới đọc ra hình, không thì
+   thành vệt mực đen. */
+.qbScenery .qbStalk,.qbScenery .qbBranch{fill:none;stroke:#6FDCC0;stroke-linecap:round;opacity:.34}
+.qbScenery .qbNode{stroke:#6FDCC0;stroke-linecap:round;opacity:.22;fill:none}
+.qbScenery .qbLeaf{fill:#6FDCC0;opacity:.26}
+.qbScenery .qbRidge{fill:#3FA98F;opacity:.16}
+[data-theme="light"] .qbScenery .qbStalk,[data-theme="light"] .qbScenery .qbBranch{stroke:#2C6B5C;opacity:.30}
+[data-theme="light"] .qbScenery .qbNode{stroke:#2C6B5C;opacity:.18}
+[data-theme="light"] .qbScenery .qbLeaf{fill:#2C6B5C;opacity:.20}
+[data-theme="light"] .qbScenery .qbRidge{fill:#5C9186;opacity:.16}
+/* Nội dung thật luôn nằm trên cảnh */
+.questionBox>*:not(.qbScenery){position:relative;z-index:1}
+@media (max-width:560px){
+  .qbScenery{opacity:.65}
+}
+@media (max-width:860px){
+  .ws-scenery{opacity:.45}
+}
+@media (prefers-reduced-motion:reduce){
+  .ws-scenery .scFar,.ws-scenery .scMid,.ws-scenery .scBamboo{animation:none!important}
+}
+

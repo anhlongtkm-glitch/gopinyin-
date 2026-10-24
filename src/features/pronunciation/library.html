@@ -1,0 +1,26 @@
+<section id="pronLibCard" class="card hidden pronLibView">
+        <div class="fileWarn hidden" data-filewarn role="alert">
+          <span class="fileWarnIco" aria-hidden="true">⚠️</span>
+          <span class="fileWarnTxt">Bạn đang mở app bằng <b>file://</b> — Chrome <b>không ghi nhớ quyền micro</b> cho địa chỉ này, nên mỗi lần bấm nói đều phải cấp quyền lại. <b>Mở thư mục gopinyin → nháy đúp file <code>start.bat</code></b> → trình duyệt tự mở đúng địa chỉ → chỉ hỏi quyền micro <b>một lần</b>.</span>
+          <span class="fileWarnActs">
+            <button type="button" class="btn primary btnSm" data-filewarn-go>Chuyển sang localhost</button>
+            <button type="button" class="btn secondary btnSm" data-filewarn-hide>Ẩn</button>
+          </span>
+        </div>
+        <div class="libraryHead">
+          <div>
+            <h2>🎙 Luyện phát âm</h2>
+            <div class="small">Chọn bộ câu để luyện nói. <b>Dùng chung kho câu với Luyện gõ</b>, nhưng <b>tiến độ luyện nói tính riêng</b> — không ảnh hưởng tiến độ gõ.</div>
+          </div>
+        </div>
+        <!-- ★ Đã bỏ mục "Bộ câu của bạn (đã học)" và "Các câu đã làm":
+             tiến độ nay hiện NGAY TRÊN thẻ HSK bên dưới. -->
+        <div class="sectionTitle">🎓 Câu theo cấp HSK <span class="muted">— chọn một cấp để bắt đầu</span></div>
+        <div id="pronLibHsk" class="vocabGrid pronLibGrid"></div>
+        <div class="vocabNote">
+          💡 Mỗi cấp dùng đúng bộ câu của màn <b>Luyện gõ</b> — chung kho câu, nhưng <b>tiến độ luyện nói tách riêng</b> (luyện nói không làm thay đổi tiến độ gõ, và ngược lại).
+          <br>📖 <b>Thanh tiến độ trên mỗi thẻ</b> cho biết bạn đã luyện nói bao nhiêu câu (<b>x/N</b> + <b>%</b>) và bao nhiêu câu <b>đạt</b>; bấm vào thẻ là <b>vào đúng câu đang dở</b>.
+          <br>📚 <b>HSK 1–3 miễn phí</b> · <b>HSK 4–9</b> thuộc gói Pro (mỗi tài khoản được dùng thử 7 ngày).
+          <br>🎙 Cần micro và trình duyệt <b>Chrome / Edge</b>. Micro chỉ bật khi bạn bấm nút nói — không thu âm ngầm.
+        </div>
+      </section>

@@ -1,0 +1,85 @@
+<section id="aiCard" class="card hidden aiView">
+    <div class="aiViewHead">
+      <div>
+        <h2>🤖 AI sinh câu</h2>
+        <div class="small">Viết chủ đề bạn muốn học → AI tạo câu mới kèm pinyin &amp; nghĩa tiếng Việt. Tính năng dành cho hội viên Pro.</div>
+      </div>
+    </div>
+<div id="aiPane">
+      <div class="aiBox">
+        <label class="aiLabel" for="aiPrompt">
+          <span id="aiPromptLabelText">Bạn muốn học câu tiếng Trung về chủ đề gì?</span>
+          <small id="aiPromptSub">AI sẽ viết câu hoàn chỉnh kèm pinyin &amp; nghĩa tiếng Việt.</small>
+        </label>
+        <textarea id="aiPrompt" class="aiPrompt" rows="3" placeholder="Ví dụ: hội thoại khi đi mua đồ ở chợ, nói thẳng, dùng được ngày mai"></textarea>
+        <div class="aiControls">
+          <label class="aiField">Học gì
+            <select id="aiKind" class="select" aria-describedby="aiKindHint">
+              <option value="sentence" selected>📝 Câu hoàn chỉnh</option>
+              <option value="word">🔤 Từ vựng</option>
+              <option value="both">📝🔤 Cả câu và từ vựng</option>
+            </select>
+          </label>
+          <label class="aiField">Mỗi lần sinh
+            <select id="aiBatch" class="select">
+              <option value="3">3 câu</option>
+              <option value="5" selected>5 câu</option>
+              <option value="10">10 câu</option>
+            </select>
+          </label>
+          <label class="aiField">Trình độ
+            <select id="aiLevel" class="select">
+              <option value="">Không cần</option>
+              <option value="HSK 1">HSK 1</option>
+              <option value="HSK 2">HSK 2</option>
+              <option value="HSK 3">HSK 3</option>
+              <option value="HSK 4">HSK 4</option>
+              <option value="HSK 5">HSK 5</option>
+              <option value="HSK 6">HSK 6</option>
+              <option value="HSK 7">HSK 7</option>
+              <option value="HSK 8">HSK 8</option>
+              <option value="HSK 9">HSK 9</option>
+            </select>
+          </label>
+        </div>
+        <div id="aiKindHint" class="aiKindHint"></div>
+        <div class="aiControls">
+          <button id="aiStartBtn" class="btn primary" type="button">🚀 Viết prompt rồi học ngay</button>
+        </div>
+        <details class="aiDetails">
+          <summary>Tuỳ chọn nâng cao</summary>
+          <div class="aiControls">
+            <label class="aiField">Nhà cung cấp AI
+              <select id="aiProvider" class="select">
+                <option value="gemini">Google Gemini — API key miễn phí (khuyên dùng)</option>
+                <option value="openrouter">OpenRouter — model miễn phí, cần API key</option>
+              </select>
+            </label>
+            <input id="aiKey" class="aiKey" type="password" placeholder="Dán API key vào đây (chỉ lưu trên máy bạn)" aria-label="API key" />
+            <!-- ★ Nhiều người KHÔNG BIẾT lấy API key ở đâu → nút dẫn thẳng tới trang lấy key
+                 của nhà cung cấp đang chọn (link + chữ đổi theo nhà cung cấp) -->
+            <div id="keyHelpRow" class="aiControls">
+              <a id="keyHelpLink" class="miniBtn primary" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">🔑 Lấy API key Gemini (miễn phí)</a>
+              <span id="keyHelpHint" class="aiStatus">Bấm nút trên → đăng nhập tài khoản Google → bấm <b>“Create API key”</b> → <b>sao chép</b> key rồi dán vào ô “API key” phía trên. Key chỉ lưu trên máy bạn.</span>
+            </div>
+          </div>
+          <label class="aiCheck" for="aiVerify" title="AI tự dịch lại chữ Hán rồi so với nghĩa tiếng Việt đã tạo; nghĩa nào lệch sẽ được sửa. Tốn thêm 1 lượt gọi AI mỗi đợt.">
+            <input type="checkbox" id="aiVerify" checked />
+            <span>🔍 <b>Soát lại nghĩa Việt ↔ chữ Hán</b> sau khi tạo <small>(khuyên bật — tốn thêm 1 lượt gọi AI)</small></span>
+          </label>
+          <div class="aiHint"><b>Cách dùng:</b> chọn <b>“Học gì”</b> (Câu hoàn chỉnh / Từ vựng / Cả hai) → viết chủ đề → bấm “học ngay”. AI viết đợt đầu, rồi <b>hỏi bạn có lưu lại không</b>:<br />• <b>💾 Lưu lại</b> → đặt tên → bộ nằm trong <b>“Bộ AI đã lưu”</b> ngay bên dưới; lần sau bấm <b>“Học tiếp”</b> là vào <b>đúng chỗ bạn đang học dở</b>.<br />• <b>Không lưu</b> → chỉ học tạm lần này, thoát ra là hết, không ghi gì vào máy.<br />Khi đang học, <b>sắp hết là AI tự viết tiếp</b> — nội dung mới được cộng dồn vào bộ đã lưu. Nội dung AI tạo ra <b>không bao giờ lặp lại</b> nhau trong cùng chủ đề.<br /><br /><b>Gemini (khuyên dùng):</b> ổn định, chất lượng cao — bấm <b>“🔑 Lấy API key Gemini (miễn phí)”</b> để mở trang lấy key, dán key vào ô <b>API key</b> là dùng được. Key <b>miễn phí</b>, chỉ lưu trên máy bạn.<br /><b>OpenRouter:</b> dự phòng khi Gemini hết hạn mức — bấm <b>“🔑 Lấy API key OpenRouter”</b>, tạo key miễn phí rồi dán vào ô API key.</div>
+        </details>
+        <div id="aiStatus" class="aiStatus" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <!-- ★ BỘ CÂU AI ĐÃ LƯU — nằm ngay dưới khung tạo prompt.
+         Bấm "Học tiếp" là vào đúng câu đang học dở của bộ đó. -->
+    <div id="aiSetsWrap" class="aiSetsWrap">
+      <div class="aiSetsHead">
+        <h3>📚 Bộ AI đã lưu</h3>
+        <span class="small">Bấm “Học tiếp” để làm tiếp đúng chỗ bạn đang dở.</span>
+      </div>
+      <div id="aiSets" class="libraryGrid aiSetsGrid"></div>
+    </div>
+  </section>

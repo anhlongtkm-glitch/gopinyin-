@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════════════════════════════
+   Băng cảnh báo file:// — Chrome không lưu quyền micro cho file://
+   nên mỗi lượt nói lại hỏi lại. Không sửa được bằng JS → hướng dẫn
+   chạy qua http://localhost.
+   ═══════════════════════════════════════════════════════════════ */
+.fileWarn{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--warn-soft);border:1px solid rgba(251,191,36,.45);
+  border-radius:var(--r-lg);padding:10px 14px;margin-bottom:12px;
+  font-size:12.5px;line-height:1.55;color:var(--text-2);flex:none;
+}
+.fileWarnIco{font-size:17px;line-height:1;flex:none}
+.fileWarnTxt{flex:1 1 320px;min-width:0}
+.fileWarnTxt b{color:var(--warn);font-weight:800}
+.fileWarnTxt code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
+  background:var(--card-3);border:1px solid var(--line-2);border-radius:5px;padding:1px 5px}
+.fileWarnActs{display:flex;gap:8px;flex-wrap:wrap;flex:none}
+#pronCard .fileWarn{margin-bottom:8px;padding:8px 12px;font-size:12px}
+@media (max-width:720px){
+  .fileWarn{padding:9px 12px;gap:8px}
+  .fileWarnActs{width:100%}
+  .fileWarnActs .btn{flex:1 1 auto;justify-content:center}
+}
+/* Băng cảnh báo file:// đang hiện → nén thêm để nút micro vẫn nằm trong khung */
+#pronCard.has-warn .kbdHint{display:none}
+#pronCard.has-warn .pronStage{margin:4px 0 0;gap:5px}
+#pronCard.has-warn .pronStatus{margin:2px 0}
+#pronCard.has-warn .pronMicIco{width:clamp(64px,min(6.4vw,8.6vh),86px);height:clamp(64px,min(6.4vw,8.6vh),86px)}
+#pronCard.has-warn .pronMicRing{width:calc(clamp(64px,min(6.4vw,8.6vh),86px) + 14px);height:calc(clamp(64px,min(6.4vw,8.6vh),86px) + 14px);margin-left:calc((clamp(64px,min(6.4vw,8.6vh),86px) + 14px) / -2)}
+

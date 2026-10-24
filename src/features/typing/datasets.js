@@ -1,0 +1,188 @@
+// State and behavior owned by features/typing/datasets. Initialization is orchestrated by app/bootstrap.js.
+
+import { state as dataCatalogState } from "../../data/catalog.js";
+
+import { aiEndSession } from "../ai/session.js";
+
+import { updateSoundUI, updateReadTypeUI, updateViUI, updateHanUI, updateModeUI } from "./controls.js";
+
+import { loadHistory, renderAppHistory } from "./history.js";
+
+import { resetSessionRuntime, loadProgress } from "./progress.js";
+
+import { render } from "./render.js";
+
+import { state as typingSessionState } from "./session.js";
+
+import { populateVoiceSelect } from "../../shared/audio/tts.js";
+
+import { state as domState } from "../../shared/dom.js";
+
+import { dbGetAll, progressKey } from "../../shared/storage/lesson-repository.js";
+
+import { shuffle, escapeHtml } from "../../shared/utils.js";
+
+/* ── Dataset Management ── */
+export async function openDataset(id) {
+  const sets = await dbGetAll();
+  const ds = sets.find(x => x.id === id);
+  if (!ds) return;
+  /* Ghi nhớ đang mở từ màn nào để nút "← ..." quay lại đúng chỗ */
+  const aiVisible = !!(domState.$('aiCard') && !domState.$('aiCard').classList.contains('hidden'));
+  typingSessionState.studyOrigin = aiVisible ? 'ai' : 'library';
+  aiEndSession(); // rời phiên AI (không lưu gì) nếu đang học câu do AI tạo
+  resetSessionRuntime();
+  typingSessionState.activeDataset = ds;
+  typingSessionState.rows = ds.rows;
+  typingSessionState.currentFileKey = progressKey(ds.id);
+  typingSessionState.pinyinHint = false; // ★ mới vào chế độ gỗ → pinyin luôn ẩn, muốn xem thì bật
+  const saved = loadProgress(ds.id);
+  const validOrder = o => Array.isArray(o) && o.every(i => Number.isInteger(i) && i >= 0 && i < typingSessionState.rows.length);
+  if (saved && validOrder(saved.mainOrder) && saved.mainOrder.length === typingSessionState.rows.length) {
+    typingSessionState.mainOrder = saved.mainOrder;
+    typingSessionState.mainIndex = saved.mainIndex || 0;
+    typingSessionState.stats = saved.stats || typingSessionState.stats;
+    typingSessionState.wrongIds = new Set(saved.wrongIds || []);
+    typingSessionState.autoSound = saved.autoSound !== false;
+    typingSessionState.speechRate = Number(saved.speechRate) || 0.8;
+    typingSessionState.selectedVoiceName = String(saved.selectedVoiceName || '');
+    typingSessionState.showVietnamese = saved.showVietnamese !== false;
+    typingSessionState.showHanzi = saved.showHanzi !== false;
+    typingSessionState.readOnType = saved.readOnType !== false;
+  } else if (saved && validOrder(saved.mainOrder) && saved.mainOrder.length) {
+    /* ★ Bộ câu ĐÃ LỚN THÊM (AI viết tiếp sau khi lưu) → giữ nguyên tiến độ cũ,
+       chỉ nối các câu mới vào CUỐI. Trước đây độ dài lệch là xoá sạch tiến độ
+       và xáo lại từ đầu — mất đúng câu người dùng đang học dở. */
+    const seen = new Set(),
+      ord = [];
+    for (const i of saved.mainOrder) {
+      if (!seen.has(i)) {
+        seen.add(i);
+        ord.push(i);
+      }
+    }
+    for (let i = 0; i < typingSessionState.rows.length; i++) if (!seen.has(i)) ord.push(i);
+    typingSessionState.mainOrder = ord;
+    typingSessionState.mainIndex = Math.min(saved.mainIndex || 0, ord.length);
+    typingSessionState.stats = saved.stats || typingSessionState.stats;
+    typingSessionState.wrongIds = new Set(saved.wrongIds || []);
+    typingSessionState.autoSound = saved.autoSound !== false;
+    typingSessionState.speechRate = Number(saved.speechRate) || 0.8;
+    typingSessionState.selectedVoiceName = String(saved.selectedVoiceName || '');
+    typingSessionState.showVietnamese = saved.showVietnamese !== false;
+    typingSessionState.showHanzi = saved.showHanzi !== false;
+    typingSessionState.readOnType = saved.readOnType !== false;
+  } else {
+    typingSessionState.mainOrder = shuffle(typingSessionState.rows.map((_, i) => i));
+    typingSessionState.mainIndex = 0;
+    typingSessionState.stats = {
+      correct: 0,
+      wrong: 0,
+      combo: 0,
+      bestCombo: 0,
+      attempts: 0
+    };
+    typingSessionState.wrongIds = new Set();
+    typingSessionState.autoSound = true;
+    typingSessionState.speechRate = .8;
+    typingSessionState.selectedVoiceName = '';
+    typingSessionState.showVietnamese = true;
+    typingSessionState.readOnType = true;
+  }
+  typingSessionState.mode = 'all';
+  typingSessionState.order = [...typingSessionState.mainOrder];
+  typingSessionState.index = typingSessionState.mainIndex;
+  domState.$('rateSelect').value = String(typingSessionState.speechRate);
+  populateVoiceSelect();
+  updateSoundUI();
+  updateReadTypeUI();
+  updateViUI();
+  updateHanUI();
+  updateModeUI();
+  domState.$('libraryCard').classList.add('hidden');
+  domState.$('aiCard')?.classList.add('hidden');
+  domState.$('appCard').classList.remove('hidden');
+  /* ★ Không còn nút "← Thư viện" trên thanh tiêu đề: màn luyện gõ đã có nút
+     "← Bộ khác" trong nhóm "📚 Nội dung" — giống hệt màn Luyện phát âm. */
+  domState.$('backLibrary').classList.add('hidden');
+  /* ★ Màn luyện gõ dùng CHUNG khung với màn Luyện phát âm: khoá trang đúng
+     1 khung hình + đổ danh sách bộ câu vào nhóm "📚 Nội dung". */
+  document.body.classList.add('studyFit');
+  try {
+    fillAppSource();
+  } catch (e) {}
+  render();
+  loadHistory();
+  renderAppHistory();
+}
+
+/* ★ CẢNH TRÚC TRONG THẺ CÂU — màn Luyện gõ vẽ sẵn trong HTML, màn Luyện phát âm
+   nhân bản đúng hình đó để hai thẻ câu trông y hệt nhau (khỏi chép 3KB SVG). */
+
+/* ★ NHÓM "📚 NỘI DUNG" CỦA MÀN LUYỆN GÕ (giống hệt bên Luyện phát âm):
+   đang học bộ nào thì hiện bộ đó trước, sau là các bộ đã học, rồi các cấp HSK.
+   Chọn bộ khác là đổi ngay tại chỗ, không phải quay ra Thư viện. */
+export async function fillAppSource() {
+  const sel = domState.$('appSource');
+  if (!sel) return;
+  const cur = typingSessionState.activeDataset ? typingSessionState.activeDataset.id : '';
+  const out = [];
+  if (typingSessionState.activeDataset) {
+    out.push({
+      v: 'id:' + cur,
+      t: '📌 ' + (typingSessionState.activeDataset.name || 'Bộ đang mở') + ' (' + typingSessionState.rows.length + ')'
+    });
+  } else {
+    out.push({
+      v: '',
+      t: '🤖 Câu do AI tạo (chưa lưu)'
+    });
+  }
+  let sets = [];
+  try {
+    sets = await dbGetAll();
+  } catch (e) {
+    sets = [];
+  }
+  sets.filter(ds => ds && ds.builtin && Array.isArray(ds.rows) && ds.rows.length && ds.id !== cur).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).forEach(ds => out.push({
+    v: 'id:' + ds.id,
+    t: '💾 ' + ds.name + ' (' + ds.rows.length + ')'
+  }));
+  /* Cấp HSK nào đã tạo bộ (id "vocab:hskN") thì thôi, không liệt kê 2 lần */
+  const have = new Set(sets.map(ds => ds && ds.id));
+  (dataCatalogState.VOCAB_GROUPS.hsk || []).forEach(x => {
+    if ('vocab:' + x[0] === cur || have.has('vocab:' + x[0])) return;
+    out.push({
+      v: 'src:' + x[0],
+      t: '🎓 ' + x[1]
+    });
+  });
+  sel.innerHTML = out.map(o => '<option value="' + escapeHtml(o.v) + '">' + escapeHtml(o.t) + '</option>').join('');
+  sel.value = typingSessionState.activeDataset ? 'id:' + cur : '';
+}
+
+/* ── Chinese Word Rendering ── */
+/* ★ Bộ tách từ tiếng Hán (maximal matching trên từ điển HSK 3.0).
+   Mục đích: nhóm các chữ thuộc CÙNG MỘT TỪ lại với nhau (vd 听见, 你的…)
+   để hiển thị chữ trong cùng từ sát nhau, còn giữa các TỪ có khe rộng hơn. */
+/* Bộ tách từ tiếng Hán bằng VITERBI có trọng số tần suất.
+   → Sửa lỗi greedy maximal-matching chọn nhầm từ dài hiếm (vd "有时" thay vì "时间").
+   Với mỗi vị trí, tính chi phí = log(hạng tần suất); chọn đường có tổng chi phí nhỏ nhất. */
+
+export function initializeTypingDatasets() {
+  /* ★ CẢNH TRÚC TRONG THẺ CÂU — màn Luyện gõ vẽ sẵn trong HTML, màn Luyện phát âm
+     nhân bản đúng hình đó để hai thẻ câu trông y hệt nhau (khỏi chép 3KB SVG). */
+  (function () {
+    try {
+      const src = document.querySelector('#appCard .qbScenery');
+      const box = document.querySelector('#pronCard .pronBox');
+      if (src && box && !box.querySelector('.qbScenery')) {
+        box.insertBefore(src.cloneNode(true), box.firstChild);
+      }
+    } catch (e) {}
+  })();
+
+  /* ★ NHÓM "📚 NỘI DUNG" CỦA MÀN LUYỆN GÕ (giống hệt bên Luyện phát âm):
+     đang học bộ nào thì hiện bộ đó trước, sau là các bộ đã học, rồi các cấp HSK.
+     Chọn bộ khác là đổi ngay tại chỗ, không phải quay ra Thư viện. */
+}

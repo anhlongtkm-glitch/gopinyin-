@@ -1,6 +1,6 @@
 const { chromium } = require('playwright-core');
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const URL = 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8080/';
 
 (async () => {
   const browser = await chromium.launch({ executablePath: CHROME, headless: true });

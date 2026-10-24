@@ -1,0 +1,67 @@
+/* ═══════════════════════════════════════════════════════════════
+   BỘ CÂU CÁ NHÂN — upload Excel/CSV, danh sách bộ câu người dùng
+   ═══════════════════════════════════════════════════════════════ */
+.personalView{display:flex;flex-direction:column;gap:18px}
+.personalHead{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:4px}
+.personalHead h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
+.personalActions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.personalDrop{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  padding:34px 22px;text-align:center;cursor:pointer;
+  border:2px dashed rgba(31,200,162,.45);
+  background:linear-gradient(180deg,rgba(31,200,162,.08),rgba(31,200,162,.02));
+  border-radius:var(--r-lg);
+  transition:all .2s var(--ease);
+  outline:none;
+}
+.personalDrop:hover,.personalDrop:focus-visible{
+  border-color:rgba(31,200,162,.75);
+  background:linear-gradient(180deg,rgba(31,200,162,.14),rgba(31,200,162,.04));
+  transform:translateY(-1px);
+}
+.personalDrop.isOver{
+  border-color:var(--primary);
+  background:linear-gradient(180deg,rgba(31,200,162,.22),rgba(31,200,162,.08));
+  transform:scale(1.005);
+  box-shadow:0 16px 40px rgba(11,164,136,.18);
+}
+.personalDropIcon{font-size:42px;line-height:1;filter:drop-shadow(0 6px 14px rgba(11,164,136,.3))}
+.personalDropTitle{font-weight:800;font-size:16px;color:var(--text)}
+.personalDropSub{color:var(--muted);font-size:13px;max-width:56ch;line-height:1.5}
+
+.personalFormat{
+  border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--card-2);padding:18px 20px;
+}
+.personalFormat h3{margin:0 0 6px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px}
+.personalFormat p{margin:6px 0 10px;color:var(--muted);font-size:13px;line-height:1.55}
+.personalTableWrap{overflow:auto;margin:4px 0 8px;border-radius:var(--r-md);border:1px solid var(--line)}
+.personalTable{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--card)}
+.personalTable th,.personalTable td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.personalTable th{background:var(--card-3);color:var(--faint);font-weight:900;letter-spacing:.04em;text-transform:uppercase;font-size:10.5px;position:sticky;top:0}
+.personalTable td b{color:var(--text-2);font-weight:800}
+.personalTable td .muted{color:var(--faint);font-weight:500;font-size:11.5px}
+.personalTable code{background:var(--card-3);padding:1px 6px;border-radius:4px;font-size:11.5px}
+.personalTipList{margin:6px 0 0;padding-left:18px;color:var(--muted);font-size:12.5px;line-height:1.6}
+.personalTipList code{background:var(--card-3);padding:1px 6px;border-radius:4px;font-size:11.5px}
+@media (max-width:760px){
+  .personalHead{align-items:flex-start}
+  .personalActions{margin-left:0;width:100%}
+  .personalDrop{padding:22px 14px}
+  .personalDropIcon{font-size:34px}
+  .personalDropTitle{font-size:14.5px}
+  .personalDropSub{font-size:12px}
+}
+.libraryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.libraryItem{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:19px;
+  display:flex;flex-direction:column;gap:10px;transition:all var(--d) var(--ease)}
+.libraryItem:hover{transform:translateY(-3px);border-color:rgba(31,200,162,.4);box-shadow:var(--sh-2)}
+.libraryItem h3{margin:0;font-size:15.5px;font-weight:800;line-height:1.4}
+.libraryMeta{display:flex;gap:6px;flex-wrap:wrap}
+.libraryMeta span{font-size:11px;font-weight:700;color:var(--muted);background:var(--card-3);padding:3px 9px;border-radius:99px}
+.libraryActions{margin-top:auto;display:flex;gap:8px}
+.badgeBuiltin{font-size:10.5px;font-weight:800;color:var(--primary);background:var(--primary-soft);padding:3px 9px;border-radius:99px;align-self:flex-start}
+.badgeAi{color:var(--accent);background:rgba(244,114,182,.13)}
+.emptyLibrary{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;font-size:14px;border:1px dashed var(--line-2);border-radius:var(--r-lg)}
+

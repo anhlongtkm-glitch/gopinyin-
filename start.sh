@@ -14,11 +14,12 @@ echo "  ============================================================"
 echo ""
 
 if command -v node >/dev/null 2>&1; then
-  PORT="$PORT" node server/serve.js
-elif command -v python3 >/dev/null 2>&1; then
-  ( sleep 1; command -v open >/dev/null 2>&1 && open "http://localhost:$PORT/" || xdg-open "http://localhost:$PORT/" >/dev/null 2>&1 || true ) &
-  python3 -m http.server "$PORT" --bind 127.0.0.1
+  if ! node -e "require.resolve('esbuild')" >/dev/null 2>&1; then
+    echo "Chưa cài dependencies. Chạy npm install trong thư mục dự án."
+    exit 1
+  fi
+  PORT="$PORT" node scripts/dev.mjs
 else
-  echo "  Không tìm thấy Node.js hoặc Python. Cài Node.js: https://nodejs.org"
+  echo "  Không tìm thấy Node.js. Cài Node.js: https://nodejs.org"
   exit 1
 fi

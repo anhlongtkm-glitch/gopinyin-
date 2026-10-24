@@ -1,0 +1,31 @@
+/* ═══════════════════════════════════════════════════════════════
+   MÀN HẸP — chống tràn ngang, giữ bố cục gọn
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width:680px){
+  .lp-nav{gap:10px;padding:10px 16px}
+  .lp-brand .brandLockup img{height:28px}
+  #lpLoginBtn{display:none}
+  .lp-actions{gap:6px}
+  .lp-actions .lp-btn.primary{padding:9px 14px;font-size:13px}
+  .lp-hero{padding:32px 16px 40px}
+  .lp-title{font-size:clamp(29px,8.2vw,42px);letter-spacing:-.02em}
+  .lp-sub{font-size:14.5px;margin-bottom:24px}
+  .lp-ctaRow{gap:10px}
+  .lp-ctaRow .lp-btn{flex:1 1 auto;justify-content:center}
+  .lp-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px 10px;margin-top:28px}
+  .lp-stat b{font-size:24px}
+  .lp-stat span{font-size:11.5px}
+  .lp-floatCard{display:none}
+  .scSun{opacity:0}
+  .scSunGlow{opacity:.08}
+  .lp-heroArt{max-width:100%}
+  .lp-mock{transform:none}
+  .lp-section{padding-left:16px;padding-right:16px}
+  .lp-sectionHead h2{font-size:26px}
+  .lp-sectionHead p{font-size:14.5px}
+  .lp-badge{font-size:11.5px;padding:6px 12px}
+  .lp-price{padding:24px}
+  .lp-priceNum{font-size:34px}
+  .lp-footer{padding:32px 16px}
+}
+

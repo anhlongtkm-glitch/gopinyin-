@@ -1,0 +1,39 @@
+<div id="authModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
+  <div class="modalBackdrop" data-close="auth"></div>
+  <div class="modalCard authCard">
+    <button class="modalClose" type="button" data-close="auth" aria-label="Đóng">✕</button>
+    <div class="authHead">
+      <img class="authLogo" src="assets/logo-icon.png" alt="GoPinyin" width="64" height="64" decoding="async" />
+      <h2 id="authTitle">Đăng nhập GoPinyin</h2>
+      <p id="authSubtitle">Đăng nhập để lưu tiến độ học và đồng bộ trên mọi thiết bị.</p>
+    </div>
+    <div class="authTabs" role="tablist">
+      <button class="authTab active" type="button" data-authtab="login" role="tab" aria-selected="true">Đăng nhập</button>
+      <button class="authTab" type="button" data-authtab="register" role="tab" aria-selected="false">Đăng ký</button>
+    </div>
+    <form id="authForm" class="authForm" novalidate>
+      <label class="authField" id="authNameField" hidden>
+        <span>Tên hiển thị</span>
+        <input id="authName" type="text" autocomplete="nickname" placeholder="Bạn tên gì?" />
+      </label>
+      <label class="authField">
+        <span>Email</span>
+        <input id="authEmail" type="email" autocomplete="email" placeholder="ban@email.com" required />
+      </label>
+      <label class="authField">
+        <span>Mật khẩu</span>
+        <input id="authPass" type="password" autocomplete="current-password" placeholder="Mật khẩu của bạn" required />
+      </label>
+      <div class="authError" id="authError" hidden></div>
+      <button class="authSubmit lp-btn primary lg full" id="authSubmit" type="submit">Đăng nhập</button>
+      <div class="authTrialNote">🎁 Tạo tài khoản là được <b>dùng thử Pro 7 ngày</b> miễn phí — không cần thẻ.</div>
+    </form>
+    <div class="authDivider"><span>hoặc</span></div>
+    <button class="authGoogle" id="authGoogleBtn" type="button">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.2-2.2H12v4.1h6.5c-.1 1.1-.8 2.7-2.4 3.8v3.1h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.9-3.1c-1 .7-2.4 1.2-4 1.2-3.1 0-5.8-2.1-6.7-5H1.3v3.2C3.3 21.4 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.3 14.2c-.2-.7-.4-1.5-.4-2.2s.1-1.5.4-2.2V6.6H1.3C.5 8.2 0 10 0 12s.5 3.8 1.3 5.4l4-3.2z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.3.6 4.5 1.7l3.4-3.4C17.9 1.2 15.2 0 12 0 7.3 0 3.3 2.6 1.3 6.6l4 3.2c.9-2.9 3.6-5 6.7-5z"/></svg>
+      Đăng nhập với Google
+    </button>
+    <button class="authGuest" id="authGuestBtn" type="button">Dùng thử không cần đăng nhập →</button>
+    <p class="authNote">Tiến độ học được lưu an toàn. Khi thương mại hoá, dữ liệu sẽ đồng bộ qua tài khoản GoPinyin.</p>
+  </div>
+</div>

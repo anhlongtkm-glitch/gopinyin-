@@ -1,8 +1,8 @@
 /* Chụp ảnh: thanh gợi ý phím mới (Space = sang mục · Enter = ẩn/hiện pinyin)
    và công tắc "Soát lại nghĩa" trong AI sinh câu. */
 const { chromium } = require('playwright-core');
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const URL = 'http://localhost:8099/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8099/';
 
 const ITEMS = [
   { zh: '批量', py: 'pī liàng', vi: 'số lượng lớn' },

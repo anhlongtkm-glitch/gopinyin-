@@ -1,0 +1,159 @@
+/* ═══════════════════════════════════════════════════════════════
+   BRAND 2.0 — logo mới, cảnh nền núi non · rừng trúc, nút nổi khối
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Logo lockup: đổi ảnh theo theme, không nhảy layout ── */
+.brandLockup{position:relative;display:inline-grid;align-items:center;line-height:0}
+.brandLockup img{grid-area:1/1;height:38px;width:auto;display:block;
+  filter:drop-shadow(0 6px 16px rgba(11,164,136,.18))}
+.brandLockup-sm img{height:32px}
+.brandLockup-xs img{height:30px}
+[data-theme="light"] .brandLockup-dark{display:none}
+[data-theme="dark"] .brandLockup-light{display:none}
+[data-theme="dark"] .brandLockup img{filter:drop-shadow(0 6px 18px rgba(11,164,136,.28))}
+
+.lp-brand{transition:transform var(--d) var(--spring)}
+.lp-brand:hover{transform:translateY(-1px)}
+.lp-brand:hover .brandLockup img{filter:drop-shadow(0 10px 22px rgba(11,164,136,.34))}
+
+/* Icon dự phòng cho thanh bên hẹp */
+.ws-sideMark{display:none;border-radius:10px;box-shadow:0 4px 14px rgba(11,164,136,.28)}
+
+/* ── 2. Cảnh nền Trung Hoa: núi · trúc · sương · chim ── */
+.lp-scenery{position:absolute;inset:0;width:100%;height:100%;display:block;
+  pointer-events:none;overflow:visible;
+  /* rặng núi gần tan vào sương ở đáy để không cản chữ */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 90%,rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 90%,rgba(0,0,0,0) 100%)}
+
+.scRidge path{fill:currentColor;stroke:currentColor;stroke-width:1.4;
+  stroke-opacity:.5;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.scFar{color:var(--sc-far);opacity:var(--sc-far-o)}
+.scMid{color:var(--sc-mid);opacity:var(--sc-mid-o)}
+.scNear{color:var(--sc-near);opacity:var(--sc-near-o)}
+
+.scSun{fill:var(--sc-sun);opacity:var(--sc-sun-o);filter:blur(1.6px)}
+.scSunGlow{fill:var(--sc-sun);opacity:.10;filter:blur(26px)}
+[data-theme="dark"] .scSunGlow{opacity:.16;filter:blur(44px)}
+
+.scBamboo{color:var(--sc-bamboo);opacity:var(--sc-bamboo-o);
+  transform-box:fill-box;transform-origin:50% 100%}
+.bStalk{fill:none;stroke:currentColor;stroke-linecap:round}
+.bNode{fill:none;stroke:currentColor;stroke-linecap:round}
+.scBamboo use{fill:currentColor}
+
+.scBirds{color:var(--sc-bird);opacity:var(--sc-bird-o)}
+.scBirds path{fill:none;stroke:currentColor;stroke-linecap:round}
+
+/* Chuyển động rất chậm để cảnh "sống" mà không gây mỏi mắt */
+@keyframes scDrift{from{transform:translate3d(-1.4%,0,0)}to{transform:translate3d(1.4%,0,0)}}
+@keyframes scSway{from{transform:rotate(-.55deg)}to{transform:rotate(.55deg)}}
+@keyframes scBreathe{from{opacity:calc(var(--sc-far-o) * .8)}to{opacity:var(--sc-far-o)}}
+.scFar{animation:scDrift 52s ease-in-out infinite alternate}
+.scMid{animation:scDrift 38s ease-in-out infinite alternate-reverse}
+.scBamboo{animation:scSway 11s ease-in-out infinite alternate}
+.scBirds{animation:scDrift 26s ease-in-out infinite alternate}
+
+/* Sương mù trôi ngang */
+.lp-mist{position:absolute;left:-12%;width:124%;height:150px;pointer-events:none;
+  background:linear-gradient(180deg,transparent 0%,var(--sc-mist) 45%,transparent 100%);
+  filter:blur(18px);opacity:.75}
+.lp-mist.m1{top:52%;animation:mistA 58s ease-in-out infinite alternate}
+.lp-mist.m2{top:68%;height:180px;opacity:.5;animation:mistB 76s ease-in-out infinite alternate}
+@keyframes mistA{from{transform:translate3d(-5%,0,0)}to{transform:translate3d(5%,0,0)}}
+@keyframes mistB{from{transform:translate3d(4%,0,0)}to{transform:translate3d(-4%,0,0)}}
+
+/* Tối dần ở đáy để chữ phía trên luôn rõ */
+.lp-vignette{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,var(--bg) 0%,transparent 16%);
+  opacity:.6}
+
+/* ── 3. Nút: khối nổi, ánh sáng chạy khi hover ── */
+.lp-btn.primary,.btn.primary{
+  position:relative;overflow:hidden;isolation:isolate;color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(160deg,#2ED9B0 0%,#0BA488 48%,#067A63 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.36),
+    inset 0 -2px 7px rgba(2,44,36,.26),
+    0 8px 22px -6px rgba(11,164,136,.55),
+    0 2px 4px rgba(2,20,16,.22);
+  text-shadow:0 1px 1px rgba(2,50,40,.22);
+}
+.lp-btn.primary::before,.btn.primary::before{
+  content:'';position:absolute;inset:-2px;z-index:-1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 47%,transparent 62%);
+  transform:translateX(-135%) skewX(-10deg);
+  transition:transform .78s var(--ease);
+}
+.lp-btn.primary:hover::before,.btn.primary:hover::before{transform:translateX(135%) skewX(-10deg)}
+.lp-btn.primary:hover,.btn.primary:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.42),
+    inset 0 -2px 7px rgba(2,44,36,.26),
+    0 14px 34px -8px rgba(11,164,136,.62),
+    0 3px 6px rgba(2,20,16,.24);
+  filter:none;
+}
+.lp-btn.primary:active,.btn.primary:active{transform:translateY(0) scale(.985)}
+
+/* Nút phụ: kính mờ, viền mảnh */
+.lp-btn.outline{
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.02));
+  border-color:var(--line-2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+[data-theme="light"] .lp-btn.outline{
+  background:linear-gradient(180deg,#fff,rgba(255,255,255,.72));
+  box-shadow:0 2px 10px rgba(22,27,46,.06);
+}
+.lp-btn.outline:hover{border-color:var(--primary);color:var(--primary);
+  box-shadow:0 0 0 3px var(--primary-soft),0 6px 18px -6px rgba(11,164,136,.4)}
+
+.lp-btn.ghost{border-radius:var(--r-pill)}
+.lp-btn.ghost:hover{background:var(--primary-soft);color:var(--primary)}
+
+/* Nút trong workspace: cùng ngôn ngữ thị giác */
+.btn{border-radius:var(--r-md)}
+.btn:hover{box-shadow:0 6px 18px -6px rgba(2,20,16,.35)}
+
+/* ── 4. Nav & footer tinh chỉnh ── */
+.lp-nav{background:color-mix(in srgb,var(--bg) 78%,transparent)}
+@supports not (background:color-mix(in srgb,red,blue)){
+  .lp-nav{background:var(--glass)}
+}
+.lp-nav::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line-2) 22%,var(--line-2) 78%,transparent);
+  opacity:0;transition:opacity var(--d)}
+.lp-nav.scrolled::after{opacity:1}
+
+.lp-footerCols{display:flex;gap:clamp(28px,5vw,72px);margin-left:auto;flex-wrap:wrap}
+.lp-footerCol{display:flex;flex-direction:column;gap:7px;min-width:112px}
+.lp-footerCol b{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:800}
+.lp-footerCol a{font-size:13.5px;color:var(--muted);font-weight:600;transition:color var(--d),transform var(--d)}
+.lp-footerCol a:hover{color:var(--primary);transform:translateX(2px)}
+.lp-footerBottom a{color:var(--muted);font-weight:600;border-bottom:1px solid transparent}
+.lp-footerBottom a:hover{color:var(--primary);border-bottom-color:var(--primary)}
+
+.authLogo{border-radius:16px;box-shadow:0 12px 30px -10px rgba(11,164,136,.5),0 2px 6px rgba(2,20,16,.2)}
+
+/* ── 5. Tôn trọng người dùng giảm chuyển động ── */
+@media (prefers-reduced-motion:reduce){
+  .scFar,.scMid,.scBamboo,.scBirds,.lp-mist{animation:none!important}
+  .lp-btn.primary::before,.btn.primary::before{display:none}
+  .lp-blob{animation:none}
+}
+
+/* ── 6. Màn hẹp: giữ bố cục cảnh nền gọn gàng ── */
+@media (max-width:860px){
+  .lp-mist{height:140px;filter:blur(12px)}
+  .lp-mist.m1{top:44%}
+  .lp-mist.m2{top:62%}
+}
+@media (max-width:640px){
+  .brandLockup img{height:32px}
+  .lp-footerCols{margin-left:0;gap:22px}
+  .lp-scenery{opacity:.9}
+}
+

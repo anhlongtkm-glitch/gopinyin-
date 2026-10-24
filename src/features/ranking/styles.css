@@ -1,0 +1,159 @@
+/* ═══════════════════════════════════════════════════════════════
+   BẢNG XẾP HẠNG — số câu đúng + điểm game (ngày / tuần)
+   ═══════════════════════════════════════════════════════════════ */
+.rankView{display:flex;flex-direction:column;gap:18px}
+
+/* ★ Panel BXH bên trong Game: trượt từ phải, không che toàn bộ sân chơi */
+.gaLbPanel{
+  position:absolute;top:0;right:0;bottom:0;width:min(420px,100%);
+  display:flex;flex-direction:column;gap:10px;padding:14px;
+  background:linear-gradient(180deg,rgba(28,28,42,.96),rgba(18,18,30,.97));
+  border-left:1px solid var(--line);
+  box-shadow:-18px 0 36px rgba(0,0,0,.45);
+  backdrop-filter:blur(10px);
+  z-index:25;
+  animation:lbSlideIn .28s var(--ease) both;
+  overflow:hidden;
+}
+@keyframes lbSlideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.gaLbPanel.hidden{display:none}
+.gaLbHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gaLbHead h3{margin:0;font-family:var(--font-display);font-size:clamp(16px,2vw,18px);letter-spacing:-.01em}
+.gaLbHead .gaIconBtn{width:30px;height:30px;font-size:14px}
+.gaLbNote{color:var(--muted);font-size:11.5px;line-height:1.45}
+.gaLbNote b{color:var(--text-2)}
+.gaLbScroll{overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:4px;flex:1 1 auto}
+.gaLbScroll .rankTabs{width:100%;justify-content:space-between}
+.gaLbScroll .rankTab{flex:1;padding:7px 10px;font-size:12px}
+/* GaLbPanel mở rộng → không còn podium 3 cột lớn */
+.gaLbPanel .rankPodium{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.gaLbPanel .rankPod{padding:12px 8px;gap:4px}
+.gaLbPanel .rankPod.pod1{padding-top:14px;padding-bottom:14px}
+.gaLbPanel .rankPodMedal{font-size:18px}
+.gaLbPanel .rankPod.pod1 .rankPodMedal{font-size:22px}
+.gaLbPanel .rankAv{width:28px;height:28px;font-size:12px}
+.gaLbPanel .rankAv.avBig{width:36px;height:36px;font-size:14px}
+.gaLbPanel .rankPodName{font-size:12px}
+.gaLbPanel .rankPodStats{font-size:10.5px}
+.gaLbPanel .rankPodStats b{font-size:11.5px}
+.gaLbPanel .rankTableHead,.gaLbPanel .rankRow{grid-template-columns:30px minmax(0,1fr) 62px 70px;padding:8px 10px;gap:6px}
+.gaLbPanel .rankTableHead{font-size:9.5px;padding:7px 10px}
+.gaLbPanel .rankRow{padding:9px 10px}
+.gaLbPanel .rankAv{width:24px;height:24px;font-size:11px}
+.gaLbPanel .rankWho{gap:8px}
+.gaLbPanel .rankName{font-size:12px}
+.gaLbPanel .rankCorrect b,.gaLbPanel .rankScore b{font-size:12.5px}
+.gaLbPanel .rankFoot{font-size:10.5px}
+@media (max-width:760px){
+  .gaLbPanel{width:100%;border-left:0}
+}
+.gaIconBtn.on{background:linear-gradient(135deg,rgba(31,200,162,.22),rgba(31,200,162,.14));color:#fff;border-color:rgba(31,200,162,.55)}
+.rankHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.rankHead h2{margin:0 0 6px;font-family:var(--font-display);font-size:clamp(20px,2.4vw,26px);letter-spacing:-.01em}
+.rankHeadText .small{max-width:56ch;line-height:1.55}
+.rankHeadText .small b{color:var(--text-2)}
+.rankTabs{display:inline-flex;gap:4px;padding:4px;border-radius:var(--r-pill);background:var(--card-2);border:1px solid var(--line)}
+.rankTab{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;font-weight:800;
+  padding:8px 16px;border-radius:var(--r-pill);cursor:pointer;white-space:nowrap;
+  transition:color var(--d) var(--ease),background var(--d),box-shadow var(--d),transform var(--d-fast)}
+.rankTab:hover{color:var(--text-2)}
+.rankTab:active{transform:scale(.96)}
+.rankTab.active{background:var(--brand-grad);color:#fff;box-shadow:0 6px 18px rgba(11,164,136,.35)}
+
+/* ── Bục vinh danh top 3 ── */
+.rankPodium{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:end}
+.rankPod{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
+  padding:16px 14px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--card-2);
+  overflow:hidden;animation:rankRise .5s var(--ease) both}
+.rankPod::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(200px 90px at 50% 0%,rgba(31,200,162,.16),transparent 70%)}
+.rankPod.pod1{border-color:rgba(251,191,36,.45);background:linear-gradient(180deg,rgba(251,191,36,.16),var(--card-2) 62%);
+  box-shadow:0 16px 36px rgba(245,158,11,.18);padding-top:22px;padding-bottom:20px}
+.rankPod.pod1::after{background:radial-gradient(220px 100px at 50% 0%,rgba(251,191,36,.22),transparent 72%)}
+.rankPod.pod2{border-color:rgba(148,163,184,.34)}
+.rankPod.pod3{border-color:rgba(217,119,6,.32)}
+.rankPod.isMe{box-shadow:0 0 0 2px rgba(31,200,162,.55) inset,0 12px 28px rgba(11,164,136,.18)}
+.rankPodMedal{font-size:24px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+.rankPod.pod1 .rankPodMedal{font-size:30px}
+.rankPodName{font-weight:800;font-size:13.5px;display:flex;align-items:center;gap:6px;justify-content:center;
+  flex-wrap:wrap;max-width:100%;word-break:break-word}
+.rankPodStats{font-size:11.5px;color:var(--muted);line-height:1.4}
+.rankPodStats b{color:var(--text);font-size:12.5px}
+.rankPodDot{margin:0 5px;opacity:.55}
+@keyframes rankRise{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+
+/* ── Avatar + nhãn "Bạn" ── */
+.rankAv{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:14px;color:#fff;background:var(--brand-grad);flex:0 0 auto;
+  box-shadow:0 4px 12px rgba(11,164,136,.3)}
+.rankAv.avBig{width:46px;height:46px;font-size:19px}
+.rankPod.pod1 .rankAv{background:var(--pro-grad);color:#2a1500;box-shadow:0 6px 16px rgba(245,158,11,.35)}
+.rankYouTag{font-size:9px;font-weight:900;letter-spacing:.04em;padding:2px 7px;border-radius:var(--r-pill);
+  background:var(--primary-soft);color:var(--primary-2);border:1px solid rgba(31,200,162,.35);white-space:nowrap}
+
+/* ── Bảng danh sách ── */
+.rankTable{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--card-2)}
+.rankTableHead,.rankRow{display:grid;grid-template-columns:52px minmax(0,1fr) 104px 104px;align-items:center;gap:8px}
+.rankTableHead{padding:10px 16px;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--faint);background:var(--card-3)}
+.rankTableHead span:not(:nth-child(2)){text-align:right}
+.rankList{display:flex;flex-direction:column}
+.rankRow{padding:11px 16px;border-top:1px solid var(--line);transition:background var(--d)}
+.rankRow:hover{background:rgba(31,200,162,.07)}
+.rankRow.isMe{background:rgba(31,200,162,.11)}
+.rankNo{font-weight:900;font-size:12.5px;color:var(--faint);text-align:center}
+.rankRow.isMe .rankNo{color:var(--primary-2)}
+.rankWho{display:flex;align-items:center;gap:10px;min-width:0}
+.rankName{font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px;min-width:0}
+.rankNameTxt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rankYouTag{flex:0 0 auto}
+.rankCorrect,.rankScore{text-align:right;display:flex;flex-direction:column;line-height:1.15}
+.rankCorrect b,.rankScore b{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}
+.rankScore b{color:var(--gold)}
+.rankCorrect i,.rankScore i{font-style:normal;font-size:9.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase}
+.rankMe .rankMeRow{margin-top:8px;border:1px dashed rgba(31,200,162,.5);border-radius:var(--r-md);
+  background:rgba(31,200,162,.08);border-top:1px dashed rgba(31,200,162,.5)}
+
+/* ── Trạng thái rỗng + ghi chú ── */
+.rankEmpty{display:flex;align-items:center;gap:14px;padding:26px 18px;border:1px dashed var(--line-2);
+  border-radius:var(--r-lg);background:var(--card-2);color:var(--muted)}
+.rankEmptyIcon{font-size:30px;line-height:1}
+.rankEmpty b{display:block;color:var(--text);font-size:14px;margin-bottom:3px}
+.rankEmpty span{font-size:12px;line-height:1.5}
+.rankFoot{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--faint);line-height:1.5}
+.rankFootDot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft);flex:0 0 auto}
+
+@media (max-width:760px){
+  .rankPodium,.rankPodium.p1,.rankPodium.p2{grid-template-columns:1fr;gap:8px}
+  .rankPod.pod1{order:-1}
+  .rankPod{padding:12px 10px;gap:4px}
+  .rankPod.pod1{padding:14px 10px}
+  .rankPodMedal{font-size:18px}
+  .rankPod.pod1 .rankPodMedal{font-size:20px}
+  .rankAv.avBig{width:38px;height:38px;font-size:16px}
+  .rankPodName{font-size:12.5px}
+  .rankPodStats{font-size:11px}
+  .rankPodStats b{font-size:11.5px}
+  .rankTableHead,.rankRow{grid-template-columns:22px minmax(0,1fr) 46px 52px;gap:4px;padding:9px 10px}
+  .rankRow .rankYouTag{display:none}
+  .rankTableHead{font-size:9px;padding:8px 10px}
+  .rankAv{width:26px;height:26px;font-size:11.5px}
+  .rankWho{gap:7px}
+  .rankName{font-size:12px;gap:4px}
+  .rankCorrect b,.rankScore b{font-size:12.5px}
+  .rankCorrect i,.rankScore i{display:none}
+  .rankYouTag{font-size:8px;padding:1px 5px}
+  .rankHead{gap:10px}
+  .rankTabs{width:100%;justify-content:space-between}
+  .rankTab{flex:1;padding:8px 10px;font-size:12px}
+  .rankFoot{font-size:10.5px;align-items:flex-start}
+  .rankFootDot{margin-top:5px}
+}
+.rankPodium.isEmpty{display:block}
+/* Ít người trên bảng → canh giữa bục thay vì dồn sang trái */
+.rankPodium.p1{grid-template-columns:minmax(0,320px);justify-content:center}
+.rankPodium.p2{grid-template-columns:repeat(2,minmax(0,300px));justify-content:center}
+@media (max-width:760px){
+  .rankPodium.p1,.rankPodium.p2{grid-template-columns:1fr}
+}
+

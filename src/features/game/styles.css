@@ -1,0 +1,205 @@
+/* ═══════════════════════════════════════════════════════════════
+   GAME BẮN CHỮ (mới) — nền xanh đậm, mưa rơi, thẻ Hán rơi có gợi ý pinyin
+   ═══════════════════════════════════════════════════════════════ */
+#gameCard{margin-top:0;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#0a1228 0%,#0f1d3a 100%);
+  color:#e2e8f0;padding:0;border:1px solid rgba(96,165,250,.18)}
+#gameCard #gameStage,#gameCard .gameStage,#gameCard canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ★ Sân chơi RỘNG HẾT bề ngang + tối ưu theo màn hình.
+   LƯU Ý specificity: dòng #libraryCard,#aiCard,#appCard,#gameCard{max-width:1180px}
+   dùng ID nên mạnh hơn .gameArena — phải ghi đè bằng #gameCard.gameArena.
+   Cũng KHÔNG đặt min-height và max-height bằng nhau (sẽ vô hiệu hoá height). */
+#gameCard.gameArena{max-width:none;width:100%}
+.gameArena{position:relative;
+  width:100%;max-width:none;
+  height:clamp(460px,calc(100vh - 150px),860px);
+  display:flex;flex-direction:column;gap:10px}
+/* Chỉ giới hạn ở màn hình siêu rộng để chữ không quá xa tầm mắt */
+@media (min-width:1700px){
+  #gameCard.gameArena{max-width:1600px;margin-inline:auto}
+}
+/* Thanh điều khiển nằm TRÊN sân chơi → không che chữ đang rơi */
+.gaBar{position:relative;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:9px 12px;border-radius:14px;background:rgba(15,23,42,.62);border:1px solid rgba(148,163,184,.18);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+/* Sân chơi thật sự: canvas + tàu + vạch đích */
+.gaStage{position:relative;flex:1;min-height:240px;border-radius:16px;overflow:hidden;background:#0a1228;
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,.14)}
+
+/* HUD trên cùng */
+.gaHud{position:relative;z-index:4;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;
+  padding:14px 18px;background:linear-gradient(180deg,rgba(8,14,32,.7),rgba(8,14,32,0));
+  pointer-events:none}
+.gaHudLeft,.gaHudCenter,.gaHudRight{display:flex;align-items:center;gap:8px;pointer-events:auto}
+.gaHudCenter{justify-content:center;background:rgba(15,23,42,.55);border:1px solid rgba(96,165,250,.25);
+  border-radius:99px;padding:6px 14px;font-size:12.5px;font-weight:700;color:#cbd5e1;letter-spacing:.02em}
+.gaHudCenter b{color:#fde047;font-weight:800}
+.gaDot{width:8px;height:8px;border-radius:50%;background:#22d3ee;box-shadow:0 0 8px #22d3ee;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+
+/* ★ Chip chặng (Chặng N · chủ đề nền) trong HUD */
+.gaStageChip{display:inline-flex;align-items:center;padding:1px 9px;border-radius:99px;
+  background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.35);
+  color:#67e8f9;font-weight:800;font-size:11.5px;letter-spacing:.03em;white-space:nowrap}
+
+/* ★ GAME LUÔN DÙNG GIAO DIỆN TỐI — không phân biệt sáng/tối của app.
+   Ghi đè các biến theme ngay trên #gameCard để cả HUD/thanh điều khiển
+   vẫn tối kể cả khi app đang ở [data-theme="light"]. */
+#gameCard.gameArena{
+  --bg:#070d18; --bg-2:#0a1224; --card:#0b1220; --card-2:#0f1830; --card-3:#13203a;
+  --glass:rgba(11,18,32,.8); --line:rgba(148,163,184,.14); --line-2:rgba(148,163,184,.22);
+  --text:#eef2fb; --text-2:#b8c2d6; --muted:#8b98b5; --faint:#5d6b8a;
+  --ok:#10b981; --bad:#fb7185; --warn:#fbbf24;
+  color:#eef2fb; background:#070d18;
+}
+
+.gaHudLeft{justify-content:flex-start}
+.gaTrophy{font-size:20px;filter:drop-shadow(0 0 6px rgba(253,224,71,.5))}
+.gaScoreNum{font-family:var(--font-display);font-size:22px;font-weight:800;color:#fde047;
+  text-shadow:0 0 12px rgba(253,224,71,.35);min-width:30px}
+.gaScoreNum.pop{animation:scorePop .35s ease}
+@keyframes scorePop{0%{transform:scale(1)}40%{transform:scale(1.35);color:#fff}100%{transform:scale(1)}}
+
+.gaHudRight{justify-content:flex-end;gap:10px}
+.gaWordMini{min-width:118px;max-width:180px;background:rgba(30,41,59,.7);
+  border:1px solid rgba(96,165,250,.3);border-radius:12px;padding:6px 12px;text-align:center}
+.gaWmVi{font-size:12px;color:#cbd5e1;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gaWmPy{font-family:var(--font-display);font-size:14px;font-weight:800;color:#fde047;letter-spacing:.05em;margin-top:2px}
+.gaHearts{font-size:18px;color:#fb7185;letter-spacing:4px;text-shadow:0 0 6px rgba(251,113,133,.5);
+  white-space:nowrap}
+
+/* Thanh công cụ bên phải */
+.gaTools{position:relative;z-index:5;display:flex;flex-direction:row;align-items:center;gap:6px;flex:none}
+.gaIconBtn{width:38px;height:38px;border-radius:50%;background:rgba(15,23,42,.6);
+  border:1px solid rgba(148,163,184,.25);color:#cbd5e1;font-size:15px;backdrop-filter:blur(6px);
+  transition:all .18s ease;display:grid;place-items:center}
+.gaIconBtn:hover{background:rgba(96,165,250,.25);color:#fff;transform:scale(1.08);border-color:rgba(96,165,250,.5)}
+.gaIconBtn:active{transform:scale(.95)}
+.gaIconBtn.muted{opacity:.45}
+/* Nút 🔒/拼 Pinyin: sáng lên khi đang hiện pinyin */
+.gaIconBtn.on{background:linear-gradient(135deg,rgba(59,130,246,.85),rgba(99,102,241,.85));
+  color:#fff;border-color:#60a5fa;box-shadow:0 0 14px rgba(96,165,250,.65)}
+
+/* Bảng cài đặt (cấp + tốc độ) — góc trên-trái */
+.gaSettings{position:relative;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;
+  background:none;border:0;padding:0;backdrop-filter:none}
+.gaSetRow{display:flex;align-items:center;gap:8px}
+.gaSetLabel{font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;min-width:54px}
+.gaLevels{display:flex;gap:4px;flex-wrap:wrap}
+.gaLevelBtn{width:28px;height:28px;border-radius:8px;background:rgba(30,41,59,.7);
+  border:1px solid rgba(148,163,184,.25);color:#cbd5e1;font-size:12px;font-weight:800;
+  transition:all .15s ease}
+.gaLevelBtn:hover{background:rgba(96,165,250,.2);color:#fff}
+.gaLevelBtn.active{background:linear-gradient(135deg,#14B8A6,#0E9D6E);color:#fff;border-color:#5DD3C8;
+  box-shadow:0 0 10px rgba(96,165,250,.5)}
+.gaSetRow input[type=range]{width:120px;accent-color:#60a5fa;height:4px}
+.gaSpeedTag{font-size:11.5px;font-weight:800;color:#60a5fa;min-width:60px}
+.gaSelect{height:26px;border-radius:8px;background:rgba(30,41,59,.7);border:1px solid rgba(148,163,184,.25);
+  color:#e2e8f0;font-size:12px;font-weight:700;padding:0 8px;cursor:pointer}
+.gaSelect:hover{border-color:rgba(96,165,250,.5)}
+
+/* Canvas sân chơi */
+.gaCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;border-radius:16px}
+
+/* Tàu vũ trụ ở đáy */
+.gaPlayer{position:absolute;left:50%;bottom:46px;transform:translateX(-50%);z-index:3;
+  filter:drop-shadow(0 0 12px rgba(96,165,250,.6));animation:playerBob 2.2s ease-in-out infinite;pointer-events:none}
+@keyframes playerBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+
+/* Sàn phát sáng */
+.gaFloor{position:absolute;left:0;right:0;bottom:42px;height:2px;z-index:2;
+  background:linear-gradient(90deg,transparent,rgba(96,165,250,.85) 15%,rgba(96,165,250,.85) 85%,transparent);
+  box-shadow:0 0 18px rgba(96,165,250,.7),0 0 36px rgba(96,165,250,.4)}
+.gaFloorLabel{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:4;
+  background:rgba(15,23,42,.7);border:1px solid rgba(96,165,250,.3);color:#cbd5e1;
+  font-size:12px;font-weight:800;letter-spacing:.05em;padding:5px 14px;border-radius:99px;
+  backdrop-filter:blur(6px);text-transform:uppercase}
+
+/* Overlay (bắt đầu / tạm dừng / kết thúc)
+   ★ Sân chơi có overflow:hidden nên nếu nội dung overlay cao hơn khung sẽ bị
+   CẮT MẤT (mất nút "Bắt đầu" / tiêu đề). Nay overlay tự cuộn + thẻ bị giới hạn
+   chiều cao, nên luôn xem & bấm được hết nội dung ở mọi cỡ màn hình. */
+.gaOverlay{position:absolute;inset:0;z-index:6;display:flex;align-items:flex-start;justify-content:center;
+  overflow:auto;overscroll-behavior:contain;
+  background:rgba(8,14,32,.78);backdrop-filter:blur(8px);padding:14px;transition:opacity .25s}
+.gaOverlay.hidden{opacity:0;pointer-events:none}
+/* margin:auto (thay vì align-items:center) → khi nội dung cao hơn khung thì
+   cuộn được từ TRÊN CÙNG, không bị cắt mất tiêu đề như cách căn giữa. */
+/* ★ Thẻ overlay là flex-column: phần nội dung ở giữa tự cuộn, hàng nút luôn
+   nằm trong khung → không bao giờ mất nút "Bắt đầu" dù màn hình thấp. */
+.gaOverlayCard{margin:auto;max-width:min(680px,100%);max-height:100%;overflow:hidden;
+  display:flex;flex-direction:column;
+  background:linear-gradient(160deg,#1e293b,#0f172a);
+  border:1px solid rgba(96,165,250,.3);border-radius:20px;padding:26px 28px;text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,.5)}
+/* Vùng cuộn duy nhất: luật chơi / thông báo / bảng điểm */
+#gaOverlayMsg{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  padding-right:4px;margin-right:-4px;scrollbar-width:thin}
+#gaOverlayMsg::-webkit-scrollbar{width:6px}
+#gaOverlayMsg::-webkit-scrollbar-thumb{background:rgba(148,163,184,.35);border-radius:99px}
+/* Thông điệp chính của overlay: căn giữa, giới hạn bề rộng cho dễ đọc */
+.gaOverlayCard p{color:#cbd5e1;font-size:14.5px;line-height:1.75;margin:0 auto 20px;max-width:42ch;text-wrap:pretty}
+/* ★ Ô thống kê dạng lưới — điểm/tim/từ/chặng, không bị bẻ câu vụn như khối chữ */
+.gaStats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:2px 0 20px}
+.gaStats.hidden{display:none}
+.gaStat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:12px 6px;border-radius:14px;
+  background:linear-gradient(180deg,rgba(56,189,248,.13),rgba(15,23,42,.5));
+  border:1px solid rgba(56,189,248,.22)}
+.gaStatVal{font-family:var(--font-display);font-size:19px;font-weight:800;color:#fde047;line-height:1}
+.gaStatLbl{font-size:11px;font-weight:600;color:#93a4c3;letter-spacing:.02em;white-space:nowrap}
+@media (max-width:520px){.gaStats{grid-template-columns:repeat(2,1fr)}}
+/* Danh sách luật chơi dạng hàng — dễ quét mắt hơn 1 khối chữ dày.
+   Container KHÔNG đặt text-align để thông báo dạng chữ thường (tạm dừng /
+   hết mạng do JS chèn) vẫn căn giữa; chỉ từng hàng .gaRule căn trái. */
+.gaRules{display:flex;flex-direction:column;gap:9px;margin:0 0 22px}
+.gaRule{display:flex;align-items:flex-start;gap:10px;color:#cbd5e1;text-align:left;
+  font-size:13.8px;line-height:1.6;background:rgba(148,163,184,.07);
+  border:1px solid rgba(148,163,184,.14);border-radius:11px;padding:9px 12px}
+.gaRuleIco{flex:none;font-size:15px;line-height:1.45}
+.gaRule b{color:#e2e8f0}
+/* Màn hình thấp: thu gọn overlay để nút "Bắt đầu" luôn nằm trong khung */
+@media (max-height:760px){
+  .gaOverlayCard{padding:22px 24px}
+  .gaOverlayEmoji{width:56px;height:56px;font-size:26px;margin-bottom:10px}
+  .gaOverlayCard h2{font-size:20px;margin-bottom:6px}
+  .gaOverlayCard p{font-size:13px;line-height:1.6;margin-bottom:14px}
+  .gaRules{gap:6px;margin-bottom:14px}
+  .gaRule{font-size:12.6px;padding:7px 10px}
+  .gaStatVal{font-size:17px}
+}
+/* Màn hình rất thấp (laptop 13" thu nhỏ, cửa sổ chia đôi): thu gọn hơn nữa */
+@media (max-height:640px){
+  .gaOverlayCard{padding:16px 18px}
+  .gaOverlayEmoji{width:46px;height:46px;font-size:20px;margin-bottom:6px}
+  .gaOverlayCard h2{font-size:18px;margin-bottom:2px}
+  .gaRules{gap:5px;margin-bottom:10px}
+  .gaRule{font-size:12px;padding:6px 9px;line-height:1.45}
+  .gaBtn{padding:9px 20px;font-size:13px}
+}
+@media (max-height:520px){
+  .gaOverlayEmoji{display:none}
+  .gaOverlayCard h2{font-size:16px;margin-bottom:4px}
+  .gaOverlay{padding:8px}
+}
+/* Emoji đầu thẻ: nằm trong vòng tròn phát sáng → mềm hơn chữ khổng lồ cũ */
+.gaOverlayEmoji{width:74px;height:74px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;font-size:34px;
+  background:radial-gradient(circle at 50% 38%,rgba(56,189,248,.30),rgba(15,23,42,.15) 72%);
+  box-shadow:inset 0 0 0 1px rgba(96,165,250,.28);animation:floaty 3s ease-in-out infinite}
+.gaOverlayCard h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 6px;color:#f1f5f9}
+.gaOverlayCard .gaSub{color:#93a4c3;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+.gaOverlayActions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  flex:0 0 auto;margin-top:4px}
+.gaBtn{padding:11px 26px;border-radius:99px;font-size:14px;font-weight:800;border:none;cursor:pointer;transition:all .2s ease}
+.gaBtn.primary{background:linear-gradient(135deg,#14B8A6,#0E9D6E);color:#fff;
+  box-shadow:0 6px 20px rgba(59,130,246,.45)}
+.gaBtn.primary:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(59,130,246,.6)}
+.gaBtn.ghost{background:rgba(148,163,184,.15);color:#cbd5e1;border:1px solid rgba(148,163,184,.3)}
+.gaBtn.ghost:hover{background:rgba(148,163,184,.25)}
+
+/* cũ → ẩn phần tử game cũ để an toàn nếu còn sót */
+.gameTop,.gamePanel,.gameHud,.gameStat,.gameStage,.gameOverlay,.gameOverlayInner,.gameOverlayEmoji,
+.gameActions,.gameCloseBtn,.gameSettingRow,.gameSlider,.gameSpeedTag,.gameCheck,.gamePoolTag,
+.gameLevels,.gameLevels button,#gameCanvas{display:none!important}

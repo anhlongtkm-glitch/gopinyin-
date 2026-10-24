@@ -18,8 +18,8 @@
    Chạy: NODE_PATH=<node_modules> node tests/verify_pron_studied.js
    ══════════════════════════════════════════════════════════════════ */
 const { chromium } = require('playwright-core');
-const URL = 'http://localhost:8080/';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 let pass = 0, fail = 0;
 const fails = [];
@@ -177,7 +177,8 @@ const txt = (s) => (s || '').replace(/\s+/g, ' ').trim();
   /* ảnh chụp màn chọn bộ câu */
   await page.evaluate(() => window.showView('pron'));
   await page.waitForTimeout(700);
-  const shot = 'C:/Users/Administrator/Downloads/gopinyin/tests/shot_pron_studied.png';
+  const shot = require('node:path').resolve(__dirname, '../.cache/test-run/shot_pron_studied.png');
+  require('node:fs').mkdirSync(require('node:path').dirname(shot), { recursive: true });
   const card = await page.$('#pronLibCard');
   if (card) await card.screenshot({ path: shot });
   console.log('\n  Ảnh: ' + shot);

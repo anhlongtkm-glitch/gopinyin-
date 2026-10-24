@@ -1,0 +1,41 @@
+/* ═══════════════════════════════════════════════════════════════
+   THƯ VIỆN (libraryCard)
+   ═══════════════════════════════════════════════════════════════ */
+#libraryCard,#aiCard,#appCard,#gameCard{margin:0 auto;width:100%;max-width:1180px;padding:clamp(18px,3vw,34px)}
+.aiViewHead{margin-bottom:20px}
+.aiViewHead h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
+.aiViewHead .small{font-size:13px;font-weight:600;color:var(--muted);line-height:1.5;max-width:640px}
+.libraryHead{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.libraryHead h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
+.libraryHeadActions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.storageWarn{background:var(--warn-soft);border:1px solid rgba(251,191,36,.4);color:var(--warn);
+  border-radius:var(--r-lg);padding:13px 17px;font-size:13px;margin-bottom:18px;line-height:1.6}
+.libTabs{margin-bottom:20px;flex-wrap:wrap}
+.libraryImport{display:none}
+
+/* Kho câu giao tiếp */
+.vocabTabs{margin-bottom:16px;flex-wrap:wrap}
+.vocabNote{margin-top:18px;background:var(--primary-soft);border:1px solid rgba(31,200,162,.25);
+  border-radius:var(--r-lg);padding:15px 18px;font-size:13px;color:var(--text-2);line-height:1.7}
+.vocabNote b{color:var(--primary)}
+.vocabGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px;margin-top:18px}
+.vocabCard{
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:17px;
+  transition:all var(--d) var(--ease);position:relative;overflow:hidden;
+}
+.vocabCard::after{content:'→';position:absolute;right:14px;top:14px;color:var(--faint);font-weight:800;transition:all var(--d)}
+.vocabCard:hover{transform:translateY(-3px);border-color:rgba(31,200,162,.45);box-shadow:var(--sh-2),var(--glow-soft)}
+.vocabCard:hover::after{color:var(--primary);transform:translateX(3px)}
+.vocabCat{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);
+  background:var(--primary-soft);padding:3px 9px;border-radius:99px}
+.vocabCard-title{font-size:14.5px;font-weight:700;line-height:1.35}
+.vocabEmpty{grid-column:1/-1;text-align:center;color:var(--muted);padding:36px;font-size:14px}
+.vocabLoading{grid-column:1/-1;text-align:center;color:var(--muted);padding:36px;font-size:14px}
+.vocabLoading::after{content:'…';animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+/* Bộ câu của tôi */
+.libraryTools{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.libraryTools .librarySearch{flex:1;min-width:220px}
+

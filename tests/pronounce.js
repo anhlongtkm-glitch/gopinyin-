@@ -12,8 +12,8 @@
    Chạy: NODE_PATH="<node_modules có playwright-core>" node tests/pronounce.js
 */
 const { chromium } = require('playwright-core');
-const URL = 'http://localhost:8080/';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 let pass = 0, fail = 0;
 function check(name, ok, detail) {

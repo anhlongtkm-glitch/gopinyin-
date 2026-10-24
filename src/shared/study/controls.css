@@ -1,0 +1,29 @@
+/* ═══════════════════════════════════════════════════════════
+   THANH ĐIỀU KHIỂN — 3 NHÓM CHỨC NĂNG (Chế độ · Âm thanh · Hiển thị)
+   Thiết kế theo nguyên tắc "nhóm theo việc người dùng đang muốn làm":
+   mỗi nhóm là 1 khối có nhãn riêng, các công tắc cùng loại nằm cạnh nhau.
+   Nhờ vậy nút "Chữ Hán" luôn ở nhóm Hiển thị (cạnh "Nghĩa"), không bị rơi
+   xuống dòng một mình như trước.
+   ═══════════════════════════════════════════════════════════ */
+.studyControls{display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  margin-bottom:14px;padding-bottom:14px}
+.ctrlZone{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  min-height:36px}
+.ctrlZoneLabel{font-size:10.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);padding-right:2px;white-space:nowrap}
+.ctrlZone .segmented{background:transparent;border:0;padding:0}
+.studyControls .modeBtn{padding:6px 13px;font-size:12.5px}
+.studyControls .select{font-size:12.5px;padding:6px 30px 6px 10px}
+.studyControls .selectVoice{max-width:170px}
+.studyControls .toggleBtn{padding:6px 12px;font-size:12.5px}
+/* Màn hình hẹp: mỗi nhóm chiếm trọn 1 dòng cho dễ bấm */
+@media (max-width:720px){
+  .ctrlZone{flex:1 1 100%}
+  .studyControls .selectVoice{max-width:none;flex:1 1 auto}
+}
+.studyControls .toggleBtn{font-size:12px;padding:6px 11px;gap:5px}
+.studyControls .controlLabel{font-size:11px}
+.controlGroup{display:flex;align-items:center;gap:7px}
+.controlLabel{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.wrongBadge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:5px;border-radius:99px;background:var(--bad);color:#fff;font-size:10.5px;font-weight:800}
+

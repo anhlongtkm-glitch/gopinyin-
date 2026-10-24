@@ -1,0 +1,24 @@
+<section id="rankCard" class="card hidden rankView">
+        <div class="libRankHead">
+          <h2>🏆 Bảng xếp hạng Luyện gõ</h2>
+          <span class="small">Số câu bạn đã luyện — cập nhật theo ngày / tuần</span>
+        </div>
+        <div class="rankTabs" role="tablist" aria-label="Khoảng thời gian xếp hạng luyện gõ">
+          <button class="rankTab studyRankTab active" type="button" role="tab" data-rank="day" aria-selected="true">📅 Hôm nay</button>
+          <button class="rankTab studyRankTab" type="button" role="tab" data-rank="week" aria-selected="false">🗓 Tuần này</button>
+        </div>
+        <div class="gaLbScroll">
+          <div class="rankPodium" id="studyRankPodium"></div>
+          <div class="rankTable" id="studyRankTable">
+            <div class="rankTableHead" aria-hidden="true">
+              <span>#</span><span>Người học</span><span>Câu luyện</span>
+            </div>
+            <div class="rankList" id="studyRankList" role="list"></div>
+          </div>
+          <div class="rankMe hidden" id="studyRankMe"></div>
+          <div class="rankFoot">
+            <span class="rankFootDot" aria-hidden="true"></span>
+            <span id="studyRankScopeNote"></span>
+          </div>
+        </div>
+      </section>

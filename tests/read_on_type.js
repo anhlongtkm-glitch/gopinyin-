@@ -5,8 +5,8 @@
    - tắt công tắc → không đọc
 */
 const { chromium } = require('playwright-core');
-const URL = 'http://localhost:8099/';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8099/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 let pass = 0, fail = 0;
 function check(name, ok, detail) {

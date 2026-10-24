@@ -1,0 +1,163 @@
+/* ═══════════════════════════════════════════════════════════════
+   ★ KHUNG HỌC DÙNG CHUNG — Luyện gõ (#appCard) & Luyện phát âm (#pronCard)
+   Hai màn chỉ được phép KHÁC NHAU ở THÂN THẺ (ô gõ chữ Hán vs nút micro +
+   sóng âm) và vài nút chức năng. Mọi thứ còn lại dùng đúng một bộ số đo:
+     · đầu thẻ  : 6 ô thống kê + thanh tiến độ
+     · công cụ  : 3 nhóm Nội dung · Âm thanh · Hiển thị
+     · thẻ câu  : nhãn + nội dung, hàng nghe mẫu, gợi ý phím
+     · chân thẻ : nút điều hướng câu (trái) · tên bộ + Xoá tiến độ (phải)
+   Sửa một chỗ là cả hai màn đổi theo — không để lệch như trước.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Khoá workspace = đúng 1 khung hình (bật bằng body.studyFit):
+   thẻ tự chia chiều cao, chỉ thân thẻ cuộn nếu màn hình quá thấp. */
+body.studyFit{overflow:hidden}
+body.studyFit .ws-main{height:100dvh;overflow:hidden}
+body.studyFit .ws-side{height:100dvh}
+
+/* id + class để thắng dòng `#libraryCard,#aiCard,#appCard,#gameCard{padding:…}` */
+#appCard.studyShell,#pronCard.studyShell{
+  flex:1 1 auto;min-height:0;max-width:1180px;width:100%;margin:0 auto;
+  padding:clamp(10px,1.5vh,16px) clamp(14px,2.4vw,26px);
+  display:flex;flex-direction:column;gap:clamp(7px,1.1vh,11px);overflow:hidden;
+}
+
+/* ── 1. Đầu thẻ ── */
+.studyShell .studyHead{flex:none;display:flex;flex-direction:column;gap:6px}
+.studyShell .stats{gap:8px;margin-bottom:0}
+.studyShell .stats .stat{padding:5px 6px;border-radius:var(--r-md)}
+.studyShell .stats .stat b{font-size:clamp(15px,1.7vh,19px)}
+.studyShell .stats .stat span{font-size:10px}
+.studyShell .progress{height:7px;margin-bottom:0}
+
+/* ── 2. Thanh công cụ (3 nhóm) ── */
+.studyShell .studyControls{margin-bottom:0;padding-bottom:0;gap:8px 14px;flex:none}
+.studyShell .studyControls .ctrlZoneLabel{font-size:9.5px}
+.studyShell .studyControls .select,
+.studyShell .studyControls .toggleBtn{font-size:11.5px;padding:5px 10px}
+.studyShell .studyControls .select{padding-right:26px}
+.studyShell .studyControls .selectVoice{max-width:168px}
+.studyShell .btnSm{padding:6px 11px;font-size:11.5px}
+
+/* ── 3. Thân thẻ ── */
+.studyShell .studyBody{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.studyShell .studyArea{
+  flex:1 1 auto;min-height:0;display:grid;
+  grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:12px;
+}
+/* Luyện phát âm có kết quả → thẻ câu bên trái, phân tích bên phải */
+.studyShell .studyArea.has-result{grid-template-columns:minmax(0,1fr) minmax(296px,36%)}
+/* Màn "đã hết danh sách" (#completeArea / #pronComplete) là anh em của vùng
+   học, hiện thay chỗ vùng học → cho nó tự căn giữa phần còn lại. */
+.studyShell .studyBody>.complete{margin:auto;padding:0 16px;max-width:560px}
+.studyShell .questionBox{
+  min-height:0;overflow:auto;display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(10px,1.7vh,22px) clamp(14px,2.4vw,26px);
+}
+.studyShell .questionBox .qbRow+.qbRow{margin-top:7px}
+.studyShell .questionBox .label{margin-bottom:4px}
+.studyShell .prompt{font-size:clamp(19px,min(2.4vw,3.1vh),28px)}
+.studyShell .hanzi{font-size:clamp(26px,min(3.9vw,4.7vh),42px);line-height:1.4}
+.studyShell .inputWrap{margin-top:10px}
+/* Cỡ chữ ô gõ co theo BỀ NGANG nữa, nếu không trên điện thoại chữ trong ô
+   bị cắt mất ("Gõ chữ Hán của…") vì ô chỉ còn ~300px. */
+.studyShell .typingStage .input{font-size:clamp(16px,min(4vw,2.7vh),26px);padding:11px 16px}
+.studyShell .feedback{margin-top:8px;padding:10px 14px;font-size:13px}
+.studyShell .audioRow{margin-top:6px;gap:10px;flex-wrap:wrap}
+.studyShell .audioBtn{padding:9px 18px;font-size:13px}
+.studyShell .kbdHint{margin-top:6px}
+
+/* ── 4. Chân thẻ ── */
+.studyShell .studyFoot{
+  flex:none;display:flex;align-items:center;gap:12px;flex-wrap:nowrap;
+  padding-top:7px;border-top:1px dashed var(--line);
+}
+/* Nút ở chân thẻ gọn hơn nút thường để 6 nút vẫn nằm chung 1 hàng với
+   tên bộ + Xoá tiến độ (nếu để cỡ mặc định thì màn 1280px sẽ gãy dòng). */
+.studyShell .studyFoot .btn{padding:8px 13px;font-size:12.5px;gap:6px}
+.studyShell .studyFoot .actions{margin-top:0;justify-content:flex-start;flex:0 1 auto;min-width:0}
+.studyShell .studyFootRight{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0;flex:0 1 auto}
+.studyShell .studyFootRight .fileinfo{
+  font-size:11px;flex:1 1 0;min-width:0;max-width:52ch;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* ── 5. Riêng màn phát âm: cỡ chữ co theo cả chiều cao khung ── */
+.studyShell .pronCharGlyph{font-size:clamp(24px,min(3.7vw,4.5vh),40px)}
+.studyShell .pronPy{font-size:clamp(14px,min(1.6vw,2.1vh),17px);line-height:1.5}
+.studyShell .pronMicIco{width:clamp(72px,min(7.6vw,10vh),96px);height:clamp(72px,min(7.6vw,10vh),96px);font-size:clamp(26px,min(3vw,4vh),36px)}
+.studyShell .pronMicRing{width:calc(clamp(72px,min(7.6vw,10vh),96px) + 14px);height:calc(clamp(72px,min(7.6vw,10vh),96px) + 14px);margin-left:calc((clamp(72px,min(7.6vw,10vh),96px) + 14px) / -2)}
+.studyShell .pronStage{gap:6px;margin:10px 0 2px}
+.studyShell .pronMeter{max-width:460px;width:100%}
+.studyShell .pronStatus{min-height:0;margin:4px 0}
+.studyShell .pronResult{margin-top:0;min-height:0;max-height:100%;overflow:auto;align-self:start}
+.studyShell .pronComplete{margin:0}
+.studyShell .pronDetailHead{margin-bottom:2px}
+
+/* Màn hẹp / thấp: bỏ cột phải, cho phép cuộn trong thân thẻ */
+@media (max-width:900px), (max-height:700px){
+  .studyShell .studyArea.has-result{grid-template-columns:minmax(0,1fr)}
+  .studyShell .studyBody{overflow:auto}
+  .studyShell .questionBox{overflow:visible}
+}
+/* Màn thấp (laptop 720p/768p): nén dọc để vẫn thấy đủ nút, không phải cuộn */
+@media (max-height:820px) and (min-width:721px){
+  .studyShell .kbdHint{display:none}
+  .studyShell .stats .stat{padding:4px 6px}
+  .studyShell .stats .stat b{font-size:14.5px}
+  .studyShell .stats .stat span{font-size:9.5px}
+  .studyShell .studyBody{overflow:auto}
+  .studyShell .pronCharGlyph{font-size:clamp(22px,min(3.3vw,3.9vh),34px)}
+  .studyShell .pronMicTxt{font-size:12.5px}
+  .studyShell .pronMicSub{font-size:10.5px}
+}
+/* Kết quả gọn hơn ở màn thấp — để không phải cuộn trong cột phải */
+@media (max-height:820px) and (min-width:721px){
+  .studyShell .pronResult{padding:11px 12px}
+  .studyShell .pronScoreWrap{gap:10px}
+  .studyShell .pronRing{width:84px;height:84px}
+  .studyShell .pronRingIn{width:66px;height:66px}
+  .studyShell .pronRingIn b{font-size:20px}
+  .studyShell .pronScoreTitle{font-size:16px}
+  .studyShell .pronChips{margin:5px 0 4px;gap:4px}
+  .studyShell .pronChip{font-size:10px;padding:2px 7px}
+  .studyShell .pronHeard{font-size:11px}
+  .studyShell .pronNote{font-size:11px;line-height:1.5;margin-top:4px}
+  .studyShell .pronErrBlock{margin-top:8px;padding-top:7px}
+  .studyShell .pronLegend{margin-top:8px;font-size:10px;gap:8px}
+  .studyShell .pronHonest{font-size:10.5px;line-height:1.5;padding:6px 8px;margin-top:7px}
+}
+/* Điện thoại: thẻ cao theo nội dung, mỗi nhóm công cụ 1 dòng, nút chia 2 cột */
+@media (max-width:720px){
+  body.studyFit{overflow:auto}
+  body.studyFit .ws-main{height:auto;overflow:visible}
+  .studyShell{height:auto;max-height:none;overflow:visible}
+  .studyShell .studyBody{overflow:visible}
+  /* Không có bàn phím vật lý nên bỏ hàng gợi ý phím */
+  .studyShell .kbdHint{display:none}
+  /* min-width:0 là BẮT BUỘC: <select> có min-content bằng độ dài option dài
+     nhất (tên giọng đọc), nếu không nó sẽ đẩy cả nhóm rộng hơn thẻ. */
+  .studyShell .ctrlZone{flex:1 1 100%;min-width:0}
+  .studyShell .ctrlZone .select{min-width:0;flex:1 1 120px;max-width:100%}
+  .studyShell .ctrlZone .selectVoice{max-width:none}
+  /* Nhãn nhóm luôn nằm TRÊN cùng của nhóm (trong HTML nút "← Bộ khác" đứng
+     trước nhãn để hàng ngang trên máy tính đọc tự nhiên). */
+  .studyShell .ctrlZoneLabel{flex:1 1 100%;order:-1}
+  .studyShell .hanzi{font-size:clamp(21px,6.2vw,30px)}
+  .studyShell .stats{gap:6px}
+  .studyShell .stats .stat b{font-size:14px}
+  .studyShell .stats .stat span{font-size:9px}
+  .studyShell .audioRow .btn,.studyShell .audioRow .audioBtn{min-width:0;flex:1 1 140px;justify-content:center}
+  .studyShell .studyFoot{gap:8px;flex-wrap:wrap}
+  .studyShell .studyFoot .actions{flex-direction:column;align-items:stretch;gap:8px;flex:1 1 100%}
+  .studyShell .actGroup{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .studyShell .actGroup .btn{justify-content:center;min-width:0}
+  /* nhóm có số nút lẻ → nút cuối chiếm trọn hàng cho khỏi trống */
+  .studyShell .actGroup>.btn:last-child:nth-child(odd){grid-column:1/-1}
+  .studyShell .actDivider{display:none}
+  .studyShell .studyFootRight{width:100%;margin-left:0;justify-content:space-between}
+  .studyShell .studyFootRight .fileinfo{max-width:100%;white-space:normal;font-size:10.5px}
+}
+/* Nút "Học tiếp bộ đang mở" khi chưa có bộ nào được mở */
+#pronLibContinue:disabled{background:var(--card-3);color:var(--muted);box-shadow:none;cursor:not-allowed;transform:none}
+

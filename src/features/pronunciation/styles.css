@@ -1,0 +1,189 @@
+/* ═══════════════════════════════════════════════════════════════
+   ★ LUYỆN PHÁT ÂM — dùng lại token/thẻ/nút của màn Luyện gõ.
+   Chỉ thêm những thành phần riêng: chữ Hán bấm được, nút micro,
+   sóng âm, vòng điểm, popover chi tiết.
+   ═══════════════════════════════════════════════════════════════ */
+.studyShell .pronHanHint,.pronView .pronHanHint{font-weight:600;text-transform:none;letter-spacing:0;color:var(--faint);font-size:11px}
+
+/* ── Dòng pinyin ── */
+.pronPy{font-family:var(--font-cjk);font-size:17px;line-height:1.6;color:var(--primary-2);letter-spacing:.2px;text-align:center;word-break:break-word}
+
+/* ── Chữ Hán bấm được ── */
+.pronHanzi{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:flex-end;padding:2px 0}
+.pronPunct{font-family:var(--font-cjk);font-size:30px;color:var(--muted);line-height:1.1;padding:0 1px}
+/* ★ Dấu câu dùng CHUNG khung 3 dòng với chữ Hán (chữ · pinyin · chấm) để nó
+   đứng đúng hàng chân chữ. Trước đây .pronPunct là span rời, align-items:
+   flex-end đẩy nó xuống hàng chấm → dấu "。" trông như một chấm trạng thái lạc. */
+.pronChar.is-punct{cursor:default;pointer-events:none}
+.pronChar.is-punct:hover{transform:none;background:transparent}
+/* Giữ NGUYÊN chiều cao 3 dòng như chữ Hán (chỉ thu nhỏ hình bằng transform,
+   transform không đổi layout) → dấu câu đứng đúng hàng chân chữ. */
+.pronChar.is-punct .pronCharGlyph{color:var(--muted);transform:scale(.78);transform-origin:50% 100%}
+.pronChar.is-punct .pronCharPy,
+.pronChar.is-punct .pronCharDot{visibility:hidden}
+.pronSpace{width:6px;flex:0 0 6px}
+.pronChar{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:transparent;border:0;border-radius:var(--r-md);padding:6px 7px 5px;
+  cursor:pointer;transition:transform var(--d) var(--spring),background var(--d) var(--ease);
+  font-family:inherit;
+}
+.pronChar:hover{transform:translateY(-2px);background:var(--card-3)}
+.pronChar:focus-visible{outline:none;box-shadow:var(--ring)}
+.pronCharGlyph{font-family:var(--font-cjk);font-size:clamp(30px,4.4vw,44px);line-height:1.1;font-weight:600;color:var(--text);transition:color var(--d) var(--ease)}
+.pronCharPy{font-family:var(--font-cjk);font-size:11px;line-height:1.2;color:var(--muted);min-height:14px}
+.pronCharDot{width:6px;height:6px;border-radius:50%;background:var(--line-2);transition:background var(--d) var(--ease)}
+/* Trạng thái — LUÔN kèm ký hiệu riêng, không chỉ dựa vào màu */
+.pronChar.st-good .pronCharGlyph{color:var(--ok)}
+.pronChar.st-good .pronCharDot{background:var(--ok);box-shadow:0 0 8px rgba(16,185,129,.6)}
+.pronChar.st-warn .pronCharGlyph{color:var(--warn)}
+.pronChar.st-warn .pronCharDot{background:var(--warn);border-radius:1px;transform:rotate(45deg)}
+.pronChar.st-bad .pronCharGlyph{color:var(--bad)}
+/* ★ Gạch chân lượn sóng KHÔNG dùng text-decoration nữa: với cỡ chữ 40px,
+   `text-underline-offset:6px` rơi đúng vào dòng pinyin bên dưới và gạch
+   chéo lên chữ "tǐng"/"zǎo" (lỗi hiển thị người dùng báo). Trạng thái đã có
+   2 kênh: màu chữ + hình dạng chấm (tròn / thoi / vuông / rỗng). */
+.pronChar.st-bad .pronCharDot{background:var(--bad);border-radius:1px;width:7px;height:7px;box-shadow:0 0 8px rgba(225,29,72,.5)}
+.pronChar.st-unknown .pronCharGlyph{color:var(--muted)}
+.pronChar.st-unknown .pronCharDot{background:var(--faint);opacity:.7}
+
+/* ── Vùng luyện nói ── */
+.pronStage{display:flex;flex-direction:column;align-items:center;gap:10px;margin:14px 0 6px}
+/* Nút micro: vòng tròn lớn (chỉ icon) + nhãn nằm DƯỚI vòng tròn.
+   Cách này đọc rõ hơn nhồi chữ vào trong hình tròn, và vùng chạm vẫn lớn. */
+.pronMic{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:9px;
+  background:none;border:0;padding:0;cursor:pointer;font-family:inherit;
+}
+.pronMicIco{
+  position:relative;width:104px;height:104px;border-radius:50%;
+  display:grid;place-items:center;font-size:38px;line-height:1;
+  background:var(--brand-grad);color:#04120F;box-shadow:var(--shadow-brand);
+  transition:transform var(--d) var(--spring),box-shadow var(--d) var(--ease),background var(--d) var(--ease);
+  isolation:isolate;
+}
+.pronMic:hover .pronMicIco{transform:translateY(-3px) scale(1.03)}
+.pronMic:active .pronMicIco{transform:scale(.97)}
+.pronMic:disabled{cursor:progress}
+.pronMic:disabled .pronMicIco{opacity:.8}
+.pronMic:focus-visible{outline:none}
+.pronMic:focus-visible .pronMicIco{box-shadow:var(--ring),var(--shadow-brand)}
+.pronMicTxt{font-size:13.5px;font-weight:800;color:var(--text);line-height:1.3}
+.pronMicSub{font-size:11px;font-weight:700;color:var(--muted);line-height:1.3}
+.pronMicRing{position:absolute;top:-7px;left:50%;margin-left:-59px;width:118px;height:118px;border-radius:50%;
+  border:2px solid rgba(31,200,162,.55);opacity:0;pointer-events:none;z-index:-1}
+.pronMic.is-rec .pronMicIco{background:linear-gradient(135deg,#FF8A5B 0%,#e11d48 100%);color:#fff;box-shadow:0 8px 30px rgba(225,29,72,.45)}
+.pronMic.is-rec .pronMicRing{opacity:1;animation:pronPulse 1.5s var(--ease) infinite}
+.pronMic.is-rec .pronMicIco{animation:pronBob .9s var(--ease) infinite alternate}
+.pronMic.is-busy .pronMicIco{background:var(--card-3);color:var(--text);box-shadow:none}
+@keyframes pronPulse{0%{transform:scale(1);opacity:.75}100%{transform:scale(1.3);opacity:0}}
+@keyframes pronBob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+
+.pronMeter{position:relative;width:100%;max-width:560px;display:flex;align-items:center;justify-content:center;gap:8px}
+.pronMeter canvas{width:100%;height:44px;display:block}
+.pronTimer{font-variant-numeric:tabular-nums;font-size:12px;font-weight:800;color:var(--bad);background:var(--bad-soft);border:1px solid rgba(251,113,133,.3);border-radius:var(--r-pill);padding:2px 9px;white-space:nowrap}
+
+/* ── Dòng trạng thái ── */
+.pronStatus{min-height:22px;text-align:center;font-size:13px;font-weight:600;color:var(--muted);line-height:1.5;padding:2px 4px}
+.pronStatus.is-err{color:var(--bad)}
+.pronStatus.is-ok{color:var(--ok)}
+.pronStatus.is-busy{color:var(--primary-2)}
+.pronStatus .pronInterim{color:var(--text);font-family:var(--font-cjk)}
+.pronDot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:7px;animation:pronBlink 1s steps(2,end) infinite}
+@keyframes pronBlink{50%{opacity:.25}}
+.pronSpinner{display:inline-block;width:13px;height:13px;border:2px solid var(--line-2);border-top-color:var(--primary-2);border-radius:50%;margin-right:7px;vertical-align:-2px;animation:pronSpin .8s linear infinite}
+@keyframes pronSpin{to{transform:rotate(360deg)}}
+
+/* ── Kết quả ── */
+.pronResult{margin-top:12px;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-xl);padding:16px}
+.pronScoreWrap{display:flex;gap:16px;align-items:center}
+.pronRing{
+  --ringColor:var(--primary-2);
+  flex:0 0 auto;width:112px;height:112px;border-radius:50%;
+  background:conic-gradient(var(--ringColor) calc(var(--p) * 1%), var(--card-3) 0);
+  display:grid;place-items:center;transition:background .6s var(--ease);
+}
+.pronRing.ok{--ringColor:var(--ok)}
+.pronRing.warn{--ringColor:var(--warn)}
+.pronRing.bad{--ringColor:var(--bad)}
+.pronRingIn{width:88px;height:88px;border-radius:50%;background:var(--card-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;border:1px solid var(--line)}
+.pronRingIn b{font-family:var(--font-display);font-size:26px;font-weight:800;line-height:1;color:var(--text)}
+.pronRingIn span{font-size:9.5px;color:var(--muted);font-weight:800;letter-spacing:.06em;margin-top:2px}
+.pronScoreMeta{flex:1;min-width:0}
+.pronScoreTitle{font-family:var(--font-display);font-size:19px;font-weight:800;line-height:1.25}
+.pronScoreTitle small{font-family:var(--font-ui);font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.2px}
+.pronScoreTitle.ok{color:var(--ok)}
+.pronScoreTitle.warn{color:var(--warn)}
+.pronScoreTitle.bad{color:var(--bad)}
+.pronChips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
+.pronChip{font-size:11px;font-weight:800;padding:3px 9px;border-radius:var(--r-pill);background:var(--card-3);border:1px solid var(--line);color:var(--text-2)}
+.pronChip.ok{background:var(--ok-soft);border-color:rgba(16,185,129,.3);color:var(--ok)}
+.pronChip.warn{background:var(--warn-soft);border-color:rgba(251,191,36,.32);color:var(--warn)}
+.pronChip.bad{background:var(--bad-soft);border-color:rgba(251,113,133,.32);color:var(--bad)}
+.pronHeard{font-size:12px;color:var(--muted);line-height:1.5}
+.pronHeard b{font-family:var(--font-cjk);color:var(--text-2);font-weight:600}
+.pronNote{font-size:12px;color:var(--text-2);line-height:1.6;margin-top:6px}
+.pronErrBlock{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.pronErrTitle{display:block;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.pronErrList{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.pronErrList li{font-size:11.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);border:1px solid rgba(251,191,36,.28);border-radius:var(--r-pill);padding:3px 10px}
+.pronLegend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:11px;color:var(--muted);font-weight:700}
+.pronLegend span{display:inline-flex;align-items:center;gap:5px}
+.pronLegend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.pronLegend .lg-good{background:var(--ok)}
+.pronLegend .lg-warn{background:var(--warn);border-radius:1px;transform:rotate(45deg)}
+.pronLegend .lg-bad{background:var(--bad);border-radius:1px}
+.pronLegend .lg-unknown{background:var(--faint);opacity:.7}
+.pronHonest{margin-top:10px;font-size:11.5px;line-height:1.6;color:var(--muted);background:var(--card-3);border:1px dashed var(--line-2);border-radius:var(--r-md);padding:8px 10px}
+.pronHonest b{color:var(--text-2)}
+.pronResultActs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* ── Popover chi tiết chữ ── */
+.pronDetail{
+  position:fixed;z-index:120;width:min(340px,calc(100vw - 32px));
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-xl);
+  /* Viền sáng lớn đóng vai trò "màn chắn" tối phía sau popover */
+  box-shadow:var(--sh-4),0 0 0 100vmax rgba(4,8,16,.55);padding:16px;
+}
+.pronDetailHead{display:flex;gap:12px;align-items:flex-start}
+.pronDetailCh{font-family:var(--font-cjk);font-size:40px;line-height:1;font-weight:700}
+.pronDetailPy{font-family:var(--font-cjk);font-size:15px;font-weight:700;color:var(--primary-2)}
+.pronDetailTone{font-size:11.5px;color:var(--muted);line-height:1.5;margin-top:3px}
+.pronDetailClose{margin-left:auto;background:transparent;border:0;color:var(--muted);font-size:15px;cursor:pointer;padding:2px 4px;border-radius:var(--r-sm)}
+.pronDetailClose:hover{color:var(--text);background:var(--card-3)}
+.pronDetailRows{display:flex;flex-direction:column;gap:6px;margin:12px 0 0}
+.pronDetailRows>div{display:flex;justify-content:space-between;gap:10px;font-size:12.5px}
+.pronDetailRows span{color:var(--muted);font-weight:700}
+.pronDetailRows b{font-weight:800}
+.pronDetailRows b.st-good{color:var(--ok)}
+.pronDetailRows b.st-warn{color:var(--warn)}
+.pronDetailRows b.st-bad{color:var(--bad)}
+.pronDetailRows b.st-unknown,.pronDetailRows b.st-idle{color:var(--muted)}
+.pronDetailNote{margin-top:10px;font-size:12px;line-height:1.6;color:var(--text-2);background:var(--card-2);border-radius:var(--r-md);padding:8px 10px}
+.pronDetailActs{display:flex;gap:8px;margin-top:12px}
+.pronDetailActs .btn{flex:1}
+
+/* ── Responsive ── */
+@media (max-width:760px){
+  .pronMicIco{width:92px;height:92px;font-size:33px}
+  .pronMicRing{width:106px;height:106px;margin-left:-53px}
+  .pronScoreWrap{flex-direction:column;align-items:flex-start;gap:12px}
+  .pronRing{width:96px;height:96px}
+  .pronRingIn{width:76px;height:76px}
+  .pronRingIn b{font-size:22px}
+  .pronCharGlyph{font-size:32px}
+  .pronChar{padding:5px 4px 4px}
+  .pronResult{padding:13px}
+}
+@media (max-width:420px){
+  .pronCharGlyph{font-size:27px}
+  .pronCharPy{font-size:10px}
+  .pronMicIco{width:84px;height:84px;font-size:30px}
+  .pronMicRing{width:98px;height:98px;margin-left:-49px}
+  .pronMicTxt{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  .pronMic.is-rec .pronMicRing,.pronMic.is-rec .pronMicIco,.pronDot,.pronSpinner{animation:none!important}
+}
+

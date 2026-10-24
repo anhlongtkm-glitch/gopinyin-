@@ -4,9 +4,17 @@
   "private": true,
   "description": "Gopinyin — học gõ Pinyin, nhận mặt chữ Hán & luyện phát âm tiếng Trung",
   "scripts": {
-    "start": "node server/serve.js",
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/dev.mjs",
     "serve": "node server/serve.js --no-open",
-    "test": "node tests/pronounce.js"
+    "test": "node tests/run.cjs",
+    "test:parity": "node tests/refactor-parity.cjs",
+    "test:build": "node tests/build.cjs",
+    "test:tooling": "node tests/tooling.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "playwright-core": "^1.56.0"
   },
   "license": "UNLICENSED"
 }

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoPinyin — Luyện gõ chữ Hán, AI sinh câu &amp; game bắn chữ</title>
+<meta name="description" content="GoPinyin — nền tảng luyện gõ chữ Hán, từ vựng HSK 1–9 cho người Việt. Nhìn nghĩa tiếng Việt, gõ chữ Hán của cả câu, AI sinh câu theo chủ đề và game bắn chữ." />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+<link rel="mask-icon" href="assets/logo-mark.png" color="#0BA488" />
+<link rel="manifest" href="assets/site.webmanifest" />
+<meta name="theme-color" content="#0BA488" />
+<meta name="apple-mobile-web-app-title" content="GoPinyin" />
+<meta name="application-name" content="GoPinyin" />
+<meta property="og:site_name" content="GoPinyin" />
+<meta property="og:title" content="GoPinyin — Luyện gõ chữ Hán, AI sinh câu &amp; game bắn chữ" />
+<meta property="og:description" content="Luyện gõ chữ Hán với 4.969 câu HSK 1–9, 206 chủ đề từ vựng và game bắn chữ." />
+<meta property="og:image" content="https://gopinyin.app/assets/icon-512.png" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+<!-- @inline app/theme-preload.js -->
+</script>
+<script src="assets/config.js"></script>
+<script>
+<!-- @inline app/storage-import.js -->
+</script>
+<link rel="stylesheet" href="assets/app.css" />
+</head>
+<body id="top">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LANDING — trang giới thiệu công khai
+     ═══════════════════════════════════════════════════════════════ -->
+<!-- @include features/landing/view.html -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     WORKSPACE — không gian học (cần đăng nhập)
+     ═══════════════════════════════════════════════════════════════ -->
+<!-- @include app/workspace.html -->
+
+<!-- Popup Google Dịch (của core) -->
+<div id="gtPopup" class="gtPopup" role="dialog" aria-hidden="true" aria-labelledby="gtPopup-title">
+  <div class="gtHeader">
+    <div class="gtHeader-logo">G</div>
+    <div id="gtPopup-title" class="gtHeader-title">Google Dịch</div>
+    <button id="gtClose" class="gtHeader-close" type="button" title="Đóng (Esc)" aria-label="Đóng">✕</button>
+  </div>
+  <div id="gtBody" class="gtBody">
+    <div class="gtEmpty">
+      <div class="gtEmpty-icon">👆</div>
+      <div class="gtEmpty-text">Bấm vào chữ Hán<br>để dịch sang tiếng Việt</div>
+      <div class="gtEmpty-sub">Bấm chữ Hán → hiện phía trên (tự tắt 5s)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast host (của core) -->
+<div id="toastHost" aria-live="polite" aria-atomic="true"></div>
+
+<!-- App modal (của core) -->
+<!-- @include shared/modal.html -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL ĐĂNG NHẬP / ĐĂNG KÝ
+     ═══════════════════════════════════════════════════════════════ -->
+<!-- @include features/auth/view.html -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL NÂNG CẤP PRO + THANH TOÁN VIETCOMBANK
+     ═══════════════════════════════════════════════════════════════ -->
+<!-- @include features/pro/view.html -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODAL HƯỚNG DẪN — cơ chế gõ & phím tắt (nút 💡)
+     ═══════════════════════════════════════════════════════════════ -->
+<!-- @include shared/help.html -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BẢNG LỚN — tất cả các câu đã làm (mở bằng nút "📜 Câu đã làm")
+     ═══════════════════════════════════════════════════════════════ -->
+<!-- @include features/typing/history.html -->
+
+<!-- Canvas pháo hoa (confetti) toàn màn hình -->
+<canvas id="confettiCanvas" class="confettiCanvas" aria-hidden="true"></canvas>
+
+<!-- Classic bundle; app/bootstrap.js initializes shared data before feature controllers. -->
+<script src="assets/app.js"></script>
+</body>
+</html>

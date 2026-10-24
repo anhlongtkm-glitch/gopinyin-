@@ -1,0 +1,136 @@
+/* ═══════════════════════════════════════════════════════════════
+   MODAL PRO — thiết kế lại: hero gradient + QR riêng từng khách
+   ═══════════════════════════════════════════════════════════════ */
+.proCard{max-width:820px;padding:0;overflow:hidden;background:var(--card)}
+.proCard .modalClose{top:14px;right:14px;background:rgba(0,0,0,.28);border-color:rgba(255,255,255,.18);color:#fff;z-index:5}
+.proCard .modalClose:hover{background:rgba(251,113,133,.9);color:#fff;border-color:transparent}
+
+/* Hero */
+.proHero{position:relative;overflow:hidden;padding:18px clamp(20px,4vw,38px) 16px;text-align:center;
+  background:radial-gradient(120% 160% at 50% -30%,#4c1d95 0%,#2a1a63 42%,#151a33 100%);color:#fff}
+.proHeroOrb{position:absolute;border-radius:50%;filter:blur(46px);opacity:.55;pointer-events:none}
+.proOrbA{width:260px;height:260px;left:-70px;top:-90px;background:#7c3aed;animation:proOrbFloat 12s ease-in-out infinite}
+.proOrbB{width:230px;height:230px;right:-60px;bottom:-110px;background:#f59e0b;animation:proOrbFloat 15s ease-in-out infinite reverse}
+@keyframes proOrbFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(26px,18px,0) scale(1.12)}}
+.proBadge{position:relative;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:900;letter-spacing:.14em;
+  background:var(--pro-grad);color:#2a1500;padding:5px 14px;border-radius:99px;box-shadow:0 6px 20px rgba(245,158,11,.45)}
+.proHero h2{position:relative;font-family:var(--font-display);font-size:clamp(22px,3.2vw,28px);font-weight:800;
+  margin:10px 0 6px;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.35)}
+.proHero p{position:relative;margin:0 auto;max-width:56ch;font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.82)}
+.proHeroStats{position:relative;display:flex;justify-content:center;gap:clamp(16px,4vw,44px);margin-top:10px}
+.proHeroStats div{display:flex;flex-direction:column;gap:2px}
+.proHeroStats b{font-family:var(--font-display);font-size:20px;font-weight:800;
+  background:var(--pro-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.proHeroStats span{font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.08em}
+
+/* Gói */
+.proPlans{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px clamp(20px,4vw,38px) 0}
+.proPlan{position:relative;display:flex;flex-direction:column;gap:1px;padding:12px 15px 11px;border-radius:var(--r-lg);
+  background:var(--card-2);border:2px solid var(--line);text-align:left;transition:all var(--d) var(--ease);overflow:hidden}
+.proPlan::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(135deg,rgba(251,191,36,.16),transparent 55%);opacity:0;transition:opacity var(--d)}
+.proPlan:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.proPlan:hover::after{opacity:1}
+.proPlan.active{border-color:var(--gold);box-shadow:0 10px 30px rgba(245,158,11,.22),0 0 0 4px rgba(251,191,36,.10)}
+.proPlan.active::after{opacity:1}
+.proPlanTag{align-self:flex-start;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);background:var(--card-3);padding:3px 9px;border-radius:99px;margin-bottom:6px}
+.proPlanTag.best{background:var(--pro-grad);color:#2a1500}
+.proPlanName{font-family:var(--font-display);font-size:16px;font-weight:800}
+.proPlanPrice{display:flex;align-items:baseline;gap:5px;margin-top:2px}
+.proPlanPrice b{font-family:var(--font-display);font-size:23px;font-weight:800;color:var(--text)}
+.proPlanPrice small{font-size:12px;font-weight:700;color:var(--muted)}
+.proPlanSub{font-size:11.5px;font-weight:600;color:var(--muted);margin-top:3px}
+
+/* Quyền lợi */
+.proBenefits{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 0;padding:0 clamp(20px,4vw,38px)}
+.proBenefits li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:8px 6px;
+  border-radius:var(--r-md);background:var(--card-2);border:1px solid var(--line)}
+.proBenefits li>span{font-size:17px;line-height:1.2}
+.proBenefits b{display:block;font-size:11.5px;font-weight:800;line-height:1.3}
+.proBenefits small{display:none}
+
+/* Thanh toán */
+.proPay{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;margin:12px clamp(20px,4vw,38px) 0;
+  padding:12px;border-radius:var(--r-xl);border:1px solid var(--line);
+  background:linear-gradient(160deg,var(--card-2),var(--card));align-items:start}
+
+/* QR khung đẹp */
+.proQrCard{display:flex;flex-direction:column;align-items:center;gap:9px}
+.proQrFrame{position:relative;padding:10px;border-radius:var(--r-lg);background:#fff;
+  box-shadow:0 14px 40px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.14);overflow:hidden;width:100%;max-width:172px}
+.proQrFrame::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(135deg,rgba(31,200,162,.18),transparent 40%,rgba(251,191,36,.16));opacity:.7}
+.proQrFrame img{display:block;width:100%;height:auto;border-radius:8px;opacity:0;transition:opacity .4s var(--ease);position:relative}
+.proQrFrame img.ready{opacity:1}
+.proQrChip{position:absolute;top:8px;right:8px;z-index:3;font-size:9px;font-weight:900;letter-spacing:.1em;
+  background:#0f172a;color:#fff;padding:3px 8px;border-radius:99px}
+.proQrScan{position:absolute;left:6%;right:6%;height:2px;top:12%;z-index:2;
+  background:linear-gradient(90deg,transparent,#2EB597,#fbbf24,transparent);opacity:0;pointer-events:none;
+  animation:proScan 3.4s ease-in-out infinite}
+.proQrFrame img.ready~.proQrScan{opacity:.85}
+@keyframes proScan{0%{top:14%}50%{top:84%}100%{top:14%}}
+.proQrFallback{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-height:180px;
+  text-align:center;color:#334155;font-size:12px;padding:10px}
+.proQrFallback b{font-size:13px;color:#0f172a}
+.proQrFallback[hidden]{display:none}
+.proQrCaption{text-align:center;line-height:1.5}
+.proQrCaption b{display:block;font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--text)}
+.proQrCaption span{font-size:11.5px;color:var(--muted);font-weight:600}
+
+/* Thông tin CK */
+.proPayInfo{display:flex;flex-direction:column;gap:2px}
+.proPayRow{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+.proPayRow span{color:var(--muted);font-weight:600;min-width:104px;flex:none}
+.proPayRow b{font-weight:800;word-break:break-word}
+.proPayRow b.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:var(--primary)}
+.proCopy{margin-left:auto;width:28px;height:28px;flex:none;border-radius:8px;background:var(--card-3);
+  border:1px solid var(--line);font-size:12px;display:grid;place-items:center;transition:all var(--d)}
+.proCopy:hover{background:var(--primary);color:#fff;border-color:var(--primary);transform:scale(1.06)}
+.proCopy.copied{background:var(--ok);border-color:var(--ok);color:#062;transform:scale(1)}
+.proPayHint{margin:10px 0 0;font-size:11px;line-height:1.5;color:var(--muted);
+  background:var(--warn-soft);border:1px solid rgba(251,191,36,.28);border-radius:var(--r-sm);padding:9px 11px}
+
+/* 3 bước */
+.proSteps{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 20px;margin:12px clamp(20px,4vw,38px) 0}
+.proStep{display:flex;align-items:center;gap:6px;padding:0;border:0;background:none;font-size:11.5px;font-weight:700;color:var(--muted);line-height:1.35}
+.proStep i{flex:none;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-style:normal;
+  font-size:9.5px;font-weight:900;color:var(--primary);background:var(--primary-soft);border:1px solid rgba(31,200,162,.35)}
+
+/* Trạng thái chờ */
+.proStatus{display:flex;align-items:center;gap:9px;margin:14px clamp(20px,4vw,38px) 0;padding:10px 14px;
+  border-radius:var(--r-md);background:var(--primary-soft);border:1px solid rgba(31,200,162,.28);
+  font-size:12.5px;font-weight:700;color:var(--text-2)}
+.proStatus[hidden]{display:none}
+.proStatusDot{width:9px;height:9px;flex:none;border-radius:50%;background:var(--primary);
+  box-shadow:0 0 0 0 rgba(31,200,162,.6);animation:proPulse 1.6s infinite}
+@keyframes proPulse{0%{box-shadow:0 0 0 0 rgba(31,200,162,.55)}70%{box-shadow:0 0 0 9px rgba(31,200,162,0)}100%{box-shadow:0 0 0 0 rgba(31,200,162,0)}}
+
+/* Xác nhận + nút */
+.proConfirm{display:flex;align-items:center;gap:9px;margin:12px clamp(20px,4vw,38px) 0;font-size:12.5px;
+  font-weight:700;color:var(--text-2);cursor:pointer;line-height:1.5}
+.proConfirm input{width:17px;height:17px;flex:none;accent-color:var(--gold)}
+.proCard #proActivateBtn{margin:10px clamp(20px,4vw,38px) 18px;width:calc(100% - 2*clamp(20px,4vw,38px));
+  background:var(--pro-grad);color:#2a1500;font-weight:900;border:none;
+  box-shadow:0 12px 30px rgba(245,158,11,.32);transition:all var(--d) var(--ease)}
+.proCard #proActivateBtn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(245,158,11,.45)}
+.proCard #proActivateBtn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+.proNote{margin:8px clamp(20px,4vw,38px) 16px;font-size:11.5px;line-height:1.6;color:var(--faint);text-align:center}
+
+@media (max-width:720px){
+  .proBenefits,.proSteps{grid-template-columns:1fr}
+  .proPay{grid-template-columns:1fr}
+  .proPlans{grid-template-columns:1fr}
+  .proHeroStats{gap:20px}
+}
+
+/* Confetti */
+.confettiCanvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:1400;display:none}
+.confettiCanvas.fire{display:block}
+
+/* Trạng thái Pro toàn cục */
+body.is-pro .ws-upgradeBtn{background:linear-gradient(135deg,#34d399,#10b981);box-shadow:0 8px 24px rgba(16,185,129,.3)}
+body.is-pro .ws-upgradeBtn small::after{content:' ✓ Đã kích hoạt'}
+body.is-pro .ws-proBadge{display:inline-grid!important}
+body.is-pro .ws-lock{display:none}
+

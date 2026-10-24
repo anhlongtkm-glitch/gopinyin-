@@ -5,6 +5,9 @@
 - Truy cập Vercel Dashboard.
 - Import repository.
 - Chọn framework: "Other" / Static site.
+- Build command: `npm run build`.
+- Output directory: `dist`.
+- Giữ bước cài devDependencies vì esbuild dùng khi build; lockfile được lưu trong repository.
 
 ## 2) Domain
 Sau khi deploy xong, vào:
@@ -25,5 +28,5 @@ Trong [vercel.json](vercel.json), các alias đã thêm sẵn:
 > Bạn vẫn cần nhập domain trong dashboard Vercel để xác nhận và gắn DNS.
 
 ## 5) Lưu ý
-Dự án này là static frontend, nên không cần build command phức tạp.
-Vercel sẽ phục vụ trực tiếp file HTML/CSS/JS từ root folder.
+Frontend dùng HTML/CSS/JavaScript thuần. Build ghép HTML partials và đóng gói JS/CSS bằng esbuild.
+Vercel chỉ phục vụ `dist/`; không triển khai toàn bộ thư mục mã nguồn. Không đưa `.env`, mã server hoặc dữ liệu thanh toán vào thư mục này.

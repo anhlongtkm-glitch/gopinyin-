@@ -1,0 +1,25 @@
+<div id="histModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="histTitle" hidden>
+  <div class="modalBackdrop" data-close="histModal"></div>
+  <div class="modalCard histCard">
+    <button class="modalClose" type="button" data-close="histModal" aria-label="Đóng">✕</button>
+    <aside id="app-history-panel" class="appHistory" aria-label="Lịch sử gõ">
+      <div class="appHistoryHead">
+        <div>
+          <h3 class="appHistoryTitle" id="histTitle">📜 Các câu đã làm</h3>
+          <div class="appHistorySub">Bấm vào câu để làm lại</div>
+        </div>
+        <span class="appHistoryBadge" id="app-history-done">0 đã làm</span>
+      </div>
+      <div class="appHistoryTabs" role="tablist" aria-label="Bộ lọc lịch sử gõ">
+        <button class="appHistoryTab active" data-tab="done" type="button" role="tab" aria-selected="true">Đã làm<span class="tabCount" id="app-hist-cnt-done">0</span></button>
+        <button class="appHistoryTab" data-tab="wrong" type="button" role="tab" aria-selected="false">Sai<span class="tabCount" id="app-hist-cnt-wrong">0</span></button>
+        <button class="appHistoryTab" data-tab="weak" type="button" role="tab" aria-selected="false">Điểm yếu<span class="tabCount" id="app-hist-cnt-weak">0</span></button>
+      </div>
+      <div class="appHistoryList" id="app-history-list" role="list"></div>
+      <div class="appHistoryFoot">
+        <button id="weakBuildBtn" class="btn secondary weakBuildBtn" type="button" title="Tạo bộ luyện riêng từ những âm tiết bạn hay gõ sai">🎯 Tạo bộ ôn điểm yếu</button>
+        <div class="appHistorySaveNote">Lưu tự động trên trình duyệt</div>
+      </div>
+    </aside>
+  </div>
+</div>

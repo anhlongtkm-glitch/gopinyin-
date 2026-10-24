@@ -1,0 +1,105 @@
+// State and behavior owned by features/pronunciation/controller. Initialization is orchestrated by app/bootstrap.js.
+
+import { publishLegacy } from "../../app/compatibility.js";
+
+import { state as pronunciationAssessmentState } from "./assessment.js";
+
+import { wire } from "./events.js";
+
+import { syncFileWarn } from "./file-transfer.js";
+
+import { renderLib, startSource } from "./library.js";
+
+import { drawMeter } from "./meter.js";
+
+import { state as pronunciationMicrophoneState } from "./microphone.js";
+
+import { state as pronunciationRecognitionState } from "./recognition.js";
+
+import { setPhase } from "./recording.js";
+
+import { renderStats, hideDetail, hanziHtml } from "./render.js";
+
+import { state as pronunciationSessionState } from "./session.js";
+
+import { loadSettings, fillVoices, fillSources, loadSource, syncToolbar } from "./settings.js";
+
+export const state = {};
+
+const pronunciationControllerState = state;
+
+export function initializePronunciationController() {
+  /* ═══════════════════════════════════════════════════════════
+     API công khai
+     ═══════════════════════════════════════════════════════════ */
+  pronunciationControllerState.Pron = {
+    /* Màn CHỌN BỘ CÂU (view "pron") */
+    async openLib() {
+      if (!pronunciationSessionState.S.ready) {
+        pronunciationSessionState.S.ready = true;
+        loadSettings();
+        wire();
+        fillVoices();
+      }
+      document.body.classList.remove('studyFit');
+      pronunciationMicrophoneState.PronMic.hardRelease();
+      syncFileWarn();
+      await renderLib();
+    },
+    /* Màn LUYỆN (view "pronStudy") */
+    async open() {
+      if (!pronunciationSessionState.S.ready) {
+        pronunciationSessionState.S.ready = true;
+        loadSettings();
+        wire();
+        fillVoices();
+      }
+      /* Khoá trang đúng 1 khung hình — thẻ tự chia chiều cao, không phải cuộn */
+      document.body.classList.add('studyFit');
+      syncFileWarn();
+      await fillSources();
+      if (!pronunciationSessionState.S.items.length || pronunciationSessionState.S.lastSource !== pronunciationSessionState.S.source) {
+        pronunciationSessionState.S.lastSource = pronunciationSessionState.S.source;
+        await loadSource(pronunciationSessionState.S.source);
+      }
+      syncToolbar();
+      drawMeter(0);
+      renderStats();
+      /* giọng đọc thường nạp trễ */
+      setTimeout(fillVoices, 500);
+    },
+    /* Vào thẳng một bộ (dùng cho nút "Học tiếp" ở nơi khác) */
+    start(srcId) {
+      return startSource(srcId);
+    },
+    leave() {
+      pronunciationMicrophoneState.PronMic.hardRelease();
+      pronunciationRecognitionState.PronAsr.stop();
+      if (pronunciationSessionState.S.timer) {
+        clearInterval(pronunciationSessionState.S.timer);
+        pronunciationSessionState.S.timer = 0;
+      }
+      if (pronunciationSessionState.S.maxTimer) {
+        clearTimeout(pronunciationSessionState.S.maxTimer);
+        pronunciationSessionState.S.maxTimer = 0;
+      }
+      if (pronunciationSessionState.S.silenceTimer) {
+        clearTimeout(pronunciationSessionState.S.silenceTimer);
+        pronunciationSessionState.S.silenceTimer = 0;
+      }
+      if (pronunciationSessionState.S.phase === 'recording') setPhase('idle', '');
+      hideDetail();
+      document.body.classList.remove('studyFit');
+      try {
+        window.speechSynthesis && window.speechSynthesis.cancel();
+      } catch (e) {}
+    },
+    /* dùng cho kiểm thử + tích hợp ngoài */
+    _state: pronunciationSessionState.S,
+    _assess: (item, transcript, conf) => pronunciationAssessmentState.PronAssess.local(item, transcript, conf),
+    _align: (a, b) => pronunciationAssessmentState.PronAssess.align(a, b),
+    _hanziHtml: (zh, st) => hanziHtml(zh, st || {}),
+    _good: pronunciationSessionState.GOOD
+  };
+  publishLegacy("__pron", pronunciationControllerState.Pron);
+}

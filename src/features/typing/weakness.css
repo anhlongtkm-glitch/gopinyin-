@@ -1,0 +1,27 @@
+/* ═══════════════════════════════════════════════════════════
+   ★ LUYỆN TẬP NÂNG CAO — chấm theo âm tiết, thanh điệu, điểm yếu
+   ═══════════════════════════════════════════════════════════ */
+/* Chip tốc độ (CPM) trong hàng thống kê */
+.stat[data-kind="speed"] b{color:var(--text)}
+.stat[data-kind="speed"] b::after{content:''}
+/* Âm tiết gõ SAI (đỏ) / sai THANH (vàng) — trên dòng chữ Hán và trong feedback */
+.hanzi-pair.wBad{background:var(--bad-soft);box-shadow:0 0 0 2px rgba(251,113,133,.45);border-radius:6px}
+.hanzi-pair.wBad .hanzi-word{color:var(--bad-deep,var(--bad))}
+.hanzi-pair.wTone{background:var(--warn-soft);box-shadow:0 0 0 2px rgba(251,191,36,.45);border-radius:6px}
+.hanzi-pair.wTone .hanzi-word{color:var(--warn)}
+.feedback .wBad{color:var(--bad-deep,var(--bad));background:var(--bad-soft);padding:1px 5px;border-radius:5px;font-weight:800}
+.feedback .wTone{color:var(--warn);background:var(--warn-soft);padding:1px 5px;border-radius:5px;font-weight:800}
+.feedback .wBad,.feedback .wTone{display:inline-block;margin:0 1px}
+/* Danh sách điểm yếu trong panel "Câu đã gõ" */
+.weakList{display:flex;flex-direction:column;gap:6px}
+.weakItem{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--card-3,#f5f6f8);border:1px solid var(--line);border-radius:var(--r-sm,8px);padding:7px 10px}
+.weakWord{font-size:14px;font-weight:800;color:var(--text);letter-spacing:.3px}
+.weakNum{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap}
+.weakNum .bad{font-style:normal;color:var(--bad);font-weight:800}
+.weakBuildBtn{width:100%;font-size:12px;padding:7px 10px}
+.appHistorySaveNote{font-size:10.5px;color:var(--muted);font-weight:600;width:100%;text-align:center;margin-top:6px}
+.appHistoryFoot{flex-direction:column;gap:8px}
+/* 3 tab lịch sử — thu nhỏ chữ để vừa panel hẹp */
+.appHistoryTabs .appHistoryTab{font-size:11.5px;padding:5px 7px}
+

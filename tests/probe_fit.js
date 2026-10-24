@@ -1,7 +1,7 @@
 /* Kiểm tra màn luyện phát âm vừa khung ở nhiều độ phân giải + chụp ảnh */
 const { chromium } = require('playwright-core');
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const URL = 'http://localhost:8099/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8099/';
 
 const SIZES = [
   { w: 1920, h: 1080, tag: '1920x1080' },

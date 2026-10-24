@@ -1,0 +1,201 @@
+<div id="workspace" class="workspace hidden">
+  <!-- Thanh bên -->
+  <aside class="ws-side">
+    <div class="ws-sideBrand">
+      <img class="ws-sideMark" src="assets/logo-icon.png" alt="GoPinyin" width="36" height="36" decoding="async" />
+      <span class="brandLockup brandLockup-xs">
+        <img class="brandLockup-light" src="assets/logo-full.png" alt="GoPinyin" width="118" height="30" decoding="async" />
+        <img class="brandLockup-dark" src="assets/logo-full-dark.png" alt="" aria-hidden="true" width="118" height="30" decoding="async" />
+      </span>
+      <span class="ws-proBadge hidden" id="wsProBadge">PRO</span>
+    </div>
+    <nav class="ws-nav" aria-label="Điều hướng chính">
+      <button class="ws-navItem active" type="button" data-view="dash"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="ws-navLabel">Bảng điều khiển</span></button>
+      <button class="ws-navItem" type="button" data-view="library"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9.5 14h5"/></svg></span><span class="ws-navLabel">Luyện gõ</span></button>
+      <button class="ws-navItem" type="button" data-view="pron"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1"/><path d="M12 18v3.5"/><path d="M8.5 21.5h7"/></svg></span><span class="ws-navLabel">Luyện phát âm</span></button>
+      <button class="ws-navItem" type="button" data-view="rank"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M17 5h2.5a1.5 1.5 0 0 1 0 3H17M7 5H4.5a1.5 1.5 0 0 0 0 3H7"/></svg></span><span class="ws-navLabel">Bảng xếp hạng</span></button>
+      <button class="ws-navItem" type="button" data-view="ai"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/><path d="M5 3l.7 1.8L7.5 5.5l-1.8.7L5 8l-.7-1.8L2.5 5.5l1.8-.7z"/></svg></span><span class="ws-navLabel">AI sinh câu</span><span class="ws-lock" title="Pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></button>
+      <button class="ws-navItem" type="button" data-view="games"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="7" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="11" y2="12"/><line x1="15" y1="12" x2="15" y2="12"/><path d="M6 10.5v3M4.5 12h3"/></svg></span><span class="ws-navLabel">Game từ vựng</span></button>
+    </nav>
+    <div class="ws-sideFoot">
+      <button class="ws-upgradeBtn" id="wsUpgradeBtn" type="button">
+        <span class="ws-upgradeIcon">⭐</span>
+        <span><b>Nâng cấp Pro</b><small>Mở AI &amp; HSK 4–9</small></span>
+      </button>
+      <div class="ws-userChip" id="wsUserChip">
+        <span class="ws-avatar" id="wsAvatar">K</span>
+        <span class="ws-userInfo"><b id="wsUserName">Khách</b><small id="wsUserPlan">Gói miễn phí</small></span>
+        <button class="ws-logoutBtn" id="wsLogoutBtn" type="button" title="Đăng xuất">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Nội dung chính -->
+  <div class="ws-main">
+
+    <!-- Cảnh nền rừng trúc cho toàn bộ không gian học -->
+    <div class="ws-scenery" aria-hidden="true">
+      <div class="ws-sceneryGlow"></div>
+      <svg class="ws-scenerySvg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+        <defs>
+          <path id="bLeafWs" d="M0 0C15 -11 42 -15 62 -7C40 3 15 7 0 0Z"/>
+        </defs>
+        
+        
+        <g class="scRidge scFar"><path d="M-30 660 C40 640 70 570 100 470 C122 400 142 320 176 292 C212 262 228 356 252 430 C276 504 302 566 342 606 C382 646 422 604 452 522 C482 440 502 338 542 298 C582 258 602 352 627 432 C652 512 677 582 717 617 C757 652 802 600 832 520 C862 440 882 348 922 313 C962 278 982 370 1007 450 C1032 530 1057 600 1097 630 C1137 660 1182 610 1212 540 C1242 470 1262 378 1302 348 C1342 318 1362 412 1387 482 C1412 552 1432 612 1470 642 L1470 920 L-30 920 Z"/></g>
+        <g class="scRidge scMid"><path d="M-30 730 C50 710 92 656 132 604 C172 552 202 502 242 497 C282 492 302 548 337 592 C372 636 412 662 452 642 C492 622 522 558 562 532 C602 506 627 562 662 606 C697 650 737 682 782 666 C827 650 852 592 892 566 C932 540 957 602 992 642 C1027 682 1067 702 1107 682 C1147 662 1172 602 1212 576 C1252 550 1277 606 1312 646 C1347 686 1387 706 1470 700 L1470 920 L-30 920 Z"/></g>
+        <g class="scBamboo">
+          <path class="bStalk" d="M44.0 920.0 C54.0 692.2 47.5 437.6 53.0 250.0" stroke-width="17"/>
+          <path class="bNode" d="M36.8 820.7 L57.9 821.3" stroke-width="2.7"/>
+          <path class="bNode" d="M38.7 720.2 L59.7 720.5" stroke-width="2.7"/>
+          <path class="bNode" d="M39.5 619.7 L60.5 619.8" stroke-width="2.7"/>
+          <path class="bNode" d="M39.8 520.7 L60.8 520.8" stroke-width="2.7"/>
+          <path class="bNode" d="M40.0 425.0 L61.1 425.1" stroke-width="2.7"/>
+          <path class="bNode" d="M40.8 334.1 L61.8 334.4" stroke-width="2.7"/>
+          <use href="#bLeafWs" transform="translate(43.6 240.2) rotate(-133.9) scale(0.844)"/>
+          <use href="#bLeafWs" transform="translate(49.9 240.4) rotate(-107.9) scale(0.969)"/>
+          <use href="#bLeafWs" transform="translate(55.4 238.4) rotate(-78.3) scale(1.063)"/>
+          <use href="#bLeafWs" transform="translate(61.6 239.5) rotate(-50.6) scale(0.904)"/>
+          <use href="#bLeafWs" transform="translate(68.4 246.4) rotate(-13.1) scale(1.135)"/>
+          <use href="#bLeafWs" transform="translate(41.7 309.6) rotate(-132.4) scale(1.098)"/>
+          <use href="#bLeafWs" transform="translate(53.7 310.0) rotate(-78.1) scale(1.213)"/>
+          <use href="#bLeafWs" transform="translate(56.8 316.9) rotate(-32.9) scale(1.179)"/>
+          <use href="#bLeafWs" transform="translate(42.3 395.2) rotate(-122.5) scale(0.919)"/>
+          <use href="#bLeafWs" transform="translate(54.3 395.4) rotate(-74.0) scale(1.233)"/>
+          <use href="#bLeafWs" transform="translate(61.4 402.8) rotate(-26.7) scale(1.148)"/>
+          <path class="bStalk" d="M108.0 920.0 C100.0 664.3 105.2 378.6 100.8 168.0" stroke-width="13"/>
+          <path class="bNode" d="M97.3 809.0 L113.4 808.7" stroke-width="2.1"/>
+          <path class="bNode" d="M95.8 696.0 L111.9 695.9" stroke-width="2.1"/>
+          <path class="bNode" d="M95.1 583.0 L111.3 583.0" stroke-width="2.1"/>
+          <path class="bNode" d="M94.9 471.9 L111.0 471.9" stroke-width="2.1"/>
+          <path class="bNode" d="M94.7 364.5 L110.8 364.4" stroke-width="2.1"/>
+          <path class="bNode" d="M94.1 262.6 L110.2 262.5" stroke-width="2.1"/>
+          <use href="#bLeafWs" transform="translate(95.0 163.2) rotate(-140.1) scale(0.869)"/>
+          <use href="#bLeafWs" transform="translate(97.9 158.8) rotate(-107.6) scale(0.781)"/>
+          <use href="#bLeafWs" transform="translate(102.0 157.7) rotate(-83.6) scale(0.701)"/>
+          <use href="#bLeafWs" transform="translate(110.2 157.2) rotate(-48.9) scale(0.745)"/>
+          <use href="#bLeafWs" transform="translate(115.6 163.6) rotate(-16.5) scale(0.927)"/>
+          <use href="#bLeafWs" transform="translate(91.7 235.1) rotate(-131.3) scale(0.976)"/>
+          <use href="#bLeafWs" transform="translate(103.0 238.5) rotate(-83.0) scale(1.168)"/>
+          <use href="#bLeafWs" transform="translate(111.5 242.2) rotate(-26.3) scale(1.052)"/>
+          <use href="#bLeafWs" transform="translate(96.6 338.0) rotate(-128.4) scale(1.165)"/>
+          <use href="#bLeafWs" transform="translate(103.9 334.7) rotate(-83.9) scale(1.247)"/>
+          <use href="#bLeafWs" transform="translate(113.5 340.0) rotate(-27.3) scale(0.990)"/>
+          <path class="bStalk" d="M162.0 920.0 C168.0 719.4 164.1 495.2 167.4 330.0" stroke-width="10"/>
+          <path class="bNode" d="M158.1 818.0 L170.5 818.2" stroke-width="2.0"/>
+          <path class="bNode" d="M159.1 714.6 L171.5 714.6" stroke-width="2.0"/>
+          <path class="bNode" d="M159.5 611.7 L171.9 611.7" stroke-width="2.0"/>
+          <path class="bNode" d="M159.7 511.8 L172.1 511.8" stroke-width="2.0"/>
+          <path class="bNode" d="M160.1 417.1 L172.5 417.2" stroke-width="2.0"/>
+          <use href="#bLeafWs" transform="translate(157.0 322.1) rotate(-142.7) scale(1.087)"/>
+          <use href="#bLeafWs" transform="translate(164.4 322.0) rotate(-110.7) scale(1.045)"/>
+          <use href="#bLeafWs" transform="translate(169.5 317.3) rotate(-80.4) scale(0.955)"/>
+          <use href="#bLeafWs" transform="translate(172.4 323.5) rotate(-52.6) scale(1.021)"/>
+          <use href="#bLeafWs" transform="translate(180.5 325.0) rotate(-20.9) scale(0.883)"/>
+          <use href="#bLeafWs" transform="translate(163.2 386.7) rotate(-122.4) scale(1.059)"/>
+          <use href="#bLeafWs" transform="translate(168.4 386.0) rotate(-72.2) scale(1.273)"/>
+          <use href="#bLeafWs" transform="translate(181.1 385.4) rotate(-23.7) scale(0.931)"/>
+          <use href="#bLeafWs" transform="translate(159.1 461.1) rotate(-129.7) scale(1.170)"/>
+          <use href="#bLeafWs" transform="translate(168.4 457.0) rotate(-79.1) scale(1.156)"/>
+          <use href="#bLeafWs" transform="translate(173.5 464.3) rotate(-33.9) scale(1.045)"/>
+          <path class="bStalk" d="M1298.0 920.0 C1289.0 676.9 1294.9 405.2 1289.9 205.0" stroke-width="15"/>
+          <path class="bNode" d="M1285.7 814.6 L1304.3 814.2" stroke-width="2.4"/>
+          <path class="bNode" d="M1284.0 707.1 L1302.6 706.9" stroke-width="2.4"/>
+          <path class="bNode" d="M1283.3 599.6 L1301.9 599.5" stroke-width="2.4"/>
+          <path class="bNode" d="M1283.0 493.9 L1301.6 493.9" stroke-width="2.4"/>
+          <path class="bNode" d="M1282.8 391.8 L1301.4 391.7" stroke-width="2.4"/>
+          <path class="bNode" d="M1282.1 295.0 L1300.7 294.8" stroke-width="2.4"/>
+          <use href="#bLeafWs" transform="translate(1277.4 201.9) rotate(-166.0) scale(0.966)"/>
+          <use href="#bLeafWs" transform="translate(1280.0 195.2) rotate(-135.4) scale(1.032)"/>
+          <use href="#bLeafWs" transform="translate(1288.2 196.8) rotate(-101.9) scale(0.736)"/>
+          <use href="#bLeafWs" transform="translate(1292.1 198.7) rotate(-71.0) scale(0.953)"/>
+          <use href="#bLeafWs" transform="translate(1294.4 200.4) rotate(-45.2) scale(1.158)"/>
+          <use href="#bLeafWs" transform="translate(1285.1 275.9) rotate(-146.5) scale(1.002)"/>
+          <use href="#bLeafWs" transform="translate(1289.3 273.1) rotate(-105.8) scale(1.084)"/>
+          <use href="#bLeafWs" transform="translate(1296.9 273.9) rotate(-47.3) scale(1.189)"/>
+          <use href="#bLeafWs" transform="translate(1279.0 365.4) rotate(-146.9) scale(1.245)"/>
+          <use href="#bLeafWs" transform="translate(1290.1 363.8) rotate(-100.9) scale(1.119)"/>
+          <use href="#bLeafWs" transform="translate(1297.9 365.3) rotate(-55.7) scale(1.088)"/>
+          <path class="bStalk" d="M1362.0 920.0 C1369.0 709.2 1364.5 473.6 1368.3 300.0" stroke-width="12"/>
+          <path class="bNode" d="M1357.2 812.8 L1372.1 813.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1358.4 704.1 L1373.3 704.2" stroke-width="2.0"/>
+          <path class="bNode" d="M1358.9 596.0 L1373.8 596.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1359.1 491.0 L1374.0 491.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1359.5 391.5 L1374.4 391.6" stroke-width="2.0"/>
+          <use href="#bLeafWs" transform="translate(1361.2 298.3) rotate(-166.6) scale(0.879)"/>
+          <use href="#bLeafWs" transform="translate(1360.6 292.7) rotate(-136.4) scale(0.833)"/>
+          <use href="#bLeafWs" transform="translate(1365.0 286.0) rotate(-103.3) scale(0.740)"/>
+          <use href="#bLeafWs" transform="translate(1370.1 291.8) rotate(-77.7) scale(0.890)"/>
+          <use href="#bLeafWs" transform="translate(1379.7 288.9) rotate(-44.2) scale(0.887)"/>
+          <use href="#bLeafWs" transform="translate(1358.9 360.5) rotate(-151.4) scale(1.138)"/>
+          <use href="#bLeafWs" transform="translate(1365.3 355.8) rotate(-101.9) scale(1.165)"/>
+          <use href="#bLeafWs" transform="translate(1373.0 356.3) rotate(-56.8) scale(0.928)"/>
+          <use href="#bLeafWs" transform="translate(1358.8 442.2) rotate(-151.5) scale(1.057)"/>
+          <use href="#bLeafWs" transform="translate(1364.4 438.2) rotate(-105.5) scale(1.220)"/>
+          <use href="#bLeafWs" transform="translate(1374.0 438.8) rotate(-46.1) scale(1.620)"/>
+          <path class="bStalk" d="M1236.0 920.0 C1231.0 733.7 1234.2 525.4 1231.5 372.0" stroke-width="9"/>
+          <path class="bNode" d="M1228.3 806.3 L1239.5 806.1" stroke-width="2.0"/>
+          <path class="bNode" d="M1227.5 690.8 L1238.6 690.8" stroke-width="2.0"/>
+          <path class="bNode" d="M1227.3 577.5 L1238.4 577.5" stroke-width="2.0"/>
+          <path class="bNode" d="M1227.0 470.1 L1238.1 470.0" stroke-width="2.0"/>
+          <use href="#bLeafWs" transform="translate(1218.7 367.7) rotate(-161.4) scale(1.103)"/>
+          <use href="#bLeafWs" transform="translate(1220.5 360.8) rotate(-134.6) scale(1.009)"/>
+          <use href="#bLeafWs" transform="translate(1229.1 356.9) rotate(-98.9) scale(0.822)"/>
+          <use href="#bLeafWs" transform="translate(1235.7 360.9) rotate(-69.4) scale(0.974)"/>
+          <use href="#bLeafWs" transform="translate(1236.4 368.4) rotate(-36.5) scale(0.968)"/>
+          <use href="#bLeafWs" transform="translate(1218.0 422.5) rotate(-154.1) scale(1.381)"/>
+          <use href="#bLeafWs" transform="translate(1230.1 414.9) rotate(-98.5) scale(0.908)"/>
+          <use href="#bLeafWs" transform="translate(1239.9 418.6) rotate(-55.0) scale(1.061)"/>
+          <use href="#bLeafWs" transform="translate(1226.7 498.0) rotate(-149.8) scale(1.386)"/>
+          <use href="#bLeafWs" transform="translate(1231.1 490.4) rotate(-98.0) scale(1.237)"/>
+          <use href="#bLeafWs" transform="translate(1237.1 495.9) rotate(-51.7) scale(1.336)"/>
+        </g>
+        <g class="scRidge scNear"><path d="M-30 812 C110 782 232 800 356 810 C480 820 604 790 726 795 C848 800 968 822 1088 816 C1208 810 1350 786 1470 800 L1470 920 L-30 920 Z"/></g>
+        
+      </svg>
+    </div>
+
+    <div class="top" id="topBar">
+      <div class="brand">
+        <div class="brandMini"><img src="assets/logo-icon.png" alt="" width="26" height="26" /></div>
+        <div class="brand-text">
+          <div class="title" id="wsViewTitle">Bảng điều khiển</div>
+          <div class="sub" id="wsViewSub">Tổng quan hành trình học tập của bạn</div>
+        </div>
+      </div>
+      <div class="topActions">
+        <span class="ws-streakChip hidden" id="wsStreakChip">🔥 <b id="wsStreakNum">0</b> ngày</span>
+        <button id="themeToggle" class="btn secondary iconBtn" type="button" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng tối" aria-pressed="false">🌙</button>
+        <button type="button" id="backLibrary" class="btn secondary backBtn hidden">← Game từ vựng</button>
+      </div>
+    </div>
+
+    <!-- ═══ Bảng điều khiển (mới) ═══ -->
+    <!-- @include features/dashboard/view.html -->
+
+      <!-- @include features/library/view.html -->
+
+      <!-- Mục "Bộ câu cá nhân" đã được gỡ bỏ theo yêu cầu người dùng -->
+
+      <!-- @include features/ai/view.html -->
+
+      <!-- ═══ ★ LUYỆN PHÁT ÂM — 1) CHỌN BỘ CÂU (vào trước, giống Thư viện) ═══ -->
+      <!-- @include features/pronunciation/library.html -->
+
+      <!-- ═══ ★ LUYỆN PHÁT ÂM — 2) MÀN LUYỆN (vừa đúng 1 màn hình) ═══ -->
+      <!-- @include features/pronunciation/view.html -->
+
+      <!-- @include features/typing/view.html -->
+
+      <!-- ★ Bảng xếp hạng Luyện gõ — mục riêng trên thanh bên (chỉ tính số câu luyện được) -->
+      <!-- @include features/ranking/view.html -->
+
+      <!-- @include features/games/view.html -->
+
+      <!-- @include features/game/view.html -->
+
+  <!-- ===== GAME KHU VƯỜN PINYIN & CUNG THỦ đã được gỡ bỏ theo yêu cầu người dùng ===== -->
+
+  </div>
+</div>
+

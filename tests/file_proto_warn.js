@@ -9,9 +9,9 @@
    (cần server/serve.js đang chạy ở cổng 8080 cho mục B)
 */
 const { chromium } = require('playwright-core');
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const FILE_URL = 'file:///C:/Users/ADMIN/Downloads/gopinyin/index.html';
-const HTTP_URL = 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const FILE_URL = process.env.TEST_FILE_URL || require('node:url').pathToFileURL(require('node:path').resolve(__dirname, '../dist/index.html')).href;
+const HTTP_URL = process.env.TEST_URL || 'http://localhost:8080/';
 
 let pass = 0, fail = 0;
 function check(name, ok, detail) {

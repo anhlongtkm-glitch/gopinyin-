@@ -1,0 +1,142 @@
+<section id="pronCard" class="card studyShell hidden pronView">
+        <div class="fileWarn hidden" data-filewarn role="alert">
+          <span class="fileWarnIco" aria-hidden="true">⚠️</span>
+          <span class="fileWarnTxt">Đang mở bằng <b>file://</b> → Chrome hỏi lại quyền micro <b>mỗi lần nói</b>. <b>Nháy đúp <code>start.bat</code></b> trong thư mục gopinyin → trình duyệt tự mở đúng địa chỉ → chỉ hỏi quyền <b>một lần</b>.</span>
+          <span class="fileWarnActs">
+            <button type="button" class="btn primary btnSm" data-filewarn-go>Chuyển sang localhost</button>
+            <button type="button" class="btn secondary btnSm" data-filewarn-hide>Ẩn</button>
+          </span>
+        </div>
+        <!-- ★ ĐẦU THẺ — thống kê + thanh tiến độ (cùng bộ khung với màn Luyện gõ) -->
+        <div class="studyHead">
+          <div class="stats">
+            <div class="stat"><b id="pronProg">0/0</b><span>Tiến độ</span></div>
+            <div class="stat" data-kind="ok"><b id="pronGood">0</b><span>Phát âm tốt</span></div>
+            <div class="stat" data-kind="bad"><b id="pronNeed">0</b><span>Cần cải thiện</span></div>
+            <div class="stat" data-kind="combo"><b id="pronStreak">0</b><span>Chuỗi tốt</span></div>
+            <div class="stat"><b id="pronAvg">—</b><span>Điểm TB</span></div>
+            <div class="stat" data-kind="speed"><b id="pronTries">0</b><span>Lượt nói</span></div>
+          </div>
+          <div class="progress"><div id="pronBar" class="bar"></div></div>
+        </div>
+
+        <!-- Thanh công cụ — 3 nhóm, giống hệt màn luyện gõ -->
+        <div class="studyControls pronControls">
+          <div class="ctrlZone" role="group" aria-label="Nội dung">
+            <button id="pronBackBtn" class="btn secondary btnSm" type="button" title="Quay lại chọn bộ câu khác">← Bộ khác</button>
+            <span class="ctrlZoneLabel">📚 Nội dung</span>
+            <select id="pronSource" class="select selectVoice" aria-label="Chọn bộ nội dung" title="Chọn bộ nội dung để luyện"></select>
+            <select id="pronFilter" class="select" aria-label="Lọc câu" title="Lọc câu">
+              <option value="all">Tất cả câu</option>
+              <option value="new">Chưa luyện</option>
+              <option value="redo">Cần luyện lại</option>
+              <option value="done">Đã đạt mục tiêu</option>
+            </select>
+          </div>
+          <div class="ctrlZone" role="group" aria-label="Âm thanh mẫu">
+            <span class="ctrlZoneLabel">🔊 Giọng mẫu</span>
+            <select id="pronRate" class="select" aria-label="Tốc độ đọc mẫu" title="Tốc độ đọc mẫu (không ảnh hưởng việc chấm điểm)">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1.0×</option>
+              <option value="1.25">1.25×</option>
+            </select>
+            <select id="pronVoice" class="select selectVoice" aria-label="Giọng đọc mẫu" title="Giọng đọc mẫu"><option value="">Giọng tự động</option></select>
+            <button id="pronAutoSample" class="toggleBtn off" type="button" aria-pressed="false" title="Tự phát câu mẫu khi chuyển câu">
+              <span class="tgIco" aria-hidden="true">🔊</span><span class="tgTxt">Tự nghe mẫu</span>
+            </button>
+          </div>
+          <div class="ctrlZone" role="group" aria-label="Hiển thị">
+            <span class="ctrlZoneLabel">👁 Hiển thị</span>
+            <button id="pronPyToggle" class="toggleBtn" type="button" aria-pressed="true" title="Ẩn/hiện pinyin">
+              <span class="tgIco" aria-hidden="true">🅿️</span><span class="tgTxt">Pinyin</span>
+            </button>
+            <button id="pronHanToggle" class="toggleBtn" type="button" aria-pressed="true" title="Ẩn/hiện chữ Hán">
+              <span class="tgIco" aria-hidden="true">🀄</span><span class="tgTxt">Chữ Hán</span>
+            </button>
+            <button id="pronViToggle" class="toggleBtn" type="button" aria-pressed="true" title="Ẩn/hiện nghĩa tiếng Việt">
+              <span class="tgIco" aria-hidden="true">👁️</span><span class="tgTxt">Nghĩa</span>
+            </button>
+            <button id="pronAutoNext" class="toggleBtn off" type="button" aria-pressed="false" title="Tự sang câu tiếp sau khi xem kết quả">
+              <span class="tgIco" aria-hidden="true">⏭</span><span class="tgTxt">Tự sang câu</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="studyBody" id="pronBody">
+          <div id="pronArea" class="studyArea">
+            <div class="questionBox pronBox">
+              <div class="qbRow" id="pronViLine">
+                <div class="label">Tiếng Việt</div>
+                <div id="pronVi" class="prompt"></div>
+              </div>
+              <div class="qbRow" id="pronHanLine">
+                <div class="label">Chữ Hán <span class="pronHanHint">— bấm vào từng chữ để xem chi tiết</span></div>
+                <div id="pronHanzi" class="hanzi pronHanzi"></div>
+              </div>
+              <div class="qbRow" id="pronPyLine">
+                <div class="label">Pinyin</div>
+                <div id="pronPy" class="pronPy"></div>
+              </div>
+
+              <!-- Vùng luyện nói -->
+              <div class="pronStage">
+                <button id="pronMicBtn" class="pronMic" type="button" aria-label="Bắt đầu nói">
+                  <span class="pronMicRing" aria-hidden="true"></span>
+                  <span class="pronMicIco" aria-hidden="true">🎤</span>
+                  <span class="pronMicTxt">Nhấn để bắt đầu nói</span>
+                  <span class="pronMicSub">hoặc nhấn <b>Enter</b></span>
+                </button>
+                <div class="pronMeter" aria-hidden="true">
+                  <canvas id="pronWave" width="720" height="72"></canvas>
+                  <span id="pronTimer" class="pronTimer hidden">0.0s</span>
+                </div>
+              </div>
+
+              <div id="pronStatus" class="pronStatus" role="status" aria-live="polite" aria-atomic="true"></div>
+
+              <div class="audioRow">
+                <button id="pronSampleBtn" class="audioBtn" type="button" title="Nghe phát âm chuẩn của câu (F1)">🔊 <span>Nghe phát âm mẫu</span></button>
+                <button id="pronPlayMineBtn" class="btn secondary btnSm" type="button" disabled title="Nghe lại bản ghi vừa nói">▶ Bản ghi của tôi</button>
+              </div>
+
+              <div class="kbdHint" id="pronKbdHint">
+                <span><span class="kbd">Enter</span> Bắt đầu / dừng nói</span>
+                <span><span class="kbd">Space</span> Câu tiếp</span>
+                <span><span class="kbd">F1</span> Nghe mẫu</span>
+              </div>
+            </div>
+
+            <!-- Kết quả chấm (cột phải trên máy tính, dưới thẻ trên điện thoại) -->
+            <div id="pronResult" class="pronResult hidden"></div>
+          </div>
+
+          <div id="pronComplete" class="complete hidden">
+            <div class="emoji">🎉</div>
+            <h2>Đã hết danh sách</h2>
+            <p id="pronCompleteMsg"></p>
+            <button type="button" id="pronRestartBtn" class="btn primary">Luyện lại từ đầu</button>
+          </div>
+        </div><!-- /.studyBody -->
+
+        <!-- ═══ CHÂN THẺ — nút điều hướng câu + thông tin bộ (giống màn Luyện gõ) ═══ -->
+        <div class="studyFoot">
+          <div class="actions pronActions">
+            <div class="actGroup">
+              <button id="pronPrevBtn" class="btn secondary" type="button" title="Quay lại câu trước">◀ Câu trước</button>
+              <button id="pronRetryBtn" class="btn secondary" type="button" title="Nói lại câu này (tạo lượt mới)">↺ Nói lại</button>
+              <button id="pronSkipBtn" class="btn secondary" type="button" title="Bỏ qua câu này (không tính là đã luyện xong)">Bỏ qua ▶</button>
+            </div>
+            <span class="actDivider" aria-hidden="true"></span>
+            <div class="actGroup">
+              <button id="pronNextBtn" class="btn primary" type="button" title="Sang câu tiếp theo">Câu tiếp ▶</button>
+            </div>
+          </div>
+          <div class="studyFootRight pronFootRight">
+            <span id="pronInfo" class="fileinfo"></span>
+            <button type="button" id="pronResetBtn" class="btn danger btnSm" title="Xóa tiến độ luyện phát âm của bộ này">Xóa tiến độ</button>
+          </div>
+        </div>
+
+        <!-- Popover chi tiết từng chữ -->
+        <div id="pronDetail" class="pronDetail hidden" role="dialog" aria-modal="false" aria-label="Chi tiết phát âm của chữ"></div>
+      </section>

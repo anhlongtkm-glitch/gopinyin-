@@ -1,0 +1,100 @@
+<section id="gameCard" class="card hidden gameArena">
+    <div class="gaHud">
+      <div class="gaHudLeft">
+        <span class="gaTrophy" aria-hidden="true">🏆</span>
+        <span class="gaScoreNum" id="gaScoreNum">0</span>
+      </div>
+      <div class="gaHudCenter" id="gaProgress">
+        <span class="gaDot" aria-hidden="true"></span>
+        <span class="gaStageChip" id="gaStageChip">Chặng 1 · 0/30</span>
+        Mốc <b id="gaMoc">1/14</b> · <b id="gaUnit">HSK 2</b>
+      </div>
+      <div class="gaHudRight">
+        <div class="gaHearts" id="gaHearts" title="Mạng">♥♥♥♡♡</div>
+      </div>
+    </div>
+    <!-- Thanh điều khiển: nằm TRÊN sân chơi nên không che chữ đang rơi -->
+    <div class="gaBar">
+      <div class="gaSettings" id="gaSettings">
+        <div class="gaSetRow">
+          <span class="gaSetLabel">Cấp HSK</span>
+          <div class="gaLevels" id="gaLevels" role="group" aria-label="Chọn cấp HSK">
+            <button class="gaLevelBtn" data-glevel="1" type="button" aria-pressed="false">1</button>
+            <button class="gaLevelBtn active" data-glevel="2" type="button" aria-pressed="true">2</button>
+            <button class="gaLevelBtn" data-glevel="3" type="button" aria-pressed="false">3</button>
+            <button class="gaLevelBtn" data-glevel="4" type="button" aria-pressed="false">4</button>
+            <button class="gaLevelBtn" data-glevel="5" type="button" aria-pressed="false">5</button>
+            <button class="gaLevelBtn" data-glevel="6" type="button" aria-pressed="false">6</button>
+          </div>
+        </div>
+        <div class="gaSetRow">
+          <label class="gaSetLabel" for="gaSpeed">Tốc độ</label>
+          <input id="gaSpeed" type="range" min="1" max="10" step="1" value="3" aria-label="Tốc độ rơi" />
+          <span class="gaSpeedTag" id="gaSpeedTag">Chậm</span>
+        </div>
+        <div class="gaSetRow">
+          <label class="gaSetLabel" for="gaDensity">Số thẻ</label>
+          <select id="gaDensity" class="gaSelect" aria-label="Số thẻ rơi cùng lúc">
+            <option value="1">1 thẻ</option>
+            <option value="2">2 thẻ</option>
+            <option value="3" selected>3 thẻ</option>
+            <option value="4">4 thẻ</option>
+            <option value="5">5 thẻ</option>
+          </select>
+        </div>
+      </div>
+      <div class="gaTools" role="toolbar" aria-label="Điều khiển game">
+        <button class="gaIconBtn" id="gaCloseBtn" type="button" title="Đóng (ván sẽ được giữ lại)">✕</button>
+        <button class="gaIconBtn" id="gaPauseBtn" type="button" title="Tạm dừng">⏸</button>
+        <button class="gaIconBtn" id="gaSoundBtn" type="button" title="Âm thanh">🔊</button>
+        <button class="gaIconBtn" id="gaKbdBtn" type="button" title="Bật bàn phím ảo" aria-pressed="false">⌨️</button>
+        <button class="gaIconBtn" id="gaPyBtn" type="button" title="Đang ẩn Pinyin — bấm hoặc Enter để xem gợi ý" aria-pressed="false">🔒</button>
+        <button class="gaIconBtn" id="gaFsBtn" type="button" title="Chơi toàn màn hình" aria-pressed="false">⛶</button>
+      </div>
+    </div>
+
+    <!-- Sân chơi: canvas + tàu + vạch đích + lớp phủ -->
+    <div class="gaStage" id="gaStage">
+      <canvas id="gaCanvas" class="gaCanvas" aria-label="Sân chơi bắn chữ"></canvas>
+      <div class="gaPlayer" id="gaPlayer" aria-hidden="true">
+        <svg id="gaShipSvg" viewBox="0 0 50 50" width="46" height="46">
+          <defs>
+            <linearGradient id="plG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#93c5fd"/><stop offset="1" stop-color="#1e3a8a"/>
+            </linearGradient>
+          </defs>
+          <!-- nòng pháo: chỉ rõ hướng ngắm -->
+          <rect x="22.5" y="1" width="5" height="13" rx="2.5" fill="#9ad8ff"/>
+          <rect x="23.8" y="1" width="1.4" height="13" rx=".7" fill="#e0f2fe" opacity=".9"/>
+          <!-- thân tàu, mũi nhọn hướng lên -->
+          <path d="M25 7 L11 20 L12 33 Q13 44 25 44 Q37 44 38 33 L39 20 Z" fill="url(#plG)" stroke="#9ad8ff" stroke-width="1.4"/>
+          <!-- buồng lái -->
+          <circle cx="25" cy="29" r="5" fill="#bfdbfe" stroke="#9ad8ff" stroke-width="1.2"/>
+          <!-- cánh hai bên -->
+          <path d="M11 30 L4 38 L11 37 Z" fill="#1e3a8a"/><path d="M39 30 L46 38 L39 37 Z" fill="#1e3a8a"/>
+        </svg>
+      </div>
+      <div class="gaFloor" aria-hidden="true"></div>
+      <div class="gaFloorLabel" id="gaFloorLabel">HSK 2 Vocabulary (3.0)</div>
+      <div class="gaOverlay" id="gaOverlay">
+        <div class="gaOverlayCard">
+          <div class="gaOverlayEmoji" id="gaOverlayEmoji">🎮</div>
+          <h2 id="gaOverlayTitle">Sẵn sàng?</h2>
+          <div class="gaStats hidden" id="gaOverlayStats"></div>
+          <div class="gaRules" id="gaOverlayMsg">
+            <div class="gaRule"><span class="gaRuleIco">🎯</span><span>Gõ <b>toàn bộ pinyin</b> của từ để <b>bắn nổ</b>.</span></div>
+            <div class="gaRule"><span class="gaRuleIco">💡</span><span><b>Enter</b> hiện/ẩn pinyin · <b>Backspace</b> đổi mục tiêu.</span></div>
+            <div class="gaRule"><span class="gaRuleIco">🔒</span><span>Gõ sai chỉ <b>mất combo</b> — không trừ điểm, không nhảy thẻ.</span></div>
+            <div class="gaRule"><span class="gaRuleIco">❤️</span><span><b>5 mạng</b>: thẻ qua vạch <b>−1</b> · thẻ <b style="color:#fb7185">♥</b> phá nổ <b>+1</b>.</span></div>
+          </div>
+          <div class="gaOverlayActions" id="gaOverlayActions">
+            <button class="gaBtn primary" id="gaStartBtn" type="button">▶ Bắt đầu</button>
+            <button class="gaBtn ghost hidden" id="gaNewBtn" type="button">↺ Ván mới</button>
+            <button class="gaBtn ghost" id="gaAdBtn" type="button">🎁 Nhận thêm 3 ♥</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bảng xếp hạng game đã được gỡ bỏ theo yêu cầu người dùng -->
+  </section>

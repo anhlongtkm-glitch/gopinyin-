@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════════════════════════
+   ★ HIỆU ỨNG LỖI KHI GÕ SAI — rung ô gõ + nền/viền đỏ
+   Ký tự sai vẫn không được nhập vào ô, nhưng người dùng thấy rõ là sai
+   (trước đây bị bỏ âm thầm nên tưởng phím bàn phím hỏng).
+   ═══════════════════════════════════════════════════════════ */
+#pinyinInput.shakeBad{
+  animation:gpShake .42s cubic-bezier(.36,.07,.19,.97) both,gpBadFlash .42s ease-out both;
+  border-color:var(--bad)!important;box-shadow:0 0 0 3px var(--bad-soft)!important}
+@keyframes gpShake{
+  10%,90%{transform:translateX(-2px)}
+  20%,80%{transform:translateX(4px)}
+  30%,50%,70%{transform:translateX(-7px)}
+  40%,60%{transform:translateX(7px)}
+}
+@keyframes gpBadFlash{
+  0%{background:var(--bad-soft)}
+  55%{background:var(--bad-soft)}
+  100%{background:transparent}
+}
+/* tôn trọng thiết lập "giảm chuyển động" của hệ điều hành */
+@media (prefers-reduced-motion: reduce){
+  #pinyinInput.shakeBad{animation:gpBadFlash .42s ease-out both;border-color:var(--bad)!important}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .ws-main::before,.lp-blob,.lp-chars span,.ws-upgradeBtn::after,.proOrbA,.proOrbB,
+  .proQrScan,.dashHero::after,.ws-navItem.active::before,.conic-ring,.star-field{animation:none!important}
+  *{scroll-behavior:auto!important}
+}
+

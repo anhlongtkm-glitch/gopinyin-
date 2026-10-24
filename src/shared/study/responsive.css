@@ -1,0 +1,77 @@
+/* ═══════════════════════════════════════════════════════════════
+   Màn hình hẹp: thanh điều khiển luyện gõ không được đẩy trang rộng ra
+   (select "Giọng" chứa tên giọng dài → tràn ngang → bàn phím ảo bị lệch)
+   ═══════════════════════════════════════════════════════════════ */
+.select{max-width:100%}
+@media (max-width:760px){
+  .studyControls{gap:6px}
+  .studyControls .controlGroup{flex:1 1 100%;min-width:0}
+  .studyControls .controlGroup .select{flex:1 1 auto;width:100%;min-width:0}
+  .studyControls .toggleBtn{flex:1 1 auto;justify-content:center}
+}
+
+/* toast không bị bàn phím ảo che */
+body.vk-open #toastHost{bottom:calc(var(--vk-h) + 16px)}
+
+/* HUD game gọn trên màn hình hẹp */
+@media (max-width:760px){
+  .gaHud{gap:8px}
+  .gaHearts{font-size:14px;white-space:nowrap}
+  .gaHudCenter{font-size:11px;padding:5px 10px;white-space:nowrap}
+  .gaScoreNum{font-size:18px}
+}
+
+/* ── Tiêu đề nhóm (Thư viện / Luyện phát âm) ──
+   ★ Đã bỏ khối "📖 Bộ câu của bạn": tiến độ nay hiện ngay trên từng thẻ. */
+.sectionTitle{font-size:16px;font-weight:800;margin:0 0 10px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sectionTitle .muted{font-size:12px;font-weight:500;color:var(--muted,#8b90a0);min-width:0}
+
+/* ── Bộ câu AI đã lưu (ngay dưới khung "AI sinh câu") ── */
+.aiSetsWrap{margin:18px 0 4px;padding:16px 18px;background:var(--card-2,rgba(255,255,255,.55));
+  border:1px solid var(--line,#e6e8ef);border-radius:16px}
+.aiSetsHead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.aiSetsHead h3{margin:0;font-size:16px;font-weight:800}
+.aiSetsHead .small{color:var(--muted,#8b90a0);font-size:12px}
+.aiSetsGrid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.aiSetCard{display:flex;flex-direction:column;gap:8px}
+.aiSetCard .libraryMeta{font-size:12px;color:var(--muted,#8b90a0);line-height:1.65}
+.aiSetPrompt{font-size:11.5px;color:var(--muted,#8b90a0);opacity:.85;
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.aiSetBar{height:5px;border-radius:99px;background:var(--line,#e6e8ef);overflow:hidden}
+.aiSetBar i{display:block;height:100%;background:var(--primary,#1fc8a2);border-radius:99px;transition:width .3s}
+.aiSetActs{display:flex;gap:7px;margin-top:auto;padding-top:4px;flex-wrap:wrap}
+.aiSetActs .miniBtn{flex:1 1 auto;justify-content:center}
+.aiSetsEmpty{grid-column:1/-1;text-align:center;padding:22px 12px;color:var(--muted,#8b90a0);font-size:13px}
+.aiSetsEmpty .emoji{font-size:26px;display:block;margin-bottom:6px}
+/* Nhãn loại nội dung của bộ AI (câu / từ vựng / cả hai) */
+.aiSetBadges{display:flex;gap:6px;flex-wrap:wrap}
+.aiSetBadge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;
+  font-size:10.5px;font-weight:800;letter-spacing:.02em;white-space:nowrap;
+  background:var(--card-3,rgba(0,0,0,.04));color:var(--text-2);border:1px solid var(--line,#e6e8ef)}
+.aiSetBadge.k-word{background:rgba(31,200,162,.14);color:var(--primary,#12a884);border-color:rgba(31,200,162,.35)}
+.aiSetBadge.k-both{background:rgba(120,110,255,.14);color:#6b63e8;border-color:rgba(120,110,255,.32)}
+/* Gợi ý dưới ô chọn "Học gì" */
+.aiKindHint{margin-top:-2px;padding:9px 12px;border-radius:10px;font-size:12.5px;line-height:1.6;
+  background:var(--primary-soft,rgba(31,200,162,.09));color:var(--text-2);
+  border:1px solid rgba(31,200,162,.22)}
+.aiKindHint:empty{display:none}
+/* Công tắc "Soát lại nghĩa" trong Tuỳ chọn nâng cao */
+.aiCheck{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.55;
+  color:var(--text-2);cursor:pointer;padding:9px 12px;border-radius:10px;
+  background:var(--card-2,rgba(0,0,0,.02));border:1px solid var(--line,#e6e8ef)}
+.aiCheck input{width:16px;height:16px;margin:2px 0 0;flex:none;accent-color:var(--primary,#1fc8a2);cursor:pointer}
+.aiCheck small{color:var(--muted,#8b90a0);font-weight:600}
+.aiCheck b{color:var(--text)}
+
+/* ── Bảng xếp hạng Luyện gõ (mục riêng trên thanh bên, #rankCard) ── */
+.libRankHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.libRankHead h3{margin:0;font-size:17px;font-weight:800}
+.libRankHead .small{color:var(--muted,#8b90a0);font-size:12px}
+/* Bảng luyện gõ chỉ có 3 cột (không có cột "Điểm"); cột Điểm do rankRowFor thêm
+   vào bị ẩn bằng .hidden → ép grid 3 cột cho khỏi hở cột trống bên phải. */
+#rankCard .rankTableHead,#rankCard .rankRow{grid-template-columns:56px minmax(0,1fr) 132px}
+#rankCard .rankScore.hidden{display:none!important}
+
+/* ★ Người dùng thích giảm chuyển động / máy yếu: tắt các hiệu ứng nền chạy vô hạn
+   (aurora, blob, chữ trôi, sheen, nav glow, quét QR…) để việc cuộn mượt mà,
+   không bị "dựt dựt". Không tắt animation giao diện ngắn (toast, modal, viewIn). */

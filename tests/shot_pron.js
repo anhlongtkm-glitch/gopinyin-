@@ -1,7 +1,7 @@
 /* Chụp ảnh màn Luyện phát âm: trạng thái sẵn sàng + trạng thái có kết quả + mobile */
 const { chromium } = require('playwright-core');
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const URL = 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8080/';
 
 async function boot(browser, viewport) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 2 });

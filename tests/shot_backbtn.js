@@ -1,8 +1,8 @@
 /* Chụp ảnh: bấm nút "← Game từ vựng" ở góc trên bên phải → phải về
    đúng màn sảnh "Game từ vựng" (KHÔNG mở thư viện chồng lên). */
 const { chromium } = require('playwright-core');
-const URL = 'http://localhost:8080/';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 (async () => {
   const browser = await chromium.launch({

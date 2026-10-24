@@ -2,12 +2,25 @@
 
 **Gopinyin** là một ứng dụng web học tiếng Trung (Mandarin) dành cho người Việt: học gõ Pinyin có dấu, nhận diện chữ Hán (nhận mặt chữ), học từ vựng, luyện nghe, và tạo câu bằng AI. Giao diện tối giản, nhiều hiệu ứng, có chế độ Sáng/Tối, âm thanh tương tác và chế độ Pro nâng cao.
 
-> Ứng dụng hoàn toàn tĩnh (static HTML/CSS/JS), **không cần server** để chạy. Dữ liệu (HSK 1–9, từ vựng, từ điển phân đoạn chữ Hán) được nhúng sẵn trong `assets/data.js`.
+> Mã nguồn HTML/CSS/JS được chia theo tính năng trong `src/`. Chạy `npm install` lần đầu, sau đó `npm start` để phát triển hoặc `npm run build` để tạo website tĩnh trong `dist/`. Dữ liệu được nhúng từ `src/data/catalog.js`; tiến độ và cấu hình trình duyệt giữ nguyên.
 
-> ⚠️ **ĐỪNG mở `index.html` trực tiếp bằng `file://` nếu bạn dùng tính năng Luyện phát âm.**
+## Phát triển và tìm mã nguồn
+
+```bash
+npm install       # lần đầu; dùng npm ci khi cài đúng lockfile
+npm start         # build + localhost:8080 + theo dõi thay đổi
+npm run serve     # build + server, không tự mở trình duyệt
+npm run build     # tạo dist/ để triển khai hoặc mở dist/index.html
+npm test          # tự mở server riêng, chạy 11 bộ hồi quy
+npm run test:build
+```
+
+**Chỉ sửa mã trong `src/`, không sửa `dist/`.** HTML, JS và CSS của từng chức năng nằm cạnh nhau trong `src/features/`. Hướng dẫn tìm file, thứ tự khởi tạo và kiểm thử: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+> ⚠️ **ĐỪNG mở `dist/index.html` trực tiếp bằng `file://` nếu bạn dùng tính năng Luyện phát âm.**
 > Chrome **không ghi nhớ quyền micro cho địa chỉ `file://`**, nên **mỗi lần bấm nút nói đều hỏi lại quyền** —
 > đây là giới hạn của trình duyệt, không sửa được bằng JavaScript. Hãy chạy qua `http://localhost`:
-> nháy đúp **`start.bat`** (Windows) hoặc `npm start` / `node server/serve.js` → mở `http://localhost:8080`.
+> nháy đúp **`start.bat`** (Windows, sau khi cài dependencies) hoặc `npm start` → mở `http://localhost:8080`.
 > Khi chạy qua `localhost`, quyền micro chỉ hỏi **một lần**.
 > Nếu bạn đã dùng bản `file://` và có tài khoản/tiến độ ở đó, app có nút **“Chuyển sang localhost (giữ tiến độ)”**
 > — dữ liệu `localStorage` được chuyển sang, không phải học lại từ đầu.
@@ -29,7 +42,7 @@
 | **AI tạo câu** | Sinh câu tiếng Trung theo chủ đề (Gemini / OpenRouter). **Chỉ dành cho Pro.** |
 | **Luyện phát âm (mới)** | Nói tiếng Trung bằng micro, chấm điểm từng chữ. **Vào mục là màn chọn bộ câu** (thẻ HSK 1–9 + bộ đã lưu, có thanh tiến độ riêng từng bộ) rồi mới vào luyện — giống luồng của màn Luyện gõ. Dùng **chung kho câu HSK** với Luyện gõ (không có bộ dữ liệu riêng), nên tiến độ và thứ tự câu khớp nhau. Màn luyện **vừa đúng 1 khung hình, không phải cuộn** (kết quả chấm nằm ở cột phải). Có nghe mẫu (zh-CN), đo âm lượng, tự dừng khi im lặng, chấm theo từng âm tiết, tô màu chữ đúng/cần sửa, nghe lại bản ghi, thống kê 6 chỉ số + lịch sử từng lượt. **Micro chỉ xin quyền 1 lần** cho cả phiên luyện. Xem mục **Chấm điểm phát âm** bên dưới để biết phần nào cần cấu hình thêm. |
 | **Trò chơi "bắn chữ"** | Chữ Hán rơi xuống, gõ Pinyin để bắn nổ (cấp HSK 1–3 miễn phí, HSK 4–6 cần Pro). Tàu tự xoay nòng về thẻ đang gõ, mỗi ký tự đúng có tiếng bắn, gõ sai chỉ mất combo (không trừ điểm), có tạm dừng / chơi tiếp / toàn màn hình. |
-| **Sảnh "Game từ vựng"** | Mục cha của các trò chơi: mỗi game là một **thẻ có ảnh đại diện (SVG)**, mô tả và nút chơi. Hiện có **🚀 Game bắn chữ** + 2 thẻ "Sắp ra mắt" (chỗ trống sẵn cho 2–3 game sau này). Bấm thẻ mới vào màn chơi; bấm ✕ trong game quay lại sảnh. Nút **"← Game từ vựng"** trên góc phải thanh tiêu đề cũng quay về đúng sảnh này. **Cách thêm game mới:** copy một `<button class="gameTile" data-view="…">` trong `index.html` (`#gamesCard`) rồi thêm `data-view` mới vào `VIEW_META` + `showView()` trong `assets/gopinyin.js`. |
+| **Sảnh "Game từ vựng"** | Mục cha của các trò chơi: mỗi game là một **thẻ có ảnh đại diện (SVG)**, mô tả và nút chơi. Hiện có **🚀 Game bắn chữ** + 2 thẻ "Sắp ra mắt" (chỗ trống sẵn cho 2–3 game sau này). Bấm thẻ mới vào màn chơi; bấm ✕ trong game quay lại sảnh. Nút **"← Game từ vựng"** trên góc phải thanh tiêu đề cũng quay về đúng sảnh này. **Cách thêm game mới:** copy một `<button class="gameTile" data-view="…">` trong `src/features/games/view.html` (`#gamesCard`) rồi thêm `data-view` mới vào `VIEW_META` + `showView()` trong `src/app/navigation.js`. |
 | **Bảng xếp hạng** | Số câu học **đúng** kèm điểm game bên cạnh, xem theo **Hôm nay** và **Tuần này** (câu sai không tính). Lưu cục bộ ở `gp:lb`, mỗi tài khoản một dòng. |
 | **Dùng thử Pro 7 ngày** | Mỗi tài khoản mới được tặng **1 tuần dùng Pro miễn phí** (cấp ngay khi đăng ký/đăng nhập lần đầu, lưu ở `gp:trial:<email>`). Dashboard hiện băng đếm ngày + thanh tiến trình, modal Pro hiện "Còn N/7 ngày", sidebar đổi thành **TRIAL**. Hết hạn → tự khoá lại AI & HSK 4–9. |
 | **Pro Upgrade** | Mở khóa nội dung sâu (HSK 4–9) + AI. Bảng giá ở landing có **công tắc Gói tháng / Gói năm**, mỗi khách nhận **mã QR động riêng** (đúng số tiền + nội dung `GOPINYIN {email}`), không dùng ảnh chụp tài khoản. |
@@ -46,23 +59,27 @@
 
 ```
 gopinyin/
-├── index.html              # Trang chính (landing + workspace + modals)
+├── src/
+│   ├── index.html          # Khung HTML; @include ghép các màn khi build
+│   ├── app/                # Entry, bootstrap, điều hướng, workspace, cấu hình
+│   ├── features/           # HTML + JS + CSS theo chức năng
+│   ├── shared/             # Modal, toast, storage, âm thanh, ngôn ngữ, khung học
+│   ├── styles/index.css    # Thứ tự import CSS, giữ nguyên cascade
+│   └── data/catalog.js     # Dữ liệu nhúng dùng chung
+├── scripts/                # Build và môi trường phát triển
+├── dist/                   # Sinh tự động; chỉ triển khai nội dung thư mục này
 ├── start.bat               # Windows: chạy http://localhost:8080 (cần cho micro)
-├── package.json            # npm start → server/serve.js
+├── package.json            # Build + watch + kiểm thử
+├── package-lock.json       # Khóa dependency cho npm ci
 ├── assets/
-│   ├── style.css           # Hệ thống thiết kế, toàn bộ giao diện
-│   ├── data.js             # Dữ liệu: HSK 1–9, từ vựng, từ điển chữ Hán, LATIN→HANZI
-│   ├── app-core.js         # Logic cốt lõi (DB, speech, pinyin, AI, dịch, game, render)
-│   ├── gopinyin.js         # SFX, auth, Pro, dashboard, nhận mặt chữ, hiệu ứng trang chủ
-│   ├── pronounce.js        # Luyện phát âm: micro, nghe mẫu, canh âm tiết, chấm điểm, thống kê
-│   ├── vkbd.js             # Bàn phím ảo (game + luyện gõ)
 │   ├── vocab-pack.js       # 206 chủ đề · 41.621 từ (nạp lười)
 │   ├── logo.png            # Logo Gopinyin
 │   └── qr-vietcombank.png  # (dự phòng) ảnh QR tĩnh — app dùng QR động img.vietqr.io
 ├── server/
 │   ├── serve.js            # Server tĩnh cho dev (http://localhost:8080) — cần cho micro
 │   └── pro-server.js       # Webhook thanh toán + chấm phát âm (Azure, tuỳ chọn)
-├── tests/                  # Bộ kiểm thử Playwright + ảnh chụp màn hình
+├── tests/                  # Playwright; kết quả mới lưu trong .cache/
+├── docs/ARCHITECTURE.md    # Muốn sửa tính năng nào, tìm ở đâu
 └── README.md
 ```
 
@@ -73,18 +90,19 @@ gopinyin/
 ```bash
 # Windows: nháy đúp start.bat  (tự mở http://localhost:8080)
 # hoặc:
-npm start                 # = node server/serve.js
+npm install               # lần đầu
+npm start                 # build + watch + server
 node server/serve.js --no-open   # không tự mở trình duyệt
 PORT=5500 node server/serve.js   # đổi cổng
 ```
 
-`server/serve.js` chỉ dùng `http/fs/path` của Node, **không cần cài gói nào**. Nó phục vụ đúng thư mục dự án,
-không cache (sửa file là thấy ngay), và có 2 endpoint phụ: `/__gopinyin` (để trang `file://` nhận diện server)
+`server/serve.js` tự build trước khi mở server và chỉ phục vụ `dist/`. Development dùng `npm start`
+để tự build lại khi sửa HTML/JS/CSS; tải lại trình duyệt để xem. Hai endpoint phụ vẫn là `/__gopinyin` (để trang `file://` nhận diện server)
 và `/__import` (chuyển `localStorage` từ bản `file://` sang `localhost`).
 
-Ứng dụng là **static site** — khi đưa lên hosting thật thì chỉ cần upload toàn bộ thư mục:
+Ứng dụng sau build là **static site** — chạy `npm run build`, rồi chỉ upload nội dung `dist/`:
 
-1. **GitHub Pages / Netlify / Vercel**: kéo thả thư mục `gopinyin/` là chạy được.
+1. **GitHub Pages / Netlify**: phục vụ `dist/`. **Vercel**: import repository; cấu hình build/output đã có trong `vercel.json`.
 2. **Hosting Việt Nam** (ví dụ Viettel Web, FPT, PA Vietnam): upload qua FTP vào thư mục gốc (`public_html`).
 3. **Tên miền**: trỏ tên miền đã mua về hosting, đảm bảo `index.html` nằm ở root.
 
@@ -92,7 +110,7 @@ và `/__import` (chuyển `localStorage` từ bản `file://` sang `localhost`).
 
 ### Kết nối thanh toán thật (Pro)
 Hiện tại nút "Kích hoạt Pro" là demo — người dùng chuyển khoản thủ công qua QR Vietcombank và nhấn kích hoạt. Để **tự động nâng cấp khi tiền về**, chạy `server/pro-server.js` (webhook SePay/Casso/payOS) rồi đặt `window.PRO_VERIFY_URL` trỏ tới endpoint `/pro/status`. Ngoài ra có thể:
-- Thay thế hàm `setPro()` trong `assets/gopinyin.js` bằng callback gọi webhook xác nhận thanh toán (Vietcombank API / bên thứ 3 như PayOS, Sepay).
+- Hàm `setPro()` nằm trong `src/features/pro/entitlements.js`; cấu hình đối soát công khai đặt ở `src/app/public-config.js`.
 - Nội dung chuyển khoản chuẩn: **`GOPINYIN {email}`** để đối soát.
 
 > ⚠️ **Server BẮT BUỘC có `WEBHOOK_SECRET`.** Thiếu khoá thì server từ chối khởi động, vì
@@ -109,7 +127,7 @@ Hiện tại nút "Kích hoạt Pro" là demo — người dùng chuyển khoả
 - Số tài khoản Vietcombank: **9342383345**
 - Gói: Tháng **39.000đ** / Gói năm **399.000đ**
 
-> 🔐 **Thông tin ngân hàng đang hard-code trong `assets/gopinyin.js` (`PRO_BANK`) và trong `index.html`.**
+> 🔐 **Thông tin ngân hàng dùng ở `src/features/pro/checkout.js` (`PRO_BANK`) và `src/features/pro/view.html`.**
 > Đây là thông tin công khai (khách phải thấy để chuyển tiền) nên không phải bí mật, nhưng khi
 > thương mại hoá nên đưa vào một chỗ cấu hình duy nhất (hoặc endpoint server) để đổi tài khoản
 > không phải sửa nhiều file.
@@ -117,7 +135,7 @@ Hiện tại nút "Kích hoạt Pro" là demo — người dùng chuyển khoả
 ### Khung học dùng chung (Luyện gõ ↔ Luyện phát âm)
 
 Hai màn luyện **chỉ khác nhau ở thân thẻ và vài nút chức năng**, còn lại dùng đúng một bộ khung
-`.studyShell` trong `assets/style.css` — sửa một chỗ là cả hai đổi theo:
+`.studyShell` trong `src/shared/study/shell.css` — sửa một chỗ là cả hai đổi theo:
 
 | Phần | Nội dung (giống nhau ở cả 2 màn) |
 |---|---|
@@ -196,7 +214,7 @@ ALLOWED_ORIGIN=https://gopinyin.vn node server/pro-server.js
 - Nếu mở cho người dùng thật, hãy đặt **hạn mức theo tài khoản** (ví dụ N lượt/ngày) ở server trước khi
   bật, vì mỗi lượt là tiền thật.
 
-**Muốn đổi nhà cung cấp khác?** Chỉ cần sửa `PronAssess.server()` trong `assets/pronounce.js` và route
+**Muốn đổi nhà cung cấp khác?** Sửa `PronAssess.server()` trong `src/features/pronunciation/assessment.js` và route
 `POST /api/pron` trong `server/pro-server.js` — phần còn lại (canh âm tiết, giao diện, thống kê) không phụ thuộc dịch vụ nào.
 
 ### Hạn dùng của gói Pro
@@ -212,17 +230,17 @@ ALLOWED_ORIGIN=https://gopinyin.vn node server/pro-server.js
 - Khi tạo tài khoản (hoặc đăng nhập tài khoản cũ chưa nhận), app gọi `ensureTrial()` → ghi `gp:trial:<email> = {start, end}` với `end = start + 7 ngày`.
 - `isPro()` trả `true` nếu **đã mua** (`isPaidPro()`) **hoặc** còn trong hạn dùng thử (`trialActive()`), nên mọi chỗ khoá Pro (AI, HSK 4–9) tự mở.
 - UI dùng thử: `#trialBanner` (dashboard), `#proTrial` (modal Pro), badge `TRIAL` ở sidebar, dòng `Dùng thử · còn N ngày`.
-- Muốn đổi số ngày: sửa hằng `TRIAL_DAYS` trong `assets/gopinyin.js`. Muốn tắt hẳn: cho `ensureTrial()` trả `null`.
+- Muốn đổi số ngày: sửa `TRIAL_DAYS` trong `src/features/pro/entitlements.js`. Muốn tắt hẳn: cho `ensureTrial()` trả `null`.
 
 ## 🔧 Tuỳ chỉnh nhanh
-- **Màu thương hiệu**: sửa `--primary` / `--primary-2` / `--brand-grad` trong `assets/style.css`.
+- **Màu thương hiệu**: sửa `--primary` / `--primary-2` / `--brand-grad` trong `src/shared/styles/tokens-base.css`; xem override ở `polish.css` cùng thư mục.
   Bộ màu lấy trực tiếp từ logo: teal `#0BA488`, than `#3D464D`.
 - **Logo & icon**: bộ asset nằm trong `assets/` — `logo-full.png` (lockup nền sáng),
   `logo-full-dark.png` (lockup cho giao diện tối), `logo-mark.png` (panda tách nền trong suốt),
   `logo-icon.png` / `icon-512.png` / `icon-192.png` (app icon), `favicon-16/32/48.png`,
   `apple-touch-icon.png`. Manifest: `assets/site.webmanifest`.
 - **Cảnh nền Trung Hoa** (núi non, rừng trúc, sương, chim): khối `<svg class="lp-scenery">` trong
-  `index.html` + nhóm luật `.sc*` trong `assets/style.css`. Màu và độ đậm điều khiển bằng biến
+  `src/features/landing/view.html` + nhóm luật `.sc*` trong `src/shared/styles/brand.css`. Màu và độ đậm điều khiển bằng biến
   `--sc-far`, `--sc-mid`, `--sc-near`, `--sc-bamboo`, `--sc-mist`, `--sc-sun` (đặt riêng cho
   theme sáng và tối).
 - **Cảnh nền trong không gian học** (không chỉ landing): khối `<div class="ws-scenery">` (đặt ngay
@@ -238,15 +256,15 @@ ALLOWED_ORIGIN=https://gopinyin.vn node server/pro-server.js
   `color-mix()` bán trong suốt + `backdrop-filter` để cảnh nền xuyên qua. Muốn đặc lại thì tăng
   phần trăm trong `color-mix(in srgb, var(--card) 94%, transparent)`. Trình duyệt không hỗ trợ
   `color-mix` tự rơi về nền đặc nhờ khối `@supports not`.
-- **Giá Pro / thông tin ngân hàng**: tìm đoạn "Vietcombank" trong `index.html` và `gopinyin.js`.
-- **Ngưỡng chấm phát âm**: đầu `assets/pronounce.js` có `GOOD` (mốc "phát âm tốt", mặc định 75),
+- **Giá Pro / thông tin ngân hàng**: xem `src/features/pro/checkout.js`, `view.html` và `src/app/public-config.js`.
+- **Ngưỡng chấm phát âm**: `src/features/pronunciation/session.js` có `GOOD` (mốc "phát âm tốt", mặc định 75),
   `MIN_CONF` (dưới mức này thì không kết luận lỗi, mặc định 0.55), `MAX_MS` (cắt lượt nói, 15 s) và
   `SILENCE_MS` / `SILENCE_RMS` (tự dừng khi im lặng). Đổi số ở đây, không cần sửa logic.
-- **Thêm dữ liệu câu/từ**: sửa mảng trong `assets/data.js`.
+- **Thêm dữ liệu câu/từ**: sửa mảng trong `src/data/catalog.js`.
 
 ## 📝 Ghi chú
 - Xác thực & Pro hiện là **demo phía client**. Khi thương mại hoá, hãy bổ sung backend/xác thực thực tế để bảo vệ nội dung Pro.
-- Tính năng AI cần khoá API (Gemini/OpenRouter) — cấu hình trong `app-core.js`.
+- Tính năng AI cần khoá API (Gemini/OpenRouter) — giao diện nằm trong `src/features/ai/`; cấu hình công khai trong `src/app/public-config.js`.
 
 ### 🔐 Bảo mật — những gì đã sửa
 

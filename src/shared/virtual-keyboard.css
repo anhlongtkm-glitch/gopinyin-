@@ -1,0 +1,93 @@
+/* ═══════════════════════════════════════════════════════════════
+   BÀN PHÍM ẢO (game + luyện gõ) — cho tablet/điện thoại không có phím
+   ═══════════════════════════════════════════════════════════════ */
+:root{--vk-h:0px}
+
+/* nút ⌨️ cạnh ô gõ */
+.typingStage .input{padding-right:58px}
+.vkToggleBtn{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:40px;height:40px;
+  display:grid;place-items:center;appearance:none;cursor:pointer;font-size:18px;line-height:1;
+  border-radius:12px;border:1px solid var(--line-2);background:var(--card-2);color:var(--text-2);
+  transition:transform var(--d-fast) var(--ease),background var(--d),border-color var(--d),box-shadow var(--d)}
+.vkToggleBtn:hover{transform:translateY(-50%) scale(1.06);border-color:var(--primary)}
+.vkToggleBtn:active{transform:translateY(-50%) scale(.95)}
+.vkToggleBtn.on{border-color:transparent;background:var(--primary);color:#0b1220;
+  box-shadow:0 8px 22px rgba(99,102,241,.45)}
+
+/* khung bàn phím */
+.vkbd{position:fixed;left:0;right:0;bottom:0;z-index:130;max-width:760px;margin:0 auto;
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));
+  border-radius:20px 20px 0 0;border:1px solid var(--line-2);border-bottom:0;
+  background:linear-gradient(180deg,var(--card),var(--bg));
+  box-shadow:0 -22px 60px rgba(0,0,0,.45);
+  animation:vkUp .22s var(--ease) both;
+  user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.vkbd[hidden]{display:none!important}
+@keyframes vkUp{from{transform:translateY(100%);opacity:.4}to{transform:translateY(0);opacity:1}}
+
+.vkbdHead{display:flex;align-items:center;gap:10px;padding:2px 6px 8px}
+.vkbdTitle{font-size:12px;font-weight:800;letter-spacing:.01em;color:var(--text-2);white-space:nowrap}
+.vkbdTip{flex:1;min-width:0;font-size:11px;font-weight:600;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vkbdHide{flex:0 0 auto;width:30px;height:30px;display:grid;place-items:center;appearance:none;cursor:pointer;
+  border-radius:9px;border:1px solid var(--line-2);background:var(--card-2);color:var(--muted);font-size:13px}
+.vkbdHide:hover{color:var(--text);border-color:var(--primary)}
+
+.vkbdBody{display:flex;flex-direction:column;gap:6px}
+.vkRow{display:flex;gap:6px;justify-content:center}
+.vkRow2{padding:0 12px}
+.vkRow4{gap:8px;margin-top:2px}
+/* ★ Chế độ gõ CHỮ HÁN: chữ Latin không tạo được chữ Hán → ẩn 3 hàng chữ cái,
+   chỉ giữ ⌫ / ␣ / 💡. Tránh việc bấm phím mà không có gì xảy ra. */
+.vkbd--hanzi .vkRow1,.vkbd--hanzi .vkRow2,.vkbd--hanzi .vkRow3{display:none}
+.vkHanziOnly{display:none}
+.vkbd--hanzi .vkHanziOnly{display:flex;flex:0 0 auto;min-width:64px}
+
+.vkKey{flex:1 1 0;min-width:0;height:46px;appearance:none;cursor:pointer;
+  display:grid;place-items:center;font:inherit;font-size:17px;font-weight:800;text-transform:lowercase;
+  border-radius:12px;border:1px solid var(--line-2);
+  background:linear-gradient(180deg,rgba(148,163,184,.16),rgba(148,163,184,.06)),var(--card-2);
+  color:var(--text);box-shadow:0 2px 0 rgba(0,0,0,.25);
+  transition:transform .08s var(--ease),background .12s,border-color .12s,box-shadow .12s}
+.vkKey:hover{border-color:var(--primary)}
+.vkKey.isPress,.vkKey:active{transform:translateY(2px) scale(.97);box-shadow:none;background:var(--primary);color:#0b1220}
+.vkFn{flex:0 0 54px;font-size:16px;color:var(--muted)}
+.vkWide{flex:1 1 0;font-size:12.5px;font-weight:800;text-transform:none;letter-spacing:.01em}
+.vkAccent{color:var(--gold);border-color:rgba(251,191,36,.4)}
+
+/* phím tiếp theo cần gõ (chỉ trong game) */
+.vkKey.isNext{background:var(--pro-grad);color:#2a1500;border-color:transparent;
+  box-shadow:0 0 0 2px rgba(251,191,36,.45),0 6px 18px rgba(245,158,11,.35);
+  animation:vkNext 1.1s ease-in-out infinite}
+@keyframes vkNext{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+
+/* khi bàn phím mở: chừa chỗ để không che nội dung */
+body.vk-open #appCard{padding-bottom:calc(var(--vk-h) + 14px)}
+body.vk-open #gameCard{min-height:0;padding-bottom:10px}
+body.vk-open .ws-main{scroll-padding-bottom:calc(var(--vk-h) + 20px)}
+
+/* cấp HSK 4–6 bị khoá trong game */
+.gaLevelBtn.isLocked{position:relative;opacity:.62}
+.gaLevelBtn.isLocked::after{content:'🔒';position:absolute;top:-4px;right:-4px;font-size:9px;line-height:1;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+
+/* số mục trên thẻ chủ đề */
+.vocabCount{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:800;color:var(--muted);
+  padding:1px 7px;border-radius:99px;background:rgba(148,163,184,.14)}
+/* --gold (#fbbf24) chỉ đạt ~1.8:1 trên nền sáng → dùng nâu vàng đậm cho chữ, giữ nền vàng nhạt */
+.vocabCard.isLocked .vocabCount{color:#8a5a00;background:rgba(251,191,36,.18)}
+/* nền tối thì ngược lại: nâu vàng đậm gần như tàng hình → trả về vàng sáng */
+[data-theme="dark"] .vocabCard.isLocked .vocabCount{color:#fbbf24;background:rgba(251,191,36,.14)}
+
+@media (max-width:520px){
+  .vkKey{height:42px;font-size:15.5px;border-radius:10px}
+  .vkFn{flex-basis:46px}
+  .vkRow{gap:5px}
+  .vkbd{border-radius:16px 16px 0 0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+  .vkbdTip{display:none}
+}
+@media (max-height:520px){
+  .vkKey{height:38px;font-size:14px}
+  .vkbdHead{padding-bottom:4px}
+}
+

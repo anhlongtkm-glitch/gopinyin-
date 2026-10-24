@@ -1,7 +1,7 @@
 /* Chụp màn hình cảnh báo file:// (đúng luồng thật) */
 const { chromium } = require('playwright-core');
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const FILE_URL = 'file:///C:/Users/ADMIN/Downloads/gopinyin/index.html';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const FILE_URL = process.env.TEST_FILE_URL || require('node:url').pathToFileURL(require('node:path').resolve(__dirname, '../dist/index.html')).href;
 (async () => {
   const b = await chromium.launch({ executablePath: CHROME, headless: true, args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
   const p = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });

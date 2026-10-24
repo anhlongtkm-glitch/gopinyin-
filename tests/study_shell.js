@@ -1,7 +1,7 @@
 /* Kiểm tra nhóm "📚 Nội dung" của màn Luyện gõ: select đổi bộ + nút ← Bộ khác */
 const { chromium } = require('playwright-core');
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const URL = 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8080/';
 let pass = 0, fail = 0;
 const check = (n, ok, d) => { if (ok) { pass++; console.log('  PASS  ' + n + (d !== undefined ? '  →  ' + JSON.stringify(d) : '')); } else { fail++; console.log('  FAIL  ' + n + '  →  ' + JSON.stringify(d)); } };
 

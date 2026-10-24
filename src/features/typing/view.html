@@ -1,0 +1,134 @@
+<section id="appCard" class="card studyShell hidden">
+    <!-- ★ ĐẦU THẺ — thống kê + thanh tiến độ.
+         Cùng một bộ khung .studyHead với màn Luyện phát âm. -->
+    <div class="studyHead">
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat"><b id="progressText">0/0</b><span>Tiến độ</span></div>
+      <div class="stat" data-kind="ok"><b id="correctText">0</b><span>Đúng</span></div>
+      <div class="stat" data-kind="bad"><b id="wrongText">0</b><span>Sai</span></div>
+      <div class="stat" data-kind="combo"><b id="comboText">0</b><span>Combo</span></div>
+      <div class="stat"><b id="accuracyText">100%</b><span>Chính xác</span></div>
+      <div class="stat" data-kind="speed"><b id="cpmText">—</b><span>Tốc độ (CPM)</span></div>
+    </div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    </div><!-- /.studyHead -->
+
+    <!-- Controls — 3 NHÓM giống hệt màn Luyện phát âm:
+         Nội dung · Âm thanh · Hiển thị.
+         Nhóm "Nội dung" cho đổi bộ câu ngay tại chỗ, không phải quay ra thư viện. -->
+    <div class="studyControls">
+      <!-- Nhóm 1: nội dung (bộ đang học · đổi bộ khác) -->
+      <div class="ctrlZone" role="group" aria-label="Nội dung">
+        <button id="appBackBtn" class="btn secondary btnSm" type="button" title="Quay lại chọn bộ câu khác">← Bộ khác</button>
+        <span class="ctrlZoneLabel">📚 Nội dung</span>
+        <select id="appSource" class="select selectVoice" aria-label="Chọn bộ nội dung" title="Chọn bộ nội dung để luyện"></select>
+      </div>
+
+      <!-- Nhóm 2: âm thanh (tốc độ · giọng · tự đọc) -->
+      <div class="ctrlZone" role="group" aria-label="Âm thanh">
+        <span class="ctrlZoneLabel">🔊 Âm thanh</span>
+        <select id="rateSelect" class="select" aria-label="Tốc độ đọc" title="Tốc độ đọc">
+          <option value="0.6">0.6×</option>
+          <option value="0.8" selected>0.8×</option>
+          <option value="1">1.0×</option>
+          <option value="1.2">1.2×</option>
+        </select>
+        <select id="voiceSelect" class="select selectVoice" aria-label="Giọng đọc" title="Giọng đọc"><option value="">Giọng tự động</option></select>
+        <button id="soundToggle" class="toggleBtn" type="button" aria-pressed="true" title="Tự động đọc câu khi chuyển câu">
+          <span class="tgIco" aria-hidden="true">🔊</span><span class="tgTxt">Tự đọc</span>
+        </button>
+        <button id="readTypeToggle" class="toggleBtn" type="button" aria-pressed="true" title="Đọc chữ Hán ngay sau mỗi chữ gõ đúng (gõ 2–3 chữ một lúc sẽ đọc gộp 1 lần)">
+          <span class="tgIco" aria-hidden="true">🔈</span><span class="tgTxt">Đọc khi gõ</span>
+        </button>
+      </div>
+
+      <!-- Nhóm 3: hiển thị (nghĩa · chữ Hán) — 2 công tắc cùng loại nằm cạnh nhau -->
+      <div class="ctrlZone" role="group" aria-label="Hiển thị">
+        <span class="ctrlZoneLabel">👁 Hiển thị</span>
+        <button id="viToggle" class="toggleBtn" type="button" title="Ẩn/hiện dòng nghĩa tiếng Việt" aria-pressed="true">
+          <span class="tgIco" aria-hidden="true">👁️</span><span class="tgTxt">Nghĩa</span>
+        </button>
+        <button id="hanToggle" class="toggleBtn" type="button" title="Ẩn/hiện dòng chữ Hán" aria-pressed="true">
+          <span class="tgIco" aria-hidden="true">🀄</span><span class="tgTxt">Chữ Hán</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ THÂN THẺ — đây là phần KHÁC nhau giữa 2 màn:
+         Luyện gõ = ô gõ chữ Hán · Luyện phát âm = nút micro + sóng âm.
+         Phần khung (đầu thẻ, thanh công cụ, chân thẻ) thì giống hệt nhau. ═══ -->
+    <div class="studyBody" id="appBody">
+    <!-- Quiz Area (căn giữa) -->
+    <div id="quizArea" class="studyArea">
+      <div class="questionBox">
+        <!-- ★ Cảnh rừng trúc vẽ ngay trong thẻ câu hỏi: màn gõ luôn có nền
+             núi non – trúc – sương, không chỉ ở landing page. -->
+        <svg class="qbScenery" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
+          <g class="qbCanopy"><path class="qbStalk" d="M-26 -24C16 58 8 152 44 258" stroke-width="9"/><path class="qbStalk" d="M28 -32C64 38 54 122 88 214" stroke-width="5.2"/><path class="qbStalk" d="M80 -26C102 28 98 80 120 134" stroke-width="3.6"/><path class="qbNode" d="M-5 62L11 59" stroke-width="2" transform="rotate(-8 2 62)"/><path class="qbNode" d="M3 120L19 117" stroke-width="2" transform="rotate(-4 10 120)"/><path class="qbNode" d="M15 180L31 177" stroke-width="2" transform="rotate(2 22 180)"/><path class="qbNode" d="M27 232L43 229" stroke-width="2" transform="rotate(8 34 232)"/><path class="qbBranch" d="M18 78C46 68 74 78 96 96" stroke-width="3.2"/><path class="qbBranch" d="M56 112C84 102 112 112 136 130" stroke-width="3.2"/><path class="qbBranch" d="M28 168C58 158 86 168 110 186" stroke-width="3.2"/><path class="qbBranch" d="M76 176C104 166 132 176 156 194" stroke-width="3.2"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(22) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(-14) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(56) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(30) scale(1.55)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(-6) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(66) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(26) scale(1.45)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(-16) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(62) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(34) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(0) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(12 6) rotate(104) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(48 24) rotate(118) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(74) scale(1.4)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(30) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(88 214) rotate(58) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(120 134) rotate(40) scale(1.1)"/></g>
+          <g class="qbCanopy" transform="translate(1200,0) scale(-1,1)"><path class="qbStalk" d="M-26 -24C16 58 8 152 44 258" stroke-width="9"/><path class="qbStalk" d="M28 -32C64 38 54 122 88 214" stroke-width="5.2"/><path class="qbStalk" d="M80 -26C102 28 98 80 120 134" stroke-width="3.6"/><path class="qbNode" d="M-5 62L11 59" stroke-width="2" transform="rotate(-8 2 62)"/><path class="qbNode" d="M3 120L19 117" stroke-width="2" transform="rotate(-4 10 120)"/><path class="qbNode" d="M15 180L31 177" stroke-width="2" transform="rotate(2 22 180)"/><path class="qbNode" d="M27 232L43 229" stroke-width="2" transform="rotate(8 34 232)"/><path class="qbBranch" d="M18 78C46 68 74 78 96 96" stroke-width="3.2"/><path class="qbBranch" d="M56 112C84 102 112 112 136 130" stroke-width="3.2"/><path class="qbBranch" d="M28 168C58 158 86 168 110 186" stroke-width="3.2"/><path class="qbBranch" d="M76 176C104 166 132 176 156 194" stroke-width="3.2"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(22) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(-14) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(96 96) rotate(56) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(30) scale(1.55)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(-6) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(136 130) rotate(66) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(26) scale(1.45)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(-16) scale(1.2)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(110 186) rotate(62) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(34) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(156 194) rotate(0) scale(1.25)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(12 6) rotate(104) scale(1.5)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(48 24) rotate(118) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(74) scale(1.4)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(44 258) rotate(30) scale(1.15)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(88 214) rotate(58) scale(1.3)"/><path class="qbLeaf" d="M0 0C16 -11 44 -15 64 -7C42 4 16 7 0 0Z" transform="translate(120 134) rotate(40) scale(1.1)"/></g>
+        </svg>
+        <div class="qbRow" id="viLine">
+          <div class="label">Tiếng Việt</div>
+          <div id="vietnamese" class="prompt"></div>
+        </div>
+          <div class="qbRow" id="hanLine">
+            <div class="label">Chữ Hán <span class="pronHanHint">— bấm vào từng chữ để tra nghĩa</span></div>
+            <div id="chinese" class="hanzi"></div>
+          </div>
+          <div class="quizEmptyHint" id="quizEmptyHint" hidden>🔒 Đang ẩn cả nghĩa và chữ Hán — nhấn <b>F1</b> để nghe rồi gõ theo trí nhớ</div>
+        <div class="inputWrap">
+          <label id="typingLabel" class="label" for="pinyinInput">Gõ chữ Hán</label>
+          <div class="typingStage">
+            <input id="pinyinInput" class="input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Gõ chữ Hán của cả câu — gõ đúng là tự báo Đúng" />
+            <button class="vkToggleBtn" id="vkBtn" type="button" title="Bật bàn phím ảo" aria-pressed="false" aria-label="Bật/tắt bàn phím ảo">⌨️</button>
+          </div>
+        </div>
+        <!-- ★ Feedback đặt NGAY DƯỚI ô gõ (trong cùng thẻ câu): đáp án diff
+             (đỏ/vàng) + hướng dẫn sửa phải hiện trước hàng nút. -->
+        <div id="feedback" class="feedback hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div class="audioRow">
+          <button id="audioBtn" class="audioBtn" type="button" title="Nghe câu tiếng Trung">🔊 <span>Nghe câu tiếng Trung</span></button>
+        </div>
+        <div class="kbdHint" id="kbdHint">
+          <span><span class="kbd">Space</span> <span id="kbdNextLabel">Sang câu</span></span>
+          <span><span class="kbd">Enter</span> Ẩn/hiện Pinyin</span>
+          <span><span class="kbd">F1</span> Nghe lại</span>
+        </div>
+      </div><!-- /.questionBox -->
+    </div><!-- /.studyArea -->
+
+    <!-- Complete — anh em với #quizArea (ẩn/hiện thay nhau), giống #pronComplete -->
+    <div id="completeArea" class="complete hidden">
+      <div class="emoji">🎉</div>
+      <h2>Hoàn thành!</h2>
+      <p>Bạn đã trả lời đúng toàn bộ câu trong file.</p>
+      <button type="button" id="restartBtn" class="btn primary">Luyện lại từ đầu</button>
+    </div>
+    </div><!-- /.studyBody -->
+
+    <div id="aiGenBar" class="aiGenBar hidden" role="status" aria-live="polite"></div>
+
+    <!-- ═══ CHÂN THẺ — nút điều hướng câu + thông tin bộ (giống màn Luyện phát âm) ═══ -->
+    <div class="studyFoot">
+      <div class="actions">
+        <!-- Nhóm 1: điều hướng câu (dùng nhiều nhất) -->
+        <div class="actGroup">
+          <button id="prevSentenceBtn" class="btn secondary" type="button" title="Quay lại câu trước (Backspace khi vừa gõ xong)">◀ Câu trước</button>
+          <button id="retrySentenceBtn" class="btn secondary" type="button" title="Xóa nội dung vừa gõ, làm lại câu này">↺ Làm lại</button>
+          <button id="skipBtn" class="btn secondary" type="button" title="Bỏ qua câu này (tính là sai)">Bỏ qua ▶</button>
+        </div>
+        <span class="actDivider" aria-hidden="true"></span>
+        <!-- Nhóm 2: công cụ hỗ trợ -->
+        <div class="actGroup">
+          <button type="button" id="hintBtn" class="btn secondary" title="Pinyin mặc định ẩn — bấm để hiện gợi ý phía trên chữ Hán">💡 Hiện Pinyin</button>
+          <button id="historyBtn" class="btn secondary" type="button" title="Xem danh sách các câu đã làm (đúng / sai / điểm yếu)">📜 Đã làm <span id="historyCount" class="histCount">0</span></button>
+          <button id="helpBtn" class="btn secondary" type="button" title="Giải thích toàn bộ cơ chế gõ cùng các phím tắt">ⓘ Phím tắt</button>
+        </div>
+      </div>
+      <div class="studyFootRight">
+        <span id="fileInfo" class="fileinfo"></span>
+        <button type="button" id="resetBtn" class="btn danger btnSm" title="Xóa tiến độ của bộ này">Xóa tiến độ</button>
+      </div>
+    </div>
+  </section>

@@ -3,7 +3,7 @@
    GoPinyin — server tĩnh để CHẠY ĐÚNG CÁCH trong lúc phát triển / dùng thử.
 
    VÌ SAO CẦN FILE NÀY?
-   Mở thẳng `index.html` (địa chỉ `file:///...`) thì app vẫn hiển thị, nhưng
+   Mở thẳng `dist/index.html` (địa chỉ `file:///...`) thì app vẫn hiển thị, nhưng
    **Chrome KHÔNG ghi nhớ quyền micro cho origin `file://`**. Hệ quả: mỗi lần
    bấm nút nói, Chrome lại hỏi "Cho phép dùng micro?" — không có cách nào sửa
    từ phía JavaScript. Chạy qua `http://localhost` thì quyền được ghi nhớ theo
@@ -24,7 +24,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { execFile } = require('child_process');
 
-const ROOT = path.resolve(__dirname, '..');
+const ROOT = path.resolve(__dirname, '..', 'dist');
 const PORT = Number(process.env.PORT || 8080);
 const HOST = process.env.HOST || '127.0.0.1';
 const NO_OPEN = process.argv.includes('--no-open') || process.env.NO_OPEN === '1';
@@ -185,7 +185,12 @@ server.on('error', (e) => {
   process.exit(1);
 });
 
-server.listen(PORT, HOST, () => {
+async function start() {
+  if (process.env.GP_BUILD_READY !== '1') {
+    const { build } = await import('../scripts/build.mjs');
+    await build();
+  }
+  server.listen(PORT, HOST, () => {
   const url = 'http://localhost:' + PORT + '/';
   console.log('\n  🐼 GoPinyin đang chạy tại:  ' + url);
   console.log('  (Ctrl+C để dừng)\n');
@@ -203,4 +208,10 @@ server.listen(PORT, HOST, () => {
       }
     } catch (e) { }
   }
+  });
+}
+start().catch(error => {
+  console.error('[GoPinyin] Không build được ứng dụng:', error.message);
+  console.error('Chạy npm install trong thư mục dự án, rồi thử lại.');
+  process.exitCode = 1;
 });

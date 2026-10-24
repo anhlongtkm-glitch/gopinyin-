@@ -7,8 +7,8 @@
    Chạy: NODE_PATH=<node_modules> node tests/games_hub.js
    ══════════════════════════════════════════════════════════════════ */
 const { chromium } = require('playwright-core');
-const URL = 'http://localhost:8080/';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const URL = process.env.TEST_URL || 'http://localhost:8080/';
+const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 let pass = 0, fail = 0;
 const fails = [];
@@ -119,19 +119,20 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   check('KHÔNG quay về thư viện', back.libraryHidden === true, back.libraryHidden);
   check('Mục "games" vẫn tô sáng', back.navActive === 'games', back.navActive);
 
-  section('5 — Thẻ lối tắc trên bảng điều khiển → sảnh game');
+  section('5 — Từ bảng điều khiển → sảnh game qua thanh bên');
   await page.evaluate(() => document.querySelector('.ws-navItem[data-view="dash"]').click());
   await page.waitForTimeout(700);
   const dash = await page.evaluate(() => {
     const b = [...document.querySelectorAll('.dashFeature')].find(x => x.dataset.view === 'games');
     return { exists: !!b, label: b ? (b.textContent || '').replace(/\s+/g, ' ').trim() : '' };
   });
-  check('Thẻ lối tắc "Game từ vựng" trên bảng điều khiển', dash.exists === true, dash.exists);
-  check('Nhãn thẻ lối tắc nói "Game từ vựng"', /Game từ vựng/.test(dash.label), dash.label.slice(0, 60));
-  await page.evaluate(() => document.querySelector('.dashFeature[data-view="games"]').click());
+  // The current dashboard deliberately has no games shortcut (also true before this refactor).
+  check('Dashboard giữ nguyên việc không có thẻ game riêng', dash.exists === false, dash.exists);
+  check('Thanh bên vẫn có đường vào game', await page.locator('.ws-navItem[data-view="games"]').count() === 1);
+  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="games"]').click());
   await page.waitForTimeout(700);
   const viaDash = await page.evaluate(() => !document.querySelector('#gamesCard').classList.contains('hidden'));
-  check('Bấm thẻ lối tắc → mở sảnh game', viaDash === true, viaDash);
+  check('Bấm mục thanh bên từ dashboard → mở sảnh game', viaDash === true, viaDash);
 
   section('6 — Đang chơi game mà bấm mục khác trên thanh bên');
   await page.evaluate(() => document.querySelector('.gameTile[data-view="game"]').click());
@@ -226,8 +227,10 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
 
   await page.evaluate(() => document.querySelector('.ws-navItem[data-view="games"]').click());
   await page.waitForTimeout(700);
-  await page.screenshot({ path: 'tests/shot_games_hub.png' });
-  console.log('\n  Ảnh: tests/shot_games_hub.png');
+  const shot=require('node:path').resolve(__dirname,'../.cache/test-run/shot_games_hub.png');
+  require('node:fs').mkdirSync(require('node:path').dirname(shot),{recursive:true});
+  await page.screenshot({ path: shot });
+  console.log('\n  Ảnh: '+shot);
 
   console.log('\n  ── KẾT QUẢ: ' + pass + ' PASS · ' + fail + ' FAIL ──');
   if (fail) console.log('  Lỗi: ' + fails.join(' | '));

@@ -39,8 +39,15 @@ if not errorlevel 1 (
   exit /b 0
 )
 
-echo Dang khoi dong GoPinyin...
-start "GoPinyin-Server" /min "%NODE_EXE%" server\serve.js --no-open
+"%NODE_EXE%" -e "require.resolve('esbuild')" >nul 2>nul
+if errorlevel 1 (
+  echo Chua cai dependencies. Hay chay npm install trong thu muc du an.
+  pause
+  exit /b 1
+)
+
+echo Dang build va khoi dong GoPinyin...
+start "GoPinyin-Server" /min "%NODE_EXE%" scripts\dev.mjs --no-open
 
 REM Cho server khoi dong, kiem tra bang Node (toi da ~30 giay)
 set "READY=0"
