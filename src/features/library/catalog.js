@@ -128,24 +128,13 @@ export async function fetchVocabItems(file) {
   });
   return items;
 }
-// ★ HSK 4–9 là nội dung Pro (HSK 1–3 học miễn phí)
 
-// ★ HSK 4–9 là nội dung Pro (HSK 1–3 học miễn phí)
-export function vocabLocked(srcId) {
-  const m = /^hsk([4-9])$/.exec(String(srcId || ''));
-  return !!m && legacy.__gpIsPro !== true;
-}
 // ★ Bấm 1 mục trong kho → tạo bộ luyện (lưu vào thư viện) rồi mở luôn
 
 // ★ Bấm 1 mục trong kho → tạo bộ luyện (lưu vào thư viện) rồi mở luôn
 export async function openVocabSource(srcId) {
   const src = findVocabSource(srcId);
   if (!src) return;
-  if (vocabLocked(srcId)) {
-    if (typeof legacy.__gpOpenPro === 'function') legacy.__gpOpenPro();
-    toast('HSK 4–9 nằm trong gói Pro. Nâng cấp (hoặc dùng thử 7 ngày) để mở khoá nhé!', 'warn', 3600);
-    return;
-  }
   const id = 'vocab:' + srcId;
   const existing = (await dbGetAll()).find(x => x.id === id);
   if (existing) {
@@ -194,7 +183,6 @@ export function renderVocab() {
     return;
   }
   list.innerHTML = items.map(x => {
-    const locked = vocabLocked(x[0]);
     const cnt = srcCount(x[0]);
     const unit = /^hsk[1-9]$/.test(String(x[0])) ? 'câu' : 'từ';
     const cntTxt = cnt ? '<span class="vocabCount">' + cnt + ' ' + unit + '</span>' : '';
@@ -203,7 +191,7 @@ export function renderVocab() {
     const cat = x[2] && !/^\s*\d+\s*(câu|từ)\s*$/i.test(x[2]) ? x[2] : '';
     /* ★ Tiến độ đã học hiện NGAY trên thẻ (thay mục "Bộ câu của bạn" đã bỏ) */
     const prog = srcProgress(x[0], cnt, unit);
-    return '<button class="vocabCard' + (locked ? ' isLocked' : '') + '" type="button" data-vsrc="' + escapeHtml(x[0]) + '" title="' + (locked ? 'Mở khoá bằng gói Pro — ' : '') + 'Tạo bộ luyện: ' + escapeHtml(x[1]) + (cnt ? ' · ' + cnt + ' ' + unit : '') + '">' + (cat ? '<span class="vocabCat">' + escapeHtml(cat) + '</span>' : '') + (locked ? '<span class="vocabLock">🔒 Pro</span>' : '') + '<span class="vocabCard-title">' + escapeHtml(x[1]) + '</span>' + cntTxt + prog + '</button>';
+    return '<button class="vocabCard' + '" type="button" data-vsrc="' + escapeHtml(x[0]) + '" title="' + 'Tạo bộ luyện: ' + escapeHtml(x[1]) + (cnt ? ' · ' + cnt + ' ' + unit : '') + '">' + (cat ? '<span class="vocabCat">' + escapeHtml(cat) + '</span>' : '') + '<span class="vocabCard-title">' + escapeHtml(x[1]) + '</span>' + cntTxt + prog + '</button>';
   }).join('');
 }
 

@@ -30,7 +30,7 @@ async function boot(browser, viewport) {
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
-  await page.click('#lpLoginBtn'); await page.waitForTimeout(300);
+  await page.click('#wsLoginBtn'); await page.waitForTimeout(300);
   await page.click('[data-authtab="register"]'); await page.waitForTimeout(200);
   await page.fill('#authName', 'Minh Anh');
   await page.fill('#authEmail', 'p' + Date.now() + '@l.test');

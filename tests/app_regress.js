@@ -24,7 +24,7 @@ function check(name, ok, detail) {
   await page.goto(URL, { waitUntil: 'networkidle' });
   check('Tải trang không lỗi', errors.length === 0, errors);
 
-  await page.evaluate(() => document.querySelector('#lpLoginBtn')?.click());
+  await page.evaluate(() => document.querySelector('#wsLoginBtn')?.click());
   await page.waitForTimeout(500);
   await page.evaluate(() => document.querySelector('#authGuestBtn')?.click());
   await page.waitForTimeout(800);

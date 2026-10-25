@@ -4,7 +4,6 @@ import { renderUserChip, enterWorkspace } from "../../app/navigation.js";
 
 import { doRegister, doLogin, doGuest, doLogout } from "./service.js";
 
-import { renderProState, trialActive, state as proEntitlementsState, trialDaysLeft } from "../pro/entitlements.js";
 
 import { state as accountStorageState } from "../../shared/account-storage.js";
 
@@ -31,7 +30,7 @@ export function setAuthMode(mode) {
   accountStorageState.$('authSubmit').textContent = mode === 'register' ? 'Tạo tài khoản' : 'Đăng nhập';
   accountStorageState.$('authError').hidden = true;
   accountStorageState.$('authTitle').textContent = mode === 'register' ? 'Tạo tài khoản GoPinyin' : 'Đăng nhập GoPinyin';
-  accountStorageState.$('authSubtitle').textContent = mode === 'register' ? 'Tạo tài khoản để lưu tiến độ học của bạn.' : 'Đăng nhập để lưu tiến độ học và đồng bộ trên mọi thiết bị.';
+  accountStorageState.$('authSubtitle').textContent = mode === 'register' ? 'Tạo tài khoản để lưu tiến độ học của bạn.' : 'Đăng nhập tài khoản trên trình duyệt này.';
   /* ★ Không dùng minlength trên ô mật khẩu: form dùng chung cho cả Đăng nhập —
      minlength sẽ chặn luôn tài khoản cũ có mật khẩu ngắn. Chỉ đổi gợi ý. */
   const pw = accountStorageState.$('authPass');
@@ -81,15 +80,8 @@ export function initializeAuthController() {
     err.hidden = true;
     closeModal('authModal');
     renderUserChip();
-    renderProState();
     enterWorkspace();
-    if (r.trial && trialActive()) {
-      toast('🎁 Tài khoản mới — tặng bạn ' + proEntitlementsState.TRIAL_DAYS + ' ngày dùng thử Pro miễn phí!', 'ok', 4200);
-    } else if (trialActive()) {
-      toast('Đăng nhập thành công. Bạn còn ' + trialDaysLeft() + ' ngày dùng thử Pro 🎁', 'ok', 3600);
-    } else {
-      toast((mode === 'register' ? 'Đăng ký' : 'Đăng nhập') + ' thành công. Chúc bạn học tốt! 🎉', 'ok');
-    }
+    toast((mode === 'register' ? 'Đăng ký' : 'Đăng nhập') + ' thành công. Chúc bạn học tốt!', 'ok');
     audioEffectsState.Sfx.unlock();
     fireConfetti(120);
   });
@@ -101,16 +93,12 @@ export function initializeAuthController() {
     doGuest();
     closeModal('authModal');
     renderUserChip();
-    renderProState();
     enterWorkspace();
-    toast('Đang dùng thử với tư cách khách — tiến độ lưu trên máy này.', 'ok');
+    toast('Đang học với tư cách khách — tiến độ lưu trên máy này.', 'ok');
   });
   accountStorageState.$('wsLogoutBtn').addEventListener('click', () => {
     doLogout();
     audioEffectsState.Sfx.click();
   });
 
-  /* ═══════════════ MODAL PRO + THANH TOÁN ═══════════════ */
-  /* ★ MỘT nguồn dữ liệu duy nhất cho gói Pro — landing page và modal đều đọc từ đây
-     để giá / quyền lợi không bao giờ lệch nhau. */
 }

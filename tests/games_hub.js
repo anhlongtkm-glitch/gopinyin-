@@ -34,7 +34,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
-  await page.click('#lpLoginBtn'); await page.waitForTimeout(300);
+  await page.click('#wsLoginBtn'); await page.waitForTimeout(300);
   await page.click('[data-authtab="register"]'); await page.waitForTimeout(200);
   await page.fill('#authName', 'Test');
   await page.fill('#authEmail', 'g' + Date.now() + '@l.test');

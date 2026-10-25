@@ -1,8 +1,6 @@
 // State and behavior owned by app/core-startup. Initialization is orchestrated by app/bootstrap.js.
 
-import { showStorageWarn } from "../features/library/catalog.js";
-
-import { renderLibrary } from "../features/library/controller.js";
+import { showStorageWarn, renderVocab } from "../features/library/catalog.js";
 
 import { loadWeakSpeed } from "../features/typing/weakness.js";
 
@@ -20,7 +18,7 @@ export function initializeAppCoreStartup() {
     await initDB();
     if (storageLessonRepositoryState.dbBroken) showStorageWarn();
     try {
-      renderLibrary();
+      renderVocab();
     } catch (e) {
       toast('Không tải được thư viện: ' + e.message, 'bad', 5000);
     }

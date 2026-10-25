@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 const recording = process.argv.includes('--record');
 const dir = path.join(root, '.cache/refactor-parity', recording ? 'before' : 'after');
 const url = process.env.TEST_URL || 'http://localhost:8080/';
-if(!recording&&!fs.existsSync(path.join(root,'.cache/refactor-parity/before/light-desktop-landing.json'))) {
+if(!recording&&!fs.existsSync(path.join(root,'.cache/refactor-parity/before/light-desktop-dashboard.json'))) {
   throw new Error('Missing baseline. Record the pre-change application first: TEST_URL=<baseline URL> node tests/refactor-parity.cjs --record');
 }
 (async () => {
@@ -27,7 +27,7 @@ if(!recording&&!fs.existsSync(path.join(root,'.cache/refactor-parity/before/ligh
       await page.goto(url,{waitUntil:'networkidle'});
       await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important} .toast{visibility:hidden!important}'});
       const take = async screen => {
-        await page.waitForTimeout(screen === 'landing' ? 1800 : 650);
+        await page.waitForTimeout(650);
         const name = `${theme}-${device}-${screen}`;
         const snapshot = await page.evaluate(() => [...document.querySelectorAll('[id]')].filter(e=>e.getBoundingClientRect().width&&e.getBoundingClientRect().height&&!e.closest('#toastHost')).map(e=>{
           const r=e.getBoundingClientRect(),s=getComputedStyle(e);
@@ -41,8 +41,6 @@ if(!recording&&!fs.existsSync(path.join(root,'.cache/refactor-parity/before/ligh
           if(!fs.readFileSync(path.join(dir,name+'.png')).equals(fs.readFileSync(path.join(root,'.cache/refactor-parity/before',name+'.png'))))failures.push(name+'/pixels');
         }
       };
-      await take('landing');
-      await page.locator('#lpLoginBtn').evaluate(e=>e.click());await page.click('#authGuestBtn');
       await take('dashboard');
       await page.locator('.ws-navItem[data-view="library"]').click();
       await page.locator('#vocabList [data-vsrc="hsk1"]').click();
@@ -54,7 +52,7 @@ if(!recording&&!fs.existsSync(path.join(root,'.cache/refactor-parity/before/ligh
       if(errors.length)failures.push({theme,device,errors});
       await context.close();
     }
-    const result={mode:recording?'record':'compare',screens:20,failures};
+    const result={mode:recording?'record':'compare',screens:16,failures};
     fs.writeFileSync(path.join(dir,'result.json'),JSON.stringify(result,null,2));
     console.log(JSON.stringify(result,null,2));
     assert.equal(failures.length,0,'Parity check failed');

@@ -40,7 +40,7 @@ const SIZES = [
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
-  await page.click('#lpLoginBtn'); await page.waitForTimeout(300);
+  await page.click('#wsLoginBtn'); await page.waitForTimeout(300);
   await page.click('[data-authtab="register"]'); await page.waitForTimeout(200);
   await page.fill('#authName', 'Probe');
   await page.fill('#authEmail', 'q' + Date.now() + '@l.test');

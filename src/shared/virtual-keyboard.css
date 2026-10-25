@@ -56,7 +56,7 @@
 .vkAccent{color:var(--gold);border-color:rgba(251,191,36,.4)}
 
 /* phím tiếp theo cần gõ (chỉ trong game) */
-.vkKey.isNext{background:var(--pro-grad);color:#2a1500;border-color:transparent;
+.vkKey.isNext{background:var(--gold-grad);color:#2a1500;border-color:transparent;
   box-shadow:0 0 0 2px rgba(251,191,36,.45),0 6px 18px rgba(245,158,11,.35);
   animation:vkNext 1.1s ease-in-out infinite}
 @keyframes vkNext{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}

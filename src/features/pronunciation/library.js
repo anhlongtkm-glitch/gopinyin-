@@ -55,7 +55,7 @@ export function libCardHtml(x) {
   const typedOnly = !attempted && done > 0;
   let meta;
   if (attempted) meta = attempted + '/' + x.count + ' đã luyện · <b>' + s.good + '</b> đạt';else if (typedOnly) meta = 'Đã gõ ' + done + '/' + x.count + ' · chưa luyện nói';else meta = 'Chưa luyện câu nào';
-  return '<button class="vocabCard' + (x.locked ? ' isLocked' : '') + '" type="button" data-psrc="' + esc(x.id) + '"' + ' title="' + esc((x.locked ? 'Mở khoá bằng gói Pro — ' : '') + 'Luyện nói ' + x.name + ' · ' + x.count + ' câu' + (done ? ' · đã gõ ' + done + '/' + x.count : '')) + '">' + (x.locked ? '<span class="vocabLock">🔒 Pro</span>' : '') + '<span class="vocabCard-title">' + esc(x.name) + '</span>' + '<span class="vocabCount">' + x.count + ' câu</span>' + '<span class="vocabProg' + (typedOnly ? ' isType' : '') + '"><i style="width:' + w + '%"></i></span>' + '<span class="vocabMeta">' + meta + '</span>' + '</button>';
+  return '<button class="vocabCard' + '" type="button" data-psrc="' + esc(x.id) + '"' + ' title="' + esc('Luyện nói ' + x.name + ' · ' + x.count + ' câu' + (done ? ' · đã gõ ' + done + '/' + x.count : '')) + '">' + '<span class="vocabCard-title">' + esc(x.name) + '</span>' + '<span class="vocabCount">' + x.count + ' câu</span>' + '<span class="vocabProg' + (typedOnly ? ' isType' : '') + '"><i style="width:' + w + '%"></i></span>' + '<span class="vocabMeta">' + meta + '</span>' + '</button>';
 }
 
 export async function renderLib() {
@@ -75,11 +75,6 @@ export async function startSource(srcId) {
   if (!srcId) return;
   if (srcId.startsWith('hsk:')) {
     const lvl = Number(srcId.slice(4).replace(/[^0-9]/g, '')) || 0;
-    if (lvl >= 4 && legacy.__gpIsPro !== true) {
-      toast('HSK 4–9 nằm trong gói Pro. Nâng cấp (hoặc dùng thử 7 ngày) để mở khoá nhé!', 'warn', 3600);
-      if (typeof legacy.__gpOpenPro === 'function') legacy.__gpOpenPro();
-      return;
-    }
   }
   pronunciationSessionState.S.source = srcId;
   pronunciationSessionState.S.lastSource = srcId;

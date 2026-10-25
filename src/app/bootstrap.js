@@ -36,13 +36,10 @@ import { initializeAccountStorage } from "../shared/account-storage.js";
 import { initializeAudioEffects } from "../shared/audio/effects.js";
 import { initializeConfetti } from "../shared/confetti.js";
 import { initializeAuthService } from "../features/auth/service.js";
-import { initializeProEntitlements } from "../features/pro/entitlements.js";
 import { initializeAppNavigation } from "./navigation.js";
 import { initializeDialogs } from "../shared/dialogs.js";
 import { initializeAuthController } from "../features/auth/controller.js";
-import { initializeProCheckout } from "../features/pro/checkout.js";
 import { initializeAppNavigationEvents } from "./navigation-events.js";
-import { initializeThemeControls } from "../shared/theme-controls.js";
 import { initializeDashboardController } from "../features/dashboard/controller.js";
 import { initializeRankingController } from "../features/ranking/controller.js";
 import { initializeAppShellStartup } from "./shell-startup.js";
@@ -113,13 +110,12 @@ function initializeShell(){
   initializeAudioEffects();
   initializeConfetti();
   initializeAuthService();
-  initializeProEntitlements();
+
   initializeAppNavigation();
   initializeDialogs();
   initializeAuthController();
-  initializeProCheckout();
+
   initializeAppNavigationEvents();
-  initializeThemeControls();
   initializeDashboardController();
   initializeRankingController();
   initializeAppShellStartup();

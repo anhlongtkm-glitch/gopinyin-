@@ -10,19 +10,13 @@
 @media (max-width:860px){
   :root{--side-w:72px}
   .ws-side{padding:16px 10px;align-items:center}
-  .ws-sideBrand .brandLockup,.ws-navLabel,.ws-navItem .ws-lock{display:none}
+  .ws-sideBrand .brandLockup,.ws-navLabel{display:none}
   .ws-sideBrand .ws-sideMark{display:block}
   .ws-navItem{justify-content:center;padding:12px}
-  .ws-upgradeBtn{justify-content:center;padding:12px}
-  .ws-upgradeBtn b,.ws-upgradeBtn small{display:none}
   .ws-userChip .ws-userInfo{display:none}
   .ws-userChip{justify-content:center}
   .ws-sideBrand{justify-content:center}
-  .ws-proBadge{display:none}
   .stats{grid-template-columns:repeat(3,1fr)}
-  .proBenefits{grid-template-columns:1fr}
-  .proPay{grid-template-columns:1fr}
-  .proQrBox img{max-width:180px}
   .top .sub{display:none}
 }
 @media (max-width:640px){
@@ -36,7 +30,6 @@
   .recOptions{grid-template-columns:1fr}
   .recSetup{width:100%}
   .recSetup .recField{flex:1}
-  .proPlans{grid-template-columns:1fr}
   .gameHud{flex-wrap:wrap}
   .gameStat{min-width:calc(50% - 12px)}
   .card{padding:20px}

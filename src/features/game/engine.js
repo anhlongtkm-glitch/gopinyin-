@@ -37,8 +37,7 @@ export function loadGamePick() {
   }
   if (!p) return false;
   const lv = Number(p.level) || 0;
-  /* HSK 4–6 là nội dung Pro → tài khoản miễn phí không được khôi phục */
-  if (!(lv >= 1 && lv <= 6) || lv >= 4 && legacy.__gpIsPro !== true) return false;
+  if (!(lv >= 1 && lv <= 6)) return false;
   gameSessionState.state.level = lv;
   const sp = Number(p.speed);
   if (sp >= 1 && sp <= 10) {

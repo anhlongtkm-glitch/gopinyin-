@@ -2,7 +2,6 @@
 
 import { lessonRepository } from "../../shared/lesson-bridge.js";
 
-import { renderTrial } from "../pro/entitlements.js";
 
 import { state as accountStorageState } from "../../shared/account-storage.js";
 
@@ -97,7 +96,6 @@ export async function refreshDashContinue() {
 }
 
 export function refreshDash() {
-  renderTrial();
   /* Gom tiến độ từ tất cả bộ câu (core lưu ở localStorage key cts:progress:<id>) */
   let learned = 0,
     correct = 0,

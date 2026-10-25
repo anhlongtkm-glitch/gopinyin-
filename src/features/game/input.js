@@ -1,6 +1,5 @@
 // State and behavior owned by features/game/input. Initialization is orchestrated by app/bootstrap.js.
 
-import { legacy, publishLegacy } from "../../app/compatibility.js";
 
 import { togglePause } from "./controller.js";
 
@@ -179,21 +178,14 @@ export function syncPinyinBtn() {
   b.setAttribute('aria-pressed', gameSessionState.state.showPinyin ? 'true' : 'false');
   b.title = gameSessionState.state.showPinyin ? 'Đang hiện Pinyin — bấm hoặc Enter để ẩn' : 'Đang ẩn Pinyin — bấm hoặc Enter để xem gợi ý';
 }
-/* ★ Khoá cấp HSK 4–6 khi chưa có Pro (đồng bộ với kho câu HSK 4–9) */
-
-/* ★ Khoá cấp HSK 4–6 khi chưa có Pro (đồng bộ với kho câu HSK 4–9) */
-export function syncGameLocks() {
-  const pro = legacy.__gpIsPro === true;
+export function syncGameLevelTitles() {
   document.querySelectorAll('[data-glevel]').forEach(b => {
-    const lv = Number(b.dataset.glevel) || 0;
-    const lock = lv >= 4 && !pro;
-    b.classList.toggle('isLocked', lock);
-    b.title = lock ? 'Cấp HSK ' + lv + ' — cần gói Pro' : 'Chơi cấp HSK ' + lv;
+    b.title = 'Chơi cấp HSK ' + b.dataset.glevel;
   });
 }
 
 export function initializeGameInput() {
-  publishLegacy("__gpSyncGameLocks", syncGameLocks);
+  syncGameLevelTitles();
 
   /* ═══ TÀU: xoay đầu nhọn về phía thẻ đang gõ ═══ */
 }

@@ -39,7 +39,7 @@ const txt = (s) => (s || '').replace(/\s+/g, ' ').trim();
   await page.goto(URL, { waitUntil: 'networkidle' });
 
   /* đăng nhập khách */
-  await page.evaluate(() => document.querySelector('#lpLoginBtn')?.click());
+  await page.evaluate(() => document.querySelector('#wsLoginBtn')?.click());
   await page.waitForTimeout(400);
   await page.evaluate(() => document.querySelector('#authGuestBtn')?.click());
   await page.waitForTimeout(900);

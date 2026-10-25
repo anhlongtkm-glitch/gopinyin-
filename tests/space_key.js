@@ -32,7 +32,7 @@ const ITEMS = [
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
-  await page.click('#lpLoginBtn'); await page.waitForTimeout(400);
+  await page.click('#wsLoginBtn'); await page.waitForTimeout(400);
   await page.click('[data-authtab="register"]'); await page.waitForTimeout(250);
   await page.fill('#authName', 'Probe');
   await page.fill('#authEmail', 'p' + Date.now() + '@l.test');

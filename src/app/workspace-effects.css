@@ -1,3 +1,6 @@
+@keyframes pulse{50%{opacity:.4;transform:scale(.8)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}}
 /* ═══════════════════════════════════════════════════════════════
    ★ NÂNG CẤP GIAO DIỆN WORKSPACE (đồng bộ chất lượng với landing)
    ═══════════════════════════════════════════════════════════════ */
@@ -67,21 +70,17 @@
 .dashFeature .dfIcon{transition:transform var(--d) var(--spring)}
 .dashFeature:hover .dfIcon{transform:translateY(-3px) scale(1.12) rotate(-4deg)}
 
-/* Nút nâng cấp Pro: ánh sáng chạy */
-.ws-upgradeBtn{position:relative;overflow:hidden}
-.ws-upgradeBtn::after{content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);
-  transform:translateX(-130%);animation:proShine 4.5s ease-in-out infinite}
+
+
+
 @keyframes proShine{0%,70%{transform:translateX(-130%)}85%,100%{transform:translateX(130%)}}
 
 /* Thẻ từ vựng: nhấc lên + vệt sáng */
 .vocabCard:hover{box-shadow:var(--sh-3),0 0 0 1px rgba(31,200,162,.25),var(--glow-soft)}
-.vocabCard.isLocked{border-style:dashed;opacity:.82}
-.vocabCard.isLocked::after{display:none}
-.vocabCard.isLocked:hover{border-color:rgba(251,191,36,.55);box-shadow:0 12px 30px rgba(245,158,11,.18)}
-.vocabLock{position:absolute;top:12px;right:12px;font-size:9.5px;font-weight:900;letter-spacing:.04em;
-  background:var(--pro-grad);color:#2a1500;padding:3px 8px;border-radius:99px;
-  box-shadow:0 4px 12px rgba(245,158,11,.32)}
+
+
+
+
 
 /* Nút bấm: phản hồi rõ hơn */
 .btn,.lp-btn,.gaBtn,.modeBtn{transition:transform var(--d-fast) var(--ease),box-shadow var(--d),background var(--d),border-color var(--d)}

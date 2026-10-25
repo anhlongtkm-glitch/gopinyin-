@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   MODAL CHUNG (Auth + Pro)
+   MODAL CHUNG
    ═══════════════════════════════════════════════════════════════ */
 .modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding:18px;overflow-y:auto}
 .modal[hidden]{display:none}

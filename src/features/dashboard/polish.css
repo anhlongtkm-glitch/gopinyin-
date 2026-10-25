@@ -133,3 +133,12 @@
 @media (max-width:380px){
   .dashGrid{grid-template-columns:1fr}
 }
+
+/* Compact dashboard statistics on narrow screens. */
+@media (max-width:480px){
+  .dashStats{gap:10px}
+  .dashStat{padding:12px;gap:10px;border-radius:var(--r-lg)}
+  .dashStatIcon{width:34px;height:34px;font-size:15px;border-radius:10px}
+  .dashStat b{font-size:17px}
+  .dashStat span{font-size:10.5px;line-height:1.35}
+}

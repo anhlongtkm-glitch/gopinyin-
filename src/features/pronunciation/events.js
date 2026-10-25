@@ -97,12 +97,6 @@ export function wire() {
     const v = e.target.value;
     if (v && v.startsWith('hsk:')) {
       const lvl = Number(v.slice(4).replace(/[^0-9]/g, '')) || 0;
-      if (lvl >= 4 && legacy.__gpIsPro !== true) {
-        toast('HSK 4–9 nằm trong gói Pro. Nâng cấp (hoặc dùng thử 7 ngày) để mở khoá nhé!', 'warn', 3600);
-        if (typeof legacy.__gpOpenPro === 'function') legacy.__gpOpenPro();
-        e.target.value = pronunciationSessionState.S.source;
-        return;
-      }
     }
     pronunciationMicrophoneState.PronMic.release();
     pronunciationSessionState.S.lastSource = v;

@@ -31,7 +31,6 @@ const root = path.resolve(__dirname, '..');
     await page.goto(pathToFileURL(path.join(root,'dist/index.html')).href,{waitUntil:'domcontentloaded'});
     assert.equal(await page.evaluate(()=>typeof window.showView),'function');
     assert.equal(await page.evaluate(()=>!!window.__pron&&!!window.__game&&!!window.VK&&!!window.__gpBridge),true);
-    await page.locator('#lpLoginBtn').click();await page.locator('#authGuestBtn').click();
     assert(await page.locator('#dashView').isVisible(),'file:// guest dashboard works');
     await page.locator('.ws-navItem[data-view="library"]').click();
     await page.locator('#vocabList [data-vsrc="hsk1"]').click();

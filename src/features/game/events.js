@@ -63,12 +63,6 @@ export function wireUI() {
     const b = e.target.closest('[data-glevel]');
     if (!b) return;
     const lv = Number(b.dataset.glevel) || 2;
-    /* ★ HSK 4–6 trong game cũng là nội dung Pro */
-    if (lv >= 4 && legacy.__gpIsPro !== true) {
-      if (typeof legacy.__gpOpenPro === 'function') legacy.__gpOpenPro();
-      toast('Cấp HSK 4–6 trong game thuộc gói Pro — nâng cấp hoặc dùng thử 7 ngày để chơi.', 'warn', 3400);
-      return;
-    }
     document.querySelectorAll('[data-glevel]').forEach(x => {
       x.classList.toggle('active', x === b);
       x.setAttribute('aria-pressed', x === b ? 'true' : 'false');

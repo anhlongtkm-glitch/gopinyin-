@@ -16,7 +16,7 @@ const check = (n, ok, d) => { if (ok) { pass++; console.log('  PASS  ' + n + (d 
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForTimeout(400);
-  await page.click('#lpLoginBtn'); await page.waitForTimeout(300);
+  await page.click('#wsLoginBtn'); await page.waitForTimeout(300);
   await page.click('[data-authtab="register"]'); await page.waitForTimeout(200);
   await page.fill('#authName', 'Minh Anh');
   await page.fill('#authEmail', 's' + Date.now() + '@l.test');

@@ -40,13 +40,13 @@ export function initializePronunciationRepository() {
         if (!lvl) continue; /* bỏ mảng meta HSK_DATA.hsk */
         out.push({
           id: 'hsk:' + k,
-          label: 'HSK ' + lvl + ' (' + a.length + ')' + (lvl >= 4 ? ' 🔒' : '')
+          label: 'HSK ' + lvl + ' (' + a.length + ')'
         });
       }
       return out;
     },
     /* Danh mục cho MÀN CHỌN BỘ CÂU (giống Thư viện bên Luyện gõ).
-       Trả về cấu trúc có sẵn số câu + cờ Pro để vẽ thẻ, không phải đoán
+       Trả về cấu trúc có sẵn số câu để vẽ thẻ, không phải đoán
        từ chuỗi nhãn như sources(). */
     async catalog() {
       const out = {
@@ -82,7 +82,6 @@ export function initializePronunciationRepository() {
           name: 'HSK ' + lvl,
           lvl,
           count: a.length,
-          locked: lvl >= 4,
           done: typed
         });
       }

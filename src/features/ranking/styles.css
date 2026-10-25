@@ -87,7 +87,7 @@
   font-weight:900;font-size:14px;color:#fff;background:var(--brand-grad);flex:0 0 auto;
   box-shadow:0 4px 12px rgba(11,164,136,.3)}
 .rankAv.avBig{width:46px;height:46px;font-size:19px}
-.rankPod.pod1 .rankAv{background:var(--pro-grad);color:#2a1500;box-shadow:0 6px 16px rgba(245,158,11,.35)}
+.rankPod.pod1 .rankAv{background:var(--gold-grad);color:#2a1500;box-shadow:0 6px 16px rgba(245,158,11,.35)}
 .rankYouTag{font-size:9px;font-weight:900;letter-spacing:.04em;padding:2px 7px;border-radius:var(--r-pill);
   background:var(--primary-soft);color:var(--primary-2);border:1px solid rgba(31,200,162,.35);white-space:nowrap}
 

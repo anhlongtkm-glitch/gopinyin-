@@ -2,50 +2,31 @@
 
 import { publishLegacy, legacy } from "./compatibility.js";
 
-import { currentUser } from "../features/auth/service.js";
+import { currentUser, doGuest } from "../features/auth/service.js";
 
 import { refreshDash } from "../features/dashboard/controller.js";
 
 import { setLibTab } from "../features/library/catalog.js";
 
-import { ensureTrial, renderProState, isPro } from "../features/pro/entitlements.js";
 
 import { state as accountStorageState } from "../shared/account-storage.js";
 
 import { state as audioEffectsState } from "../shared/audio/effects.js";
 
-import { openModal } from "../shared/dialogs.js";
 
-import { toast } from "../shared/toast.js";
 
 export const state = {};
 
 const appNavigationState = state;
 
-export function showLanding() {
-  accountStorageState.$('landing').classList.remove('hidden');
-  accountStorageState.$('workspace').classList.add('hidden');
-  document.body.style.overflow = '';
-  window.scrollTo(0, 0);
-  audioEffectsState.Sfx.page();
-}
 
 export function enterWorkspace() {
-  const u = currentUser();
-  if (!u) {
-    openModal('authModal');
-    return;
-  }
-  ensureTrial(u);
+  if (!currentUser()) doGuest();
   renderUserChip();
-  renderProState();
-  accountStorageState.$('landing').classList.add('hidden');
   accountStorageState.$('workspace').classList.remove('hidden');
   window.scrollTo(0, 0);
   showView('dash');
   audioEffectsState.Sfx.whoosh();
-  if (!accountStorageState.lsGet(accountStorageState.LS.seenLanding, false)) {/* landing đã xem */}
-  accountStorageState.lsSet(accountStorageState.LS.seenLanding, true);
 }
 
 export function renderUserChip() {
@@ -57,7 +38,12 @@ export function renderUserChip() {
     av = accountStorageState.$('wsAvatar'),
     dn = accountStorageState.$('dashName');
   const nm = u.name || (u.email ? u.email.split('@')[0] : 'Khách');
-  if (nameEl) nameEl.textContent = u.guest ? 'Khách (dùng thử)' : nm;
+  if (nameEl) nameEl.textContent = u.guest ? 'Khách' : nm;
+  const login = accountStorageState.$('wsLoginBtn');
+  const logout = accountStorageState.$('wsLogoutBtn');
+  accountStorageState.$('wsUserChip')?.classList.toggle('is-guest', !!u.guest);
+  if (login) login.hidden = !u.guest;
+  if (logout) logout.hidden = !!u.guest;
   if (av) av.textContent = (nm[0] || 'K').toUpperCase();
   if (dn) dn.textContent = u.guest ? 'bạn' : nm;
 }
@@ -66,15 +52,8 @@ export function showView(v) {
   /* ★ Chốt an toàn: tên view lạ → về Bảng điều khiển. Nếu không, mọi section
      đều bị ẩn và người dùng chỉ thấy một khung trắng. */
   if (!appNavigationState.VIEW_META[v]) v = 'dash';
-  if (v === 'ai' && !isPro()) {
-    openModal('proModal');
-    toast('Tính năng này dành cho hội viên Pro ⭐', 'warn');
-    return;
-  }
-  if (!currentUser()) {
-    openModal('authModal');
-    return;
-  }
+
+  if (!currentUser()) doGuest();
   /* rời màn luyện phát âm → TẮT MIC ngay (không ghi âm ngoài ý muốn) */
   if ((appNavigationState.currentView === 'pron' || appNavigationState.currentView === 'pronStudy') && v !== 'pronStudy' && legacy.__pron) {
     try {
@@ -171,8 +150,7 @@ export function replayFx(el) {
 }
 
 /* ═══════════════ MODAL PLUMBING ═══════════════ */
-/* ★ Các nút đóng dùng data-close="auth" / "pro" nhưng id thật là authModal / proModal
-   → phải ánh xạ lại, nếu không closeModal() không tìm thấy phần tử và nút ✕ "chết". */
+/* Resolve dialog aliases to their element IDs. */
 
 export function initializeAppNavigation() {
   /* ═══════════════ ĐIỀU HƯỚNG LANDING ↔ WORKSPACE ═══════════════ */

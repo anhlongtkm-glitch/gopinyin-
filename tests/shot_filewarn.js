@@ -9,7 +9,7 @@ const FILE_URL = process.env.TEST_FILE_URL || require('node:url').pathToFileURL(
   await p.evaluate(() => localStorage.clear());
   await p.reload({ waitUntil: 'networkidle' });
   await p.waitForTimeout(500);
-  await p.click('#lpLoginBtn'); await p.waitForTimeout(300);
+  await p.click('#wsLoginBtn'); await p.waitForTimeout(300);
   await p.click('[data-authtab="register"]'); await p.waitForTimeout(200);
   await p.fill('#authName', 'Minh Anh');
   await p.fill('#authEmail', 'fw' + Date.now() + '@l.test');

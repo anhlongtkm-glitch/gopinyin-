@@ -1,115 +1,20 @@
-/* ═══════════════════════════════════════════════════════════════
-   GOPINYIN — SERVER ĐỐI SOÁT CHUYỂN KHOẢN (tự động nâng cấp Pro)
-   ───────────────────────────────────────────────────────────────
-   Không cần cài thư viện gì (chỉ dùng http + fs + crypto của Node).
-   Chạy:   WEBHOOK_SECRET=<khoa-bi-mat> node server/pro-server.js
-   Mặc định: http://localhost:8787
-
-   ⚠️ BẮT BUỘC ĐỌC — BẢO MẬT
-   ─────────────────────────────────────────────────────────────
-   Bản trước chạy được khi KHÔNG có WEBHOOK_SECRET → bất kỳ ai cũng POST
-   JSON giả vào /webhook để tự mở Pro cho bất kỳ email nào.
-   Nay server TỪ CHỐI KHỞI ĐỘNG nếu thiếu WEBHOOK_SECRET (fail-closed).
-   Chỉ khi test ở máy local mới được bỏ qua bằng:
-       ALLOW_INSECURE_WEBHOOK=1 node server/pro-server.js
-
-   CÁCH NỐI VÀO APP (3 bước):
-   1) Đưa server này lên Internet (VPS, Render, Railway, Fly.io…
-      hoặc tạm thời:  npx cloudflared tunnel --url http://localhost:8787)
-   2) Mở assets/gopinyin.js, đổi:
-         const PRO_VERIFY_URL='';   →   const PRO_VERIFY_URL='https://api.ban.com/pro/status';
-      (không có dấu / ở cuối)
-   3) Vào cổng thanh toán (SePay / Casso / payOS…) tạo Webhook trỏ tới:
-         https://api.ban.com/webhook
-      Đặt header "Authorization: Apikey <WEBHOOK_SECRET>".
-      Nếu cổng hỗ trợ chữ ký HMAC, đặt thêm HMAC_SECRET để server kiểm tra
-      chữ ký trên RAW BODY (khuyến nghị — chống giả mạo tuyệt đối).
-
-   LUỒNG HOẠT ĐỘNG:
-   Khách quét VietQR (đã có sẵn số tiền + nội dung "GOPINYIN email")
-     → tiền vào tài khoản Vietcombank
-     → ngân hàng/cổng bắn webhook về /webhook
-     → server kiểm tra khoá + số tiền, lưu hạn dùng theo gói
-     → app đang mở tự hỏi /pro/status mỗi 5 giây
-     → thấy paid:true → tự bật Pro, không cần khách bấm gì.
-
-   LƯU Ý: file dữ liệu pro-paid.json chỉ để demo. Khi chạy thật, hãy thay
-   bằng DB thật (Postgres/Mongo/Redis…) và gắn thêm tài khoản người dùng.
-   ═══════════════════════════════════════════════════════════════ */
+// Optional AI and pronunciation API. Run: node server/pro-server.js
 'use strict';
 const http = require('http');
-const fs = require('fs');
-const path = require('path');
 const crypto = require('crypto');
 
 const PORT = Number(process.env.PORT || 8787);
-const SECRET = process.env.WEBHOOK_SECRET || '';            // khoá webhook (BẮT BUỘC)
-const HMAC_SECRET = process.env.HMAC_SECRET || '';          // tuỳ chọn: xác thực chữ ký
-const ALLOW_INSECURE = process.env.ALLOW_INSECURE_WEBHOOK === '1';
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';    // chỉ dùng cho GET /pro/status
-const DB_FILE = process.env.DB_FILE || path.join(__dirname, 'pro-paid.json');
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';    // Browser origin
 const AI_KEY_GEMINI = process.env.AI_KEY_GEMINI || '';        // key AI giữ ở server (dùng cho proxy)
 const AI_KEY_OPENROUTER = process.env.AI_KEY_OPENROUTER || '';
 const AI_PROXY_TOKEN = process.env.AI_PROXY_TOKEN || '';      // nếu đặt, /api/ai yêu cầu Bearer token
-const MAX_BODY = 256 * 1024;                                 // 256 KB là quá đủ cho 1 webhook
+const MAX_BODY = 256 * 1024;                                 // 256 KB AI request body
 /* ★ Chấm phát âm: key Azure giữ ở server. Không đặt → /api/pron trả 501
    và app dùng đánh giá sơ bộ (không giả điểm). */
 const AZURE_SPEECH_KEY = process.env.AZURE_SPEECH_KEY || '';
 const AZURE_SPEECH_REGION = process.env.AZURE_SPEECH_REGION || 'southeastasia';
 const PRON_MAX_BODY = 4 * 1024 * 1024;                       // 4 MB (≈15s WAV 16k mono)
 
-/* ── Gói + hạn dùng ──
-   Gói tháng: 39.000đ / 31 ngày.
-   Gói năm: 399.000đ / 365 ngày.
-   Bản cũ có plan lifetime được giữ tương thích để không mất quyền cũ. */
-const DAY = 24 * 60 * 60 * 1000;
-const PLANS = {
-  month:    { price: 39000,   ms: 31 * DAY },
-  year:     { price: 399000,  ms: 365 * DAY },
-  lifetime: { price: 399000,  ms: 0 }
-};
-function planOf(amount) {
-  const n = Number(amount) || 0;
-  if (n >= PLANS.year.price) return 'year';
-  if (n >= PLANS.month.price) return 'month';
-  return null;                     // chuyển thiếu tiền → KHÔNG kích hoạt
-}
-
-/* ── Kiểm tra cấu hình trước khi chạy ── */
-if (!SECRET && !ALLOW_INSECURE) {
-  console.error('\n✗ TỪ CHỐI KHỞI ĐỘNG: chưa đặt WEBHOOK_SECRET.\n');
-  console.error('  Nếu không có khoá, bất kỳ ai cũng có thể POST giả vào /webhook');
-  console.error('  để tự mở Pro miễn phí.\n');
-  console.error('  Chạy đúng cách:');
-  console.error('    WEBHOOK_SECRET=mot-chuoi-bi-mat-dai node server/pro-server.js\n');
-  console.error('  Chỉ khi test ở máy local:');
-  console.error('    ALLOW_INSECURE_WEBHOOK=1 node server/pro-server.js\n');
-  process.exit(1);
-}
-if (!SECRET && ALLOW_INSECURE) {
-  console.warn('\n⚠️  ĐANG CHẠY KHÔNG CÓ KHOÁ WEBHOOK — chỉ dùng để test local, TUYỆT ĐỐI không đưa lên Internet.\n');
-}
-
-/* ── Lưu trữ tạm bằng file JSON ── */
-function loadDB() {
-  try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')) || {}; } catch (e) { return {}; }
-}
-function saveDB(db) {
-  try {
-    /* ghi qua file tạm rồi rename → không bao giờ để lại file JSON hỏng */
-    const tmp = DB_FILE + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
-    fs.renameSync(tmp, DB_FILE);
-  } catch (e) { console.error('Không ghi được DB:', e.message); }
-}
-/* Chuẩn hoá nội dung CK để so khớp: bỏ dấu cách, viết hoa, bỏ ký tự lạ */
-function normNote(s) {
-  return String(s || '')
-    .toUpperCase()
-    .replace(/[^A-Z0-9@._-]/g, '')
-    .trim();
-}
-/* So sánh chuỗi an toàn với timing attack */
 function safeEqual(a, b) {
   const A = Buffer.from(String(a || ''));
   const B = Buffer.from(String(b || ''));
@@ -117,28 +22,8 @@ function safeEqual(a, b) {
   try { return crypto.timingSafeEqual(A, B); } catch (e) { return false; }
 }
 
-/* ★ Kiểm tra trạng thái Pro từ DB (dùng chung cho /pro/status và /pro/content) */
-function proStatusOf(rawNote) {
-  const note = normNote(rawNote || '');
-  if (!note) return { paid: false, error: 'missing note' };
-  const db = loadDB();
-  const hit = db[note];
-  if (!hit) return { paid: false };
-  const paid = hit.plan === 'lifetime' ? true : Number(hit.expiresAt || 0) > Date.now();
-  return { paid, plan: hit.plan, at: hit.at, expiresAt: Number(hit.expiresAt || 0) };
-}
-/* ★ Nội dung Pro (HSK 4–9) — chỉ server giữ; đọc 1 lần rồi cache */
-let __proContent = null;
-function loadProContent() {
-  if (__proContent) return __proContent;
-  try { __proContent = JSON.parse(fs.readFileSync(path.join(__dirname, 'pro-content.json'), 'utf8')); }
-  catch (e) { __proContent = {}; }
-  return __proContent;
-}
-
 function cors(res) {
-  /* ★ Chỉ các route app tĩnh gọi từ domain khác cần CORS: GET /pro/status và
-     POST /api/pron (chấm phát âm). /webhook là server-to-server → KHÔNG mở CORS. */
+  /* CORS for the browser AI and pronunciation clients. */
   res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -219,7 +104,7 @@ function readBodyBig(req, limit) {
   });
 }
 
-/* ── Giới hạn tần suất đơn giản theo IP (chống dò /pro/status) ── */
+/* Rate limit service requests by IP. */
 const HITS = new Map();
 const RATE_WINDOW = 60 * 1000, RATE_MAX = 120;
 function rateLimited(ip) {
@@ -240,85 +125,6 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'OPTIONS') { cors(res); res.writeHead(204); return res.end(); }
 
-  /* ── 1. WEBHOOK: ngân hàng / cổng thanh toán gọi vào đây ── */
-  if (url.pathname === '/webhook' && req.method === 'POST') {
-    if (SECRET) {
-      const auth = req.headers.authorization || '';
-      const token = auth.replace(/^(apikey|bearer)\s+/i, '').trim() || auth.trim();
-      if (!safeEqual(token, SECRET)) {
-        console.warn('[webhook] TỪ CHỐI — sai khoá từ', ip);
-        return json(res, 401, { ok: false, error: 'unauthorized' });
-      }
-    }
-    const parsed = await readBody(req);
-    if (parsed === null) return json(res, 413, { ok: false, error: 'body too large' });
-    const raw = parsed.data;
-    const rawBody = parsed.raw;
-
-    /* ★ Nếu cổng ký HMAC trên raw body → xác thực chữ ký (chống giả mạo tuyệt đối).
-       Tính trên chuỗi body thô (rawBody), KHÔNG phải JSON.stringify(raw) — nếu không
-       thứ tự key/khoảng trắng sẽ khác byte gốc và mọi webhook hợp lệ bị từ chối. */
-    if (HMAC_SECRET) {
-      const got = String(req.headers['x-signature'] || req.headers['x-hub-signature-256'] || '')
-        .replace(/^sha256=/i, '').trim();
-      const want = crypto.createHmac('sha256', HMAC_SECRET)
-        .update(rawBody || '').digest('hex');
-      if (!safeEqual(got, want)) {
-        console.warn('[webhook] TỪ CHỐI — sai chữ ký HMAC từ', ip);
-        return json(res, 401, { ok: false, error: 'bad signature' });
-      }
-    }
-
-    const body = raw;
-    /* Hỗ trợ nhiều cổng: SePay (content/transferAmount), Casso (data[]), payOS */
-    const list = Array.isArray(body.data) ? body.data : [body];
-    const saved = [], ignored = [];
-    const db = loadDB();
-
-    for (const tx of list) {
-      const content = tx.content || tx.description || tx.transaction_content || tx.desc || '';
-      const amount = tx.transferAmount || tx.amount || tx.transfer_amount || 0;
-      /* chỉ nhận tiền vào */
-      if (String(tx.transferType || tx.type || 'in').toLowerCase() === 'out') continue;
-      const m = String(content).toUpperCase().match(/GOPINYIN[\s:_-]*([A-Z0-9@._-]+)/);
-      if (!m) continue;
-      const plan = planOf(amount);
-      if (!plan) { ignored.push({ content, amount, reason: 'số tiền thấp hơn giá gói' }); continue; }
-
-      const note = normNote('GOPINYIN ' + m[1]);
-      const prev = db[note];
-      let expiresAt = 0;
-      if (plan === 'month') {
-        /* ★ Gia hạn cộng dồn: còn hạn thì cộng tiếp, hết hạn thì tính từ hôm nay */
-        const base = (prev && prev.plan === 'month' && Number(prev.expiresAt) > Date.now())
-          ? Number(prev.expiresAt) : Date.now();
-        expiresAt = base + PLANS.month.ms;
-      } else if (plan === 'year') {
-        const base = (prev && prev.plan === 'year' && Number(prev.expiresAt) > Date.now())
-          ? Number(prev.expiresAt) : Date.now();
-        expiresAt = base + PLANS.year.ms;
-      } else if (prev && prev.plan === 'lifetime') {
-        expiresAt = 0;                       /* dữ liệu cũ trọn đời → giữ nguyên */
-      }
-      db[note] = { note, amount: Number(amount), plan, at: Date.now(), expiresAt, raw: content };
-      saved.push({ note, plan, expiresAt });
-    }
-    if (saved.length) saveDB(db);
-    console.log('[webhook] ghi nhận:', saved.map(s => s.note + '/' + s.plan).join(', ') || 'không khớp nội dung');
-    if (ignored.length) console.log('[webhook] bỏ qua:', JSON.stringify(ignored));
-    return json(res, 200, { ok: true, saved, ignored });
-  }
-
-  /* ── 2. STATUS: app hỏi "đã nhận tiền chưa?" ── */
-  if (url.pathname === '/pro/status' && req.method === 'GET') {
-    if (rateLimited(ip)) return json(res, 429, { paid: false, error: 'too many requests' }, true);
-    const note = normNote(url.searchParams.get('note') || '');
-    const st = proStatusOf(note);
-    if (st.error) return json(res, 400, { paid: false, error: st.error }, true);
-    if (st.paid) console.log('[status] PAID', note);
-    return json(res, 200, { paid: st.paid, plan: st.plan, at: st.at, expiresAt: st.expiresAt }, true);
-  }
-
   /* ── 2b. AI PROXY: app gửi prompt, server giữ key (AI_KEY_*) → không lưu plaintext client ── */
   if (url.pathname === '/api/ai' && req.method === 'POST') {
     if (AI_PROXY_TOKEN) {
@@ -334,16 +140,6 @@ const server = http.createServer(async (req, res) => {
       const text = await serverCallAi(provider, key, prompt, image);
       return json(res, 200, { ok: true, text }, true);
     } catch (e) { return json(res, 502, { ok: false, error: (e && e.message) || String(e) }, true); }
-  }
-
-  /* ── 2c. PRO CONTENT: trả nội dung Pro (HSK 4–9) CHỈ sau khi xác thực ★ ──
-     Nội dung không nằm trong JS tĩnh → không thể lấy nếu chưa trả tiền. */
-  if (url.pathname === '/pro/content' && req.method === 'GET') {
-    if (rateLimited(ip)) return json(res, 429, { paid: false, error: 'too many requests' }, true);
-    const st = proStatusOf(url.searchParams.get('note') || '');
-    if (!st.paid) return json(res, 403, { paid: false, error: 'not paid' }, true);
-    const content = loadProContent();
-    return json(res, 200, { paid: true, plan: st.plan, content }, true);
   }
 
   /* ── 2d. PRONUNCIATION ASSESSMENT: chấm phát âm thật, key GIỮ Ở SERVER ★ ──
@@ -450,12 +246,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log('Gopinyin pro-server chạy tại http://localhost:' + PORT);
-  console.log('  POST /webhook       ← trỏ webhook SePay/Casso vào đây (cần Authorization)');
-  console.log('  GET  /pro/status    ← app gọi để biết đã thanh toán chưa');
-  console.log('  GET  /pro/content   ← trả nội dung Pro (HSK 4–9) sau khi xác thực');
+  console.log('GoPinyin API chạy tại http://localhost:' + PORT);
   console.log('  POST /api/ai        ← proxy AI (giữ key ở server)');
   console.log('  POST /api/pron      ← chấm phát âm (Azure) ' + (AZURE_SPEECH_KEY ? 'đã bật ✓' : 'CHƯA CẤU HÌNH → client tự đánh giá sơ bộ'));
-  console.log('  Khoá webhook: ' + (SECRET ? 'đã đặt ✓' : 'CHƯA ĐẶT ⚠'));
-  console.log('  Chữ ký HMAC : ' + (HMAC_SECRET ? 'đã bật ✓' : 'tắt (khuyến nghị bật)'));
 });

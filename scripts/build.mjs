@@ -10,7 +10,7 @@ const sourceRoot = path.join(projectRoot, 'src');
 const publicAssets = [
   'apple-touch-icon.png', 'favicon-16.png', 'favicon-32.png', 'favicon-48.png',
   'icon-192.png', 'icon-512.png', 'logo-full-dark.png', 'logo-full.png',
-  'logo-icon.png', 'logo-mark.png', 'logo.png', 'qr-vietcombank.png',
+  'logo-icon.png', 'logo-mark.png', 'logo.png',
   'site.webmanifest', 'vocab-pack.js'
 ];
 
@@ -30,6 +30,7 @@ export async function renderHtml(file = 'index.html', ancestors = []) {
 
 export async function build({ development = false } = {}) {
   await mkdir(path.join(outputRoot, 'assets'), { recursive: true });
+  await rm(path.join(outputRoot, 'assets/qr-vietcombank.png'), { force: true });
   if (!development) for (const name of ['app.js.map','app.css.map']) await rm(path.join(outputRoot,'assets',name),{force:true});
   await esbuild.build({
     absWorkingDir: projectRoot,

@@ -22,7 +22,7 @@ function check(name, ok, detail) {
   page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 
   await page.goto(URL, { waitUntil: 'networkidle' });
-  await page.evaluate(() => document.querySelector('#lpLoginBtn')?.click());
+  await page.evaluate(() => document.querySelector('#wsLoginBtn')?.click());
   await page.waitForTimeout(400);
   await page.evaluate(() => document.querySelector('#authGuestBtn')?.click());
   await page.waitForTimeout(700);

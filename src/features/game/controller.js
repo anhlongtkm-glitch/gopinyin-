@@ -8,7 +8,7 @@ import { spawn, saveGameStage, loadGameStage } from "./entities.js";
 
 import { isFs, syncFsBtn } from "./events.js";
 
-import { syncPinyinBtn, updateHud, syncGameLocks } from "./input.js";
+import { syncPinyinBtn, updateHud, syncGameLevelTitles } from "./input.js";
 
 import { frame } from "./loop.js";
 
@@ -247,7 +247,7 @@ export function openGame() {
   gameSessionState.state.showPinyin = false; // ★ mới vào game → pinyin luôn ẩn, muốn xem thì bật
   syncPinyinBtn();
   syncFsBtn();
-  syncGameLocks();
+  syncGameLevelTitles();
   /* ★ Có ván đang dở → mời tiếp tục thay vì xoá sạch */
   if (gameSessionState.state.suspended && gameSessionState.state.pool.length) {
     gameSessionState.state.running = false;
@@ -265,10 +265,10 @@ export function openGame() {
   if (saved && saved.stage) gameSessionState.state.stage = Math.max(1, Number(saved.stage) || 1);
   gameSessionState.state.stageWords = saved ? Math.max(0, Math.min(gameSessionState.STAGE_SIZE - 1, Number(saved.stageWords) || 0)) : 0;
   /* ★ Khôi phục cả CẤP HSK đã chọn — nhưng chỉ khi cấp đó được phép
-     (HSK 4–6 là nội dung Pro, không được khôi phục cho tài khoản miễn phí). */
+     (giữ nguyên cấp HSK đã chọn). */
   if (saved && saved.level) {
     const lv = Number(saved.level) || 0;
-    if (lv >= 1 && lv <= 6 && (lv < 4 || legacy.__gpIsPro === true)) {
+    if (lv >= 1 && lv <= 6) {
       gameSessionState.state.level = lv;
     }
   }

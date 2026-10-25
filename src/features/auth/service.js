@@ -1,8 +1,7 @@
 // State and behavior owned by features/auth/service. Initialization is orchestrated by app/bootstrap.js.
 
-import { renderLandingShell } from "../../app/shell-startup.js";
+import { enterWorkspace } from "../../app/navigation.js";
 
-import { migrateGlobalPro, ensureTrial } from "../pro/entitlements.js";
 
 import { state as accountStorageState } from "../../shared/account-storage.js";
 
@@ -33,7 +32,7 @@ export function saveUser(u) {
      • Tài khoản cũ (dạng 'h…') vẫn đăng nhập được và được TỰ NÂNG CẤP sang
        PBKDF2 ngay lần đăng nhập kế tiếp → không mất tài khoản đang có.
    Lưu ý: đây vẫn là xác thực phía client (bản demo tĩnh). Khi thương mại hoá
-   BẮT BUỘC chuyển sang backend — xem mục "Kết nối thanh toán thật" trong README. */
+   BẮT BUỘC chuyển sang backend — cần backend xác thực riêng. */
 
 export function bufToHex(b) {
   return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
@@ -149,12 +148,6 @@ export async function doLogin(email, pass) {
     name: u.name,
     guest: false
   });
-  migrateGlobalPro(); /* chuyển Pro mua bằng bản cũ sang tài khoản này */
-  /* tài khoản cũ chưa từng nhận ưu đãi → cấp 7 ngày dùng thử */
-  ensureTrial({
-    email: key,
-    name: u.name
-  });
   return {
     ok: true,
     user: {
@@ -199,18 +192,12 @@ export async function doRegister(name, email, pass) {
     name: users[key].name,
     guest: false
   });
-  /* ★ Tặng 7 ngày dùng thử Pro cho tài khoản mới */
-  ensureTrial({
-    email: key,
-    name: users[key].name
-  });
   return {
     ok: true,
     user: {
       email: key,
       name: users[key].name
-    },
-    trial: true
+    }
   };
 }
 
@@ -232,12 +219,11 @@ export function doGuest() {
 
 export function doLogout() {
   localStorage.removeItem(accountStorageState.LS.user);
-  renderLandingShell();
+  doGuest();
+  enterWorkspace();
   toast('Đã đăng xuất. Hẹn gặp lại bạn!', 'ok');
 }
 
-/* ═══════════════ PRO ═══════════════ */
-/* ★ DÙNG THỬ PRO 7 NGÀY cho mỗi tài khoản đăng ký */
 
 export function initializeAuthService() {
   /* ═══════════════ MẬT KHẨU — PBKDF2 (WebCrypto) ═══════════════

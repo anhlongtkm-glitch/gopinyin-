@@ -1,7 +1,6 @@
 /* Order is intentional: preserve base rules, responsive rules and late overrides. */
 @import "../shared/styles/tokens-base.css";
 @import "../shared/styles/buttons.css";
-@import "../features/landing/styles.css";
 @import "../app/workspace.css";
 @import "../features/dashboard/styles.css";
 @import "../features/library/styles.css";
@@ -13,13 +12,10 @@
 @import "../shared/translation.css";
 @import "../features/game/styles.css";
 @import "../shared/dialogs.css";
-@import "../features/pro/styles.css";
 @import "../shared/styles/responsive.css";
 @import "../app/workspace-effects.css";
 @import "../features/games/styles.css";
 @import "../features/ranking/styles.css";
-@import "../features/pro/landing-pricing.css";
-@import "../features/pro/trial.css";
 @import "../shared/virtual-keyboard.css";
 @import "../shared/study/responsive.css";
 @import "../features/typing/feedback.css";

@@ -2,9 +2,8 @@
 
 import { legacy } from "./compatibility.js";
 
-import { enterWorkspace, showView } from "./navigation.js";
+import { showView } from "./navigation.js";
 
-import { currentUser } from "../features/auth/service.js";
 
 import { state as accountStorageState } from "../shared/account-storage.js";
 
@@ -13,53 +12,11 @@ import { openModal } from "../shared/dialogs.js";
 import { toast } from "../shared/toast.js";
 
 export function initializeAppNavigationEvents() {
-  /* ═══════════════ ĐĂNG NHẬP / CTA TỪ LANDING ═══════════════ */
-  accountStorageState.$('lpLoginBtn').addEventListener('click', () => {
-    if (currentUser()) {
-      enterWorkspace();
-      return;
-    }
-    openModal('authModal');
-  });
-  accountStorageState.$('lpCtaBtn').addEventListener('click', () => {
-    if (currentUser()) enterWorkspace();else openModal('authModal');
-  });
-  accountStorageState.$('heroStartBtn').addEventListener('click', () => {
-    if (currentUser()) {
-      enterWorkspace();
-      return;
-    }
-    openModal('authModal');
-  });
   accountStorageState.$$('[data-open="auth"]').forEach(b => b.addEventListener('click', () => openModal('authModal')));
-  accountStorageState.$$('[data-goto]').forEach(a => a.addEventListener('click', () => {
-    if (!currentUser()) {
-      openModal('authModal');
-      toast('Đăng nhập để vào học nhé!', 'warn');
-      return;
-    }
-    enterWorkspace();
-    /* ★ 'typing' và 'vocab' đều nằm trong Thư viện; trước đây 'vocab' được truyền
-       thẳng vào showView() — mà showView không có view tên 'vocab' → ẩn HẾT các
-       mục và người dùng nhận một màn trắng. */
-    const g = a.dataset.goto;
-    const view = g === 'typing' || g === 'vocab' ? 'library' : g;
-    setTimeout(() => {
-      showView(view);
-      if (g === 'vocab') {
-        const t = document.querySelector('.modeBtn[data-vtab="topic"]');
-        if (t) setTimeout(() => {
-          try {
-            t.click();
-          } catch (e) {}
-        }, 0);
-      }
-    }, 80);
-  }));
   accountStorageState.$$('.ws-navItem').forEach(b => {
     const label = b.querySelector('.ws-navLabel')?.textContent.trim() || b.dataset.view;
-    b.setAttribute('aria-label', label + (b.dataset.view === 'ai' ? ', Pro' : ''));
-    b.title = label + (b.dataset.view === 'ai' ? ', Pro' : '');
+    b.setAttribute('aria-label', label);
+    b.title = label;
     b.addEventListener('click', () => showView(b.dataset.view));
   });
   accountStorageState.$('dashContinueBtn').addEventListener('click', async () => {

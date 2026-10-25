@@ -1,8 +1,6 @@
 // State and behavior owned by shared/dialogs. Initialization is orchestrated by app/bootstrap.js.
 
-import { syncProPlan } from "../features/pro/checkout.js";
 
-import { renderTrial } from "../features/pro/entitlements.js";
 
 import { state as accountStorageState } from "./account-storage.js";
 
@@ -23,11 +21,7 @@ export function openModal(id) {
   m.hidden = false;
   document.body.style.overflow = 'hidden';
   audioEffectsState.Sfx.pop();
-  /* mở bảng Pro → làm mới QR + số tiền theo đúng khách đang đăng nhập */
-  if (m.id === 'proModal') {
-    renderTrial();
-    if (typeof syncProPlan === 'function') syncProPlan();
-  }
+
 }
 
 export function closeModal(id) {
@@ -43,11 +37,9 @@ export function closeModal(id) {
 
 export function initializeDialogs() {
   /* ═══════════════ MODAL PLUMBING ═══════════════ */
-  /* ★ Các nút đóng dùng data-close="auth" / "pro" nhưng id thật là authModal / proModal
-     → phải ánh xạ lại, nếu không closeModal() không tìm thấy phần tử và nút ✕ "chết". */
+  /* Resolve dialog aliases to their element IDs. */
   dialogsState.MODAL_ALIAS = {
-    auth: 'authModal',
-    pro: 'proModal'
+    auth: 'authModal'
   };
   accountStorageState.$$('[data-close]').forEach(el => el.addEventListener('click', () => closeModal(el.dataset.close)));
   accountStorageState.$$('.modal').forEach(m => m.addEventListener('keydown', e => {

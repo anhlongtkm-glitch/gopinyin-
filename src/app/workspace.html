@@ -1,4 +1,4 @@
-<div id="workspace" class="workspace hidden">
+<div id="workspace" class="workspace">
   <!-- Thanh bên -->
   <aside class="ws-side">
     <div class="ws-sideBrand">
@@ -7,24 +7,21 @@
         <img class="brandLockup-light" src="assets/logo-full.png" alt="GoPinyin" width="118" height="30" decoding="async" />
         <img class="brandLockup-dark" src="assets/logo-full-dark.png" alt="" aria-hidden="true" width="118" height="30" decoding="async" />
       </span>
-      <span class="ws-proBadge hidden" id="wsProBadge">PRO</span>
     </div>
     <nav class="ws-nav" aria-label="Điều hướng chính">
       <button class="ws-navItem active" type="button" data-view="dash"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="ws-navLabel">Bảng điều khiển</span></button>
       <button class="ws-navItem" type="button" data-view="library"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9.5 14h5"/></svg></span><span class="ws-navLabel">Luyện gõ</span></button>
       <button class="ws-navItem" type="button" data-view="pron"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1"/><path d="M12 18v3.5"/><path d="M8.5 21.5h7"/></svg></span><span class="ws-navLabel">Luyện phát âm</span></button>
       <button class="ws-navItem" type="button" data-view="rank"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M17 5h2.5a1.5 1.5 0 0 1 0 3H17M7 5H4.5a1.5 1.5 0 0 0 0 3H7"/></svg></span><span class="ws-navLabel">Bảng xếp hạng</span></button>
-      <button class="ws-navItem" type="button" data-view="ai"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/><path d="M5 3l.7 1.8L7.5 5.5l-1.8.7L5 8l-.7-1.8L2.5 5.5l1.8-.7z"/></svg></span><span class="ws-navLabel">AI sinh câu</span><span class="ws-lock" title="Pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></button>
+      <button class="ws-navItem" type="button" data-view="ai"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/><path d="M5 3l.7 1.8L7.5 5.5l-1.8.7L5 8l-.7-1.8L2.5 5.5l1.8-.7z"/></svg></span><span class="ws-navLabel">AI sinh câu</span></button>
       <button class="ws-navItem" type="button" data-view="games"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="7" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="11" y2="12"/><line x1="15" y1="12" x2="15" y2="12"/><path d="M6 10.5v3M4.5 12h3"/></svg></span><span class="ws-navLabel">Game từ vựng</span></button>
     </nav>
     <div class="ws-sideFoot">
-      <button class="ws-upgradeBtn" id="wsUpgradeBtn" type="button">
-        <span class="ws-upgradeIcon">⭐</span>
-        <span><b>Nâng cấp Pro</b><small>Mở AI &amp; HSK 4–9</small></span>
-      </button>
+
       <div class="ws-userChip" id="wsUserChip">
         <span class="ws-avatar" id="wsAvatar">K</span>
-        <span class="ws-userInfo"><b id="wsUserName">Khách</b><small id="wsUserPlan">Gói miễn phí</small></span>
+        <span class="ws-userInfo"><b id="wsUserName">Khách</b><small id="wsUserPlan">Học miễn phí</small></span>
+        <button class="btn" id="wsLoginBtn" type="button" data-open="auth">Đăng nhập</button>
         <button class="ws-logoutBtn" id="wsLogoutBtn" type="button" title="Đăng xuất">⏻</button>
       </div>
     </div>

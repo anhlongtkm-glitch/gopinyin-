@@ -1,14 +1,4 @@
-/* GoPinyin education + commerce visual refresh */
-.lp-blob{opacity:.24;filter:blur(110px);animation:none}
-.lp-grid{opacity:.18}
-.lp-chars span{animation:none}
-.lp-mock{transform:none;box-shadow:var(--sh-3)}
-.lp-heroArt:hover .lp-mock{transform:translateY(-2px)}
-.lp-floatCard{animation:none;box-shadow:var(--sh-2)}
-.lp-feature:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
-.lp-feature::before{display:none}
-.lp-price.pro{box-shadow:var(--sh-3)}
-.lp-price.pro:hover{transform:translateY(-2px)}
+/* GoPinyin education visual refresh */
 
 .ws-main::before{opacity:.32}
 .ws-scenery{opacity:.12}

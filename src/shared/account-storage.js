@@ -9,13 +9,10 @@ export function initializeAccountStorage() {
   accountStorageState.LS = {
     users: 'gp:users',
     user: 'gp:user',
-    pro: 'gp:pro',
-    proPlan: 'gp:proPlan',
     goal: 'gp:dailyGoal',
     daily: 'gp:daily',
     streak: 'gp:streak',
     best: 'gp:bestScore',
-    seenLanding: 'gp:seenLanding'
   };
   accountStorageState.lsGet = (k, d) => {
     try {

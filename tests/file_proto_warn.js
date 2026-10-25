@@ -21,7 +21,7 @@ function check(name, ok, detail) {
 function section(t) { console.log('\n══ ' + t + ' ══'); }
 
 async function login(page) {
-  await page.click('#lpLoginBtn'); await page.waitForTimeout(400);
+  await page.click('#wsLoginBtn'); await page.waitForTimeout(400);
   await page.click('[data-authtab="register"]'); await page.waitForTimeout(250);
   await page.fill('#authName', 'FileTest');
   await page.fill('#authEmail', 'f' + Date.now() + '@l.test');

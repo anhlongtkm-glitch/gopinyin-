@@ -10,7 +10,7 @@ import { toast } from "../shared/toast.js";
 import { state as modalState, _modalOpen, _modalClose, appAlert, appConfirm, appPrompt } from "../shared/modal.js";
 import { state as libraryControllerState, renderLibrary, srcProgress } from "../features/library/controller.js";
 import { renderAiSets, aiSetsWire } from "../features/ai/saved-sets.js";
-import { state as libraryCatalogState, ensureVocabPack, parsePackRows, topicCount, srcCount, findVocabSource, fetchVocabItems, vocabLocked, openVocabSource, renderVocab, setLibTab, showStorageWarn, hideStorageWarn } from "../features/library/catalog.js";
+import { state as libraryCatalogState, ensureVocabPack, parsePackRows, topicCount, srcCount, findVocabSource, fetchVocabItems, openVocabSource, renderVocab, setLibTab, showStorageWarn, hideStorageWarn } from "../features/library/catalog.js";
 import { state as aiProvidersState, geminiUrl, aiLsGet, aiLsSet, aiKeyStore, aiKeyLoad } from "../features/ai/providers.js";
 import { state as aiSessionState, aiSetStatus, aiShowGen, aiAppendRows, aiSavedSet, aiCurrentKind, aiCurrentUnit, aiFillMissingVi, aiRefreshAfterAppend, aiMaybeFill, aiStartStudy, aiEndSession, aiSessionLive } from "../features/ai/session.js";
 import { state as aiClientState, aiKindMeta, aiUnitOf, buildAiPrompt, callAi, callAiProxy, callOpenRouter } from "../features/ai/client.js";
@@ -142,7 +142,6 @@ export function exposeCoreGlobals(){
  window["srcCount"] = srcCount;
  window["findVocabSource"] = findVocabSource;
  window["fetchVocabItems"] = fetchVocabItems;
- window["vocabLocked"] = vocabLocked;
  window["openVocabSource"] = openVocabSource;
  window["renderVocab"] = renderVocab;
  window["setLibTab"] = setLibTab;
