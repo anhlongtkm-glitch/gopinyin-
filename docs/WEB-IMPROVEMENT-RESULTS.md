@@ -4,6 +4,8 @@ Ngày: 26/10/2026. Triển khai trong workspace; chưa phát hành production ho
 
 Đã tiếp tục tối ưu đồng bộ theo phiên bản và chỉ tải nội dung bộ câu khi cần học. Xem [kết quả đợt 2](WEB-PERFORMANCE-PHASE-2.md). Các số đo và số lượng kiểm thử bên dưới ghi nhận đợt triển khai đầu.
 
+Đợt tiếp theo đã triển khai và xác minh API cùng Vercel: xem [biên bản production](PRODUCTION-ACCEPTANCE.md). Backend đã chạy; còn thiếu key provider để kiểm chứng AI/phát âm chuyên dụng thật.
+
 ## Các thay đổi đã thực hiện
 
 | Nhóm | Kết quả |

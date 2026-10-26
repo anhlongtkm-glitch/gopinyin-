@@ -2,6 +2,8 @@
 
 ## Bổ sung backend cùng Vercel — 26/10/2026
 
+Đã xác minh production tại commit `16b1da3`: Vercel success, `/api/status` trả JSON và xác nhận cấu hình tài khoản có mặt; AI/phát âm chặn request không token bằng 401. Chưa có key provider ở backend. Xem [biên bản kiểm chứng](PRODUCTION-ACCEPTANCE.md).
+
 Đợt tiếp theo đã bổ sung function `/api/ai`, `/api/pron`, `/api/status` cùng dự án web, thay vì cần hosting Node riêng cho mọi trường hợp. Cấu hình và cách kiểm tra nằm trong [VERCEL.md](../VERCEL.md). Dùng hash route cho web; không rewrite `/api/*` về HTML. Các ghi nhận về “chỉ triển khai web tĩnh” bên dưới là lịch sử của đợt phát hành tài khoản trước đó.
 
 Handler hỗ trợ body Vercel parse sẵn; vẫn chạy Node standalone được. Khi thiếu `SUPABASE_*`, API dùng `GOPINYIN_SUPABASE_*` của cùng deployment để xác minh user, không dùng service-role key.
