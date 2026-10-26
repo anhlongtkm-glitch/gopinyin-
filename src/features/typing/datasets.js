@@ -13,6 +13,7 @@ import { updateSoundUI, updateReadTypeUI, updateViUI, updateHanUI, updateModeUI 
 import { loadHistory, renderAppHistory } from "./history.js";
 
 import { resetSessionRuntime, loadProgress } from "./progress.js";
+import { normalizeProgress } from "./progress-normalization.js";
 
 import { render } from "./render.js";
 
@@ -49,36 +50,13 @@ export async function openDataset(id, options = {}) {
   typingSessionState.currentFileKey = progressKey(ds.id);
   typingSessionState.pinyinHint = false; // ★ mới vào chế độ gỗ → pinyin luôn ẩn, muốn xem thì bật
   const saved = loadProgress(ds.id);
-  typingSessionState.reviewById = saved?.reviewById && typeof saved.reviewById === 'object' ? saved.reviewById : {};
-  const validOrder = o => Array.isArray(o) && o.every(i => Number.isInteger(i) && i >= 0 && i < typingSessionState.rows.length);
-  if (saved && validOrder(saved.mainOrder) && saved.mainOrder.length === typingSessionState.rows.length) {
-    typingSessionState.mainOrder = saved.mainOrder;
-    typingSessionState.mainIndex = saved.mainIndex || 0;
-    typingSessionState.stats = saved.stats || typingSessionState.stats;
-    typingSessionState.wrongIds = new Set(saved.wrongIds || []);
-    typingSessionState.autoSound = saved.autoSound !== false;
-    typingSessionState.speechRate = Number(saved.speechRate) || 0.8;
-    typingSessionState.selectedVoiceName = String(saved.selectedVoiceName || '');
-    typingSessionState.showVietnamese = saved.showVietnamese !== false;
-    typingSessionState.showHanzi = saved.showHanzi !== false;
-    typingSessionState.readOnType = saved.readOnType !== false;
-  } else if (saved && validOrder(saved.mainOrder) && saved.mainOrder.length) {
-    /* ★ Bộ câu ĐÃ LỚN THÊM (AI viết tiếp sau khi lưu) → giữ nguyên tiến độ cũ,
-       chỉ nối các câu mới vào CUỐI. Trước đây độ dài lệch là xoá sạch tiến độ
-       và xáo lại từ đầu — mất đúng câu người dùng đang học dở. */
-    const seen = new Set(),
-      ord = [];
-    for (const i of saved.mainOrder) {
-      if (!seen.has(i)) {
-        seen.add(i);
-        ord.push(i);
-      }
-    }
-    for (let i = 0; i < typingSessionState.rows.length; i++) if (!seen.has(i)) ord.push(i);
-    typingSessionState.mainOrder = ord;
-    typingSessionState.mainIndex = Math.min(saved.mainIndex || 0, ord.length);
-    typingSessionState.stats = saved.stats || typingSessionState.stats;
-    typingSessionState.wrongIds = new Set(saved.wrongIds || []);
+  const restored = normalizeProgress(saved, typingSessionState.rows.length);
+  typingSessionState.reviewById = saved?.reviewById && typeof saved.reviewById === 'object' && !Array.isArray(saved.reviewById) ? saved.reviewById : {};
+  typingSessionState.mainOrder = restored.mainOrder ?? shuffle(typingSessionState.rows.map((_, i) => i));
+  typingSessionState.mainIndex = restored.mainIndex;
+  typingSessionState.stats = restored.stats;
+  if (restored.mainOrder !== null) {
+    typingSessionState.wrongIds = new Set(Array.isArray(saved.wrongIds) ? saved.wrongIds : []);
     typingSessionState.autoSound = saved.autoSound !== false;
     typingSessionState.speechRate = Number(saved.speechRate) || 0.8;
     typingSessionState.selectedVoiceName = String(saved.selectedVoiceName || '');
@@ -86,20 +64,12 @@ export async function openDataset(id, options = {}) {
     typingSessionState.showHanzi = saved.showHanzi !== false;
     typingSessionState.readOnType = saved.readOnType !== false;
   } else {
-    typingSessionState.mainOrder = shuffle(typingSessionState.rows.map((_, i) => i));
-    typingSessionState.mainIndex = 0;
-    typingSessionState.stats = {
-      correct: 0,
-      wrong: 0,
-      combo: 0,
-      bestCombo: 0,
-      attempts: 0
-    };
     typingSessionState.wrongIds = new Set();
     typingSessionState.autoSound = true;
     typingSessionState.speechRate = .8;
     typingSessionState.selectedVoiceName = '';
     typingSessionState.showVietnamese = true;
+    typingSessionState.showHanzi = true;
     typingSessionState.readOnType = true;
   }
   typingSessionState.mode = 'all';

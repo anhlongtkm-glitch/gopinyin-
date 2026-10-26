@@ -1,5 +1,7 @@
 # Đánh giá và kế hoạch cải tiến GoPinyin
 
+Trạng thái mới nhất: [đối chiếu lộ trình và bản sửa cuối](WEB-FIX-COMPLETION.md). Phần mã đã triển khai và phần nghiệm thu thực tế còn lại được ghi riêng trong tài liệu đó.
+
 Đã triển khai các sửa lỗi và nền tảng tối ưu trong workspace. Xem [kết quả, kiểm thử và các bước xác minh thực tế còn lại](WEB-IMPROVEMENT-RESULTS.md). Phần đánh giá bên dưới ghi nhận hiện trạng trước khi sửa.
 
 Ngày rà soát: 26/10/2026. Phạm vi: mã nguồn trong workspace hiện tại, build và kiểm thử cục bộ. Chưa sửa mã ứng dụng, triển khai hay thay đổi dữ liệu thật.

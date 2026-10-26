@@ -82,6 +82,8 @@ Dashboard chỉ đọc dữ liệu tài khoản hiện tại. Các số liệu h
 
 Khi câu vừa được chấm đúng và còn chờ Space, `index` runtime vẫn trỏ câu đang hiển thị nhưng `mainIndex` lưu trữ đã trỏ câu tiếp theo. Không dùng hai giá trị thay thế lẫn nhau trong trạng thái này. Xem `docs/LEARNING-FLOW-FIXES.md`.
 
+`app/route-restoration.js` quản lý khôi phục route và chờ kích hoạt tài khoản ban đầu. Callback sau đăng nhập và khôi phục route đều kiểm tra phiên điều hướng trước khi chạy. `features/typing/progress-normalization.js` chuẩn hóa thứ tự, con trỏ và thống kê khi mở progress cũ; không sửa schema hoặc khóa lưu trữ. Xem `docs/WEB-FIX-COMPLETION.md`.
+
 Server chỉ phục vụ `dist/`; các endpoint `__gopinyin`, `__import`, origin và cổng mặc định giữ nguyên. Luồng chuyển file:// sang localhost vẫn nhập dữ liệu trước khi khởi tạo app. Quyền micro vẫn phụ thuộc secure context/trình duyệt như trước. Chỉ cấu hình công khai được copy xuống browser; giữ khóa backend trong môi trường server.
 
 ## Kiểm thử và bằng chứng refactor

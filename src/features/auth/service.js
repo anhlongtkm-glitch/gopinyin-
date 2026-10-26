@@ -1,5 +1,6 @@
 ﻿import { getAccountClient, accountRedirect } from './client.js';
 import { attachAccountData, detachAccountData, synchronizeAccountData, flushAccountData, syncStatus } from '../../shared/storage/account-data.js';
+import { navigationVersion } from '../../app/routes.js';
 
 export const state = { user: null, ready: false, profile: null, recovery: false };
 let pendingAction = null, activation, activeId = null, epoch = 0;
@@ -34,14 +35,22 @@ async function activate(user) {
   try { await activation; } finally { activation = null; }
 }
 export async function requireAccount(action) {
-  if (!state.user) { pendingAction = action || null; emit('gp:login-required'); return false; }
+  const navigation = navigationVersion();
+  if (!state.user) { pendingAction = action ? { run: action, navigation } : null; emit('gp:login-required'); return false; }
   try {
     const c = connection(), uid = state.user.id;
     const { data, error } = await c.auth.getUser();
     if (state.user?.id !== uid) return false;
     if (error && ![401,403].includes(error.status)) throw error;
     if (error || !data.user || data.user.id !== state.user.id || !data.user.email_confirmed_at) {
-      clearAccount(); pendingAction = action || null; emit('gp:login-required'); return false;
+      const stillCurrent = navigation === navigationVersion();
+      clearAccount();
+      if (stillCurrent) {
+        // Account cleanup may navigate to the dashboard; preserve only this current intent.
+        pendingAction = action ? { run: action, navigation: navigationVersion() } : null;
+        emit('gp:login-required');
+      }
+      return false;
     }
     if (!state.ready) await activate(data.user);
     await synchronizeAccountData();
@@ -50,7 +59,7 @@ export async function requireAccount(action) {
 }
 export async function resumePendingAction() {
   const action = pendingAction; pendingAction = null;
-  if (action) await action();
+  if (action?.navigation === navigationVersion()) await action.run();
 }
 export async function doLogin(email, password) {
   try {

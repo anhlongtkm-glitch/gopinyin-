@@ -1,5 +1,7 @@
 # Kết quả triển khai cải tiến GoPinyin
 
+Xem [trạng thái chốt sửa và nghiệm thu còn lại](WEB-FIX-COMPLETION.md) để theo dõi bản mới nhất. Báo cáo dưới đây giữ mốc lịch sử của từng đợt.
+
 Ngày: 26/10/2026. Triển khai trong workspace; chưa phát hành production hoặc sửa dữ liệu Supabase thật.
 
 Đã tiếp tục tối ưu đồng bộ theo phiên bản và chỉ tải nội dung bộ câu khi cần học. Xem [kết quả đợt 2](WEB-PERFORMANCE-PHASE-2.md). Các số đo và số lượng kiểm thử bên dưới ghi nhận đợt triển khai đầu.

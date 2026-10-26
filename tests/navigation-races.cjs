@@ -114,5 +114,25 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert(await page.locator('#dashView').isVisible());
     assert.deepEqual(errors, []);
     console.log('  PASS microphone permission resolved after leaving closes its tracks and does not start recording');
+
+    const email = await page.locator('#authEmail').inputValue();
+    const login = async () => {
+      await page.fill('#authEmail', email); await page.fill('#authPass', 'password123');
+      await page.click('#authSubmit'); await page.locator('#authModal').waitFor({ state: 'hidden' });
+      await page.waitForFunction(() => !document.getElementById('authSubmit').disabled);
+    };
+    await page.click('#wsLogoutBtn'); await page.locator('#wsLoginBtn').waitFor({ state: 'visible' });
+    await page.evaluate(() => window.showView('library'));
+    await page.evaluate(() => window.showView('game')); await page.locator('#authModal').waitFor({ state: 'visible' });
+    await page.goBack(); await page.locator('#dashView').waitFor({ state: 'visible' });
+    await login();
+    assert(await page.locator('#dashView').isVisible()); assert(!(await page.locator('#gameCard').isVisible()));
+    console.log('  PASS login after browser Back does not resume the abandoned game');
+
+    await page.click('#wsLogoutBtn'); await page.locator('#wsLoginBtn').waitFor({ state: 'visible' });
+    await page.evaluate(() => window.showView('game')); await page.locator('#authModal').waitFor({ state: 'visible' });
+    await login();
+    assert(await page.locator('#gameCard').isVisible()); assert.deepEqual(errors, []);
+    console.log('  PASS login without changing navigation still resumes the requested game');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

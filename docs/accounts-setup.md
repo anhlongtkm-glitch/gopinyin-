@@ -1,5 +1,7 @@
 # Tài khoản Supabase và đồng bộ
 
+Đã sửa tiếp callback sau đăng nhập, khôi phục link bài và phục hồi tiến độ cũ. Xem [trạng thái chốt sửa web](WEB-FIX-COMPLETION.md) để đối chiếu kiểm thử mới nhất và những mục cần key/thiết bị thật.
+
 ## Bổ sung backend cùng Vercel — 26/10/2026
 
 Đã xác minh production tại commit `16b1da3`: Vercel success, `/api/status` trả JSON và xác nhận cấu hình tài khoản có mặt; AI/phát âm chặn request không token bằng 401. Chưa có key provider ở backend. Xem [biên bản kiểm chứng](PRODUCTION-ACCEPTANCE.md).
@@ -10,7 +12,7 @@ Handler hỗ trợ body Vercel parse sẵn; vẫn chạy Node standalone đượ
 
 Chưa có key provider trong cấu hình local được kiểm tra. `/api/status` phân biệt backend đã chạy với provider đã được đặt key; không phải bằng chứng đã chấm phát âm hoặc gọi AI thành công.
 
-## Trạng thái cấu hình cập nhật ngày 26/10/2026
+## Lịch sử phát hành tài khoản ban đầu — 26/10/2026
 
 - Nhánh phát hành: `release/supabase-accounts`, repo `anhlongtkm-glitch/gopinyin-`. Production trước phát hành: `https://gopinyin-rigeocjr5-long-b4d0.vercel.app`, commit `9bb473f580223960cd2baca6084fa6f88c7f3178` (giữ làm mốc rollback).
 - Cấu hình phát hành: Node 24.x, framework Other, `npm ci`, build `npm run build`, output `dist`; rewrite SPA dùng `/`, không trộn `routes` với `headers`.
