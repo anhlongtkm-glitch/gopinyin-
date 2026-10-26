@@ -4,6 +4,8 @@
 
 - Nhánh phát hành: `release/supabase-accounts`, repo `anhlongtkm-glitch/gopinyin-`. Production trước phát hành: `https://gopinyin-rigeocjr5-long-b4d0.vercel.app`, commit `9bb473f580223960cd2baca6084fa6f88c7f3178` (giữ làm mốc rollback).
 - Cấu hình phát hành: Node 24.x, framework Other, `npm ci`, build `npm run build`, output `dist`; rewrite SPA dùng `/`, không trộn `routes` với `headers`.
+- PR phát hành: https://github.com/anhlongtkm-glitch/gopinyin-/pull/1. Commit tích hợp `d8c7583`, sửa manifest Preview có bảo vệ ở `5e42f05`. Cài đặt sạch, 299 kiểm tra và test build đã đạt.
+- Preview: `https://gopinyin-git-release-supabase-accounts-long-b4d0.vercel.app/`. Hai biến Supabase đã có cho Preview; URL gốc và `/?account=recovery` của đúng host Preview đã thêm vào Auth allowlist. Tài nguyên JS/CSS/config/manifest trả HTTP 200; config đúng project; đường dẫn file riêng không trả nội dung riêng tư.
 - Dự án Supabase: `sjhvmrvawgvqnzyxjkpt` (tên hiển thị cũ: `gopinyn.io.vn`), API URL: `https://sjhvmrvawgvqnzyxjkpt.supabase.co`.
 - Đã áp dụng `001_accounts.sql` lên dự án thật: ba bảng bật RLS, trigger hồ sơ, RPC và bucket `avatars` đã được kiểm tra.
 - Đã tạo `.env.local` (Git bỏ qua) với URL và publishable key cho web/backend; `npm run build` thành công. Không lưu key trong tài liệu này.
