@@ -35,6 +35,7 @@ export function save() {
     mainIndex: typingSessionState.mainIndex,
     stats: typingSessionState.stats,
     wrongIds: [...typingSessionState.wrongIds],
+    reviewById: typingSessionState.reviewById,
     autoSound: typingSessionState.autoSound,
     speechRate: typingSessionState.speechRate,
     selectedVoiceName: typingSessionState.selectedVoiceName,

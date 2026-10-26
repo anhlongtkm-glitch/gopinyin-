@@ -5,6 +5,7 @@
 import { state as accountStorageState } from "./account-storage.js";
 
 import { state as audioEffectsState } from "./audio/effects.js";
+import { rememberFocus, restoreFocus, trapTab } from "./focus.js";
 
 export const state = {};
 
@@ -18,6 +19,7 @@ export function resolveModal(id) {
 export function openModal(id) {
   const m = resolveModal(id);
   if (!m) return;
+  rememberFocus(m);
   m.hidden = false;
   document.body.style.overflow = 'hidden';
   audioEffectsState.Sfx.pop();
@@ -29,6 +31,7 @@ export function closeModal(id, silent = false) {
   const m = resolveModal(id);
   if (!m) return;
   m.hidden = true;
+  restoreFocus(m);
   if (!silent) window.dispatchEvent(new CustomEvent('gp:modal-closed', { detail: m.id }));
   /* trả focus về nơi mở modal để bàn phím không bị "kẹt" trong modal đã đóng */
   try {
@@ -45,13 +48,8 @@ export function initializeDialogs() {
   };
   accountStorageState.$$('[data-close]').forEach(el => el.addEventListener('click', () => closeModal(el.dataset.close)));
   accountStorageState.$$('.modal').forEach(m => m.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeModal(m.id);
-    if (e.key === 'Tab') {
-      const focusable = [...m.querySelectorAll('button,input,summary,a[href],[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
-      const first = focusable[0], last = focusable[focusable.length-1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
-    }
+    if (e.key === 'Escape') { e.stopPropagation(); closeModal(m.id); }
+    trapTab(e, m);
   }));
 
   /* ═══════════════ MODAL ĐĂNG NHẬP ═══════════════ */

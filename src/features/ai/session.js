@@ -1,4 +1,5 @@
 import { requireAccount, currentUser } from "../auth/service.js";
+import { aiProxyUrl } from "../../shared/service-config.js";
 // State and behavior owned by features/ai/session. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -247,7 +248,7 @@ export async function aiStartStudy() {
   const btn = domState.$('aiStartBtn');
   /* ★ CHƯA có API key → mở sẵn "Tuỳ chọn nâng cao", focus ô key, chỉ đúng nút lấy key
      (nhiều người không biết API key lấy ở đâu). */
-  if (!key) {
+  if (!key && !aiProxyUrl()) {
     const d = document.querySelector('.aiDetails');
     if (d) d.open = true;
     const kEl = domState.$('aiKey');
@@ -258,7 +259,7 @@ export async function aiStartStudy() {
     return;
   }
   aiLsSet(aiProvidersState.AI_PROV_KEY, provider);
-  aiKeyStore(provider, key);
+  if (!aiProxyUrl()) aiKeyStore(provider, key);
   if (btn) {
     btn.disabled = true;
     btn.textContent = '⏳ Đang nhờ AI viết ' + unit + '…';
@@ -319,6 +320,7 @@ export async function aiStartStudy() {
     if (currentUser()?.id !== accountId) return;
     // → vào học ngay
     typingSessionState.activeDataset = null;
+    typingSessionState.reviewById = {};
     typingSessionState.rows = [];
     typingSessionState.order = [];
     typingSessionState.mainOrder = [];

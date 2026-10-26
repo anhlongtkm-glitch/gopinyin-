@@ -16,3 +16,12 @@
 .conflictVersions pre{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:160px;overflow:auto;background:var(--card-2);padding:10px;border-radius:8px}
 .authForm button,.accountActions button,.passwordDetails summary{min-height:44px}
 @media(max-width:640px){.syncStatus{max-width:90px;font-size:10px}.modal{padding:12px}.accountActions>.btn{flex:1}.accessNotice{padding:10px 14px;flex-wrap:wrap}}
+@media(max-width:640px){
+  .top{flex-wrap:wrap;gap:8px}
+  .top .brand{flex:1 1 100%;min-width:0}
+  .top .brandMini{display:none}
+  .topActions{flex:1;min-width:0;flex-wrap:wrap}
+  .topActions .syncStatus{margin-right:auto;max-width:none;font-size:12px;text-align:left}
+  .topActions .iconBtn{min-width:44px;min-height:44px}
+  .ws-streakChip{white-space:nowrap}
+}

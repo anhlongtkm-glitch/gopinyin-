@@ -1,4 +1,6 @@
 import { accessToken } from "../auth/service.js";
+import { fetchWithTimeout } from "../../shared/http.js";
+import { pronApiUrl } from "../../shared/service-config.js";
 // State and behavior owned by features/pronunciation/assessment. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationRepositoryState } from "./repository.js";
@@ -226,15 +228,15 @@ export function initializePronunciationAssessment() {
        Gửi JSON base64 để server không cần thư viện parse multipart. */
     async server(item, blob) {
       if (!blob) return null;
-      if (pronunciationSessionState.S.serverAssess && pronunciationSessionState.S.serverAssess.ok === false) return null;
+      if (pronunciationSessionState.S.serverAssess?.retryAt > Date.now()) return null;
       try {
         /* Dịch vụ chấm phát âm cần WAV 16 kHz mono — chuyển ngay ở máy người dùng */
         const wav = await pronunciationWavState.PronWav.encode(blob, 16000);
         if (!wav) return null;
         /* Cho phép đặt endpoint ở origin khác (vd. hosting tĩnh + API riêng):
            <script>window.PRON_API='https://api.example.com/pron'</script> */
-        const url = typeof window !== 'undefined' && window.PRON_API || '/api/pron';
-        const res = await fetch(url, {
+        const url = pronApiUrl();
+        const res = await fetchWithTimeout(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -249,6 +251,7 @@ export function initializePronunciationAssessment() {
         if (res.status === 501 || res.status === 404) {
           pronunciationSessionState.S.serverAssess = {
             ok: false,
+            retryAt: Date.now() + 60000,
             note: 'Chưa cấu hình dịch vụ chấm phát âm.'
           };
           return null;
@@ -256,6 +259,7 @@ export function initializePronunciationAssessment() {
         if (!res.ok) {
           pronunciationSessionState.S.serverAssess = {
             ok: false,
+            retryAt: Date.now() + (res.status === 429 ? 30000 : 3000),
             note: 'Dịch vụ chấm phát âm lỗi ' + res.status
           };
           return null;
@@ -264,6 +268,7 @@ export function initializePronunciationAssessment() {
         if (!data || !data.ok || typeof data.pronScore !== 'number') {
           pronunciationSessionState.S.serverAssess = {
             ok: false,
+            retryAt: Date.now() + 3000,
             note: 'Dịch vụ không trả điểm phát âm.'
           };
           return null;
@@ -276,7 +281,8 @@ export function initializePronunciationAssessment() {
       } catch (e) {
         pronunciationSessionState.S.serverAssess = {
           ok: false,
-          note: 'Không gọi được dịch vụ chấm phát âm.'
+          retryAt: Date.now() + 3000,
+          note: e?.name === 'TimeoutError' || e?.name === 'AbortError' ? 'Chấm phát âm quá lâu. Hãy thử lại.' : 'Không gọi được dịch vụ chấm phát âm.'
         };
         return null;
       }
@@ -285,8 +291,14 @@ export function initializePronunciationAssessment() {
       const exp = hanChars(item.zh);
       const syl = pronunciationRepositoryState.PronRepo.syllables(item);
       const words = Array.isArray(data.words) ? data.words : [];
+      // Service words can contain several Han characters; align text rather than indices.
+      const received = words.flatMap(w => hanChars(String(w.text || '')).map(ch => ({ ...w, ch })));
+      const aligned = {};
+      for (const op of this.align(exp, received.map(w => w.ch))) {
+        if (op.t === 'match') aligned[op.e] = received[op.g];
+      }
       const chars = exp.map((ch, i) => {
-        const w = words[i] || null;
+        const w = aligned[i] || null;
         const acc = w && typeof w.accuracy === 'number' ? w.accuracy : null;
         const err = w && w.errorType ? String(w.errorType) : '';
         let st = 'unknown';
@@ -299,7 +311,7 @@ export function initializePronunciationAssessment() {
           status: st,
           got: w && w.text || '',
           score: acc,
-          note: err ? 'Lỗi: ' + err : ''
+          note: w ? [err && err !== 'None' ? 'Lỗi: ' + err : '', hanChars(w.text).length > 1 ? 'Điểm chung của từ/cụm từ 「' + w.text + '」.' : ''].filter(Boolean).join(' ') : 'Chưa có điểm tương ứng cho chữ này.'
         };
       });
       const errors = [];

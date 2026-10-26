@@ -209,6 +209,9 @@ export function renderResult() {
   /* ★ KHÔNG lặp lại nút điều hướng ở đây: thanh nút ngay dưới thẻ đã có
      "Câu trước / Nói lại / Bỏ qua / Câu tiếp" — hai bộ nút cùng chức năng
      sẽ gây rối (yêu cầu thiết kế). */
+  if (!isPron && pronunciationSessionState.S.serverAssess?.ok === false) {
+    host.insertAdjacentHTML('beforeend', '<div class="pronNote" role="status">' + esc(pronunciationSessionState.S.serverAssess.note) + ' <button type="button" class="btn secondary" data-pron-service-retry>Thử dịch vụ lại và nói lại</button></div>');
+  }
 
   /* Kết quả nằm dưới thẻ câu → cuộn tới để người dùng THẤY ngay,
      không phải tự mò xuống (chỉ cuộn khi chưa hiện đủ trong màn hình). */

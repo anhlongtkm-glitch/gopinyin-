@@ -1,4 +1,7 @@
 import { requireAccount, accessToken, currentUser, isStudyAllowed } from "../auth/service.js";
+import { aiProxyUrl } from "../../shared/service-config.js";
+import { fetchWithTimeout } from "../../shared/http.js";
+import models from "../../data/ai-models.json";
 // State and behavior owned by features/ai/client. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as aiProvidersState, geminiUrl } from "./providers.js";
@@ -53,7 +56,7 @@ async function callAiUnchecked(provider, key, prompt, opt) {
   /* ★ Nếu app cấu hình proxy AI (window.__gpAiProxy), chuyển cuộc gọi sang server —
      key AI nằm ở server (AI_KEY_* env), client KHÔNG lưu key plaintext.
      Không đặt proxy → giữ nguyên gọi thẳng provider (tương thích cũ). */
-  if (window.__gpAiProxy) return callAiProxy(provider, prompt, opt);
+  if (aiProxyUrl()) return callAiProxy(provider, prompt, opt);
   const cfg = aiProvidersState.AI_PROVIDERS[provider] || aiProvidersState.AI_PROVIDERS[aiProvidersState.AI_DEFAULT_PROVIDER];
   if (!key) throw new Error('Bạn chưa nhập API key ' + cfg.name + ' — mở "Tuỳ chọn nâng cao" rồi bấm "' + cfg.keyBtn + '" để lấy key (chỉ 1 lần).');
   const temp = opt && typeof opt.temperature === 'number' ? opt.temperature : .9;
@@ -71,7 +74,7 @@ async function callAiUnchecked(provider, key, prompt, opt) {
           data: img.data
         }
       });
-      const resp = await fetch(geminiUrl(mdl), {
+      const resp = await fetchWithTimeout(geminiUrl(mdl), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +112,7 @@ async function callAiUnchecked(provider, key, prompt, opt) {
 export async function callAiProxy(provider, prompt, opt) {
   if (!await requireAccount()) throw new Error('Cần đăng nhập.');
   const img = opt && opt.image && opt.image.data ? opt.image : null;
-  const resp = await fetch(window.__gpAiProxy, {
+  const resp = await fetchWithTimeout(aiProxyUrl(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -153,7 +156,7 @@ export async function callOpenRouter(key, prompt, temp, img) {
   }] : prompt;
   for (const mdl of aiClientState.OPENROUTER_MODELS) {
     try {
-      const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const resp = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -222,5 +225,5 @@ export function initializeAiClient() {
   };
   /* ★ OpenRouter — chỉ dùng các model MIỄN PHÍ (đuôi ":free"). Thử lần lượt, model nào
      chết/hết hạn mức thì nhảy sang model kế tiếp. Dùng khi Gemini hết hạn mức. */
-  aiClientState.OPENROUTER_MODELS = ['deepseek/deepseek-chat-v3-0324:free', 'meta-llama/llama-3.3-70b-instruct:free', 'qwen/qwen-2.5-72b-instruct:free', 'mistralai/mistral-small-3.2-24b-instruct:free'];
+  aiClientState.OPENROUTER_MODELS = models.openrouter;
 }

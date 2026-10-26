@@ -17,6 +17,7 @@ import { speakChinese } from "../../shared/audio/tts.js";
 import { state as domState } from "../../shared/dom.js";
 
 import { _modalClose, state as modalState } from "../../shared/modal.js";
+import { aiProxyUrl } from "../../shared/service-config.js";
 
 import { toast } from "../../shared/toast.js";
 
@@ -64,6 +65,10 @@ export function aiProviderRefresh() {
   }
   if (h) h.innerHTML = cfg.keyHint;
   if (k) k.placeholder = cfg.ph;
+  const proxy = !!aiProxyUrl();
+  if (k) { k.disabled = proxy; if (proxy) k.value = ''; }
+  if (a) a.hidden = proxy;
+  if (h && proxy) h.textContent = 'Dịch vụ AI đã sẵn sàng. Bạn không cần nhập API key cá nhân.';
 }
 
 export function initializeAiController() {

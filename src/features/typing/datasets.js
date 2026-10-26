@@ -1,4 +1,7 @@
 import { requireAccount, currentUser } from "../auth/service.js";
+import { writeRoute, navigationVersion } from "../../app/routes.js";
+import { showView } from "../../app/navigation.js";
+import { selectReviewRows } from "./review.js";
 // State and behavior owned by features/typing/datasets. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as dataCatalogState } from "../../data/catalog.js";
@@ -24,13 +27,15 @@ import { dbGetAll, progressKey } from "../../shared/storage/lesson-repository.js
 import { shuffle, escapeHtml } from "../../shared/utils.js";
 
 /* ── Dataset Management ── */
-export async function openDataset(id) {
-  if (!await requireAccount(() => openDataset(id))) return;
+export async function openDataset(id, options = {}) {
+  const navigation = navigationVersion();
+  if (!await requireAccount(() => openDataset(id, options))) return;
+  if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
   const sets = await dbGetAll();
-  if (currentUser()?.id !== accountId) return;
+  if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
   const ds = sets.find(x => x.id === id);
-  if (!ds) return;
+  if (!ds) return false;
   /* Ghi nhớ đang mở từ màn nào để nút "← ..." quay lại đúng chỗ */
   const aiVisible = !!(domState.$('aiCard') && !domState.$('aiCard').classList.contains('hidden'));
   typingSessionState.studyOrigin = aiVisible ? 'ai' : 'library';
@@ -41,6 +46,7 @@ export async function openDataset(id) {
   typingSessionState.currentFileKey = progressKey(ds.id);
   typingSessionState.pinyinHint = false; // ★ mới vào chế độ gỗ → pinyin luôn ẩn, muốn xem thì bật
   const saved = loadProgress(ds.id);
+  typingSessionState.reviewById = saved?.reviewById && typeof saved.reviewById === 'object' ? saved.reviewById : {};
   const validOrder = o => Array.isArray(o) && o.every(i => Number.isInteger(i) && i >= 0 && i < typingSessionState.rows.length);
   if (saved && validOrder(saved.mainOrder) && saved.mainOrder.length === typingSessionState.rows.length) {
     typingSessionState.mainOrder = saved.mainOrder;
@@ -96,6 +102,11 @@ export async function openDataset(id) {
   typingSessionState.mode = 'all';
   typingSessionState.order = [...typingSessionState.mainOrder];
   typingSessionState.index = typingSessionState.mainIndex;
+  if (['due', 'weak'].includes(options.review)) {
+    typingSessionState.mode = 'review';
+    typingSessionState.order = selectReviewRows(typingSessionState.rows, typingSessionState.reviewById, [...typingSessionState.wrongIds], options.review);
+    typingSessionState.index = 0;
+  }
   domState.$('rateSelect').value = String(typingSessionState.speechRate);
   populateVoiceSelect();
   updateSoundUI();
@@ -103,6 +114,7 @@ export async function openDataset(id) {
   updateViUI();
   updateHanUI();
   updateModeUI();
+  await showView('library', { route: false });
   domState.$('libraryCard').classList.add('hidden');
   domState.$('aiCard')?.classList.add('hidden');
   domState.$('appCard').classList.remove('hidden');
@@ -118,6 +130,8 @@ export async function openDataset(id) {
   render();
   loadHistory();
   renderAppHistory();
+  if (options.route !== false) writeRoute('study', id, false, options.review);
+  return true;
 }
 
 /* ★ CẢNH TRÚC TRONG THẺ CÂU — màn Luyện gõ vẽ sẵn trong HTML, màn Luyện phát âm

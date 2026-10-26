@@ -85,6 +85,7 @@ export async function resetProgress() {
     danger: true
   }))) return;
   learningStorage.removeItem(progressKey(typingSessionState.activeDataset.id));
+  typingSessionState.reviewById = {};
   typingSessionState.mainOrder = shuffle(typingSessionState.rows.map((_, i) => i));
   typingSessionState.mainIndex = 0;
   typingSessionState.mode = 'all';

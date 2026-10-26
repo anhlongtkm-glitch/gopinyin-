@@ -12,7 +12,7 @@ Yêu cầu Node.js 20+ và npm; máy hiện tại đã kiểm tra bằng Node 22
 | `npm run serve` | Build và phục vụ dist, không mở trình duyệt, không watch |
 | `npm run build` | Tạo website tĩnh trong dist; không cần Node ở hosting tĩnh |
 | `node server/serve.js --no-open` | Tự build rồi mở server; giữ cách gọi trực tiếp |
-| `npm test` | Tự mở server cổng trống, chạy 11 bộ kiểm thử, đóng server |
+| `npm test` | Tự mở server cổng trống, chạy 17 bộ kiểm thử, đóng server |
 | `npm run test:build` | Kiểm tra ghép HTML, tài nguyên công khai, classic JS, chạy file:// |
 
 Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy trình build/watch. Khi thiếu dependency, chạy `npm install`; không cần cài framework hoặc trình duyệt mới. `npm start` tự build lại, sau đó bạn tải lại trang; chưa có hot reload giữ trạng thái DOM.
@@ -24,7 +24,6 @@ Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy 
 | Khung HTML, metadata, vị trí ghép màn | `src/index.html` |
 | Sidebar, thanh tiêu đề, khung workspace | `src/app/workspace.html`, các CSS workspace cạnh đó |
 | Điều hướng màn hình, rời màn và lifecycle | `src/app/navigation.js`, `navigation-events.js` |
-| Trang giới thiệu | `src/features/landing/` |
 | Đăng nhập, đăng ký, mật khẩu | `src/features/auth/` — `view.html`, `controller.js`, `service.js` |
 | Dashboard, tiếp tục học, mục tiêu | `src/features/dashboard/` |
 | Thư viện HSK, chủ đề từ vựng | `src/features/library/` |
@@ -34,7 +33,8 @@ Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy 
 | Bảng xếp hạng | `src/features/ranking/` |
 | Sảnh game | `src/features/games/` |
 | Game bắn chữ | `src/features/game/` |
-| Quyền Pro, trial, checkout, QR, bảng giá | `src/features/pro/` |
+| Lịch ôn theo kết quả luyện gõ | `src/features/typing/review.js`, lưu trong `cts:progress:<dataset>` |
+| URL màn/bài học, Back/Forward | `src/app/routes.js`, `bootstrap.js` |
 | Modal, toast, dịch nhanh, hướng dẫn | `src/shared/` |
 | IndexedDB, cache từ vựng, đọc file | `src/shared/storage/` |
 | TTS, SFX, bàn phím ảo | `src/shared/audio/`, `src/shared/virtual-keyboard.js` và CSS cùng tên |
@@ -45,7 +45,7 @@ Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy 
 | Cấu hình công khai | `src/app/public-config.js` → build thành `dist/assets/config.js` |
 | Dữ liệu nhúng | `src/data/catalog.js` |
 | Gói từ vựng tải lười, logo, favicon | `assets/` |
-| Webhook/thanh toán/chấm phát âm backend | `server/pro-server.js` — không đổi trong đợt refactor |
+| Proxy AI/chấm phát âm backend | `server/pro-server.js`, xác thực ở `server/account-auth.js` |
 
 Mỗi chức năng có HTML riêng và các module theo trách nhiệm. Không cần tạo một file cho mỗi hàm nhỏ.
 
@@ -71,6 +71,10 @@ Mỗi chức năng có HTML riêng và các module theo trách nhiệm. Không c
 `scripts/build.mjs` ghép HTML, bundle ES modules thành classic IIFE, bundle CSS và chép tài nguyên công khai theo allowlist. Vocab pack vẫn tải lười ở đường dẫn cũ. Không dùng runtime module loader hoặc code splitting cần HTTP, nên `dist/index.html` vẫn mở bằng file:// cho các tính năng đã hỗ trợ.
 
 Nguồn HTML chính đã chuyển từ index ở root sang `src/index.html`; bản để mở hoặc triển khai là `dist/index.html`. Không sửa output, không upload toàn bộ repository. Build không chứa server, tests, docs, `.env`, khóa riêng hoặc dữ liệu thanh toán. Source map chỉ được sinh khi development; production build bỏ các map đó.
+
+Production minify JS/CSS và tham chiếu file có hash dưới `assets/immutable/`; giữ tên `assets/app.js` và `app.css` cho tương thích công cụ. Chỉ thư mục immutable được cache dài; HTML/config phải được revalidate. Development vẫn dùng tên ổn định và source map.
+
+Dashboard chỉ đọc dữ liệu tài khoản hiện tại. Các số liệu hiện có giữ cùng cách tính với màn luyện: số câu đã đi qua trong thứ tự bài chính, độ chính xác = đúng/(đúng+sai), combo cao nhất dùng `bestCombo`. Phiên ôn không ghi đè vị trí bài chính. Lịch ôn dùng thời điểm UTC tuyệt đối để nhất quán giữa thiết bị; hiển thị theo giờ trên máy người học.
 
 Server chỉ phục vụ `dist/`; các endpoint `__gopinyin`, `__import`, origin và cổng mặc định giữ nguyên. Luồng chuyển file:// sang localhost vẫn nhập dữ liệu trước khi khởi tạo app. Quyền micro vẫn phụ thuộc secure context/trình duyệt như trước. Chỉ cấu hình công khai được copy xuống browser; giữ khóa backend trong môi trường server.
 

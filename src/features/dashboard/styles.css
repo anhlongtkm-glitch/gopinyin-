@@ -1,4 +1,8 @@
 /* ═══ DASHBOARD ═══ */
+.dashReview{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.dashReview .btn{min-height:44px;white-space:normal;text-align:left}
+.dashReview small{flex-basis:100%;color:var(--text-2);line-height:1.5}
+.dashReview span{font-weight:800;margin-left:6px}
 .dash{padding:clamp(20px,3vw,36px);max-width:1180px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:22px}
 .dashHero{display:flex;align-items:center;gap:24px;flex-wrap:wrap;
   background:linear-gradient(120deg,rgba(31,200,162,.18),rgba(11,164,136,.1) 60%,transparent),

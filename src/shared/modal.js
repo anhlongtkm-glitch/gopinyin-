@@ -1,6 +1,7 @@
 // State and behavior owned by shared/modal. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as domState } from "./dom.js";
+import { rememberFocus, restoreFocus, trapTab } from "./focus.js";
 
 export const state = {};
 
@@ -17,6 +18,7 @@ export function _modalOpen(opts) {
     value = ''
   } = opts || {};
   return new Promise(resolve => {
+    if (modalState._modalResolve) _modalClose(null);
     modalState._modalResolve = resolve;
     modalState._modalIsInput = !!input;
     const modal = domState.$('appModal'),
@@ -41,6 +43,7 @@ export function _modalOpen(opts) {
       inp.classList.add('hidden');
       inp.value = '';
     }
+    rememberFocus(modal);
     modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
     setTimeout(() => {
@@ -57,6 +60,7 @@ export function _modalClose(result) {
   if (!modal) return;
   modal.classList.remove('show');
   modal.setAttribute('aria-hidden', 'true');
+  restoreFocus(modal);
   const r = modalState._modalResolve;
   modalState._modalResolve = null;
   if (r) r(result);
@@ -115,4 +119,5 @@ export function initializeModal() {
      ═══════════════════════════════════════════════════════════ */
   modalState._modalResolve = null;
   modalState._modalIsInput = false;
+  domState.$('appModal').addEventListener('keydown', event => trapTab(event, domState.$('appModal')));
 }

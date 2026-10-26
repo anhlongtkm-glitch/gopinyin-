@@ -1,4 +1,5 @@
 import { requireAccount, currentUser } from "../auth/service.js";
+import { navigationVersion } from "../../app/routes.js";
 // State and behavior owned by features/library/catalog. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -134,12 +135,15 @@ export async function fetchVocabItems(file) {
 
 // ★ Bấm 1 mục trong kho → tạo bộ luyện (lưu vào thư viện) rồi mở luôn
 export async function openVocabSource(srcId) {
+  const navigation = navigationVersion();
   if (!await requireAccount(() => openVocabSource(srcId))) return;
+  if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
   const src = findVocabSource(srcId);
   if (!src) return;
   const id = 'vocab:' + srcId;
   const existing = (await dbGetAll()).find(x => x.id === id);
+  if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
   if (existing) {
     await openDataset(id);
     return;
@@ -166,7 +170,7 @@ export async function openVocabSource(srcId) {
       updatedAt: Date.now(),
       builtin: true
     };
-    if (currentUser()?.id !== accountId) return;
+    if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
     await dbPut(ds);
     toast('Đã tạo bộ "' + src.label + '" (' + rows.length + ' mục).', 'ok');
     await openDataset(id);

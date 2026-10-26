@@ -1,6 +1,7 @@
 // State and behavior owned by app/navigation. Initialization is orchestrated by app/bootstrap.js.
 
 import { publishLegacy, legacy } from "./compatibility.js";
+import { writeRoute, markNavigation } from "./routes.js";
 
 import { currentUser, requireAccount } from "../features/auth/service.js";
 
@@ -24,7 +25,7 @@ export function enterWorkspace() {
   renderUserChip();
   accountStorageState.$('workspace').classList.remove('hidden');
   window.scrollTo(0, 0);
-  showView('dash');
+  showView('dash', { route: false });
   audioEffectsState.Sfx.whoosh();
 }
 
@@ -47,8 +48,9 @@ export function renderUserChip() {
   if (dn) dn.textContent = u.guest ? 'bạn' : nm;
 }
 
-export async function showView(v) {
-  if (['game', 'pronStudy'].includes(v) && !await requireAccount(() => showView(v))) return;
+export async function showView(v, options = {}) {
+  markNavigation();
+  if (['game', 'pronStudy'].includes(v) && !await requireAccount(() => showView(v, options))) return;
   /* ★ Chốt an toàn: tên view lạ → về Bảng điều khiển. Nếu không, mọi section
      đều bị ẩn và người dùng chỉ thấy một khung trắng. */
   if (!appNavigationState.VIEW_META[v]) v = 'dash';
@@ -134,6 +136,7 @@ export async function showView(v) {
   /* ★ phát lại hiệu ứng xuất hiện mỗi lần chuyển mục */
   if (v !== 'game') replayFx(viewEl(v));
   audioEffectsState.Sfx.page();
+  if (options.route !== false) writeRoute(v === 'pronStudy' ? 'pron' : v);
 }
 /* ★ expose cho app-core gọi (vd nút Quay lại trong appCard khi đang học bộ câu cá nhân) */
 

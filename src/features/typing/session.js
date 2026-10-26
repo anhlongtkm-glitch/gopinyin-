@@ -27,6 +27,7 @@ export function initializeTypingSession() {
   typingSessionState.mainIndex = 0;
   typingSessionState.mode = 'all';
   typingSessionState.wrongIds = new Set();
+  typingSessionState.reviewById = {};
   typingSessionState.stats = {
     correct: 0,
     wrong: 0,

@@ -80,6 +80,15 @@ Giữ `AI_KEY_GEMINI`, `AI_KEY_OPENROUTER`, `AZURE_SPEECH_KEY`, `AZURE_SPEECH_RE
 
 ## 4. Dữ liệu và quyền truy cập
 
+### Bổ sung tối ưu ngày 26/10/2026
+
+- Đặt `GOPINYIN_AI_PROXY_URL=https://API_HOST/api/ai` và `GOPINYIN_PRON_API_URL=https://API_HOST/api/pron` khi build web dùng backend riêng. Proxy AI đã cấu hình thì người học không cần nhập API key. Vẫn hỗ trợ hook cũ `window.__gpAiProxy`/`window.PRON_API`; cấu hình triển khai có ưu tiên cao hơn.
+- Backend giữ `AI_KEY_GEMINI`, `AI_KEY_OPENROUTER`, `AZURE_SPEECH_KEY`. Có thể đặt `AI_MODEL_GEMINI`/`AI_MODEL_OPENROUTER` riêng ở server; mặc định frontend/backend cùng đọc `src/data/ai-models.json`. Khả năng dùng và chi phí phụ thuộc tài khoản nhà cung cấp. Đối chiếu [danh sách model Gemini](https://ai.google.dev/gemini-api/docs/models) trước khi bật thực tế.
+- Timeout upstream mặc định 30 giây (`UPSTREAM_TIMEOUT_MS`); hạn mức mặc định 120 request/phút/tài khoản (`USER_RATE_PER_MINUTE`), tối đa hai tác vụ đồng thời mỗi tài khoản, 20 tác vụ toàn tiến trình (`MAX_CONCURRENT_REQUESTS`). Bộ đếm nằm trong bộ nhớ một tiến trình; triển khai nhiều replica cần rate limiter chung. Không tin `X-Forwarded-For` do client tự gửi.
+- Khi đặt `ALLOWED_ORIGIN`, dùng chính xác origin web đang phục vụ người dùng (ví dụ `https://www.gopinyin.io.vn`, không phải domain gốc đang redirect). Chạy Node API riêng bằng `node --env-file=.env.local server/pro-server.js`; static deploy không tự khởi chạy file này.
+- Lịch ôn nằm trong trường `reviewById` của payload tiến độ hiện có; không cần chạy lại migration. Bài cũ chưa có lịch ôn vẫn mở bình thường; lịch bắt đầu từ các lượt luyện mới. Giữ outbox, kiểm tra version và giải quyết xung đột như trước.
+- Đã kiểm thử cục bộ bằng fixture; chưa triển khai API hoặc xác minh lại nhà cung cấp thật trong đợt sửa mã này.
+
 - `profiles`: chủ tài khoản đọc/sửa tên và đường dẫn ảnh của mình. Email/mật khẩu do Auth quản lý.
 - `learning_records`: dữ liệu riêng theo UUID, loại `kv` hoặc `dataset`. Chỉ chủ tài khoản đọc; ghi qua `put_learning_record`, không ghi trực tiếp bảng. RPC so phiên bản trong transaction và trả xung đột thay vì ghi đè. Xóa tạo tombstone.
 - Dữ liệu HSK có sẵn chỉ đồng bộ tham chiếu, không nhân bản toàn bộ thư viện. Bộ câu riêng/AI có nội dung đầy đủ. Bản ghi tối đa 2 MB; lỗi quá giới hạn hiện trong trạng thái đồng bộ và giữ dữ liệu chưa gửi trên máy.

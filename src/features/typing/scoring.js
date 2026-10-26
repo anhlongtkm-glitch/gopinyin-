@@ -1,4 +1,5 @@
 import { isStudyAllowed } from "../auth/service.js";
+import { nextReview } from "./review.js";
 // State and behavior owned by features/typing/scoring. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -43,7 +44,8 @@ export function markSentenceCorrect() {
   try {
     legacy.__gpOnSentenceCorrect && legacy.__gpOnSentenceCorrect();
   } catch (e) {}
-  if (typingSessionState.mode === 'wrong') typingSessionState.wrongIds.delete(q.id);
+  if (typingSessionState.mode === 'wrong' || typingSessionState.mode === 'review') typingSessionState.wrongIds.delete(q.id);
+  if (!typingSessionState.curHadError) typingSessionState.reviewById[q.id] = nextReview(typingSessionState.reviewById[q.id], true);
   typingSessionState.awaitingEnter = true;
   inp.classList.add('ok');
   inp.readOnly = true;
@@ -70,15 +72,20 @@ export function rememberCurrentWrong() {
 /* ★ Mỗi câu chỉ tính 1 lần Sai dù gõ sai nhiều ký tự; sai thì mất combo */
 export function markSentenceWrong() {
   if (!isStudyAllowed()) return;
+  const firstError = !typingSessionState.curHadError;
   typingSessionState.stats.attempts++;
   if (!typingSessionState.curHadError) {
     typingSessionState.curHadError = true;
     typingSessionState.stats.wrong++;
     const q = currentRow();
-    if (q) recordHistory(q, 'wrong');
+    if (q) {
+      recordHistory(q, 'wrong');
+      typingSessionState.reviewById[q.id] = nextReview(typingSessionState.reviewById[q.id], false);
+    }
   }
   typingSessionState.stats.combo = 0;
   rememberCurrentWrong();
+  if (firstError) save();
 }
 
 /* ═══════════════════════════════════════════════════════════

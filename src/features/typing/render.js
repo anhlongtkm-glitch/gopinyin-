@@ -72,6 +72,7 @@ export function render() {
     domState.$('completeArea').classList.remove('hidden');
     const doneMsg = aiSavedSet() ? 'Bạn đã học hết ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' của bộ “' + aiSavedSet().name + '”. Vào lại màn AI sinh câu để tạo thêm bộ mới nhé.' : aiSessionLive() ? 'Bạn đã học ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' do AI tạo cho chủ đề “' + String(aiSessionState.aiSession.prompt).slice(0, 60) + '”. AI đã hết nội dung mới — đổi chủ đề khác để học tiếp nhé.' : typingSessionState.mode === 'wrong' ? 'Bạn đã hoàn thành lượt luyện các câu sai.' : 'Bạn đã hoàn thành lượt học này. Các câu sẽ không lặp lại cho đến khi bạn bấm Xóa tiến độ.';
     domState.$('completeArea').querySelector('p').textContent = doneMsg;
+    if (typingSessionState.mode === 'review') domState.$('completeArea').querySelector('p').textContent = 'Đã hoàn thành phiên ôn ' + total + ' câu. Về Bảng điều khiển để chọn bài tiếp theo. Lịch ôn đã được cập nhật theo kết quả của bạn.';
     domState.$('restartBtn').textContent = typingSessionState.studyOrigin === 'ai' ? '← AI sinh câu' : typingSessionState.mode === 'wrong' ? 'Quay lại tất cả câu' : '← Thư viện';
     aiShowGen(aiSessionLive() && !aiSavedSet() ? 'Phiên học AI đã kết thúc — không lưu tiến độ.' : '');
     return;

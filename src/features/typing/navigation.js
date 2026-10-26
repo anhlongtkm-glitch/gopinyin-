@@ -1,6 +1,7 @@
 // State and behavior owned by features/typing/navigation. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
+import { writeRoute } from "../../app/routes.js";
 
 import { aiEndSession } from "../ai/session.js";
 
@@ -37,6 +38,7 @@ export function leaveStudy() {
     return;
   }
   renderLibrary();
+  writeRoute('library');
 }
 /* ★ NÚT QUAY LẠI (#backLibrary) — dùng chung cho nhiều màn nên gắn MỘT
    handler duy nhất và tự phân nhánh theo màn đang mở:

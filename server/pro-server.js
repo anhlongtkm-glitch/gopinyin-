@@ -3,6 +3,10 @@
 const http = require('http');
 const crypto = require('crypto');
 const { verifyAccount } = require('./account-auth');
+const models = require('../src/data/ai-models.json');
+const UPSTREAM_TIMEOUT = Math.max(1000, Number(process.env.UPSTREAM_TIMEOUT_MS) || 30000);
+const GEMINI_MODEL = process.env.AI_MODEL_GEMINI || models.gemini[0];
+const OPENROUTER_MODEL = process.env.AI_MODEL_OPENROUTER || models.openrouter[0];
 
 const PORT = Number(process.env.PORT || 8787);
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';    // Browser origin
@@ -63,7 +67,7 @@ async function serverCallAi(provider,key,prompt,image){
     const content=(image&&image.data)
       ? [{type:'text',text:prompt},{type:'image_url',image_url:{url:'data:'+image.mime+';base64,'+image.data}}]
       : prompt;
-    const resp=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'meta-llama/llama-3.3-70b-instruct:free',messages:[{role:'user',content:content}],temperature:.9})});
+    const resp=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',signal:AbortSignal.timeout(UPSTREAM_TIMEOUT),headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:OPENROUTER_MODEL,messages:[{role:'user',content:content}],temperature:.9})});
     if(!resp.ok)throw new Error('OpenRouter lỗi '+resp.status);
     const d=await resp.json();
     const t=d&&d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
@@ -72,7 +76,7 @@ async function serverCallAi(provider,key,prompt,image){
   }
   const reqParts=[{text:prompt}];
   if(image&&image.data)reqParts.push({inline_data:{mime_type:image.mime,data:image.data}});
-  const resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:reqParts}],generationConfig:{temperature:.9}})});
+  const resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(GEMINI_MODEL)+':generateContent',{method:'POST',signal:AbortSignal.timeout(UPSTREAM_TIMEOUT),headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{parts:reqParts}],generationConfig:{temperature:.9}})});
   if(!resp.ok)throw new Error('Gemini lỗi '+resp.status);
   const d=await resp.json();
   const parts=d&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts;
@@ -107,19 +111,25 @@ function readBodyBig(req, limit) {
 /* Rate limit service requests by IP. */
 const HITS = new Map();
 const RATE_WINDOW = 60 * 1000, RATE_MAX = 120;
-function rateLimited(ip) {
+function rateLimited(ip, maximum = RATE_MAX) {
   const now = Date.now();
   const rec = HITS.get(ip);
   if (!rec || now - rec.t0 > RATE_WINDOW) { HITS.set(ip, { t0: now, n: 1 }); return false; }
   rec.n++;
-  return rec.n > RATE_MAX;
+  return rec.n > maximum;
 }
+const ACTIVE = new Map();
+let activeRequests = 0;
+const USER_RATE = Math.max(1, Number(process.env.USER_RATE_PER_MINUTE) || RATE_MAX);
+const MAX_ACTIVE = Math.max(1, Number(process.env.MAX_CONCURRENT_REQUESTS) || 20);
 setInterval(() => {
   const now = Date.now();
   for (const [ip, r] of HITS) if (now - r.t0 > RATE_WINDOW * 2) HITS.delete(ip);
 }, RATE_WINDOW).unref();
 
 const server = http.createServer(async (req, res) => {
+  let release = () => {};
+  try {
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
   const ip = (req.socket && req.socket.remoteAddress) || 'unknown';
 
@@ -128,7 +138,18 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && ['/api/ai', '/api/pron'].includes(url.pathname)) {
     const account = await verifyAccount(req);
     if (!account.user) return json(res, account.status, { ok: false, error: account.error }, true);
-    if (rateLimited(ip)) return json(res, 429, { ok: false, error: 'too many requests' }, true);
+    if (rateLimited('user:' + account.user.id, USER_RATE) || rateLimited('ip:' + ip, USER_RATE * 10)) {
+      res.setHeader('Retry-After', '60');
+      return json(res, 429, { ok: false, error: 'Bạn đã dùng hết lượt trong phút này. Vui lòng thử lại sau.' }, true);
+    }
+    const uid = account.user.id;
+    if ((ACTIVE.get(uid) || 0) >= 2 || activeRequests >= MAX_ACTIVE) {
+      res.setHeader('Retry-After', '3');
+      return json(res, 429, { ok: false, error: 'Dịch vụ đang bận. Vui lòng thử lại sau.' }, true);
+    }
+    ACTIVE.set(uid, (ACTIVE.get(uid) || 0) + 1); activeRequests++;
+    let released = false;
+    release = () => { if (released) return; released = true; activeRequests--; const n = (ACTIVE.get(uid) || 1) - 1; if (n) ACTIVE.set(uid, n); else ACTIVE.delete(uid); };
   }
 
   /* ── 2b. AI PROXY: app gửi prompt, server giữ key (AI_KEY_*) → không lưu plaintext client ── */
@@ -136,6 +157,10 @@ const server = http.createServer(async (req, res) => {
     const parsed = await readBody(req);
     if (parsed === null) return json(res, 413, { ok: false, error: 'body too large' }, true);
     const { provider, prompt, image } = parsed.data || {};
+    if (!['gemini','openrouter'].includes(provider) || typeof prompt !== 'string' || !prompt.trim() || prompt.length > 50000 ||
+      (image != null && (!['image/png','image/jpeg','image/webp'].includes(image.mime) || typeof image.data !== 'string'))) {
+      return json(res, 400, { ok: false, error: 'Nội dung hoặc nhà cung cấp AI không hợp lệ.' }, true);
+    }
     const key = provider === 'openrouter' ? AI_KEY_OPENROUTER : AI_KEY_GEMINI;
     if (!key) return json(res, 500, { ok: false, error: 'server chưa cấu hình key cho ' + provider }, true);
     try {
@@ -174,7 +199,6 @@ const server = http.createServer(async (req, res) => {
         hint: 'Đặt biến môi trường AZURE_SPEECH_KEY và AZURE_SPEECH_REGION rồi chạy lại server.'
       }, true);
     }
-    if (rateLimited(ip)) return json(res, 429, { ok: false, error: 'too many requests' }, true);
     const parsed = await readBodyBig(req, PRON_MAX_BODY);
     if (parsed === null) return json(res, 413, { ok: false, error: 'audio quá lớn (giới hạn 4 MB)' }, true);
     const body = parsed.data || {};
@@ -185,6 +209,10 @@ const server = http.createServer(async (req, res) => {
     let audioBuf;
     try { audioBuf = Buffer.from(b64, 'base64'); }
     catch (e) { return json(res, 400, { ok: false, error: 'audio base64 không hợp lệ' }, true); }
+    if (body.mime !== 'audio/wav' || !/^[A-Za-z0-9+/]+={0,2}$/.test(b64) || b64.length % 4 !== 0 ||
+      audioBuf.length < 44 || audioBuf.toString('ascii',0,4) !== 'RIFF' || audioBuf.toString('ascii',8,12) !== 'WAVE') {
+      return json(res, 400, { ok: false, error: 'Cần bản ghi WAV hợp lệ.' }, true);
+    }
 
     /* Cấu hình chấm điểm: thang 100, chấm tới âm tiết, bật nhận diện đọc nhầm */
     const cfg = Buffer.from(JSON.stringify({
@@ -200,6 +228,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const r = await fetch(ep, {
         method: 'POST',
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT),
         headers: {
           'Ocp-Apim-Subscription-Key': AZURE_SPEECH_KEY,
           'Content-Type': 'audio/wav; codecs=audio/pcm; samplerate=16000',
@@ -245,7 +274,12 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/health') return json(res, 200, { ok: true });
 
   json(res, 404, { ok: false, error: 'not found' });
+  } catch {
+    if (!res.headersSent && !res.destroyed) json(res, 500, { ok: false, error: 'Không xử lý được yêu cầu. Vui lòng thử lại.' }, true);
+  } finally { release(); }
 });
+server.requestTimeout = 45000;
+server.headersTimeout = 15000;
 
 server.listen(PORT, () => {
   console.log('GoPinyin API chạy tại http://localhost:' + PORT);

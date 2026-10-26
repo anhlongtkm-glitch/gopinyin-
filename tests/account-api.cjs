@@ -16,7 +16,8 @@ const {startSupabaseFixture}=require('./helpers/supabase-fixture.cjs');
       assert.equal((await fetch(url+route,{method:'POST',headers:{Authorization:'Bearer forged'},body:'{}'})).status,401);
     }
     const headers={Authorization:'Bearer '+signup.access_token};
-    assert.equal((await fetch(url+'/api/ai',{method:'POST',headers,body:'{}'})).status,500);
+    assert.equal((await fetch(url+'/api/ai',{method:'POST',headers,body:'{}'})).status,400);
+    assert.equal((await fetch(url+'/api/ai',{method:'POST',headers,body:JSON.stringify({provider:'gemini',prompt:'Bài học'})})).status,500);
     assert.equal((await fetch(url+'/api/pron',{method:'POST',headers,body:'{}'})).status,501);
     fixture.tokens.delete(signup.access_token);
     assert.equal((await fetch(url+'/api/pron',{method:'POST',headers,body:'{}'})).status,401);

@@ -37,6 +37,11 @@ export function wire() {
     if (el) el.addEventListener(ev, fn);
   };
   wireFileWarn();
+  on('pronResult', 'click', event => {
+    if (!event.target.closest('[data-pron-service-retry]')) return;
+    pronunciationSessionState.S.serverAssess = null;
+    beginRecording();
+  });
   on('pronMicBtn', 'click', () => {
     if (pronunciationSessionState.S.phase === 'recording') stopRecording('manual');else beginRecording();
   });

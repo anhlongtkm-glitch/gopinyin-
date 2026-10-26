@@ -7,7 +7,7 @@
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modalCard{position:relative;width:100%;background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-2xl);
   box-shadow:var(--sh-4);padding:clamp(26px,4vw,40px);animation:modalPop .35s var(--spring);margin:auto}
-.modalClose{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:var(--card-3);
+.modalClose{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--card-3);
   border:1px solid var(--line);color:var(--muted);font-size:13px;transition:all var(--d);z-index:2}
 .modalClose:hover{background:var(--bad-soft);color:var(--bad);transform:rotate(90deg)}
 

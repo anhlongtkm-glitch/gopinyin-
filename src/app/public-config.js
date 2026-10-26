@@ -10,6 +10,7 @@
       SITE_URL: windowRef.GOPINYIN_SITE_URL || 'https://gopinyin.io.vn',
       SUPPORT_EMAIL: windowRef.GOPINYIN_SUPPORT_EMAIL || 'hotro@gopinyin.app',
       AI_PROXY_URL: windowRef.GOPINYIN_AI_PROXY_URL || '',
+      PRON_API_URL: windowRef.GOPINYIN_PRON_API_URL || '',
       DOMAIN: windowRef.GOPINYIN_DOMAIN || 'gopinyin.io.vn'
     },
     windowRef.__APP_CONFIG__ || {},

@@ -61,7 +61,7 @@ const isVerifyPrompt = (p) => /CẦN SOÁT|soát lỗi NGHĨA/i.test(p);
 
   // Stub AI: phân biệt "tạo nội dung" vs "soát nghĩa" theo nội dung prompt
   await page.evaluate(({ generated, verdict }) => {
-    window.__gpAiProxy = '/__ai_stub__';
+    window.APP_CONFIG.AI_PROXY_URL = '/__ai_stub__';
     window.__aiCalls = [];
     const rf = window.fetch.bind(window);
     window.fetch = (url, opt) => {
@@ -83,7 +83,7 @@ const isVerifyPrompt = (p) => /CẦN SOÁT|soát lỗi NGHĨA/i.test(p);
   await page.selectOption('#aiKind', 'word');
   await page.waitForTimeout(300);
   await page.fill('#aiPrompt', 'từ vựng ngành bao bì carton');
-  await page.evaluate(() => { document.querySelector('#aiKey').value = 'fake-key'; });
+  await page.evaluate(() => { document.querySelector('#aiKey').value = ''; });
 
   /* ═══ A. Có gọi bước soát nghĩa ═══ */
   section('A. Có bước soát nghĩa');

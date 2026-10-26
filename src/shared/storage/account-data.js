@@ -1,6 +1,6 @@
 // Only whitelisted learning records enter the account cache or cloud outbox.
 const ALLOWED = /^(cts:(progress:|history:|weak|speed:)|gp:(pron:|dailyGoal$|daily$|streak$|bestScore$|lbGame$|lbStudy$|lbSeed$)|gopinyin:game:)/;
-let owner = null, client = null, records = {}, generation = 0, timer, inflight;
+let owner = null, client = null, records = {}, generation = 0, timer, inflight, pulling, synchronizing;
 let datasetLoader = async () => [], conflictResolver = async () => 'cancel', status = 'guest';
 const listeners = new Set();
 function report(value) { status = value; window.dispatchEvent(new CustomEvent('gp:sync', { detail: value })); }
@@ -24,9 +24,13 @@ export function readRecord(kind, id) {
 export function listRecords(kind) {
   return Object.values(records).filter(r => r.kind === kind && !r.deleted).map(r => structuredClone(r.payload));
 }
+export function listRecordEntries(kind) {
+  return Object.values(records).filter(r => r.kind === kind && !r.deleted).map(r => ({ record_id: r.record_id, payload: structuredClone(r.payload) }));
+}
 export function writeRecord(kind, id, payload, deleted = false) {
   if (!owner) return;
   const key = keyOf(kind, id), old = records[key];
+  if (old && old.deleted === deleted && (old.payload === payload || (typeof payload === 'object' && JSON.stringify(old.payload) === JSON.stringify(payload)))) return;
   records[key] = { kind, record_id: id, payload, deleted, version: old?.version || 0, dirty: true, edit: (old?.edit || 0) + 1 };
   persist(); report(navigator.onLine ? 'pending' : 'offline'); clearTimeout(timer);
   timer = setTimeout(() => flushAccountData().catch(() => {}), 200);
@@ -39,7 +43,7 @@ export const learningStorage = {
   get length() { return Object.values(records).filter(r => r.kind === 'kv' && !r.deleted).length; }
 };
 export function detachAccountData() {
-  generation++; clearTimeout(timer); owner = null; client = null; records = {}; inflight = null;
+  generation++; clearTimeout(timer); owner = null; client = null; records = {}; inflight = null; pulling = null; synchronizing = null;
   report('guest'); notify();
 }
 export async function attachAccountData(uid, connection) {
@@ -49,6 +53,7 @@ export async function attachAccountData(uid, connection) {
 }
 async function reconcile(remote, epoch, fromConflict = false) {
   const key = keyOf(remote.kind, remote.record_id), local = records[key];
+  if (local && !local.dirty && local.version === remote.version) return;
   if (!fromConflict && local && local.version > remote.version) return; // A stale pull cannot roll back an acknowledged save.
   let remoteChosen = false;
   if (local?.dirty && local.version !== remote.version) {
@@ -62,6 +67,11 @@ async function reconcile(remote, epoch, fromConflict = false) {
   if (remoteChosen) window.dispatchEvent(new CustomEvent('gp:remote-record', { detail: remote.record_id }));
 }
 export async function pullAccountData() {
+  if (pulling) return pulling;
+  const operation = performPull(); pulling = operation;
+  try { return await operation; } finally { if (pulling === operation) pulling = null; }
+}
+async function performPull() {
   if (!owner || !client) return;
   if (!navigator.onLine) { report('offline'); throw new Error('Cần kết nối mạng để đồng bộ.'); }
   const epoch = generation; report('loading');
@@ -82,6 +92,7 @@ export async function pullAccountData() {
 export async function flushAccountData() {
   if (inflight) return inflight;
   if (!owner || !client) return;
+  if (!Object.values(records).some(r => r.dirty)) return;
   const epoch = generation, connection = client;
   const operation = (async () => {
     if (!navigator.onLine) { report('offline'); throw new Error('Chưa có mạng; thay đổi được giữ trên thiết bị.'); }
@@ -112,7 +123,13 @@ export async function flushAccountData() {
   catch (error) { if (epoch === generation) report('error'); throw error; }
   finally { if (inflight === operation) inflight = null; }
 }
-export async function synchronizeAccountData() { await flushAccountData(); await pullAccountData(); await flushAccountData(); }
+export async function synchronizeAccountData() {
+  if (synchronizing) return synchronizing;
+  const epoch = generation;
+  const operation = (async () => { await flushAccountData(); if (epoch !== generation) return; await pullAccountData(); if (epoch === generation) await flushAccountData(); })();
+  synchronizing = operation;
+  try { await operation; } finally { if (synchronizing === operation) synchronizing = null; }
+}
 export async function hasLegacyData() {
   if (Object.keys(localStorage).some(k => ALLOWED.test(k))) return true;
   return (await datasetLoader()).length > 0;

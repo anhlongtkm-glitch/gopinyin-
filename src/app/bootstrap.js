@@ -63,6 +63,11 @@ import { initializePronunciationFileTransfer } from "../features/pronunciation/f
 import { initializePronunciationController } from "../features/pronunciation/controller.js";
 import { initializeVirtualKeyboard } from "../shared/virtual-keyboard.js";
 import { exposeCoreGlobals } from "./compatibility.js";
+import { readRoute, writeRoute } from "./routes.js";
+import { showView } from "./navigation.js";
+import { openDataset } from "../features/typing/datasets.js";
+import { getAccountClient } from "../features/auth/client.js";
+import { state as authState } from "../features/auth/service.js";
 
 function initializeData(){
   initializeDataCatalog();
@@ -160,4 +165,22 @@ export function initializeApplication(){
  initializeShell();
  initializePron();
  initializeKeyboard();
+ const restoreRoute = async () => {
+   const route = readRoute();
+   if (!route) { if (!location.hash) await showView('dash', { route: false }); return; }
+   if (route.view === 'study' && route.dataset) {
+     const opened = await openDataset(route.dataset, { route: false, review: route.review });
+     if (opened === false) { await showView('library', { route: false }); writeRoute('library', '', true); }
+   } else await showView(route.view, { route: false });
+ };
+ window.addEventListener('popstate', () => restoreRoute().catch(console.error));
+ const initialRoute = readRoute();
+ if (initialRoute?.view === 'study') {
+   let pending = true;
+   const restoreOnce = () => { if (pending) { pending = false; restoreRoute().catch(console.error); } };
+   window.addEventListener('gp:account-ready', restoreOnce, { once: true });
+   const client = getAccountClient();
+   if (!client) restoreOnce();
+   else client.auth.getSession().then(({ data }) => { if (!data.session || authState.ready) restoreOnce(); }).catch(restoreOnce);
+ } else restoreRoute().catch(console.error);
 }
