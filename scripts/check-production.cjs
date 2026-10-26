@@ -10,6 +10,11 @@ const fs = require('node:fs');
   assert.equal(root.status, 200); report.checks.push('homepage HTTP 200');
   const assets = [...new Set([...html.matchAll(/assets\/immutable\/app\.[a-f0-9]+\.(?:js|css)/g)].map(match => match[0]))];
   assert.equal(assets.length, 2);
+  if (args.includes('--expect-local')) {
+    const localHtml = fs.readFileSync('dist/index.html', 'utf8');
+    const expected = [...new Set([...localHtml.matchAll(/assets\/immutable\/app\.[a-f0-9]+\.(?:js|css)/g)].map(match => match[0]))];
+    assert.deepEqual([...assets].sort(), expected.sort(), 'Production is not serving the assets referenced by the current local build');
+  }
   for (const asset of assets) {
     const response = await get(new URL(asset, base)); assert.equal(response.status, 200);
     assert(response.headers.get('cache-control')?.includes('immutable'));
