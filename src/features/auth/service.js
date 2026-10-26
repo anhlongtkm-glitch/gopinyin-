@@ -123,6 +123,8 @@ export function initializeAuthService() {
     // Supabase holds an auth lock during this callback: schedule subsequent SDK calls.
     setTimeout(async () => {
       try {
+        // Opening a recovery link is an explicit sign-in action after logout.
+        if (event === 'PASSWORD_RECOVERY' && session) localStorage.removeItem('gp:local-signout');
         if (session && localStorage.getItem('gp:local-signout')) return;
         if (!session) { if (state.user) clearAccount(); return; }
         if (event === 'PASSWORD_RECOVERY') { state.recovery = true; emit('gp:password-recovery'); }

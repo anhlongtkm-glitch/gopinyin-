@@ -64,7 +64,8 @@ async function login(page,email,password='password123') {
     const record=await (await fetch(config.SUPABASE_URL+'/rest/v1/rpc/put_learning_record',{method:'POST',headers,body:JSON.stringify(body)})).json();
     const collision=await (await fetch(config.SUPABASE_URL+'/rest/v1/rpc/put_learning_record',{method:'POST',headers,body:JSON.stringify({...body,p_payload:'22'})})).json();
     assert.equal(record.record.version,1);assert.equal(collision.conflict,true);
-    await second.evaluate(uid=>{
+    // Seed before the app starts: live sync timers must not overwrite this conflict fixture.
+    await second.addInitScript(uid=>{
       const key='gp:account-cache:'+uid,cache=JSON.parse(localStorage.getItem(key)||'{}');
       cache[JSON.stringify(['kv','gp:dailyGoal'])]={kind:'kv',record_id:'gp:dailyGoal',payload:'22',deleted:false,dirty:true,version:0,edit:1};
       localStorage.setItem(key,JSON.stringify(cache));
@@ -85,12 +86,23 @@ async function login(page,email,password='password123') {
     await page.waitForFunction(()=>document.getElementById('currentPassword').value==='');
     await page.click('#profileModal .modalClose');await page.click('#wsLogoutBtn');
     assert.equal(await page.locator('#wsUserName').textContent(),'Khách');assert(await page.locator('#dashView').isVisible());
+    assert.equal(await page.evaluate(()=>localStorage.getItem('gp:local-signout')),'true');
+    await page.click('#wsLoginBtn');await page.click('#authForgotBtn');await page.fill('#authEmail',email);
+    await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/auth/v1/recover'&&r.request().method()==='POST'),page.click('#authSubmit')]);
+    await page.goto(new URL('?account=recovery&code='+encodeURIComponent('fixture-recovery:'+email),process.env.TEST_URL).href,{waitUntil:'networkidle'});
+    await page.waitForFunction(()=>document.getElementById('authTitle').textContent==='Đặt lại mật khẩu');
+    assert(await page.locator('#authModal').isVisible());
+    assert.equal(await page.evaluate(()=>localStorage.getItem('gp:local-signout')),null);
+    await page.fill('#authPass','recovered123');await page.click('#authSubmit');
+    await page.locator('#authModal').waitFor({state:'hidden'});await saved(page);
+    await page.click('#wsLogoutBtn');
+    console.log('  PASS PKCE password recovery after explicit logout restores the reset form');
     await register(page,'Other account');
     assert.equal(await page.evaluate(()=>window.__gpBridge.loadProgress('vocab:hsk9')),null);
     const other=await session(page);
     const forbidden=await fetch(config.SUPABASE_URL+'/rest/v1/profiles?id=eq.'+first.user.id,{headers:{apikey:config.SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+other.access_token}});
     assert.equal(forbidden.status,403);
-    await page.click('#wsLogoutBtn');await login(page,email,'changed123');
+    await page.click('#wsLogoutBtn');await login(page,email,'recovered123');
     assert.equal(await page.locator('#wsUserName').textContent(),'Updated learner');
     assert.deepEqual(errors,[]);
     console.log('  PASS password reauthentication, account isolation and logout');

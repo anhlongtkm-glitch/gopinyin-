@@ -3,7 +3,7 @@
 const http = require('node:http');
 const crypto = require('node:crypto');
 async function startSupabaseFixture() {
-  const users = new Map(), tokens = new Map(), refresh = new Map(), records = new Map(), files = new Map();
+  const users = new Map(), tokens = new Map(), refresh = new Map(), records = new Map(), files = new Map(), recoveryCodes = new Map();
   let origin;
   const session = account => {
     const jwt = value => Buffer.from(JSON.stringify(value)).toString('base64url');
@@ -31,12 +31,23 @@ async function startSupabaseFixture() {
       return json(200,verified?session(a):user);
     }
     if(url.pathname==='/auth/v1/token') {
+      if(url.searchParams.get('grant_type')==='pkce') {
+        const pending=recoveryCodes.get(body.auth_code);
+        const challenge=crypto.createHash('sha256').update(body.code_verifier||'').digest('base64url');
+        if(!pending||pending.challenge!==challenge)return json(400,{message:'Invalid or expired recovery code',error_code:'flow_state_expired'});
+        recoveryCodes.delete(body.auth_code);
+        return json(200,session(pending.account));
+      }
       const a=url.searchParams.get('grant_type')==='refresh_token'?refresh.get(body.refresh_token):users.get(body.email);
       if(!a||(url.searchParams.get('grant_type')!=='refresh_token'&&a.password!==body.password))return json(400,{message:'Invalid login credentials',error_code:'invalid_credentials'});
       if(!a.user.email_confirmed_at)return json(400,{message:'Email not confirmed',error_code:'email_not_confirmed'});
       return json(200,session(a));
     }
-    if(url.pathname==='/auth/v1/recover') return json(200,{});
+    if(url.pathname==='/auth/v1/recover') {
+      const a=users.get(body.email);
+      if(a&&body.code_challenge)recoveryCodes.set('fixture-recovery:'+body.email,{account:a,challenge:body.code_challenge});
+      return json(200,{});
+    }
     if(url.pathname==='/auth/v1/logout') {tokens.delete(token);return json(200,{});}
     if(url.pathname==='/auth/v1/user') {
       if(!account)return denied();
