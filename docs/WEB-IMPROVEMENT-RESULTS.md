@@ -6,6 +6,8 @@ Ngày: 26/10/2026. Triển khai trong workspace; chưa phát hành production ho
 
 Đợt tiếp theo đã triển khai và xác minh API cùng Vercel: xem [biên bản production](PRODUCTION-ACCEPTANCE.md). Backend đã chạy; còn thiếu key provider để kiểm chứng AI/phát âm chuyên dụng thật.
 
+Đã tiếp tục sửa các lỗi hoàn thành câu, tải lại trước Space, lượt ôn và nút làm lại: xem [chi tiết sửa luồng học](LEARNING-FLOW-FIXES.md), với 19 suite và 325 checks đạt.
+
 ## Các thay đổi đã thực hiện
 
 | Nhóm | Kết quả |

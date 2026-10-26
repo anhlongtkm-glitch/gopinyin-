@@ -41,6 +41,8 @@ export async function openDataset(id, options = {}) {
   aiEndSession(); // rời phiên AI (không lưu gì) nếu đang học câu do AI tạo
   resetSessionRuntime();
   typingSessionState.activeDataset = ds;
+  typingSessionState.awaitingEnter = false;
+  typingSessionState.curHadError = false;
   typingSessionState.rows = ds.rows;
   typingSessionState.currentFileKey = progressKey(ds.id);
   typingSessionState.pinyinHint = false; // ★ mới vào chế độ gỗ → pinyin luôn ẩn, muốn xem thì bật

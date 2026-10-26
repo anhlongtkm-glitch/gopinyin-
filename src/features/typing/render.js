@@ -25,7 +25,7 @@ import { gtReset } from "../../shared/translation.js";
    • Chính xác = Đúng / (Đúng + Sai) */
 export function renderStatsOnly() {
   const total = currentTotal(),
-    done = Math.min(typingSessionState.index, total);
+    done = Math.min(typingSessionState.index + (typingSessionState.awaitingEnter ? 1 : 0), total);
   domState.$('progressText').textContent = done + '/' + total;
   domState.$('correctText').textContent = typingSessionState.stats.correct;
   domState.$('wrongText').textContent = typingSessionState.stats.wrong;
@@ -44,6 +44,7 @@ export function renderStatsOnly() {
 }
 
 export function render() {
+  typingSessionState.awaitingEnter = false;
   const total = currentTotal();
   renderStatsOnly();
   if (aiSessionLive()) aiMaybeFill(); // AI tự viết thêm khi sắp hết câu

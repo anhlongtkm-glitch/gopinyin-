@@ -28,7 +28,7 @@ export function save() {
   if (!typingSessionState.activeDataset) return;
   if (typingSessionState.mode === 'all') {
     typingSessionState.mainOrder = [...typingSessionState.order];
-    typingSessionState.mainIndex = typingSessionState.index;
+    typingSessionState.mainIndex = Math.min(typingSessionState.index + (typingSessionState.awaitingEnter ? 1 : 0), typingSessionState.order.length);
   }
   learningStorage.setItem(progressKey(typingSessionState.activeDataset.id), JSON.stringify({
     mainOrder: typingSessionState.mainOrder,

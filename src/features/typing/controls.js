@@ -62,6 +62,8 @@ export function retrySentence() {
   const q = currentRow();
   if (!q) return;
   typingSessionState.awaitingEnter = false;
+  typingSessionState.curHadError = false;
+  resetSessionRuntime();
   typingSessionState.lastValidInput = '';
   const inp = domState.$('pinyinInput');
   inp.value = '';

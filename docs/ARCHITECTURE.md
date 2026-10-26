@@ -78,6 +78,8 @@ Production minify JS/CSS và tham chiếu file có hash dưới `assets/immutabl
 
 Dashboard chỉ đọc dữ liệu tài khoản hiện tại. Các số liệu hiện có giữ cùng cách tính với màn luyện: số câu đã đi qua trong thứ tự bài chính, độ chính xác = đúng/(đúng+sai), combo cao nhất dùng `bestCombo`. Phiên ôn không ghi đè vị trí bài chính. Lịch ôn dùng thời điểm UTC tuyệt đối để nhất quán giữa thiết bị; hiển thị theo giờ trên máy người học.
 
+Khi câu vừa được chấm đúng và còn chờ Space, `index` runtime vẫn trỏ câu đang hiển thị nhưng `mainIndex` lưu trữ đã trỏ câu tiếp theo. Không dùng hai giá trị thay thế lẫn nhau trong trạng thái này. Xem `docs/LEARNING-FLOW-FIXES.md`.
+
 Server chỉ phục vụ `dist/`; các endpoint `__gopinyin`, `__import`, origin và cổng mặc định giữ nguyên. Luồng chuyển file:// sang localhost vẫn nhập dữ liệu trước khi khởi tạo app. Quyền micro vẫn phụ thuộc secure context/trình duyệt như trước. Chỉ cấu hình công khai được copy xuống browser; giữ khóa backend trong môi trường server.
 
 ## Kiểm thử và bằng chứng refactor

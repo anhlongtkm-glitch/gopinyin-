@@ -30,6 +30,7 @@ export function markSentenceCorrect() {
   typingSessionState.suppressSentenceSpeech = false;
   const inp = domState.$('pinyinInput'),
     q = currentRow(),
+    completedRows = typingSessionState.rows,
     completedRowIndex = typingSessionState.order[typingSessionState.index];
   if (!q) return;
   /* ★ Gõ đúng → ô gõ hiện đáp án CHỮ HÁN (kèm dấu câu gốc) để đối chiếu */
@@ -44,8 +45,10 @@ export function markSentenceCorrect() {
   try {
     legacy.__gpOnSentenceCorrect && legacy.__gpOnSentenceCorrect();
   } catch (e) {}
-  if (typingSessionState.mode === 'wrong' || typingSessionState.mode === 'review') typingSessionState.wrongIds.delete(q.id);
-  if (!typingSessionState.curHadError) typingSessionState.reviewById[q.id] = nextReview(typingSessionState.reviewById[q.id], true);
+  if (!typingSessionState.curHadError) {
+    for (const id of typingSessionState.wrongIds) if (String(id) === String(q.id)) typingSessionState.wrongIds.delete(id);
+    typingSessionState.reviewById[q.id] = nextReview(typingSessionState.reviewById[q.id], true);
+  }
   typingSessionState.awaitingEnter = true;
   inp.classList.add('ok');
   inp.readOnly = true;
@@ -57,7 +60,7 @@ export function markSentenceCorrect() {
   recordHistory(q, 'ok'); // ★ ghi câu vừa gõ đúng vào lịch sử bên phải
   setTimeout(() => {
     if (skipSpeech) return;
-    if (typingSessionState.awaitingEnter && typingSessionState.index < typingSessionState.order.length && typingSessionState.order[typingSessionState.index] === completedRowIndex && q.zh && q.zh !== '—') speakText(q.zh, false);
+    if (!domState.$('appCard').classList.contains('hidden') && typingSessionState.rows === completedRows && typingSessionState.awaitingEnter && typingSessionState.index < typingSessionState.order.length && typingSessionState.order[typingSessionState.index] === completedRowIndex && q.zh && q.zh !== '—') speakText(q.zh, false);
   }, 1000);
 }
 
@@ -71,13 +74,14 @@ export function rememberCurrentWrong() {
 
 /* ★ Mỗi câu chỉ tính 1 lần Sai dù gõ sai nhiều ký tự; sai thì mất combo */
 export function markSentenceWrong() {
-  if (!isStudyAllowed()) return;
+  if (!isStudyAllowed() || typingSessionState.awaitingEnter) return;
+  const q = currentRow();
+  if (!q) return;
   const firstError = !typingSessionState.curHadError;
-  typingSessionState.stats.attempts++;
+  if (firstError) typingSessionState.stats.attempts++;
   if (!typingSessionState.curHadError) {
     typingSessionState.curHadError = true;
     typingSessionState.stats.wrong++;
-    const q = currentRow();
     if (q) {
       recordHistory(q, 'wrong');
       typingSessionState.reviewById[q.id] = nextReview(typingSessionState.reviewById[q.id], false);

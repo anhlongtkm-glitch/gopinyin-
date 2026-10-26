@@ -7,12 +7,14 @@ import { closeHistModal } from "../features/typing/history.js";
 import { goPrevSentence } from "../features/typing/input.js";
 
 import { state as domState } from "./dom.js";
+import { rememberFocus, restoreFocus } from "./focus.js";
 
 /* ── ★ Modal hướng dẫn (nút 💡): giải thích toàn bộ cơ chế gõ + phím tắt ──
    Chỉ mở từ giao diện Luyện gõ (học câu) — không đặt trong game. */
 export function openHelpModal() {
   const m = domState.$('helpModal');
   if (!m) return;
+  rememberFocus(m);
   m.hidden = false;
   document.body.style.overflow = 'hidden';
   try {
@@ -24,6 +26,7 @@ export function closeHelpModal() {
   const m = domState.$('helpModal');
   if (!m || m.hidden) return;
   m.hidden = true;
+  restoreFocus(m);
   if (!document.querySelector('.modal:not([hidden])')) document.body.style.overflow = '';
 }
 

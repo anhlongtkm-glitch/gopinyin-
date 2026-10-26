@@ -1,4 +1,5 @@
 import { learningStorage } from "../../shared/storage/account-data.js";
+import { rememberFocus, restoreFocus } from "../../shared/focus.js";
 // State and behavior owned by features/typing/history. Initialization is orchestrated by app/bootstrap.js.
 
 import { aiSessionLive, state as aiSessionState } from "../ai/session.js";
@@ -167,6 +168,7 @@ export function fmtHistTime(ts) {
 export function openHistModal() {
   const m = domState.$('histModal');
   if (!m) return;
+  rememberFocus(m);
   setHistFilter('done');
   renderAppHistory();
   m.hidden = false;
@@ -180,6 +182,7 @@ export function closeHistModal() {
   const m = domState.$('histModal');
   if (!m || m.hidden) return;
   m.hidden = true;
+  restoreFocus(m);
   if (!document.querySelector('.modal:not([hidden])')) document.body.style.overflow = '';
 }
 

@@ -63,12 +63,56 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert.equal(await page.locator('#dashWeakCount').textContent(), '1');
     await page.click('#dashWeakBtn'); await page.locator('#appCard').waitFor({ state: 'visible' });
     assert.equal(await page.evaluate(() => window.order.length), 1);
+    await page.evaluate(() => { window.markSentenceWrong(); window.markSentenceCorrect(); });
+    await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
+    await page.evaluate(() => window.showView('dash'));
+    assert.equal(await page.locator('#dashWeakCount').textContent(), '1');
+    await page.click('#dashWeakBtn'); await page.locator('#appCard').waitFor({ state: 'visible' });
     await page.evaluate(() => window.markSentenceCorrect());
     await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
     await page.evaluate(() => window.showView('dash'));
     await page.waitForFunction(() => document.querySelector('#dashWeakBtn').disabled);
     assert.equal(await page.locator('#dashLearned').textContent(), '3');
     console.log('  PASS weak-item review persists without overwriting main lesson position');
+
+    await page.click('.ws-navItem[data-view="library"]'); await page.click('[data-vsrc="hsk2"]');
+    await page.locator('#appCard').waitFor({ state: 'visible' });
+    await page.evaluate(() => window.markSentenceCorrect());
+    const scored = await page.evaluate(() => ({ ...window.stats }));
+    await page.evaluate(() => { window.markSentenceWrong(); window.markSentenceWrong(); });
+    assert.deepEqual(await page.evaluate(() => ({ ...window.stats })), scored, 'A completed sentence must reject late error events');
+    await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('#appCard').waitFor({ state: 'visible' });
+    assert.equal(await page.evaluate(() => window.index), 1, 'Reload before Space must resume after the completed sentence');
+    assert.equal(await page.evaluate(() => window.stats.correct), 1);
+    const wrongBefore = await page.evaluate(() => ({ ...window.stats }));
+    await page.evaluate(() => { window.markSentenceWrong(); window.markSentenceWrong(); });
+    assert.equal(await page.evaluate(() => window.stats.wrong), wrongBefore.wrong + 1);
+    assert.equal(await page.evaluate(() => window.stats.attempts), wrongBefore.attempts + 1);
+    await page.click('#retrySentenceBtn');
+    await page.evaluate(() => window.markSentenceCorrect());
+    await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
+    const cleanRetry = await page.evaluate(() => {
+      const row = window.rows[window.order[window.index]];
+      const progress = window.__gpBridge.loadProgress('vocab:hsk2');
+      return { weak: progress.wrongIds.some(id => String(id) === String(row.id)), repetitions: progress.reviewById[row.id].repetitions };
+    });
+    assert.deepEqual(cleanRetry, { weak: false, repetitions: 1 });
+    console.log('  PASS retry starts a fresh attempt and a clean answer clears the weak mark');
+    await page.evaluate(() => { window.index = window.order.length - 1; window.render(); window.markSentenceCorrect(); });
+    await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.locator('#completeArea').waitFor({ state: 'visible' });
+    assert.equal(await page.evaluate(() => window.index), await page.evaluate(() => window.order.length));
+    console.log('  PASS completed progress survives reload before Space, including the final sentence; late/duplicate errors do not inflate scores');
+    for (const [trigger, modal] of [['helpBtn', 'helpModal'], ['historyBtn', 'histModal']]) {
+      await page.click('#' + trigger); await page.locator('#' + modal).waitFor({ state: 'visible' });
+      await page.keyboard.press('Escape');
+      assert.equal(await page.evaluate(() => document.activeElement.id), trigger);
+    }
+    console.log('  PASS help and history dialogs restore keyboard focus');
+    await page.evaluate(() => window.showView('dash'));
 
     fs.mkdirSync('.cache/roadmap', { recursive: true });
     for (const width of [1440, 390]) {
