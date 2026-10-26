@@ -14,7 +14,8 @@
     "test:tooling": "node tests/tooling.cjs",
     "test:database": "node tests/database.cjs",
     "test:sync": "node tests/account-sync.cjs",
-    "test:api": "node tests/account-api.cjs"
+    "test:api": "node tests/account-api.cjs",
+    "check:production": "node scripts/check-production.cjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.11",

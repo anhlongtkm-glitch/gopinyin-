@@ -6,12 +6,7 @@
   "installCommand": "npm ci",
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
-  ],
+  "functions": { "api/*.js": { "maxDuration": 60 } },
   "headers": [
     {
       "source": "/assets/immutable/(.*)",

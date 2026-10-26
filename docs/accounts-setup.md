@@ -1,5 +1,13 @@
 # Tài khoản Supabase và đồng bộ
 
+## Bổ sung backend cùng Vercel — 26/10/2026
+
+Đợt tiếp theo đã bổ sung function `/api/ai`, `/api/pron`, `/api/status` cùng dự án web, thay vì cần hosting Node riêng cho mọi trường hợp. Cấu hình và cách kiểm tra nằm trong [VERCEL.md](../VERCEL.md). Dùng hash route cho web; không rewrite `/api/*` về HTML. Các ghi nhận về “chỉ triển khai web tĩnh” bên dưới là lịch sử của đợt phát hành tài khoản trước đó.
+
+Handler hỗ trợ body Vercel parse sẵn; vẫn chạy Node standalone được. Khi thiếu `SUPABASE_*`, API dùng `GOPINYIN_SUPABASE_*` của cùng deployment để xác minh user, không dùng service-role key.
+
+Chưa có key provider trong cấu hình local được kiểm tra. `/api/status` phân biệt backend đã chạy với provider đã được đặt key; không phải bằng chứng đã chấm phát âm hoặc gọi AI thành công.
+
 ## Trạng thái cấu hình cập nhật ngày 26/10/2026
 
 - Nhánh phát hành: `release/supabase-accounts`, repo `anhlongtkm-glitch/gopinyin-`. Production trước phát hành: `https://gopinyin-rigeocjr5-long-b4d0.vercel.app`, commit `9bb473f580223960cd2baca6084fa6f88c7f3178` (giữ làm mốc rollback).

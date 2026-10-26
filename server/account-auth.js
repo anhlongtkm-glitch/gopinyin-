@@ -4,7 +4,8 @@ let client;
 async function verifyAccount(req) {
   const match = /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '');
   if (!match) return { status: 401, error: 'Đăng nhập để dùng dịch vụ này.' };
-  const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_PUBLISHABLE_KEY;
+  const url = process.env.SUPABASE_URL || process.env.GOPINYIN_SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.GOPINYIN_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) return { status: 503, error: 'Server chưa cấu hình dịch vụ tài khoản.' };
   try {
     client ||= createClient(url, key, {

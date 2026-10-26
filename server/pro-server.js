@@ -41,24 +41,7 @@ function json(res, code, data, withCors) {
 
 /* Đọc body có giới hạn kích thước; trả null nếu quá lớn */
 function readBody(req) {
-  return new Promise(resolve => {
-    let b = '';
-    let tooBig = false;
-    req.on('data', c => {
-      if (tooBig) return;
-      b += c;
-      if (b.length > MAX_BODY) { tooBig = true; b = ''; }
-    });
-    req.on('end', () => {
-      if (tooBig) return resolve(null);
-      /* Giữ nguyên chuỗi body thô (b) để tính HMAC trên byte gốc —
-         cổng thanh toán ký trên raw body, không phải JSON đã serialize lại. */
-      let data = {};
-      try { data = JSON.parse(b || '{}'); } catch (e) { data = {}; }
-      resolve({ data, raw: b });
-    });
-    req.on('error', () => resolve(null));
-  });
+  return readBodyBig(req, MAX_BODY);
 }
 
 /* ── AI PROXY: app gửi prompt, server giữ key (AI_KEY_*) → client không lưu plaintext ── */
@@ -87,6 +70,14 @@ async function serverCallAi(provider,key,prompt,image){
 
 /* Đọc body lớn hơn (audio chấm phát âm) — cùng dạng trả về như readBody */
 function readBodyBig(req, limit) {
+  // Vercel may have consumed the stream and supplied req.body already.
+  let supplied;
+  try { supplied = req.body; } catch { return Promise.resolve({ data: {}, raw: '' }); }
+  if (supplied !== undefined) {
+    const raw = Buffer.isBuffer(supplied) ? supplied.toString('utf8') : typeof supplied === 'string' ? supplied : JSON.stringify(supplied);
+    if (Buffer.byteLength(raw) > (limit || PRON_MAX_BODY)) return Promise.resolve(null);
+    try { return Promise.resolve({ data: JSON.parse(raw), raw }); } catch { return Promise.resolve({ data: {}, raw }); }
+  }
   return new Promise(resolve => {
     const chunks = [];
     let size = 0;
@@ -105,6 +96,7 @@ function readBodyBig(req, limit) {
       resolve({ data, raw });
     });
     req.on('error', () => resolve(null));
+    req.on('aborted', () => resolve(null));
   });
 }
 
@@ -127,7 +119,7 @@ setInterval(() => {
   for (const [ip, r] of HITS) if (now - r.t0 > RATE_WINDOW * 2) HITS.delete(ip);
 }, RATE_WINDOW).unref();
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
   let release = () => {};
   try {
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'));
@@ -272,16 +264,26 @@ const server = http.createServer(async (req, res) => {
 
   /* ── 3. Kiểm tra nhanh server sống (không lộ danh sách người đã trả tiền) ── */
   if (url.pathname === '/health') return json(res, 200, { ok: true });
+  if (url.pathname === '/api/status' && req.method === 'GET') {
+    res.setHeader('Cache-Control', 'no-store');
+    return json(res, 200, {
+      ok: true, apiVersion: 1,
+      accountConfigured: !!((process.env.SUPABASE_URL || process.env.GOPINYIN_SUPABASE_URL) && (process.env.SUPABASE_PUBLISHABLE_KEY || process.env.GOPINYIN_SUPABASE_PUBLISHABLE_KEY)),
+      services: { gemini: !!AI_KEY_GEMINI, openrouter: !!AI_KEY_OPENROUTER, pronunciation: !!AZURE_SPEECH_KEY }
+    }, true);
+  }
 
   json(res, 404, { ok: false, error: 'not found' });
   } catch {
     if (!res.headersSent && !res.destroyed) json(res, 500, { ok: false, error: 'Không xử lý được yêu cầu. Vui lòng thử lại.' }, true);
   } finally { release(); }
-});
+}
+module.exports = handleRequest;
+const server = http.createServer(handleRequest);
 server.requestTimeout = 45000;
 server.headersTimeout = 15000;
 
-server.listen(PORT, () => {
+if (require.main === module) server.listen(PORT, () => {
   console.log('GoPinyin API chạy tại http://localhost:' + PORT);
   console.log('  POST /api/ai        ← proxy AI (giữ key ở server)');
   console.log('  POST /api/pron      ← chấm phát âm (Azure) ' + (AZURE_SPEECH_KEY ? 'đã bật ✓' : 'CHƯA CẤU HÌNH → client tự đánh giá sơ bộ'));
