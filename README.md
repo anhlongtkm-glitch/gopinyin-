@@ -31,10 +31,10 @@ npm run test:build
 
 | Khu vực | Mô tả |
 |---|---|
-| **Đăng nhập** | Modal đăng nhập / đăng ký (local demo, sẵn sàng gắn backend), hỗ trợ khách (guest) và Google (placeholder). |
+| **Đăng nhập & hồ sơ** | Supabase email/mật khẩu, xác minh email, khôi phục mật khẩu, sửa tên và ảnh đại diện. Khách chỉ xem; học/chơi cần đăng nhập và mạng. Xem [hướng dẫn cấu hình](docs/accounts-setup.md). |
 | **Bảng điều khiển (Dashboard)** | Lộ trình hàng ngày, chuỗi ngày học (streak), tiến độ, thống kê, bài gần đây. |
 | **Thư viện & Luyện gõ** | Bộ câu HSK 1–9 (**4.804 câu**), gõ Pinyin tự động thêm dấu thanh, dịch nhanh Google Translate popup. **Toàn bộ HSK 1–9 miễn phí.** Màn luyện dùng **chung khung với Luyện phát âm** (xem mục *Khung học dùng chung*): thống kê + tiến độ → 3 nhóm công cụ → thẻ câu → chân thẻ, và **vừa đúng 1 khung hình, không phải cuộn**. Nhóm **📚 Nội dung** có sẵn danh sách bộ câu nên đổi bộ ngay tại chỗ. |
-| **Từ vựng theo chủ đề** | **206 chủ đề · 41.621 từ** (chữ Hán + pinyin + nghĩa Việt) nhúng sẵn trong `assets/vocab-pack.js`, dùng **offline**. File được nạp lười khi mở chủ đề lần đầu nên không làm chậm trang. Thẻ chủ đề hiện số từ. |
+| **Từ vựng theo chủ đề** | **206 chủ đề · 41.621 từ** (chữ Hán + pinyin + nghĩa Việt) nhúng sẵn trong `assets/vocab-pack.js`, có thể duyệt khi đã tải; bắt đầu học cần mạng. File được nạp lười khi mở chủ đề lần đầu nên không làm chậm trang. Thẻ chủ đề hiện số từ. |
 | **Bàn phím ảo** | Nút ⌨️ cạnh ô gõ và trên thanh công cụ game → bật/tắt bàn phím QWERTY ngay trong trang, dùng được trên **máy tính bảng / điện thoại không có bàn phím**. Trong game, phím cần gõ tiếp theo được tô sáng; bật bàn phím ảo thì bàn phím hệ thống không bật lên nữa (`inputmode="none"`). |
 | **Nhận mặt chữ Hán (mới)** | 4 chế độ: Hán→Việt, Việt→Hán, Nghe→Chọn, Từ vựng. 3 mạng sống, combo, điểm, HSK 1–9 miễn phí. |
 | **Từ vựng** | Nhóm từ vựng, tra nhanh, phát âm. |
@@ -42,7 +42,7 @@ npm run test:build
 | **Luyện phát âm (mới)** | Nói tiếng Trung bằng micro, chấm điểm từng chữ. **Vào mục là màn chọn bộ câu** (thẻ HSK 1–9 + bộ đã lưu, có thanh tiến độ riêng từng bộ) rồi mới vào luyện — giống luồng của màn Luyện gõ. Dùng **chung kho câu HSK** với Luyện gõ (không có bộ dữ liệu riêng), nên tiến độ và thứ tự câu khớp nhau. Màn luyện **vừa đúng 1 khung hình, không phải cuộn** (kết quả chấm nằm ở cột phải). Có nghe mẫu (zh-CN), đo âm lượng, tự dừng khi im lặng, chấm theo từng âm tiết, tô màu chữ đúng/cần sửa, nghe lại bản ghi, thống kê 6 chỉ số + lịch sử từng lượt. **Micro chỉ xin quyền 1 lần** cho cả phiên luyện. Xem mục **Chấm điểm phát âm** bên dưới để biết phần nào cần cấu hình thêm. |
 | **Trò chơi "bắn chữ"** | Chữ Hán rơi xuống, gõ Pinyin để bắn nổ (toàn bộ cấp HSK 1–6 miễn phí). Tàu tự xoay nòng về thẻ đang gõ, mỗi ký tự đúng có tiếng bắn, gõ sai chỉ mất combo (không trừ điểm), có tạm dừng / chơi tiếp / toàn màn hình. |
 | **Sảnh "Game từ vựng"** | Mục cha của các trò chơi: mỗi game là một **thẻ có ảnh đại diện (SVG)**, mô tả và nút chơi. Hiện có **🚀 Game bắn chữ** + 2 thẻ "Sắp ra mắt" (chỗ trống sẵn cho 2–3 game sau này). Bấm thẻ mới vào màn chơi; bấm ✕ trong game quay lại sảnh. Nút **"← Game từ vựng"** trên góc phải thanh tiêu đề cũng quay về đúng sảnh này. **Cách thêm game mới:** copy một `<button class="gameTile" data-view="…">` trong `src/features/games/view.html` (`#gamesCard`) rồi thêm `data-view` mới vào `VIEW_META` + `showView()` trong `src/app/navigation.js`. |
-| **Bảng xếp hạng** | Số câu học **đúng** kèm điểm game bên cạnh, xem theo **Hôm nay** và **Tuần này** (câu sai không tính). Lưu cục bộ ở `gp:lb`, mỗi tài khoản một dòng. |
+| **Bảng xếp hạng** | Số câu học **đúng** kèm điểm game bên cạnh, xem theo **Hôm nay** và **Tuần này** (câu sai không tính). Đồng bộ theo UUID; bảng công khai chỉ có tên, ảnh và điểm tổng hợp. |
 
 ## 🔊 Hiệu ứng & Âm thanh
 - Hệ thống âm thanh **WebAudio tổng hợp** (không file audio): click, hover, tap, pop, correct, combo, whoosh, unlock, win, page.
@@ -102,13 +102,13 @@ và `/__import` (chuyển `localStorage` từ bản `file://` sang `localhost`).
 2. **Hosting Việt Nam** (ví dụ Viettel Web, FPT, PA Vietnam): upload qua FTP vào thư mục gốc (`public_html`).
 3. **Tên miền**: trỏ tên miền đã mua về hosting, đảm bảo `index.html` nằm ở root.
 
-> Không cần database hay backend. Mọi dữ liệu và xác thực demo đều chạy trên trình duyệt (localStorage).
+> Phần xem công khai dùng hosting tĩnh. Đăng nhập, hồ sơ và đồng bộ cần dự án Supabase; cấu hình theo [hướng dẫn](docs/accounts-setup.md).
 
 ### Truy cập miễn phí và API tùy chọn
 
-Web mở thẳng bảng điều khiển ở chế độ khách. Đăng ký/đăng nhập là tùy chọn; dữ liệu được lưu trên trình duyệt, chưa đồng bộ giữa thiết bị. Không còn thanh toán, dùng thử hay kiểm tra quyền Pro.
+Web mở thẳng bảng điều khiển công khai. Khách xem được thư viện, danh sách phát âm, sảnh game và bảng xếp hạng; bắt đầu học/chơi cần tài khoản Supabase đã xác minh email và mạng. Tài khoản, hồ sơ và dữ liệu học được đồng bộ giữa thiết bị. Không có thanh toán hoặc Pro. Xem [cấu hình tài khoản và SQL](docs/accounts-setup.md).
 
-Chạy `node server/pro-server.js` để bật backend AI/phát âm (giữ tên file để tương thích triển khai cũ). Không cần khóa webhook. Các endpoint còn lại: `POST /api/ai`, `POST /api/pron`, `GET /health`. Cấu hình AI bằng `AI_KEY_GEMINI`, `AI_KEY_OPENROUTER`, tùy chọn `AI_PROXY_TOKEN`; phát âm bằng `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION`. Dùng `ALLOWED_ORIGIN` để chọn origin trình duyệt.
+Chạy `node server/pro-server.js` để bật backend AI/phát âm (giữ tên file để tương thích triển khai cũ). Không cần khóa webhook. Các endpoint còn lại: `POST /api/ai`, `POST /api/pron`, `GET /health`. Cấu hình AI bằng `AI_KEY_GEMINI`, `AI_KEY_OPENROUTER`,  phát âm bằng `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION`. Dùng `ALLOWED_ORIGIN` để chọn origin trình duyệt.
 
 Dữ liệu thanh toán cũ trong `server/pro-paid.json` được giữ lại nhưng không còn được đọc hoặc cập nhật. Nội dung HSK 4–9 trong bản lưu server đã có đầy đủ trong thư viện nhúng miễn phí.
 
@@ -221,14 +221,14 @@ ALLOWED_ORIGIN=https://gopinyin.vn node server/pro-server.js
 - **Thêm dữ liệu câu/từ**: sửa mảng trong `src/data/catalog.js`.
 
 ## 📝 Ghi chú
-- Xác thực hiện là demo phía client, lưu tài khoản trên trình duyệt.
+- Xác thực dùng Supabase; mật khẩu local cũ không được dùng để đăng nhập trực tuyến.
 - Tính năng AI cần khoá API (Gemini/OpenRouter) — giao diện nằm trong `src/features/ai/`; cấu hình công khai trong `src/app/public-config.js`.
 
 ### 🔐 Bảo mật — những gì đã sửa
 
 | Vấn đề | Trước | Sau |
 |---|---|---|
-| Băm mật khẩu | `(h<<5)-h+charCode` — 32 bit, không salt, đảo ngược được | **PBKDF2-SHA256, 120.000 vòng, salt 16 byte/tài khoản**; tài khoản cũ tự nâng cấp khi đăng nhập |
+| Xác thực | Tài khoản cục bộ dùng chung trình duyệt | Supabase Auth; phiên được kiểm tra qua máy chủ; dữ liệu riêng được bảo vệ bằng RLS |
 | Độ dài mật khẩu | ≥ 6 ký tự | ≥ 8 ký tự (không dùng `minlength` để không chặn tài khoản cũ) |
 | `/health` | Lộ `paidCount` (số người đã trả tiền) | Chỉ trả `{ok:true}` |
 

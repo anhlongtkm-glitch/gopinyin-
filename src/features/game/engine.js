@@ -1,10 +1,12 @@
+import { isStudyAllowed, currentUser } from "../auth/service.js";
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/game/engine. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
 
 import { showOverlay } from "./controller.js";
 
-import { spawn } from "./entities.js";
+import { spawn, saveGameStage } from "./entities.js";
 
 import { updateHud } from "./input.js";
 
@@ -20,7 +22,7 @@ const gameEngineState = state;
 
 export function saveGamePick() {
   try {
-    localStorage.setItem(gameEngineState.PICK_KEY, JSON.stringify({
+    learningStorage.setItem(gameEngineState.PICK_KEY, JSON.stringify({
       level: gameSessionState.state.level,
       speed: Number(gameSessionState.state.speed) || 3,
       maxConcurrent: Number(gameSessionState.state.maxConcurrent) || 3
@@ -31,7 +33,7 @@ export function saveGamePick() {
 export function loadGamePick() {
   let p = null;
   try {
-    p = JSON.parse(localStorage.getItem(gameEngineState.PICK_KEY) || 'null');
+    p = JSON.parse(learningStorage.getItem(gameEngineState.PICK_KEY) || 'null');
   } catch (e) {
     p = null;
   }
@@ -101,13 +103,21 @@ export function loseLife(it) {
   if (gameSessionState.state.lives <= 0) {
     gameSessionState.state.lives = 0;
     gameSessionState.state.over = true;
-    setTimeout(gameOver, 500);
+    const uid = currentUser()?.id;
+    setTimeout(() => { if (currentUser()?.id === uid) gameOver(); }, 500);
   }
 }
 
 export function gameOver() {
+  if (!isStudyAllowed()) return;
   if (!gameSessionState.state.over) gameSessionState.state.over = true;
   gameSessionState.state.running = false;
+  saveGameStage();
+  learningStorage.setItem('gopinyin:game:lastResult', JSON.stringify({
+    level: gameSessionState.state.level, score: gameSessionState.state.score,
+    wordsDone: gameSessionState.state.wordsDone, bestCombo: gameSessionState.state.bestCombo,
+    stage: gameSessionState.state.stage, completedAt: Date.now()
+  }));
   showOverlay('💔', 'Hết mạng!', 'Bắn rất tốt! Xem quảng cáo để nhận <b>+3 mạng</b> và tiếp tục chơi ngay, hoặc bắt đầu ván mới.', true, [{
     v: String(gameSessionState.state.score),
     l: 'Điểm'
@@ -124,6 +134,7 @@ export function gameOver() {
 }
 
 export function update(dt) {
+  if (!isStudyAllowed()) return;
   updateShip(dt);
   // ★ Nền theo chủ đề chặng (rain/snow/space/autumn/dusk/sea/sakura/neon)
   for (const p of gameSessionState.state.bg) {

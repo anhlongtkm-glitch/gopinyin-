@@ -1,3 +1,4 @@
+import { isStudyAllowed } from "../auth/service.js";
 // State and behavior owned by features/typing/input. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as dataCatalogState } from "../../data/catalog.js";
@@ -418,6 +419,7 @@ export function hanziAutoPunct() {
 }
 
 export function handleAutoTyping() {
+  if (!isStudyAllowed()) return;
   if (typingSessionState.composing || typingSessionState.index >= typingSessionState.order.length || typingSessionState.awaitingEnter) return;
   const inp = domState.$('pinyinInput');
   /* ★ Gõ sai → KHÔNG cho nhập: chỉ chữ đúng mới xuất hiện trong ô gõ,
@@ -521,6 +523,7 @@ export async function buildWeakDataset() {
              cho đúng (hoặc bấm "Bỏ qua" để xem đáp án rồi đi tiếp).
    ═══════════════════════════════════════════════════════════ */
 export function checkSentence(manual) {
+  if (!isStudyAllowed()) return;
   if (typingSessionState.awaitingEnter) return;
   const inp = domState.$('pinyinInput'),
     q = currentRow();
@@ -631,6 +634,7 @@ export function applyTypedToneMarks(q, g, raw) {
    Space, AI vừa chèn mục mới, màn hình vừa render lại…) — để cú bấm Space
    không bị nuốt mất. */
 export function hanziComplete() {
+  if (!isStudyAllowed()) return;
   const q = currentRow();
   if (!q) return false;
   const inp = domState.$('pinyinInput');
@@ -641,6 +645,7 @@ export function hanziComplete() {
 }
 
 export function goNextAfterCorrect() {
+  if (!isStudyAllowed()) return;
   if (!typingSessionState.awaitingEnter) return;
   typingSessionState.awaitingEnter = false;
   domState.$('pinyinInput').readOnly = false;
@@ -666,6 +671,7 @@ export function goNextAfterCorrect() {
    · Câu trước đã gõ SAI   → đánh dấu curHadError để KHÔNG tính Sai lần nữa.
    ═══════════════════════════════════════════════════════════ */
 export function goPrevSentence() {
+  if (!isStudyAllowed()) return;
   if (typingSessionState.index <= 0) return;
   typingSessionState.index--;
   typingSessionState.awaitingEnter = false;

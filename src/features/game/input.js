@@ -1,3 +1,4 @@
+import { isStudyAllowed } from "../auth/service.js";
 // State and behavior owned by features/game/input. Initialization is orchestrated by app/bootstrap.js.
 
 
@@ -106,6 +107,7 @@ export function backspaceTarget() {
 
 /* ★ Gõ 1 ký tự (dùng chung cho bàn phím thật và bàn phím ảo) */
 export function typeChar(raw) {
+  if (!isStudyAllowed()) return;
   if (!gameSessionState.state.running || gameSessionState.state.paused) return;
   if (!/^[a-zA-Z]$/.test(raw)) return;
   const ch = String(raw).toLowerCase().replace(/v/g, 'u');

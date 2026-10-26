@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/pronunciation/storage. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationRepositoryState } from "./repository.js";
@@ -67,7 +68,7 @@ export function initializePronunciationStorage() {
     },
     reset(key) {
       try {
-        localStorage.removeItem(pronunciationSessionState.STORE_PREFIX + key);
+        learningStorage.removeItem(pronunciationSessionState.STORE_PREFIX + key);
       } catch (e) {}
       pronunciationSessionState.S.progress = {
         v: 1,

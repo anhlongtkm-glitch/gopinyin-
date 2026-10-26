@@ -1,3 +1,4 @@
+import { requireAccount, isStudyAllowed, currentUser } from "../auth/service.js";
 // State and behavior owned by features/pronunciation/microphone. Initialization is orchestrated by app/bootstrap.js.
 
 import { drawMeter } from "./meter.js";
@@ -21,6 +22,7 @@ export function initializePronunciationMicrophone() {
       return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     },
     async acquire() {
+      if (!await requireAccount()) throw new Error('Cần đăng nhập và có mạng để mở micro.');
       /* ★ Dùng lại stream đang mở nếu còn sống.
          Người dùng phàn nàn: "mỗi lần sang một câu lại phải cấp quyền cho
          micro". Nguyên nhân là release() cũ DỪNG hết track sau MỖI lượt nói,
@@ -34,6 +36,7 @@ export function initializePronunciationMicrophone() {
         } catch (e) {}
         pronunciationSessionState.S.stream = null;
       }
+      const uid = currentUser()?.id;
       if (!this.supported()) throw new Error('no-mediadevices');
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -42,6 +45,7 @@ export function initializePronunciationMicrophone() {
           autoGainControl: true
         }
       });
+      if (!isStudyAllowed() || currentUser()?.id !== uid) { stream.getTracks().forEach(t => t.stop()); throw new Error('Phiên luyện đã kết thúc.'); }
       pronunciationSessionState.S.stream = stream;
       /* Thiết bị bị rút / quyền bị thu hồi giữa phiên → lần sau xin lại */
       try {

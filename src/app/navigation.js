@@ -2,7 +2,7 @@
 
 import { publishLegacy, legacy } from "./compatibility.js";
 
-import { currentUser, doGuest } from "../features/auth/service.js";
+import { currentUser, requireAccount } from "../features/auth/service.js";
 
 import { refreshDash } from "../features/dashboard/controller.js";
 
@@ -21,7 +21,6 @@ const appNavigationState = state;
 
 
 export function enterWorkspace() {
-  if (!currentUser()) doGuest();
   renderUserChip();
   accountStorageState.$('workspace').classList.remove('hidden');
   window.scrollTo(0, 0);
@@ -44,16 +43,16 @@ export function renderUserChip() {
   accountStorageState.$('wsUserChip')?.classList.toggle('is-guest', !!u.guest);
   if (login) login.hidden = !u.guest;
   if (logout) logout.hidden = !!u.guest;
-  if (av) av.textContent = (nm[0] || 'K').toUpperCase();
+  if (av) { av.textContent = (nm[0] || 'K').toUpperCase(); av.tabIndex = u.guest ? -1 : 0; av.setAttribute('role', 'button'); av.setAttribute('aria-label', 'Chỉnh sửa tài khoản'); }
   if (dn) dn.textContent = u.guest ? 'bạn' : nm;
 }
 
-export function showView(v) {
+export async function showView(v) {
+  if (['game', 'pronStudy'].includes(v) && !await requireAccount(() => showView(v))) return;
   /* ★ Chốt an toàn: tên view lạ → về Bảng điều khiển. Nếu không, mọi section
      đều bị ẩn và người dùng chỉ thấy một khung trắng. */
   if (!appNavigationState.VIEW_META[v]) v = 'dash';
 
-  if (!currentUser()) doGuest();
   /* rời màn luyện phát âm → TẮT MIC ngay (không ghi âm ngoài ý muốn) */
   if ((appNavigationState.currentView === 'pron' || appNavigationState.currentView === 'pronStudy') && v !== 'pronStudy' && legacy.__pron) {
     try {

@@ -24,9 +24,7 @@ function check(name, ok, detail) {
   await page.goto(URL, { waitUntil: 'networkidle' });
   check('Tải trang không lỗi', errors.length === 0, errors);
 
-  await page.evaluate(() => document.querySelector('#wsLoginBtn')?.click());
-  await page.waitForTimeout(500);
-  await page.evaluate(() => document.querySelector('#authGuestBtn')?.click());
+  await require('./helpers/supabase-fixture.cjs').register(page);
   await page.waitForTimeout(800);
   await page.evaluate(() => {
     const m = document.querySelector('#proModal');

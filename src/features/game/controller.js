@@ -1,3 +1,4 @@
+import { requireAccount, isStudyAllowed } from "../auth/service.js";
 // State and behavior owned by features/game/controller. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -27,14 +28,15 @@ export const state = {};
 const gameControllerState = state;
 
 export function togglePause() {
-  if (!gameSessionState.state.running) return;
+  if (!isStudyAllowed() || !gameSessionState.state.running) return;
   gameSessionState.state.paused = !gameSessionState.state.paused;
   const btn = gameSessionState.$('gaPauseBtn');
   if (btn) btn.textContent = gameSessionState.state.paused ? '▶' : '⏸';
   if (!gameSessionState.state.paused) gameSessionState.state.lastT = 0;
 }
 
-export function startGame() {
+export async function startGame() {
+  if (!await requireAccount(startGame)) return;
   if (!gameSessionState.state.pool.length) {
     toast('Chưa có từ vựng cho cấp này.', 'bad');
     return;
@@ -81,7 +83,8 @@ export function startGame() {
 /* ★ Tiếp tục ván đang dở (sau khi thoát sang mục khác) */
 
 /* ★ Tiếp tục ván đang dở (sau khi thoát sang mục khác) */
-export function resumeGame() {
+export async function resumeGame() {
+  if (!await requireAccount(resumeGame)) return;
   if (!gameSessionState.state.suspended) {
     startGame();
     return;
@@ -168,7 +171,8 @@ export function hideOverlay() {
 
 /* ★ Hết mạng → nhận thêm 3 mạng (đếm ngược 3s) rồi chơi tiếp */
 
-export function watchAd() {
+export async function watchAd() {
+  if (!await requireAccount(watchAd)) return;
   const ov = gameSessionState.$('gaOverlay');
   if (!ov) return;
   if (gameControllerState.adTimer) {
@@ -182,6 +186,7 @@ export function watchAd() {
   gameSessionState.$('gaOverlayMsg').innerHTML = 'Đang nạp thêm <b>+3 mạng</b> — còn <b id="gaAdCount">3</b> giây…';
   let left = 3;
   gameControllerState.adTimer = setInterval(() => {
+    if (!isStudyAllowed()) { clearInterval(gameControllerState.adTimer); gameControllerState.adTimer = null; return; }
     left--;
     const c = gameSessionState.$('gaAdCount');
     if (c) c.textContent = String(Math.max(0, left));
@@ -218,7 +223,7 @@ export function leaveGame(opts) {
   /* ★ Giữ lại ván đang chơi để lần sau vào tiếp tục + lưu tiến độ theo chặng */
   if (gameSessionState.state.running) gameSessionState.state.suspended = true;
   try {
-    saveGameStage();
+    if (!gameSessionState.suppressSave) saveGameStage();
   } catch (e) {}
   if (gameSessionState.state.rafId) {
     cancelAnimationFrame(gameSessionState.state.rafId);

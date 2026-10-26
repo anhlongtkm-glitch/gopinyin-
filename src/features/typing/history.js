@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/typing/history. Initialization is orchestrated by app/bootstrap.js.
 
 import { aiSessionLive, state as aiSessionState } from "../ai/session.js";
@@ -40,7 +41,7 @@ export function todayStr() {
 export function loadHistory() {
   typingHistoryState.typingHistory = [];
   try {
-    const raw = localStorage.getItem(histKey());
+    const raw = learningStorage.getItem(histKey());
     if (raw) typingHistoryState.typingHistory = JSON.parse(raw) || [];
   } catch (e) {
     typingHistoryState.typingHistory = [];
@@ -50,7 +51,7 @@ export function loadHistory() {
 
 export function saveHistory() {
   try {
-    localStorage.setItem(histKey(), JSON.stringify(typingHistoryState.typingHistory));
+    learningStorage.setItem(histKey(), JSON.stringify(typingHistoryState.typingHistory));
   } catch (e) {}
 }
 /* ghi/ghi đè 1 câu vào lịch sử (status: 'ok' | 'wrong') */

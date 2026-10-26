@@ -1,3 +1,6 @@
+import { dataOwner, listRecords, writeRecord, setDatasetLoader } from "./account-data.js";
+import { findVocabSource, fetchVocabItems } from "../../features/library/catalog.js";
+import { fixPinyin } from "../language/pinyin.js";
 // State and behavior owned by shared/storage/lesson-repository. Initialization is orchestrated by app/bootstrap.js.
 
 import { hideStorageWarn } from "../../features/library/catalog.js";
@@ -63,7 +66,7 @@ export function openDB() {
   return initDB();
 }
 
-export async function dbGetAll() {
+export async function legacyDatasets() {
   await initDB();
   if (!storageLessonRepositoryState.db) return [...storageLessonRepositoryState.memDB.values()];
   return new Promise(res => {
@@ -80,39 +83,28 @@ export async function dbGetAll() {
   });
 }
 
-export async function dbPut(v) {
-  await initDB();
-  if (!storageLessonRepositoryState.db) {
-    storageLessonRepositoryState.memDB.set(v.id, v);
-    return v;
-  }
-  return new Promise((res, rej) => {
-    try {
-      const r = storageLessonRepositoryState.db.transaction(storageLessonRepositoryState.STORE, 'readwrite').objectStore(storageLessonRepositoryState.STORE).put(v);
-      r.onsuccess = () => res(v);
-      r.onerror = () => rej(r.error);
-    } catch (e) {
-      rej(e);
+export async function dbGetAll() {
+  if (!dataOwner()) return [];
+  const result = [];
+  for (const ds of listRecords('dataset')) {
+    if (ds.builtin && !ds.rows) {
+      const src = findVocabSource(ds.id.replace(/^vocab:/, ''));
+      if (!src) continue;
+      try { ds.rows = (await fetchVocabItems(src.file)).map((it, i) => ({ id:i, vi:it.m, py:fixPinyin(it.p), zh:it.w, wv:[] })); }
+      catch { continue; }
     }
-  });
-}
-
-export async function dbDelete(id) {
-  await initDB();
-  if (!storageLessonRepositoryState.db) {
-    storageLessonRepositoryState.memDB.delete(id);
-    return;
+    result.push(ds);
   }
-  return new Promise((res, rej) => {
-    try {
-      const r = storageLessonRepositoryState.db.transaction(storageLessonRepositoryState.STORE, 'readwrite').objectStore(storageLessonRepositoryState.STORE).delete(id);
-      r.onsuccess = () => res();
-      r.onerror = () => rej(r.error);
-    } catch (e) {
-      rej(e);
-    }
-  });
+  return result;
 }
+export async function dbPut(value) {
+  if (!dataOwner()) throw new Error('Cần đăng nhập để lưu bộ câu.');
+  const stored = structuredClone(value);
+  if (stored.builtin) delete stored.rows;
+  writeRecord('dataset', value.id, stored);
+  return value;
+}
+export async function dbDelete(id) { writeRecord('dataset', id, null, true); }
 
 export function progressKey(id) {
   return 'cts:progress:' + id;
@@ -161,6 +153,7 @@ export function vcachePut(v) {
    bị đổi thành KHOẢNG TRẮNG → so khớp báo SAI oan (Bug "w lúc đúng lúc sai"). */
 
 export function initializeStorageLessonRepository() {
+  setDatasetLoader(legacyDatasets);
   storageLessonRepositoryState.DB_NAME = 'ChineseTypingStudioDB';
   storageLessonRepositoryState.DB_VERSION = 2;
   storageLessonRepositoryState.STORE = 'datasets';

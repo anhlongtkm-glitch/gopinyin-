@@ -1,3 +1,4 @@
+import { dataOwner } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/ai/providers. Initialization is orchestrated by app/bootstrap.js.
 
 export const state = {};
@@ -21,27 +22,18 @@ export function aiLsSet(k, v) {
     localStorage.setItem(k, v);
   } catch (e) {}
 }
-/* ★ Mỗi nhà cung cấp AI có API key RIÊNG (đổi qua lại không mất key đã dán).
-   Khóa: 'cts:ai:key:<provider>'. Key cũ dùng chung một ô ('cts:ai:key') được
-   tự động chuyển sang cho Gemini để người dùng không phải dán lại. */
-
-/* ★ Mỗi nhà cung cấp AI có API key RIÊNG (đổi qua lại không mất key đã dán).
-   Khóa: 'cts:ai:key:<provider>'. Key cũ dùng chung một ô ('cts:ai:key') được
-   tự động chuyển sang cho Gemini để người dùng không phải dán lại. */
+// Provider keys stay on this device and are isolated by account UUID.
 export function aiKeyStore(prov, v) {
   try {
-    localStorage.setItem('cts:ai:key:' + prov, v || '');
+    if (dataOwner()) localStorage.setItem('gp:device-ai-key:' + dataOwner() + ':' + prov, v || '');
   } catch (e) {}
 }
 
 export function aiKeyLoad(prov) {
   try {
-    const v = localStorage.getItem('cts:ai:key:' + prov);
+    const v = localStorage.getItem('gp:device-ai-key:' + dataOwner() + ':' + prov);
     if (v != null && v !== '') return v;
-    if (prov === 'gemini') {
-      const old = localStorage.getItem(aiProvidersState.AI_KEY_KEY);
-      if (old) return old;
-    }
+
   } catch (e) {}
   return '';
 }

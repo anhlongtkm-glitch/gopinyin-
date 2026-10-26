@@ -1,3 +1,4 @@
+import { learningStorage } from "./storage/account-data.js";
 // State and behavior owned by shared/account-storage. Initialization is orchestrated by app/bootstrap.js.
 
 export const state = {};
@@ -7,8 +8,6 @@ const accountStorageState = state;
 export function initializeAccountStorage() {
   accountStorageState.$ = id => document.getElementById(id);
   accountStorageState.LS = {
-    users: 'gp:users',
-    user: 'gp:user',
     goal: 'gp:dailyGoal',
     daily: 'gp:daily',
     streak: 'gp:streak',
@@ -16,7 +15,7 @@ export function initializeAccountStorage() {
   };
   accountStorageState.lsGet = (k, d) => {
     try {
-      const v = localStorage.getItem(k);
+      const v = learningStorage.getItem(k);
       return v == null ? d : JSON.parse(v);
     } catch (e) {
       return d;
@@ -24,7 +23,7 @@ export function initializeAccountStorage() {
   };
   accountStorageState.lsSet = (k, v) => {
     try {
-      localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+      learningStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
     } catch (e) {}
   };
   accountStorageState.$h = (sel, root) => (root || document).querySelector(sel);

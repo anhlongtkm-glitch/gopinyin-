@@ -1,3 +1,4 @@
+import { requireAccount, currentUser } from "../auth/service.js";
 // State and behavior owned by features/ai/session. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -229,6 +230,8 @@ export async function aiMaybeFill() {
 
 /* ★ Bắt đầu học: viết prompt → AI viết đợt đầu → học ngay */
 export async function aiStartStudy() {
+  if (!await requireAccount(() => aiStartStudy())) return;
+  const accountId = currentUser().id;
   const provider = domState.$('aiProvider').value;
   const key = domState.$('aiKey').value.trim();
   const prompt = domState.$('aiPrompt').value.trim();
@@ -313,6 +316,7 @@ export async function aiStartStudy() {
       }
     }
 
+    if (currentUser()?.id !== accountId) return;
     // → vào học ngay
     typingSessionState.activeDataset = null;
     typingSessionState.rows = [];
@@ -347,6 +351,7 @@ export async function aiStartStudy() {
     if (ds) {
       ds.rows = typingSessionState.rows;
       ds.updatedAt = Date.now();
+      if (currentUser()?.id !== accountId) return;
       await dbPut(ds);
       toast('💾 Đã lưu “' + ds.name + '” (' + typingSessionState.rows.length + ' ' + unit + ') — lần sau vào là học tiếp đúng chỗ đang dở.', 'ok', 5200);
       try {

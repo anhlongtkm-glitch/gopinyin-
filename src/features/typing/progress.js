@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/typing/progress. Initialization is orchestrated by app/bootstrap.js.
 
 import { renderLibrary } from "../library/controller.js";
@@ -11,7 +12,7 @@ import { toast } from "../../shared/toast.js";
 // ★ AI viết thêm câu cho bộ đang học (không giới hạn số lượng)
 export function loadProgress(id) {
   try {
-    return JSON.parse(localStorage.getItem(progressKey(id)) || 'null');
+    return JSON.parse(learningStorage.getItem(progressKey(id)) || 'null');
   } catch {
     return null;
   }
@@ -29,7 +30,7 @@ export function save() {
     typingSessionState.mainOrder = [...typingSessionState.order];
     typingSessionState.mainIndex = typingSessionState.index;
   }
-  localStorage.setItem(progressKey(typingSessionState.activeDataset.id), JSON.stringify({
+  learningStorage.setItem(progressKey(typingSessionState.activeDataset.id), JSON.stringify({
     mainOrder: typingSessionState.mainOrder,
     mainIndex: typingSessionState.mainIndex,
     stats: typingSessionState.stats,
@@ -100,7 +101,7 @@ export async function importProgress(file) {
         skipped++;
         continue;
       }
-      localStorage.setItem(progressKey(ds.id), JSON.stringify(item.progress));
+      learningStorage.setItem(progressKey(ds.id), JSON.stringify(item.progress));
       restored++;
     }
     await renderLibrary();

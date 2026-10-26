@@ -24,7 +24,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { execFile } = require('child_process');
 
-const ROOT = path.resolve(__dirname, '..', 'dist');
+const ROOT = path.resolve(process.env.GP_PUBLIC_ROOT || path.join(__dirname, '..', 'dist'));
 const PORT = Number(process.env.PORT || 8080);
 const HOST = process.env.HOST || '127.0.0.1';
 const NO_OPEN = process.argv.includes('--no-open') || process.env.NO_OPEN === '1';

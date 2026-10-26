@@ -1,0 +1,42 @@
+<div id="profileModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle" hidden>
+  <div class="modalBackdrop" data-close="profileModal"></div>
+  <div class="modalCard authCard">
+    <button class="modalClose" type="button" data-close="profileModal" aria-label="Đóng">✕</button>
+    <h2 id="profileTitle">Tài khoản của tôi</h2>
+    <p class="small" id="profileEmail"></p>
+    <form id="profileForm" class="authForm">
+      <div class="profilePhoto"><img id="profilePreview" alt="Ảnh đại diện xem trước" width="96" height="96" hidden><span id="profileInitial" aria-hidden="true"></span></div>
+      <label class="authField"><span>Ảnh đại diện</span><input id="profileFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+      <p class="small">JPEG, PNG hoặc WebP, tối đa 5 MB. Ảnh được cắt vuông ở giữa. Tên và ảnh hiển thị trên bảng xếp hạng công khai.</p>
+      <button class="btn" id="profileRemovePhoto" type="button">Xóa ảnh</button>
+      <label class="authField"><span>Tên hiển thị</span><input id="profileName" maxlength="50" required autocomplete="nickname"></label>
+      <p id="profileError" class="authError" role="alert" hidden></p>
+      <div class="accountActions"><button class="btn" type="button" data-close="profileModal">Hủy</button><button class="btn primary" id="profileSave" type="submit">Lưu thay đổi</button></div>
+    </form>
+    <details class="passwordDetails"><summary>Đổi mật khẩu</summary>
+      <form id="passwordForm" class="authForm">
+        <label class="authField"><span>Mật khẩu hiện tại</span><input id="currentPassword" type="password" required autocomplete="current-password"></label>
+        <label class="authField"><span>Mật khẩu mới</span><input id="newPassword" type="password" minlength="8" required autocomplete="new-password"></label>
+        <p id="passwordError" class="authError" role="alert" hidden></p>
+        <button class="btn primary" type="submit">Đổi mật khẩu</button>
+      </form>
+    </details>
+  </div>
+</div>
+<div id="syncConflictModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="syncConflictTitle" hidden>
+  <div class="modalBackdrop"></div><div class="modalCard authCard">
+    <h2 id="syncConflictTitle">Có hai bản dữ liệu khác nhau</h2>
+    <p>Bài này đã thay đổi trên thiết bị khác. Chọn bản muốn giữ; bản còn lại sẽ được thay thế.</p>
+    <p class="small" id="syncConflictRecord"></p>
+    <div class="conflictVersions"><pre id="syncLocalPreview"></pre><pre id="syncRemotePreview"></pre></div>
+    <div class="accountActions"><button class="btn" id="syncKeepRemote" type="button">Giữ bản trên máy chủ</button><button class="btn primary" id="syncKeepLocal" type="button">Giữ bản trên máy này</button></div>
+  </div>
+</div>
+<div id="legacyImportModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="legacyImportTitle" hidden>
+  <div class="modalBackdrop"></div><div class="modalCard authCard">
+    <h2 id="legacyImportTitle">Giữ dữ liệu học cũ</h2>
+    <p>Trình duyệt này có dữ liệu từ phiên bản cũ. Bạn muốn sao chép vào tài khoản đang đăng nhập không? Dữ liệu gốc vẫn được giữ lại.</p>
+    <p class="authError" id="legacyImportError" role="alert" hidden></p>
+    <div class="accountActions"><button class="btn" id="legacySkip" type="button">Bỏ qua</button><button class="btn primary" id="legacyImport" type="button">Nhập vào tài khoản này</button></div>
+  </div>
+</div>

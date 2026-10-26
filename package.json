@@ -2,6 +2,7 @@
   "name": "gopinyin",
   "version": "1.0.0",
   "private": true,
+  "engines": { "node": "24.x" },
   "description": "Gopinyin — học gõ Pinyin, nhận mặt chữ Hán & luyện phát âm tiếng Trung",
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -10,11 +11,18 @@
     "test": "node tests/run.cjs",
     "test:parity": "node tests/refactor-parity.cjs",
     "test:build": "node tests/build.cjs",
-    "test:tooling": "node tests/tooling.cjs"
+    "test:tooling": "node tests/tooling.cjs",
+    "test:database": "node tests/database.cjs",
+    "test:sync": "node tests/account-sync.cjs",
+    "test:api": "node tests/account-api.cjs"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11",
     "esbuild": "^0.25.0",
     "playwright-core": "^1.56.0"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0"
+  }
 }

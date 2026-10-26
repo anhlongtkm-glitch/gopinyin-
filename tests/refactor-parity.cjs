@@ -43,12 +43,11 @@ if(!recording&&!fs.existsSync(path.join(root,'.cache/refactor-parity/before/ligh
       };
       await take('dashboard');
       await page.locator('.ws-navItem[data-view="library"]').click();
-      await page.locator('#vocabList [data-vsrc="hsk1"]').click();
-      await take('typing');
+      await take('library');
       await page.locator('.ws-navItem[data-view="pron"]').click();
       await take('pronunciation-picker');
-      await page.locator('#pronLibCard [data-psrc="hsk:hsk1"]').click();
-      await take('pronunciation');
+      await page.locator('.ws-navItem[data-view="games"]').click();
+      await take('games');
       if(errors.length)failures.push({theme,device,errors});
       await context.close();
     }

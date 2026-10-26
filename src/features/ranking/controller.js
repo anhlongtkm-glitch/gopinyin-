@@ -1,3 +1,7 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
+import { getAccountClient } from "../auth/client.js";
+import { avatarUrl } from "../auth/profile.js";
+import { isStudyAllowed } from "../auth/service.js";
 // State and behavior owned by features/ranking/controller. Initialization is orchestrated by app/bootstrap.js.
 
 import { publishLegacy } from "../../app/compatibility.js";
@@ -42,7 +46,7 @@ export function lbUser() {
   };
   const email = String(u.email || '').toLowerCase();
   return {
-    id: email || 'name:' + (u.name || 'hocvien'),
+    id: u.id || email || 'name:' + (u.name || 'hocvien'),
     name: u.name || email.split('@')[0] || 'Học viên'
   };
 }
@@ -66,6 +70,7 @@ export function lbPrune(db) {
 /* Cộng dồn vào cả bảng ngày và bảng tuần của người đang đăng nhập.
    board = 'game' (chỉ game) | 'study' (chỉ luyện gõ) */
 export function lbBump(board, patch) {
+  if (!isStudyAllowed()) return;
   const u = lbUser();
   const db = accountStorageState.lsGet(rankStore(board), null) || {};
   db.day = db.day || {};
@@ -89,23 +94,12 @@ export function lbBump(board, patch) {
 }
 /* ★ expose cho app-core (panel BXH) gọi khi mở / có điểm mới */
 
+let publicEntries = {};
 export function rankEntries(board, scope) {
-  const db = accountStorageState.lsGet(rankStore(board), null) || {};
-  const key = scope === 'week' ? weekStamp() : dayStamp();
-  const bucket = (db[scope] || {})[key] || {};
-  const me = lbUser();
-  return Object.keys(bucket).map(id => {
-    const e = bucket[id] || {};
-    return {
-      id,
-      name: e.name || 'Học viên',
-      correct: e.correct || 0,
-      score: e.score || 0,
-      at: e.at || 0,
-      me: id === me.id
-    };
-  }).filter(e => e.correct > 0 || e.score > 0).sort((a, b) => b.correct - a.correct || b.score - a.score || String(a.name).localeCompare(String(b.name), 'vi'));
+  return (publicEntries[board + ':' + scope] || []).map(e => ({ ...e, me: e.id === currentUser()?.id }));
 }
+
+
 
 export function rankAvatar(name, extra) {
   const ch = (String(name || '?').trim()[0] || '?').toUpperCase();
@@ -114,10 +108,17 @@ export function rankAvatar(name, extra) {
 
 export function rankRowFor(board, e, place, extra) {
   const isStudy = board === 'study';
-  return '<div class="rankRow' + (e.me ? ' isMe' : '') + (extra ? ' ' + extra : '') + '" role="listitem">' + '<span class="rankNo">' + place + '</span>' + '<span class="rankWho">' + rankAvatar(e.name) + '<span class="rankName"><span class="rankNameTxt">' + rankingControllerState.escHtml(e.name) + '</span>' + (e.me ? '<span class="rankYouTag">Bạn</span>' : '') + '</span></span>' + '<span class="rankCorrect"><b>' + e.correct.toLocaleString('vi-VN') + '</b><i>' + (isStudy ? 'câu luyện' : 'câu/từ') + '</i></span>' + (isStudy ? '<span class="rankScore hidden"></span>' : '<span class="rankScore"><b>' + e.score.toLocaleString('vi-VN') + '</b><i>điểm</i></span>') + '</div>';
+  return '<div class="rankRow' + (e.me ? ' isMe' : '') + (extra ? ' ' + extra : '') + '" role="listitem">' + '<span class="rankNo">' + place + '</span>' + '<span class="rankWho">' + rankPhoto(e) + '<span class="rankName"><span class="rankNameTxt">' + rankingControllerState.escHtml(e.name) + '</span>' + (e.me ? '<span class="rankYouTag">Bạn</span>' : '') + '</span></span>' + '<span class="rankCorrect"><b>' + e.correct.toLocaleString('vi-VN') + '</b><i>' + (isStudy ? 'câu luyện' : 'câu/từ') + '</i></span>' + (isStudy ? '<span class="rankScore hidden"></span>' : '<span class="rankScore"><b>' + e.score.toLocaleString('vi-VN') + '</b><i>điểm</i></span>') + '</div>';
 }
 
-export function renderRank(board) {
+export async function renderRank(board) {
+  const connection = getAccountClient();
+  const requestedScope = (board === 'study' ? rankingControllerState.studyRankScope : rankingControllerState.rankScope) || 'day';
+  if (connection && navigator.onLine) {
+    const { data, error } = await connection.rpc('public_rankings', { p_board: board, p_scope: requestedScope, p_period: requestedScope === 'week' ? weekStamp() : dayStamp() });
+    if (!error) publicEntries[board + ':' + requestedScope] = data || [];
+  }
+
   const isStudy = board === 'study';
   const prefix = isStudy ? 'studyRank' : 'rank';
   const podium = accountStorageState.$(prefix + 'Podium'),
@@ -136,7 +137,7 @@ export function renderRank(board) {
   const note = accountStorageState.$(prefix + 'ScopeNote');
   if (note) {
     const scopeLabel = scope === 'week' ? 'Tuần ' + String(weekStamp()).slice(6) + '/' + String(weekStamp()).slice(0, 4) : 'Hôm nay';
-    note.textContent = scopeLabel + ' · ' + (isStudy ? 'xếp hạng luyện gõ trên thiết bị này, mỗi tài khoản một dòng — chỉ tính câu gõ đúng.' : 'xếp hạng lưu trên thiết bị này, mỗi tài khoản một dòng — câu sai không được tính.');
+    note.textContent = scopeLabel + ' · ' + (isStudy ? 'xếp hạng trực tuyến — chỉ tính câu gõ đúng.' : 'xếp hạng trực tuyến — câu sai không được tính.');
   }
   const list = rankEntries(board, scope);
   if (!list.length) {
@@ -159,7 +160,7 @@ export function renderRank(board) {
   if (table) table.classList.remove('hidden');
   podium.innerHTML = order.map(e => {
     const place = list.indexOf(e) + 1;
-    return '<div class="rankPod pod' + place + (e.me ? ' isMe' : '') + '">' + '<div class="rankPodMedal" aria-label="Hạng ' + place + '">' + medals[place - 1] + '</div>' + rankAvatar(e.name, 'avBig') + '<div class="rankPodName">' + rankingControllerState.escHtml(e.name) + (e.me ? '<span class="rankYouTag">Bạn</span>' : '') + '</div>' + '<div class="rankPodStats"><b>' + e.correct.toLocaleString('vi-VN') + '</b> ' + (isStudy ? 'câu luyện' : 'đúng') + (isStudy ? '' : '<span class="rankPodDot">·</span><b>' + e.score.toLocaleString('vi-VN') + '</b> điểm') + '</div>' + '</div>';
+    return '<div class="rankPod pod' + place + (e.me ? ' isMe' : '') + '">' + '<div class="rankPodMedal" aria-label="Hạng ' + place + '">' + medals[place - 1] + '</div>' + rankPhoto(e, 'avBig') + '<div class="rankPodName">' + rankingControllerState.escHtml(e.name) + (e.me ? '<span class="rankYouTag">Bạn</span>' : '') + '</div>' + '<div class="rankPodStats"><b>' + e.correct.toLocaleString('vi-VN') + '</b> ' + (isStudy ? 'câu luyện' : 'đúng') + (isStudy ? '' : '<span class="rankPodDot">·</span><b>' + e.score.toLocaleString('vi-VN') + '</b> điểm') + '</div>' + '</div>';
   }).join('');
   host.innerHTML = rows.map((e, i) => rankRowFor(board, e, i + 4)).join('');
   if (table) table.classList.toggle('hidden', rows.length === 0);
@@ -189,11 +190,11 @@ export function renderRank(board) {
 export function lbHistoryCorrect() {
   let total = 0;
   try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
+    for (let i = 0; i < learningStorage.length; i++) {
+      const k = learningStorage.key(i);
       if (!k || k.indexOf('cts:progress:') !== 0) continue;
       try {
-        const p = JSON.parse(localStorage.getItem(k));
+        const p = JSON.parse(learningStorage.getItem(k));
         total += p && p.stats && p.stats.correct || 0;
       } catch (e) {}
     }
@@ -300,4 +301,9 @@ export function initializeRankingController() {
   } catch (e) {}
 
   /* ═══════════════ LANDING: HIỆU ỨNG & TƯƠNG TÁC ═══════════════ */
+}
+
+function rankPhoto(entry, cls = '') {
+  const url = avatarUrl(entry.avatar_path);
+  return url ? '<span class="rankAv ' + cls + '"><img src="' + rankingControllerState.escHtml(url) + '" alt=""></span>' : rankAvatar(entry.name, cls);
 }

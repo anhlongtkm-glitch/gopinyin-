@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/game/entities. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -155,7 +156,11 @@ export function advanceStage(ns) {
 /* ★ Lưu tiến độ theo chặng (localStorage) */
 export function saveGameStage() {
   try {
-    localStorage.setItem('gopinyin:game:stage', JSON.stringify({
+    learningStorage.setItem('gopinyin:game:stage', JSON.stringify({
+      score: gameSessionState.state.score,
+      bestCombo: gameSessionState.state.bestCombo,
+      lives: gameSessionState.state.lives,
+      wordsDone: gameSessionState.state.wordsDone,
       stage: gameSessionState.state.stage,
       stageWords: gameSessionState.state.stageWords || 0,
       level: gameSessionState.state.level,
@@ -167,7 +172,7 @@ export function saveGameStage() {
 
 export function loadGameStage() {
   try {
-    const s = JSON.parse(localStorage.getItem('gopinyin:game:stage') || 'null');
+    const s = JSON.parse(learningStorage.getItem('gopinyin:game:stage') || 'null');
     return s && s.stage ? s : null;
   } catch (e) {
     return null;

@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/pronunciation/utils. Initialization is orchestrated by app/bootstrap.js.
 
 import { lessonRepository } from "../../shared/lesson-bridge.js";
@@ -56,7 +57,7 @@ export function hanChars(s) {
 
 export function lsGet(k, d) {
   try {
-    const v = localStorage.getItem(k);
+    const v = learningStorage.getItem(k);
     return v == null ? d : v;
   } catch (e) {
     return d;
@@ -65,13 +66,13 @@ export function lsGet(k, d) {
 
 export function lsSet(k, v) {
   try {
-    localStorage.setItem(k, v);
+    learningStorage.setItem(k, v);
   } catch (e) {}
 }
 
 export function lsJson(k, d) {
   try {
-    const v = localStorage.getItem(k);
+    const v = learningStorage.getItem(k);
     return v ? JSON.parse(v) : d;
   } catch (e) {
     return d;

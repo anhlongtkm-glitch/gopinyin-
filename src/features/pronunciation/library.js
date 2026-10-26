@@ -1,3 +1,4 @@
+import { requireAccount } from "../auth/service.js";
 // State and behavior owned by features/pronunciation/library. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -72,6 +73,7 @@ export async function renderLib() {
 }
 
 export async function startSource(srcId) {
+  if (!await requireAccount(() => startSource(srcId))) return;
   if (!srcId) return;
   if (srcId.startsWith('hsk:')) {
     const lvl = Number(srcId.slice(4).replace(/[^0-9]/g, '')) || 0;

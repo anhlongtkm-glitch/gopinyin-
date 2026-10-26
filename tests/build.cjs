@@ -7,8 +7,9 @@ const { chromium } = require('playwright-core');
 const root = path.resolve(__dirname, '..');
 (async () => {
   const { build, renderHtml } = await import('../scripts/build.mjs');
-  await build();
-  const html = fs.readFileSync(path.join(root,'dist/index.html'),'utf8');
+  const built=path.join(root,'.cache/build-test');
+  await build({outputDirectory:built});
+  const html = fs.readFileSync(path.join(built,'index.html'),'utf8');
   assert(!/<!--\s*@(include|inline)\b/.test(html), 'All HTML partials must be composed');
   await assert.rejects(()=>renderHtml('../server/serve.js'),/outside src/);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
@@ -16,26 +17,26 @@ const root = path.resolve(__dirname, '..');
   for(const match of html.matchAll(/\b(?:src|href)="([^"#]+)"/g)) {
     const value=match[1].split(/[?#]/)[0];
     if(!value||/^(https?:|data:|mailto:|tel:)/i.test(value))continue;
-    assert(fs.existsSync(path.join(root,'dist',value)),`Missing public resource: ${value}`);
+    assert(fs.existsSync(path.join(built,value)),`Missing public resource: ${value}`);
   }
   const files=[];
-  function walk(directory){for(const entry of fs.readdirSync(directory,{withFileTypes:true})){const file=path.join(directory,entry.name);if(entry.isDirectory())walk(file);else files.push(path.relative(path.join(root,'dist'),file));}}
-  walk(path.join(root,'dist'));
+  function walk(directory){for(const entry of fs.readdirSync(directory,{withFileTypes:true})){const file=path.join(directory,entry.name);if(entry.isDirectory())walk(file);else files.push(path.relative(built,file));}}
+  walk(built);
   assert(files.every(f=>f==='index.html'||f.startsWith('assets'+path.sep)), 'dist contains non-public directories');
   assert(!files.some(f=>/(^|[\\/])\.|server|pro-paid|pro-content|package|README|tests[\\/]/i.test(f)), 'Private files leaked into dist');
-  const js=fs.readFileSync(path.join(root,'dist/assets/app.js'),'utf8');
+  const js=fs.readFileSync(path.join(built,'assets/app.js'),'utf8');
   assert(!/^\s*(import|export)\s/m.test(js),'Browser entry must be a classic script');
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
   try {
     const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    await page.goto(pathToFileURL(path.join(root,'dist/index.html')).href,{waitUntil:'domcontentloaded'});
+    await page.goto(pathToFileURL(path.join(built,'index.html')).href,{waitUntil:'domcontentloaded'});
     assert.equal(await page.evaluate(()=>typeof window.showView),'function');
     assert.equal(await page.evaluate(()=>!!window.__pron&&!!window.__game&&!!window.VK&&!!window.__gpBridge),true);
     assert(await page.locator('#dashView').isVisible(),'file:// guest dashboard works');
     await page.locator('.ws-navItem[data-view="library"]').click();
     await page.locator('#vocabList [data-vsrc="hsk1"]').click();
-    await page.locator('#appCard').waitFor({state:'visible'});
-    assert(await page.locator('#appCard').isVisible(),'file:// typing works');
+    assert(await page.locator('#authModal').isVisible(),'file:// practice requires configured online authentication');
+    assert.equal(await page.locator('#appCard').isVisible(),false);
     assert.deepEqual(errors,[],'file:// runtime errors');
     await page.close();
   } finally {await browser.close();}
