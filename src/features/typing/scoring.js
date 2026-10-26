@@ -1,3 +1,4 @@
+import { isStudyAllowed } from "../auth/service.js";
 // State and behavior owned by features/typing/scoring. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -20,6 +21,7 @@ import { state as domState } from "../../shared/dom.js";
 
 /* ── Mark Correct / Wrong ── */
 export function markSentenceCorrect() {
+  if (!isStudyAllowed()) return;
   if (typingSessionState.awaitingEnter || typingSessionState.index >= typingSessionState.order.length) return;
   /* ★ Nếu lúc gõ xong đã đọc (chữ cuối + cả câu, hoặc 1 lần cả câu) thì
      KHÔNG đọc lại lần nữa sau 1 giây. */
@@ -67,6 +69,7 @@ export function rememberCurrentWrong() {
 
 /* ★ Mỗi câu chỉ tính 1 lần Sai dù gõ sai nhiều ký tự; sai thì mất combo */
 export function markSentenceWrong() {
+  if (!isStudyAllowed()) return;
   typingSessionState.stats.attempts++;
   if (!typingSessionState.curHadError) {
     typingSessionState.curHadError = true;

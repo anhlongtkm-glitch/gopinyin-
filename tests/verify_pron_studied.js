@@ -39,9 +39,7 @@ const txt = (s) => (s || '').replace(/\s+/g, ' ').trim();
   await page.goto(URL, { waitUntil: 'networkidle' });
 
   /* đăng nhập khách */
-  await page.evaluate(() => document.querySelector('#wsLoginBtn')?.click());
-  await page.waitForTimeout(400);
-  await page.evaluate(() => document.querySelector('#authGuestBtn')?.click());
+  await require('./helpers/supabase-fixture.cjs').register(page);
   await page.waitForTimeout(900);
   await page.evaluate(() => {
     const m = document.querySelector('#proModal');

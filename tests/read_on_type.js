@@ -22,9 +22,7 @@ function check(name, ok, detail) {
   page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 
   await page.goto(URL, { waitUntil: 'networkidle' });
-  await page.evaluate(() => document.querySelector('#wsLoginBtn')?.click());
-  await page.waitForTimeout(400);
-  await page.evaluate(() => document.querySelector('#authGuestBtn')?.click());
+  await require('./helpers/supabase-fixture.cjs').register(page);
   await page.waitForTimeout(700);
   await page.evaluate(() => {
     const m = document.querySelector('#proModal');
@@ -54,6 +52,16 @@ function check(name, ok, detail) {
   });
   console.log('  Bộ dữ liệu:', JSON.stringify(opened));
   await page.waitForTimeout(1800);
+
+  // Use a sentence longer than the three-character burst, so that this case
+  // measures incremental speech rather than the separate completion utterance.
+  await page.evaluate(() => {
+    const target = window.rows.findIndex(r => [...r.zh].filter(c => /[\u3400-\u9fff]/.test(c)).length >= 5);
+    if (target < 0) throw new Error('Missing long sentence fixture');
+    window.order = [target, ...window.order.filter(i => i !== target)];
+    window.mainOrder = window.order.slice(); window.index = 0; window.mainIndex = 0;
+    window.render();
+  });
 
   // Lấy đáp án câu hiện tại
   const zh = await page.evaluate(() => {

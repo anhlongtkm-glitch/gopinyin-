@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/ai/saved-sets. Initialization is orchestrated by app/bootstrap.js.
 
 import { publishLegacy } from "../../app/compatibility.js";
@@ -84,7 +85,7 @@ export function aiSetsWire() {
       if (!ok) return;
       await dbDelete(id);
       try {
-        localStorage.removeItem(progressKey(id));
+        learningStorage.removeItem(progressKey(id));
       } catch (e) {}
       toast('Đã xóa bộ câu.', 'ok');
       renderAiSets();

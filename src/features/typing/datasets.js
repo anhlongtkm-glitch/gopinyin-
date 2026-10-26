@@ -1,3 +1,4 @@
+import { requireAccount, currentUser } from "../auth/service.js";
 // State and behavior owned by features/typing/datasets. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as dataCatalogState } from "../../data/catalog.js";
@@ -24,7 +25,10 @@ import { shuffle, escapeHtml } from "../../shared/utils.js";
 
 /* ── Dataset Management ── */
 export async function openDataset(id) {
+  if (!await requireAccount(() => openDataset(id))) return;
+  const accountId = currentUser().id;
   const sets = await dbGetAll();
+  if (currentUser()?.id !== accountId) return;
   const ds = sets.find(x => x.id === id);
   if (!ds) return;
   /* Ghi nhớ đang mở từ màn nào để nút "← ..." quay lại đúng chỗ */

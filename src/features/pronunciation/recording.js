@@ -1,3 +1,4 @@
+import { requireAccount, isStudyAllowed, currentUser } from "../auth/service.js";
 // State and behavior owned by features/pronunciation/recording. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationAssessmentState } from "./assessment.js";
@@ -51,6 +52,7 @@ export function fmtSec(ms) {
 }
 
 export async function beginRecording() {
+  if (!await requireAccount(() => beginRecording())) return;
   if (pronunciationSessionState.S.busy) return;
   if (pronunciationSessionState.S.phase === 'recording') {
     stopRecording('manual');
@@ -158,11 +160,13 @@ export async function stopRecording(reason) {
 }
 
 export async function finishAssessment(transcript, conf) {
+  if (!isStudyAllowed()) return;
   const item = currentItem();
   if (!item) {
     setPhase('idle');
     return;
   }
+  const uid = currentUser()?.id;
   pronunciationSessionState.S.busy = true;
 
   /* 1) Thử dịch vụ chấm phát âm thật (nếu có cấu hình) */
@@ -176,6 +180,7 @@ export async function finishAssessment(transcript, conf) {
     result = null;
   }
 
+  if (!isStudyAllowed() || currentUser()?.id !== uid) { pronunciationSessionState.S.busy = false; return; }
   /* 2) Không có → đánh giá sơ bộ độ khớp nội dung từ văn bản nhận dạng */
   if (!result) result = pronunciationAssessmentState.PronAssess.local(item, transcript, conf);
   pronunciationSessionState.S.result = result;

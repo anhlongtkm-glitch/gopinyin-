@@ -263,9 +263,10 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
 
   /* Tiến độ được lưu thật vào localStorage */
   const persisted = await page.evaluate(() => {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('gp:pron:v1:'));
-    if (!keys.length) return null;
-    return { key: keys[0], hasRec: Object.keys(JSON.parse(localStorage.getItem(keys[0])).byId).length };
+    const cacheKey = Object.keys(localStorage).find(k => k.startsWith('gp:account-cache:'));
+    const records = Object.values(JSON.parse(localStorage.getItem(cacheKey) || '{}'));
+    const rec = records.find(r => r.kind === 'kv' && r.record_id.startsWith('gp:pron:v1:') && !r.deleted);
+    return rec ? { key: rec.record_id, hasRec: Object.keys(JSON.parse(rec.payload).byId).length } : null;
   });
   check('Tiến độ lưu vào localStorage', !!persisted && persisted.hasRec > 0, persisted);
 

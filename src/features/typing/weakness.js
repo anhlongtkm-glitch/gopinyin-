@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/typing/weakness. Initialization is orchestrated by app/bootstrap.js.
 
 export const state = {};
@@ -6,12 +7,12 @@ const typingWeaknessState = state;
 
 export function loadWeakSpeed() {
   try {
-    typingWeaknessState.weakStats = JSON.parse(localStorage.getItem(typingWeaknessState.WEAK_KEY) || '{}') || {};
+    typingWeaknessState.weakStats = JSON.parse(learningStorage.getItem(typingWeaknessState.WEAK_KEY) || '{}') || {};
   } catch (e) {
     typingWeaknessState.weakStats = {};
   }
   try {
-    const s = JSON.parse(localStorage.getItem(typingWeaknessState.SPEED_KEY) || '{}');
+    const s = JSON.parse(learningStorage.getItem(typingWeaknessState.SPEED_KEY) || '{}');
     typingWeaknessState.speedStats = {
       chars: Number(s.chars) || 0,
       ms: Number(s.ms) || 0
@@ -21,13 +22,13 @@ export function loadWeakSpeed() {
 
 export function saveWeak() {
   try {
-    localStorage.setItem(typingWeaknessState.WEAK_KEY, JSON.stringify(typingWeaknessState.weakStats));
+    learningStorage.setItem(typingWeaknessState.WEAK_KEY, JSON.stringify(typingWeaknessState.weakStats));
   } catch (e) {}
 }
 
 export function saveSpeed() {
   try {
-    localStorage.setItem(typingWeaknessState.SPEED_KEY, JSON.stringify(typingWeaknessState.speedStats));
+    learningStorage.setItem(typingWeaknessState.SPEED_KEY, JSON.stringify(typingWeaknessState.speedStats));
   } catch (e) {}
 }
 /* +1 đúng/sai cho 1 âm tiết (chấu theo pinyin, không phụ thuộc kiểu gõ) */

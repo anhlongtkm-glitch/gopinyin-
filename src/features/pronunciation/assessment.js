@@ -1,3 +1,4 @@
+import { accessToken } from "../auth/service.js";
 // State and behavior owned by features/pronunciation/assessment. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationRepositoryState } from "./repository.js";
@@ -236,7 +237,8 @@ export function initializePronunciationAssessment() {
         const res = await fetch(url, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + await accessToken()
           },
           body: JSON.stringify({
             audio: pronunciationWavState.PronWav.toBase64(wav),

@@ -2,21 +2,14 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "name": "gopinyin",
-  "alias": [
-    "gopinyin.app",
-    "www.gopinyin.app"
-  ],
+  "framework": null,
+  "installCommand": "npm ci",
   "cleanUrls": true,
   "trailingSlash": false,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/"
     }
   ],
   "headers": [

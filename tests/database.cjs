@@ -1,0 +1,52 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const { PGlite } = require('@electric-sql/pglite');
+(async()=>{
+  const db = new PGlite();
+  try {
+    await db.exec(`
+      create role anon; create role authenticated;
+      create schema auth; create schema storage;
+      create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}',email_confirmed_at timestamptz);
+      create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
+      create function auth.uid() returns uuid language sql stable as $$select (auth.jwt()->>'sub')::uuid$$;
+      create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+      create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text);
+      alter table storage.objects enable row level security;
+      create function storage.foldername(name text) returns text[] language sql immutable as $$select (string_to_array(name,'/'))[1:array_length(string_to_array(name,'/'),1)-1]$$;
+      grant usage on schema auth,storage,public to anon,authenticated;
+      grant select,insert,update,delete on storage.objects to authenticated;
+    `);
+    await db.exec(fs.readFileSync('supabase/migrations/001_accounts.sql','utf8'));
+    const one='11111111-1111-4111-8111-111111111111',two='22222222-2222-4222-8222-222222222222';
+    await db.query(`insert into auth.users(id,raw_user_meta_data,email_confirmed_at) values($1,'{"display_name":"First"}',now()),($2,'{"display_name":"Second"}',now())`,[one,two]);
+    const asUser=async id=>{await db.exec('reset role');await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({sub:id,role:'authenticated',is_anonymous:false})]);await db.exec('set role authenticated');};
+    await asUser(one);
+    assert.equal((await db.query('select * from public.profiles')).rows.length,1);
+    let result=(await db.query(`select public.put_learning_record('kv','gp:dailyGoal','"20"',0,false) as result`)).rows[0].result;
+    assert.equal(result.record.version,1);
+    result=(await db.query(`select public.put_learning_record('kv','gp:dailyGoal','"21"',0,false) as result`)).rows[0].result;
+    assert.equal(result.conflict,true);
+    await assert.rejects(()=>db.exec(`insert into public.learning_records(user_id,kind,record_id,payload) values('${one}','kv','gp:dailyGoal','"99"')`),/permission denied/);
+    await db.exec(`insert into storage.objects(bucket_id,name) values('avatars','${one}/photo.webp')`);
+    await assert.rejects(()=>db.exec(`insert into storage.objects(bucket_id,name) values('avatars','${two}/photo.webp')`),/row-level security/);
+    await asUser(two);
+    assert.equal((await db.query('select * from public.learning_records')).rows.length,0);
+    assert.equal((await db.query('select * from storage.objects')).rows.length,0);
+    assert.equal((await db.query('update public.profiles set display_name=$1 where id=$2 returning id',['Intruder',one])).rows.length,0);
+    await db.exec(`select public.put_learning_record('kv','gp:dailyGoal','"30"',0,false)`);
+    await asUser(one);
+    result=(await db.query(`select public.put_learning_record('kv','gp:dailyGoal',null,1,true) as result`)).rows[0].result;
+    assert.equal(result.record.deleted,true);assert.equal(result.record.version,2);
+    await assert.rejects(()=>db.exec(`select public.put_learning_record('kv','cts:ai:key:gemini','"secret"',0,false)`),/Invalid learning key/);
+    const leaderboard=JSON.stringify(JSON.stringify({day:{'2026-10-25':{[one]:{name:'Private old email',correct:3,score:0}}},week:{}}));
+    await db.query(`select public.put_learning_record('kv','gp:lbStudy',$1::jsonb,0,false)`,[leaderboard]);
+    await db.exec('reset role; set role anon;');
+    await assert.rejects(()=>db.exec('select * from public.learning_records'),/permission denied/);
+    const ranks=(await db.query(`select * from public.public_rankings('study','day','2026-10-25')`)).rows;
+    assert.equal(ranks[0].name,'First');assert.equal(ranks[0].correct,3);assert.equal('email' in ranks[0],false);
+    await assert.rejects(()=>db.exec(`select public.put_learning_record('kv','gp:dailyGoal','"9"',0,false)`),/permission denied/);
+    console.log('PASS database: actual SQL migration, profile trigger, RLS isolation, avatar ownership, CAS, tombstones, key allowlist, public leaderboard');
+  } finally {await db.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

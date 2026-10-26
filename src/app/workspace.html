@@ -20,7 +20,7 @@
 
       <div class="ws-userChip" id="wsUserChip">
         <span class="ws-avatar" id="wsAvatar">K</span>
-        <span class="ws-userInfo"><b id="wsUserName">Khách</b><small id="wsUserPlan">Học miễn phí</small></span>
+        <button class="ws-userInfo accountLink" id="wsProfileBtn" type="button" aria-label="Chỉnh sửa tài khoản"><b id="wsUserName">Khách</b><small id="wsUserPlan">Đăng nhập để học</small></button>
         <button class="btn" id="wsLoginBtn" type="button" data-open="auth">Đăng nhập</button>
         <button class="ws-logoutBtn" id="wsLogoutBtn" type="button" title="Đăng xuất">⏻</button>
       </div>
@@ -161,12 +161,14 @@
         </div>
       </div>
       <div class="topActions">
+        <span id="accountSyncStatus" class="syncStatus" role="status" aria-live="polite"></span>
         <span class="ws-streakChip hidden" id="wsStreakChip">🔥 <b id="wsStreakNum">0</b> ngày</span>
         <button id="themeToggle" class="btn secondary iconBtn" type="button" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng tối" aria-pressed="false">🌙</button>
         <button type="button" id="backLibrary" class="btn secondary backBtn hidden">← Game từ vựng</button>
       </div>
     </div>
 
+    <div id="accountAccessNotice" class="accessNotice" role="status" hidden><span id="accountAccessText"></span><button class="btn" type="button" id="accountRetry">Kết nối lại</button></div>
     <!-- ═══ Bảng điều khiển (mới) ═══ -->
     <!-- @include features/dashboard/view.html -->
 

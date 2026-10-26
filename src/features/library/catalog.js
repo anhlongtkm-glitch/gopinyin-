@@ -1,3 +1,4 @@
+import { requireAccount, currentUser } from "../auth/service.js";
 // State and behavior owned by features/library/catalog. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -133,6 +134,8 @@ export async function fetchVocabItems(file) {
 
 // ★ Bấm 1 mục trong kho → tạo bộ luyện (lưu vào thư viện) rồi mở luôn
 export async function openVocabSource(srcId) {
+  if (!await requireAccount(() => openVocabSource(srcId))) return;
+  const accountId = currentUser().id;
   const src = findVocabSource(srcId);
   if (!src) return;
   const id = 'vocab:' + srcId;
@@ -163,6 +166,7 @@ export async function openVocabSource(srcId) {
       updatedAt: Date.now(),
       builtin: true
     };
+    if (currentUser()?.id !== accountId) return;
     await dbPut(ds);
     toast('Đã tạo bộ "' + src.label + '" (' + rows.length + ' mục).', 'ok');
     await openDataset(id);

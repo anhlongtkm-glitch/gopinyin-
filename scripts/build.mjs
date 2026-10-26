@@ -28,14 +28,15 @@ export async function renderHtml(file = 'index.html', ancestors = []) {
   return text;
 }
 
-export async function build({ development = false } = {}) {
-  await mkdir(path.join(outputRoot, 'assets'), { recursive: true });
-  await rm(path.join(outputRoot, 'assets/qr-vietcombank.png'), { force: true });
-  if (!development) for (const name of ['app.js.map','app.css.map']) await rm(path.join(outputRoot,'assets',name),{force:true});
+export async function build({ development = false, outputDirectory = outputRoot } = {}) {
+  const buildRoot = path.resolve(outputDirectory);
+  await mkdir(path.join(buildRoot, 'assets'), { recursive: true });
+  await rm(path.join(buildRoot, 'assets/qr-vietcombank.png'), { force: true });
+  if (!development) for (const name of ['app.js.map','app.css.map']) await rm(path.join(buildRoot,'assets',name),{force:true});
   await esbuild.build({
     absWorkingDir: projectRoot,
     entryPoints: ['src/app/main.js'],
-    outfile: 'dist/assets/app.js',
+    outfile: path.join(buildRoot, 'assets/app.js'),
     bundle: true,
     format: 'iife',
     platform: 'browser',
@@ -46,12 +47,25 @@ export async function build({ development = false } = {}) {
     legalComments: 'none',
     logLevel: 'warning'
   });
-  for (const file of publicAssets) await copyFile(path.join(projectRoot, 'assets', file), path.join(outputRoot, 'assets', file));
-  await copyFile(path.join(sourceRoot, 'app/public-config.js'), path.join(outputRoot, 'assets/config.js'));
+  for (const file of publicAssets) await copyFile(path.join(projectRoot, 'assets', file), path.join(buildRoot, 'assets', file));
+  for (const file of ['.env.local', '.env']) {
+    try { process.loadEnvFile(path.join(projectRoot, file)); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
+  const publicConfig = {
+    SUPABASE_URL: process.env.GOPINYIN_SUPABASE_URL || '',
+    SUPABASE_PUBLISHABLE_KEY: process.env.GOPINYIN_SUPABASE_PUBLISHABLE_KEY || '',
+    AI_PROXY_URL: process.env.GOPINYIN_AI_PROXY_URL || ''
+  };
+  const key = publicConfig.SUPABASE_PUBLISHABLE_KEY;
+  let role;
+  try { role = JSON.parse(Buffer.from(key.split('.')[1] || '', 'base64url').toString()).role; } catch {}
+  if (key.startsWith('sb_secret_') || role === 'service_role') throw new Error('SUPABASE_PUBLISHABLE_KEY must be public; secret/service_role keys cannot enter a browser build.');
+  const configSource = await readFile(path.join(sourceRoot, 'app/public-config.js'), 'utf8');
+  await writeFile(path.join(buildRoot, 'assets/config.js'), 'window.__ENV__ = Object.assign({}, ' + JSON.stringify(publicConfig) + ', window.__ENV__ || {});\n' + configSource);
   const html = await renderHtml();
   if (/<!--\s*@(include|inline)\b/.test(html)) throw new Error('Unresolved HTML marker in build output');
   // Publish HTML last: a failed build never serves a half-composed document.
-  await writeFile(path.join(outputRoot, 'index.html'), html);
+  await writeFile(path.join(buildRoot, 'index.html'), html);
   console.log(`[build] dist/index.html, assets/app.js, assets/app.css${development ? ' + source maps' : ''}`);
 }
 

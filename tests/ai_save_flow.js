@@ -242,30 +242,14 @@ const FAKE = [
   check('Lấy được id bộ câu', !!dsId, dsId);
 
   // Giả lập "AI viết thêm 5 câu nữa" bằng cách ghi thẳng vào IndexedDB
-  const newLen = await page.evaluate(async (id) => {
-    return await new Promise((resolve, reject) => {
-      const req = indexedDB.open('ChineseTypingStudioDB', 2);
-      req.onsuccess = () => {
-        const db = req.result;
-        const tx = db.transaction('datasets', 'readwrite');
-        const st = tx.objectStore('datasets');
-        const g = st.get(id);
-        g.onsuccess = () => {
-          const ds = g.result;
-          if (!ds) return reject(new Error('không thấy dataset'));
-          const start = ds.rows.length;
-          for (let i = 0; i < 5; i++) {
-            ds.rows.push({ id: 'ai-' + (start + i), zh: '测试句子。', py: 'cè shì jù zi.', vi: 'Câu test ' + (start + i + 1), wv: [] });
-          }
-          ds.updatedAt = Date.now();
-          st.put(ds);
-          tx.oncomplete = () => { db.close(); resolve(ds.rows.length); };
-        };
-        g.onerror = () => reject(g.error);
-      };
-      req.onerror = () => reject(req.error);
-    });
+  const newLen = await page.evaluate(async id => {
+    const ds = (await window.dbGetAll()).find(ds=>ds.id===id);
+    if (!ds) throw new Error('Không tìm thấy bộ câu của tài khoản');
+    const start = ds.rows.length;
+    for (let i=0;i<5;i++) ds.rows.push({id:'ai-'+(start+i),zh:'测试句子。',py:'cè shì jù zi.',vi:'Câu test '+(start+i+1),wv:[]});
+    ds.updatedAt=Date.now(); await window.dbPut(ds); return ds.rows.length;
   }, dsId);
+  await page.waitForFunction(()=>document.getElementById('accountSyncStatus').textContent === 'Đã đồng bộ');
   check('Bộ câu đã lớn lên 10 câu', newLen === 10, newLen);
 
   await page.reload({ waitUntil: 'networkidle' });

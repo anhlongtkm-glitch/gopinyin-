@@ -1,3 +1,4 @@
+import { requireAccount, accessToken, currentUser, isStudyAllowed } from "../auth/service.js";
 // State and behavior owned by features/ai/client. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as aiProvidersState, geminiUrl } from "./providers.js";
@@ -41,6 +42,14 @@ export function buildAiPrompt(userText, count, level, avoid, kind) {
    opt.temperature: sinh câu dùng 0.9 (cần đa dạng), DỊCH dùng thấp (0.2-0.3) để bám sát nghĩa.
    opt.image = {mime, data} (base64 thuần) → gửi kèm ảnh cho model đọc ảnh (dịch ảnh). */
 export async function callAi(provider, key, prompt, opt) {
+  if (!await requireAccount()) throw new Error('Cần đăng nhập để tạo câu AI.');
+  const uid = currentUser().id;
+  const result = await callAiUnchecked(provider, key, prompt, opt);
+  if (currentUser()?.id !== uid || !isStudyAllowed()) throw new Error('Phiên học đã thay đổi hoặc mất kết nối.');
+  return result;
+}
+async function callAiUnchecked(provider, key, prompt, opt) {
+  if (!await requireAccount()) throw new Error('Cần đăng nhập để tạo câu AI.');
   /* ★ Nếu app cấu hình proxy AI (window.__gpAiProxy), chuyển cuộc gọi sang server —
      key AI nằm ở server (AI_KEY_* env), client KHÔNG lưu key plaintext.
      Không đặt proxy → giữ nguyên gọi thẳng provider (tương thích cũ). */
@@ -98,11 +107,13 @@ export async function callAi(provider, key, prompt, opt) {
 /* ★ Gọi AI qua server proxy (window.__gpAiProxy): key nằm ở server, client chỉ gửi prompt.
    Dùng khi đã cấu hình proxy để không lưu API key plaintext trên máy khách. */
 export async function callAiProxy(provider, prompt, opt) {
+  if (!await requireAccount()) throw new Error('Cần đăng nhập.');
   const img = opt && opt.image && opt.image.data ? opt.image : null;
   const resp = await fetch(window.__gpAiProxy, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + await accessToken()
     },
     body: JSON.stringify({
       provider,
@@ -128,6 +139,7 @@ export async function callAiProxy(provider, prompt, opt) {
    chết/hết hạn mức thì nhảy sang model kế tiếp. Dùng khi Gemini hết hạn mức. */
 
 export async function callOpenRouter(key, prompt, temp, img) {
+  if (!await requireAccount()) throw new Error('Cần đăng nhập.');
   let lastErr = '';
   /* có ảnh → dùng content dạng mảng (text + image_url base64) */
   const content = img && img.data ? [{

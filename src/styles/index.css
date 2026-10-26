@@ -31,3 +31,5 @@
 @import "../features/pronunciation/file-warning.css";
 @import "../shared/styles/polish.css";
 @import "../features/dashboard/polish.css";
+
+@import "../features/auth/styles.css";

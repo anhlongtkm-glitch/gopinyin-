@@ -1,3 +1,4 @@
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/pronunciation/file-transfer. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationUtilsState, toast } from "./utils.js";
@@ -75,9 +76,9 @@ export async function migrateAndGo(url) {
   let token = '';
   try {
     const dump = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k != null) dump[k] = localStorage.getItem(k);
+    for (let i = 0; i < learningStorage.length; i++) {
+      const k = learningStorage.key(i);
+      if (k != null) dump[k] = learningStorage.getItem(k);
     }
     const r = await fetch(base + '/__import', {
       method: 'POST',

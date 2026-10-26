@@ -1,3 +1,4 @@
+import { requireAccount } from "../auth/service.js";
 // State and behavior owned by features/pronunciation/controller. Initialization is orchestrated by app/bootstrap.js.
 
 import { publishLegacy } from "../../app/compatibility.js";
@@ -44,10 +45,13 @@ export function initializePronunciationController() {
       document.body.classList.remove('studyFit');
       pronunciationMicrophoneState.PronMic.hardRelease();
       syncFileWarn();
+      loadSettings();
       await renderLib();
     },
     /* Màn LUYỆN (view "pronStudy") */
     async open() {
+      if (!await requireAccount(() => pronunciationControllerState.Pron.open())) return;
+      loadSettings();
       if (!pronunciationSessionState.S.ready) {
         pronunciationSessionState.S.ready = true;
         loadSettings();

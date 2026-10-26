@@ -46,34 +46,20 @@ const SEED = {
   await page.goto(URL, { waitUntil: 'load' });
   await page.waitForFunction(() => !!window.__gpBridge && !!window.__pron, null, { timeout: 15000 });
 
+  await require('./helpers/supabase-fixture.cjs').register(page);
+
   /* ── Seed: ghi 1 bộ AI + 1 bộ thường vào IndexedDB, và tiến độ phát âm
         cho bộ thường (để nó xuất hiện trong "Các câu đã làm"). ── */
-  await page.evaluate((seed) => new Promise((resolve) => {
-    const open = indexedDB.open('ChineseTypingStudioDB', 2);
-    open.onupgradeneeded = () => {
-      const d = open.result;
-      if (!d.objectStoreNames.contains('datasets')) d.createObjectStore('datasets', { keyPath: 'id' });
-    };
-    open.onsuccess = () => {
-      const db = open.result;
-      const tx = db.transaction('datasets', 'readwrite');
-      tx.objectStore('datasets').put(seed.aiSet);
-      tx.objectStore('datasets').put(seed.savedSet);
-      tx.oncomplete = () => {
-        /* tiến độ phát âm cho bộ thường: key = gp:pron:v1:ds:saved:verifyD3 */
-        localStorage.setItem('gp:pron:v1:ds:saved:verifyD3',
-          JSON.stringify({ v: 1, byId: { 'd0:c0': { n: 1, best: 0, last: 0, good: false, at: Date.now() } },
-                          index: 0, recent: [] }));
-        resolve(true);
-      };
-    };
-    open.onerror = () => resolve(false);
-  }), SEED);
+  await page.evaluate(async seed => {
+    await window.dbPut(seed.aiSet); await window.dbPut(seed.savedSet);
+  }, SEED);
+  await page.waitForFunction(()=>document.getElementById('accountSyncStatus').textContent === 'Đã đồng bộ');
 
   /* Tải lại để app đọc lại DB + localStorage */
   await page.reload({ waitUntil: 'load' });
   await page.waitForFunction(() => !!window.__gpBridge && !!window.__pron, null, { timeout: 15000 });
 
+  await page.waitForFunction(()=>document.getElementById('wsUserName').textContent !== 'Khách');
   section('D.3 — Cấu trúc picker Luyện phát âm');
   /* Vào màn picker phát âm — gọi trực tiếp openLib() và đợi xong để bắt lỗi */
   const libErr = await page.evaluate(async () => {

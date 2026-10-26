@@ -1,3 +1,5 @@
+import { isStudyAllowed } from "../auth/service.js";
+import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/typing/controls. Initialization is orchestrated by app/bootstrap.js.
 
 import { publishLegacy } from "../../app/compatibility.js";
@@ -29,6 +31,7 @@ import { gtReset } from "../../shared/translation.js";
 import { shuffle } from "../../shared/utils.js";
 
 export function hint() {
+  if (!isStudyAllowed()) return;
   if (typingSessionState.index >= typingSessionState.order.length) return;
   typingSessionState.pinyinHint = !typingSessionState.pinyinHint; // giữ trạng thái qua các câu trong phiên — mặc định ẩn khi mới vào
   domState.$('chinese').classList.toggle('show-pinyin', typingSessionState.pinyinHint);
@@ -37,6 +40,7 @@ export function hint() {
 }
 
 export function skip() {
+  if (!isStudyAllowed()) return;
   const q = currentRow();
   if (!q) return;
   const inp = domState.$('pinyinInput');
@@ -54,6 +58,7 @@ export function skip() {
 
 // ★ Làm lại câu hiện tại — xóa nội dung đã gõ, giữ nguyên câu
 export function retrySentence() {
+  if (!isStudyAllowed()) return;
   const q = currentRow();
   if (!q) return;
   typingSessionState.awaitingEnter = false;
@@ -72,13 +77,14 @@ export function retrySentence() {
 }
 
 export async function resetProgress() {
+  if (!isStudyAllowed()) return;
   if (!typingSessionState.activeDataset) return; // phiên AI không lưu tiến độ → không có gì để xoá
   if (!(await appConfirm('Xóa tiến độ và danh sách câu sai của riêng bộ này?', {
     title: 'Xóa tiến độ',
     okText: 'Xóa',
     danger: true
   }))) return;
-  localStorage.removeItem(progressKey(typingSessionState.activeDataset.id));
+  learningStorage.removeItem(progressKey(typingSessionState.activeDataset.id));
   typingSessionState.mainOrder = shuffle(typingSessionState.rows.map((_, i) => i));
   typingSessionState.mainIndex = 0;
   typingSessionState.mode = 'all';

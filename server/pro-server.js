@@ -2,12 +2,12 @@
 'use strict';
 const http = require('http');
 const crypto = require('crypto');
+const { verifyAccount } = require('./account-auth');
 
 const PORT = Number(process.env.PORT || 8787);
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';    // Browser origin
 const AI_KEY_GEMINI = process.env.AI_KEY_GEMINI || '';        // key AI giữ ở server (dùng cho proxy)
 const AI_KEY_OPENROUTER = process.env.AI_KEY_OPENROUTER || '';
-const AI_PROXY_TOKEN = process.env.AI_PROXY_TOKEN || '';      // nếu đặt, /api/ai yêu cầu Bearer token
 const MAX_BODY = 256 * 1024;                                 // 256 KB AI request body
 /* ★ Chấm phát âm: key Azure giữ ở server. Không đặt → /api/pron trả 501
    và app dùng đánh giá sơ bộ (không giả điểm). */
@@ -125,12 +125,14 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'OPTIONS') { cors(res); res.writeHead(204); return res.end(); }
 
+  if (req.method === 'POST' && ['/api/ai', '/api/pron'].includes(url.pathname)) {
+    const account = await verifyAccount(req);
+    if (!account.user) return json(res, account.status, { ok: false, error: account.error }, true);
+    if (rateLimited(ip)) return json(res, 429, { ok: false, error: 'too many requests' }, true);
+  }
+
   /* ── 2b. AI PROXY: app gửi prompt, server giữ key (AI_KEY_*) → không lưu plaintext client ── */
   if (url.pathname === '/api/ai' && req.method === 'POST') {
-    if (AI_PROXY_TOKEN) {
-      const auth = (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
-      if (!safeEqual(auth, AI_PROXY_TOKEN)) return json(res, 401, { ok: false, error: 'unauthorized' }, true);
-    }
     const parsed = await readBody(req);
     if (parsed === null) return json(res, 413, { ok: false, error: 'body too large' }, true);
     const { provider, prompt, image } = parsed.data || {};
