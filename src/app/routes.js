@@ -1,7 +1,7 @@
 // Own only #/ routes; leave Auth recovery and legacy import fragments untouched.
 let navigationEpoch = 0;
 export function navigationVersion() { return navigationEpoch; }
-export function markNavigation() { navigationEpoch++; }
+export function markNavigation() { return ++navigationEpoch; }
 export function readRoute() {
   if (!location.hash.startsWith('#/')) return null;
   const [view, query = ''] = location.hash.slice(2).split('?');

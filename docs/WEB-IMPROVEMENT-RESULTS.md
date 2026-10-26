@@ -8,6 +8,8 @@ Ngày: 26/10/2026. Triển khai trong workspace; chưa phát hành production ho
 
 Đã tiếp tục sửa các lỗi hoàn thành câu, tải lại trước Space, lượt ôn và nút làm lại: xem [chi tiết sửa luồng học](LEARNING-FLOW-FIXES.md), với 19 suite và 325 checks đạt.
 
+Đợt tiếp theo bổ sung chống phản hồi cũ ghi đè thao tác mới trong điều hướng, AI, dịch nghĩa và phát âm: xem [chi tiết luồng bất đồng bộ](ASYNC-FLOW-FIXES.md).
+
 ## Các thay đổi đã thực hiện
 
 | Nhóm | Kết quả |

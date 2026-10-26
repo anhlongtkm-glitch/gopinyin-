@@ -1,7 +1,8 @@
 // State and behavior owned by app/navigation. Initialization is orchestrated by app/bootstrap.js.
 
 import { publishLegacy, legacy } from "./compatibility.js";
-import { writeRoute, markNavigation } from "./routes.js";
+import { writeRoute, markNavigation, navigationVersion } from "./routes.js";
+import { aiEndSession } from "../features/ai/session.js";
 
 import { currentUser, requireAccount } from "../features/auth/service.js";
 
@@ -49,8 +50,11 @@ export function renderUserChip() {
 }
 
 export async function showView(v, options = {}) {
-  markNavigation();
-  if (['game', 'pronStudy'].includes(v) && !await requireAccount(() => showView(v, options))) return;
+  const navigation = options.navigation ?? markNavigation();
+  if (navigation !== navigationVersion()) return false;
+  aiEndSession();
+  if (['game', 'pronStudy'].includes(v) && !await requireAccount(() => showView(v, { ...options, navigation: undefined }))) return false;
+  if (navigation !== navigationVersion()) return false;
   /* ★ Chốt an toàn: tên view lạ → về Bảng điều khiển. Nếu không, mọi section
      đều bị ẩn và người dùng chỉ thấy một khung trắng. */
   if (!appNavigationState.VIEW_META[v]) v = 'dash';
@@ -137,6 +141,7 @@ export async function showView(v, options = {}) {
   if (v !== 'game') replayFx(viewEl(v));
   audioEffectsState.Sfx.page();
   if (options.route !== false) writeRoute(v === 'pronStudy' ? 'pron' : v);
+  return true;
 }
 /* ★ expose cho app-core gọi (vd nút Quay lại trong appCard khi đang học bộ câu cá nhân) */
 

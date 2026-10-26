@@ -2,7 +2,8 @@
 
 import { state as pronunciationMicrophoneState } from "./microphone.js";
 
-import { setPhase } from "./recording.js";
+import { setPhase, cancelAssessment } from "./recording.js";
+import { navigationVersion } from "../../app/routes.js";
 
 import { hideDetail, renderCard, renderResult, renderStats, renderComplete } from "./render.js";
 
@@ -48,6 +49,7 @@ export function gotoItem(pos) {
   if (!pronunciationSessionState.S.order.length) return;
   const p = clamp(pos, 0, pronunciationSessionState.S.order.length - 1);
   if (p === pronunciationSessionState.S.index && pronunciationSessionState.S.record) return;
+  cancelAssessment();
   pronunciationSessionState.S.index = p;
   pronunciationSessionState.S.result = null;
   pronunciationSessionState.S.record = null;
@@ -58,12 +60,18 @@ export function gotoItem(pos) {
   renderResult();
   renderStats();
   saveIndex();
-  if (pronunciationSessionState.S.settings.autoSample) setTimeout(() => pronunciationTtsState.PronTts.speak(currentItem() && currentItem().zh), 220);
+  if (pronunciationSessionState.S.settings.autoSample) {
+    const item = currentItem(), navigation = navigationVersion();
+    setTimeout(() => {
+      if (navigation === navigationVersion() && item === currentItem() && !document.getElementById('pronCard')?.classList.contains('hidden')) pronunciationTtsState.PronTts.speak(item?.zh);
+    }, 220);
+  }
 }
 
 export function nextItem() {
   if (!pronunciationSessionState.S.order.length) return;
   if (pronunciationSessionState.S.index >= pronunciationSessionState.S.order.length - 1) {
+    cancelAssessment();
     pronunciationSessionState.S.index = pronunciationSessionState.S.order.length; // vượt cuối → hiện màn hoàn thành
     renderComplete();
     return;

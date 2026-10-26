@@ -1,4 +1,5 @@
 import { requireAccount } from "../auth/service.js";
+import { markNavigation, navigationVersion } from "../../app/routes.js";
 // State and behavior owned by features/pronunciation/library. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -73,18 +74,20 @@ export async function renderLib() {
 }
 
 export async function startSource(srcId) {
+  const navigation = markNavigation();
   if (!await requireAccount(() => startSource(srcId))) return;
+  if (navigation !== navigationVersion()) return;
   if (!srcId) return;
+  pronunciationControllerState.Pron.leave();
   if (srcId.startsWith('hsk:')) {
     const lvl = Number(srcId.slice(4).replace(/[^0-9]/g, '')) || 0;
   }
-  pronunciationSessionState.S.source = srcId;
+  if (!await loadSource(srcId)) return;
   pronunciationSessionState.S.lastSource = srcId;
-  await loadSource(srcId);
   syncToolbar();
   if (typeof legacy.showView === 'function') {
     try {
-      legacy.showView('pronStudy');
+      await legacy.showView('pronStudy', { navigation });
       return;
     } catch (e) {}
   }

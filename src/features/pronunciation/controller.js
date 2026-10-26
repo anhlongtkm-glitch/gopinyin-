@@ -23,7 +23,8 @@ import { renderStats, hideDetail, hanziHtml } from "./render.js";
 
 import { state as pronunciationSessionState } from "./session.js";
 
-import { loadSettings, fillVoices, fillSources, loadSource, syncToolbar } from "./settings.js";
+import { loadSettings, fillVoices, fillSources, loadSource, syncToolbar, cancelSourceLoad } from "./settings.js";
+import { navigationVersion } from "../../app/routes.js";
 
 export const state = {};
 
@@ -50,7 +51,9 @@ export function initializePronunciationController() {
     },
     /* Màn LUYỆN (view "pronStudy") */
     async open() {
+      const navigation = navigationVersion();
       if (!await requireAccount(() => pronunciationControllerState.Pron.open())) return;
+      if (navigation !== navigationVersion()) return;
       loadSettings();
       if (!pronunciationSessionState.S.ready) {
         pronunciationSessionState.S.ready = true;
@@ -62,9 +65,10 @@ export function initializePronunciationController() {
       document.body.classList.add('studyFit');
       syncFileWarn();
       await fillSources();
+      if (navigation !== navigationVersion()) return;
       if (!pronunciationSessionState.S.items.length || pronunciationSessionState.S.lastSource !== pronunciationSessionState.S.source) {
         pronunciationSessionState.S.lastSource = pronunciationSessionState.S.source;
-        await loadSource(pronunciationSessionState.S.source);
+        if (!await loadSource(pronunciationSessionState.S.source)) return;
       }
       syncToolbar();
       drawMeter(0);
@@ -77,6 +81,7 @@ export function initializePronunciationController() {
       return startSource(srcId);
     },
     leave() {
+      cancelSourceLoad();
       pronunciationMicrophoneState.PronMic.hardRelease();
       pronunciationRecognitionState.PronAsr.stop();
       if (pronunciationSessionState.S.timer) {
@@ -91,7 +96,7 @@ export function initializePronunciationController() {
         clearTimeout(pronunciationSessionState.S.silenceTimer);
         pronunciationSessionState.S.silenceTimer = 0;
       }
-      if (pronunciationSessionState.S.phase === 'recording') setPhase('idle', '');
+      if (['recording', 'requesting', 'analyzing'].includes(pronunciationSessionState.S.phase)) setPhase('idle', '');
       hideDetail();
       document.body.classList.remove('studyFit');
       try {

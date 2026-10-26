@@ -7,6 +7,7 @@ import { state as pronunciationUtilsState, esc } from "./utils.js";
 export const state = {};
 
 const pronunciationRecognitionState = state;
+let recognitionRequest = 0;
 
 export function initializePronunciationRecognition() {
   /* ═══════════════════════════════════════════════════════════
@@ -20,6 +21,7 @@ export function initializePronunciationRecognition() {
       return !!this.Ctor();
     },
     start() {
+      const request = ++recognitionRequest;
       pronunciationSessionState.S.asrText = '';
       pronunciationSessionState.S.asrConf = null;
       pronunciationSessionState.S.asrErr = '';
@@ -45,6 +47,7 @@ export function initializePronunciationRecognition() {
           }
         };
         r.onresult = e => {
+          if (request !== recognitionRequest) return;
           let interim = '';
           for (let i = e.resultIndex; i < e.results.length; i++) {
             const res = e.results[i];
@@ -66,7 +69,7 @@ export function initializePronunciationRecognition() {
           }
         };
         r.onerror = e => {
-          pronunciationSessionState.S.asrErr = e && e.error || 'unknown';
+          if (request === recognitionRequest) pronunciationSessionState.S.asrErr = e && e.error || 'unknown';
           if (pronunciationSessionState.S.asrErr === 'no-speech') {/* để onend xử lý */}
           done();
         };
@@ -89,6 +92,7 @@ export function initializePronunciationRecognition() {
       } catch (e) {}
       pronunciationSessionState.S.asr = null;
     },
+    cancelPending() { recognitionRequest++; this.stop(); },
     wait(ms) {
       if (!pronunciationSessionState.S.asrDone) return Promise.resolve();
       return Promise.race([pronunciationSessionState.S.asrDone, new Promise(r => setTimeout(r, ms || 2500))]);

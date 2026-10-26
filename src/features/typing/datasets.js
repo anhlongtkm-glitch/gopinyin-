@@ -1,5 +1,5 @@
 import { requireAccount, currentUser } from "../auth/service.js";
-import { writeRoute, navigationVersion } from "../../app/routes.js";
+import { writeRoute, navigationVersion, markNavigation } from "../../app/routes.js";
 import { showView } from "../../app/navigation.js";
 import { selectReviewRows } from "./review.js";
 // State and behavior owned by features/typing/datasets. Initialization is orchestrated by app/bootstrap.js.
@@ -28,8 +28,8 @@ import { shuffle, escapeHtml } from "../../shared/utils.js";
 
 /* ── Dataset Management ── */
 export async function openDataset(id, options = {}) {
-  const navigation = navigationVersion();
-  if (!await requireAccount(() => openDataset(id, options))) return;
+  const navigation = options.navigation ?? markNavigation();
+  if (!await requireAccount(() => openDataset(id, { ...options, navigation: undefined }))) return;
   if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
   const ds = await dbGet(id);
@@ -37,6 +37,8 @@ export async function openDataset(id, options = {}) {
   if (!ds) return false;
   /* Ghi nhớ đang mở từ màn nào để nút "← ..." quay lại đúng chỗ */
   const aiVisible = !!(domState.$('aiCard') && !domState.$('aiCard').classList.contains('hidden'));
+  await showView('library', { route: false, navigation });
+  if (navigation !== navigationVersion() || currentUser()?.id !== accountId) return;
   typingSessionState.studyOrigin = aiVisible ? 'ai' : 'library';
   aiEndSession(); // rời phiên AI (không lưu gì) nếu đang học câu do AI tạo
   resetSessionRuntime();
@@ -115,7 +117,6 @@ export async function openDataset(id, options = {}) {
   updateViUI();
   updateHanUI();
   updateModeUI();
-  await showView('library', { route: false });
   domState.$('libraryCard').classList.add('hidden');
   domState.$('aiCard')?.classList.add('hidden');
   domState.$('appCard').classList.remove('hidden');

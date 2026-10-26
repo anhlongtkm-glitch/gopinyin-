@@ -142,12 +142,13 @@ export function parseVerifyResult(text) {
 /* Trả về danh sách ĐÃ SỬA nghĩa. Lỗi mạng/AI → trả nguyên bản (không chặn việc học). */
 
 /* Trả về danh sách ĐÃ SỬA nghĩa. Lỗi mạng/AI → trả nguyên bản (không chặn việc học). */
-export async function aiVerifyMeanings(items, provider, key) {
+export async function aiVerifyMeanings(items, provider, key, active = () => true) {
   if (!items || !items.length) return items;
   const res = await callAi(provider, key, buildVerifyPrompt(items), {
     temperature: 0.1
   });
   const rows = parseVerifyResult(res);
+  if (!active()) return items;
   if (!rows.length) return items;
   const fix = new Map();
   for (const r of rows) {
@@ -229,7 +230,7 @@ export function parseAiSentences(text) {
 
 // ★ Gọi AI theo từng đợt nhỏ rồi lặp lại cho tới khi đủ số câu mong muốn
 //   (API AI miễn phí thường trả thiếu câu → tự gọi lại, đồng thời tránh trùng lặp)
-export async function aiCollect(provider, key, userText, target, level, seen, onProgress, kind) {
+export async function aiCollect(provider, key, userText, target, level, seen, onProgress, kind, active = () => true) {
   const CHUNK = 10;
   const maxTries = Math.min(10, Math.ceil(target / CHUNK) + 6);
   let out = [],
@@ -238,11 +239,12 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
     failTries = 0,
     stopped = '',
     skipped = 0;
-  while (out.length < target && tries < maxTries) {
+  while (active() && out.length < target && tries < maxTries) {
     tries++;
     if (onProgress) onProgress(out.length, target, tries);
     try {
       const text = await callAi(provider, key, buildAiPrompt(userText, CHUNK, level, [...seen], kind));
+      if (!active()) break;
       const parsed = parseAiSentences(text);
       const got = parsed.filter(x => !seen.has(x.zh));
       skipped += parsed.skipped || 0; // câu bị loại vì lỗi chất lượng
@@ -258,6 +260,7 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
         out = out.concat(got);
       }
     } catch (e) {
+      if (!active()) break;
       failTries++;
       if (!out.length && failTries >= 3) throw e; // lỗi liên tục mà chưa lấy được gì → báo lỗi
       if (failTries >= 5) {
@@ -271,14 +274,14 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
   /* ★ SOÁT LẠI NGHĨA VIỆT ↔ CHỮ HÁN trước khi đưa vào bài học.
      Không có bước này thì nghĩa sai vẫn lọt (vd 批量 → "số lượng lớn").
      Lỗi mạng / AI không trả lời → giữ nguyên bản, KHÔNG chặn việc học. */
-  if (out.length && aiVerifyEnabled()) {
+  if (active() && out.length && aiVerifyEnabled()) {
     try {
       aiSetStatus('🔍 Đang soát lại nghĩa tiếng Việt cho khớp với chữ Hán…');
-      out = await aiVerifyMeanings(out, provider, key);
-      aiSetStatus('');
+      out = await aiVerifyMeanings(out, provider, key, active);
+      if (active()) aiSetStatus('');
     } catch (e) {
       /* bỏ qua: thà học với nghĩa gốc còn hơn không có gì để học */try {
-        aiSetStatus('');
+        if (active()) aiSetStatus('');
       } catch (_) {}
     }
   }

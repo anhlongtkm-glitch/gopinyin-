@@ -1,5 +1,6 @@
 import { requireAccount, currentUser } from "../auth/service.js";
 import { aiProxyUrl } from "../../shared/service-config.js";
+import { markNavigation, navigationVersion, writeRoute } from "../../app/routes.js";
 // State and behavior owned by features/ai/session. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -26,7 +27,7 @@ import { state as typingSessionState } from "../typing/session.js";
 
 import { state as domState } from "../../shared/dom.js";
 
-import { appConfirm, appPrompt } from "../../shared/modal.js";
+import { appConfirm, appPrompt, _modalClose, state as modalState } from "../../shared/modal.js";
 
 import { dbPut, progressKey } from "../../shared/storage/lesson-repository.js";
 
@@ -39,6 +40,12 @@ import { escapeHtml } from "../../shared/utils.js";
 export const state = {};
 
 const aiSessionState = state;
+let aiRequestId = 0;
+async function ownedDialog(session, promise) {
+  const resolve = modalState._modalResolve;
+  session.dialog = resolve;
+  try { return await promise; } finally { if (session.dialog === resolve) session.dialog = null; }
+}
 
 // {prompt,level,provider,key,batch,seen,pending,stopped,empty,live}
 export function aiSetStatus(msg, cls) {
@@ -129,6 +136,8 @@ export function aiCurrentUnit() {
      gọi trong ngữ cảnh chỉ trích xuất hàm (test/vm). */
 
 export async function aiFillMissingVi() {
+  const rows = typingSessionState.rows, uid = currentUser()?.id;
+  const active = () => rows === typingSessionState.rows && uid === currentUser()?.id;
   const idxs = [];
   for (let i = 0; i < typingSessionState.rows.length; i++) {
     const r = typingSessionState.rows[i];
@@ -138,10 +147,13 @@ export async function aiFillMissingVi() {
     }
   }
   for (const i of idxs) {
+    if (!active()) return;
     try {
-      const tr = await fetchViTranslation(typingSessionState.rows[i].zh);
-      if (tr) typingSessionState.rows[i].vi = tr;
+      const tr = await fetchViTranslation(rows[i].zh);
+      if (!active()) return;
+      if (tr) rows[i].vi = tr;
     } catch (e) {
+      if (!active()) return;
       /* Hết hạn mức MyMemory / mất mạng → báo rõ 1 lần, không im lặng như trước */
       if (!aiSessionState._viFillWarned) {
         aiSessionState._viFillWarned = true;
@@ -207,11 +219,14 @@ export async function aiMaybeFill() {
   const unit = aiUnitOf(s.kind);
   // ★ Ghi nhớ TRƯỚC khi thêm: người dùng có đang ở màn chờ mục mới không?
   const wasWaiting = typingSessionState.index >= typingSessionState.order.length;
+  const uid = currentUser()?.id;
+  const active = () => s === aiSessionState.aiSession && s.live && uid === currentUser()?.id;
   // ★ Không hiện thanh "AI đang viết..." đè lên khi người dùng đang gõ dở,
   //   chỉ hiện khi đang thực sự chờ mục mới.
   if (wasWaiting) aiShowGen('<span class="aiSpinner">AI đang viết ' + unit + ' tiếp theo…</span> (đã có <b>' + typingSessionState.rows.length + '</b> ' + unit + ')');
   try {
-    const res = await aiCollect(s.provider, s.key, s.prompt, s.batch, s.level, s.seen, null, s.kind);
+    const res = await aiCollect(s.provider, s.key, s.prompt, s.batch, s.level, s.seen, null, s.kind, active);
+    if (!active()) return;
     if (res.items.length) {
       aiAppendRows(res.items);
       s.empty = 0;
@@ -220,6 +235,7 @@ export async function aiMaybeFill() {
       if (s.empty >= 2) s.stopped = true;
     }
   } catch (e) {
+    if (!active()) return;
     s.empty++;
     if (s.empty >= 2) s.stopped = true;
   }
@@ -231,7 +247,10 @@ export async function aiMaybeFill() {
 
 /* ★ Bắt đầu học: viết prompt → AI viết đợt đầu → học ngay */
 export async function aiStartStudy() {
+  aiEndSession();
+  const navigation = markNavigation(), requestId = ++aiRequestId;
   if (!await requireAccount(() => aiStartStudy())) return;
+  if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
   const provider = domState.$('aiProvider').value;
   const key = domState.$('aiKey').value.trim();
@@ -279,25 +298,32 @@ export async function aiStartStudy() {
     generated: 0,
     live: true
   };
+  const session = aiSessionState.aiSession;
+  const active = () => session === aiSessionState.aiSession && session.live && navigation === navigationVersion() && currentUser()?.id === accountId;
+  const ownConfirm = (...args) => ownedDialog(session, appConfirm(...args));
+  const ownPrompt = (...args) => ownedDialog(session, appPrompt(...args));
   try {
-    const res = await aiCollect(provider, key, prompt, batch, level, aiSessionState.aiSession.seen, null, kind);
+    const res = await aiCollect(provider, key, prompt, batch, level, session.seen, null, kind, active);
+    if (!active()) return;
     if (!res.items.length) throw new Error(res.stopped || 'AI chưa trả về ' + unit + ' nào cho chủ đề này.');
 
     /* ★ HỎI LƯU NGAY SAU KHI TẠO — trước khi vào học.
        · "Lưu lại"     → đặt tên → ghi vào thư viện → học tiếp lần sau đúng câu đang dở.
        · "Không lưu"   → học tạm như cũ, KHÔNG ghi gì; thoát ra là mất. */
-    const wantSave = await appConfirm('AI đã tạo ' + res.items.length + ' ' + unit + ' cho chủ đề “' + String(prompt).slice(0, 70) + '”.\n\n' + 'Lưu lại để lần sau vào học tiếp đúng chỗ bạn đang dở?\n' + 'Nếu chọn “Không lưu”, bộ này chỉ dùng tạm lần này — thoát ra là hết.', {
+    const wantSave = await ownConfirm('AI đã tạo ' + res.items.length + ' ' + unit + ' cho chủ đề “' + String(prompt).slice(0, 70) + '”.\n\n' + 'Lưu lại để lần sau vào học tiếp đúng chỗ bạn đang dở?\n' + 'Nếu chọn “Không lưu”, bộ này chỉ dùng tạm lần này — thoát ra là hết.', {
       title: '💾 Lưu bộ này?',
       okText: '💾 Lưu lại',
       cancelText: 'Không lưu'
     });
+    if (!active()) return;
     let ds = null;
     if (wantSave) {
       const defName = String(prompt).replace(/\s+/g, ' ').trim().slice(0, 48) || 'Bộ ' + unit + ' AI';
-      const name = await appPrompt('Đặt tên cho bộ ' + unit + ' để dễ tìm lại trong “Bộ AI đã lưu”:', defName, {
+      const name = await ownPrompt('Đặt tên cho bộ ' + unit + ' để dễ tìm lại trong “Bộ AI đã lưu”:', defName, {
         title: 'Đặt tên bộ ' + unit,
         okText: 'Lưu bộ ' + unit
       });
+      if (!active()) return;
       if (!name) {
         /* Huỷ ở bước đặt tên → coi như KHÔNG lưu (không tạo rác trong thư viện) */
         toast('Chưa đặt tên nên bộ ' + unit + ' này chỉ học tạm lần này.', 'warn', 4200);
@@ -317,7 +343,7 @@ export async function aiStartStudy() {
       }
     }
 
-    if (currentUser()?.id !== accountId) return;
+    if (!active()) return;
     // → vào học ngay
     typingSessionState.activeDataset = null;
     typingSessionState.reviewById = {};
@@ -353,8 +379,9 @@ export async function aiStartStudy() {
     if (ds) {
       ds.rows = typingSessionState.rows;
       ds.updatedAt = Date.now();
-      if (currentUser()?.id !== accountId) return;
+      if (!active()) return;
       await dbPut(ds);
+      if (!active()) return;
       toast('💾 Đã lưu “' + ds.name + '” (' + typingSessionState.rows.length + ' ' + unit + ') — lần sau vào là học tiếp đúng chỗ đang dở.', 'ok', 5200);
       try {
         if (typeof legacy.renderAiSets === 'function') legacy.renderAiSets();
@@ -380,13 +407,15 @@ export async function aiStartStudy() {
     render();
     loadHistory();
     renderAppHistory();
+    if (ds) writeRoute('study', ds.id);
   } catch (e) {
+    if (!active()) return;
     aiSessionState.aiSession = null;
     aiShowGen('⚠️ ' + escapeHtml(e.message) + ' — sửa lại rồi bấm “học ngay” lần nữa.', 'err');
     aiSetStatus('⚠️ ' + escapeHtml(e.message), 'err');
     toast('Không tạo được ' + unit + ': ' + e.message, 'bad', 6500);
   } finally {
-    if (btn) {
+    if (btn && requestId === aiRequestId) {
       btn.disabled = false;
       btn.textContent = '🚀 Viết prompt rồi học ngay';
     }
@@ -396,9 +425,16 @@ export async function aiStartStudy() {
 
 /* ★ Kết thúc phiên AI — không có gì để lưu */
 export function aiEndSession() {
-  if (aiSessionState.aiSession) aiSessionState.aiSession.live = false;
+  aiRequestId++;
+  const session = aiSessionState.aiSession;
+  if (session) {
+    session.live = false;
+    if (session.dialog && modalState._modalResolve === session.dialog) _modalClose(null);
+  }
   aiSessionState.aiSession = null;
   aiShowGen('');
+  const button = domState.$('aiStartBtn');
+  if (button) { button.disabled = false; button.textContent = '🚀 Viết prompt rồi học ngay'; }
 }
 
 export function aiSessionLive() {

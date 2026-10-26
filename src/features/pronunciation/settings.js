@@ -1,8 +1,10 @@
 // State and behavior owned by features/pronunciation/settings. Initialization is orchestrated by app/bootstrap.js.
 
 import { rebuildOrder, currentItem } from "./lesson.js";
+import { currentUser } from "../auth/service.js";
+import { navigationVersion } from "../../app/routes.js";
 
-import { setPhase } from "./recording.js";
+import { setPhase, cancelAssessment } from "./recording.js";
 
 import { hideDetail, renderCard, renderResult, renderStats } from "./render.js";
 
@@ -19,6 +21,9 @@ import { lsJson, lsSet, state as pronunciationUtilsState, esc, clamp } from "./u
 /* ═══════════════════════════════════════════════════════════
    Khởi động / nạp nguồn
    ═══════════════════════════════════════════════════════════ */
+let sourceRequest = 0;
+export function cancelSourceLoad() { sourceRequest++; cancelAssessment(); }
+export function sourceVersion() { return sourceRequest; }
 export function loadSettings() {
   const d = lsJson(pronunciationSessionState.SETTINGS_KEY, null);
   if (d && typeof d === 'object') {
@@ -95,10 +100,26 @@ export async function fillSources() {
 }
 
 export async function loadSource(srcId, keepId) {
-  pronunciationSessionState.S.source = srcId;
+  const request = ++sourceRequest, navigation = navigationVersion(), uid = currentUser()?.id;
+  cancelAssessment();
   const key = pronunciationRepositoryState.PronRepo.keyOf(srcId);
+  pronunciationSessionState.S.items = [];
+  pronunciationSessionState.S.busy = true;
+  setPhase('analyzing', 'Đang tải bộ câu…');
+  let items;
+  try { items = await pronunciationRepositoryState.PronRepo.load(srcId); }
+  catch {
+    if (request === sourceRequest && navigation === navigationVersion() && uid === currentUser()?.id) {
+      pronunciationSessionState.S.busy = false;
+      setPhase('error', 'Không tải được bộ câu. Hãy thử chọn lại.');
+    }
+    return false;
+  }
+  if (request !== sourceRequest || navigation !== navigationVersion() || uid !== currentUser()?.id) return false;
+  pronunciationSessionState.S.source = srcId;
   pronunciationSessionState.S.progress = pronunciationStorageState.PronStore.load(key);
-  pronunciationSessionState.S.items = await pronunciationRepositoryState.PronRepo.load(srcId);
+  pronunciationSessionState.S.items = items;
+  pronunciationSessionState.S.busy = false;
   pronunciationSessionState.S.result = null;
   pronunciationSessionState.S.record = null;
   pronunciationSessionState.S.index = 0;
@@ -119,18 +140,19 @@ export async function loadSource(srcId, keepId) {
   if (!keepId) {
     setTimeout(() => {
       const it = currentItem();
-      if (it && it.zh) pronunciationTtsState.PronTts.speak(it.zh, {
+      if (request === sourceRequest && navigation === navigationVersion() && !pronunciationUtilsState.$('pronCard').classList.contains('hidden') && it && it.zh) pronunciationTtsState.PronTts.speak(it.zh, {
         rate: pronunciationSessionState.S.settings.rate
       });
     }, 340);
   } else if (pronunciationSessionState.S.settings.autoSample) {
     setTimeout(() => {
       const it = currentItem();
-      if (it && it.zh) pronunciationTtsState.PronTts.speak(it.zh, {
+      if (request === sourceRequest && navigation === navigationVersion() && !pronunciationUtilsState.$('pronCard').classList.contains('hidden') && it && it.zh) pronunciationTtsState.PronTts.speak(it.zh, {
         rate: pronunciationSessionState.S.settings.rate
       });
     }, 300);
   }
+  return true;
 }
 
 /* ═══════════════════════════════════════════════════════════

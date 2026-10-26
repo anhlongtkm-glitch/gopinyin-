@@ -1,5 +1,5 @@
 import { requireAccount, currentUser } from "../auth/service.js";
-import { navigationVersion } from "../../app/routes.js";
+import { navigationVersion, markNavigation } from "../../app/routes.js";
 // State and behavior owned by features/library/catalog. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -135,7 +135,7 @@ export async function fetchVocabItems(file) {
 
 // ★ Bấm 1 mục trong kho → tạo bộ luyện (lưu vào thư viện) rồi mở luôn
 export async function openVocabSource(srcId) {
-  const navigation = navigationVersion();
+  const navigation = markNavigation();
   if (!await requireAccount(() => openVocabSource(srcId))) return;
   if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
@@ -145,7 +145,7 @@ export async function openVocabSource(srcId) {
   const existing = (await dbList()).find(x => x.id === id);
   if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
   if (existing) {
-    await openDataset(id);
+    await openDataset(id, { navigation });
     return;
   }
   const list = domState.$('vocabList');
@@ -173,7 +173,7 @@ export async function openVocabSource(srcId) {
     if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
     await dbPut(ds);
     toast('Đã tạo bộ "' + src.label + '" (' + rows.length + ' mục).', 'ok');
-    await openDataset(id);
+    await openDataset(id, { navigation });
   } catch (e) {
     if (list) list.innerHTML = prev;
     toast('Không tải được "' + src.label + '": ' + e.message + '. Kiểm tra kết nối mạng rồi thử lại.', 'bad', 5500);

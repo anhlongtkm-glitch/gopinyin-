@@ -6,6 +6,8 @@ import { state as pronunciationAssessmentState } from "./assessment.js";
 import { state as pronunciationFileTransferState } from "./file-transfer.js";
 
 import { currentItem, nextItem } from "./lesson.js";
+import { navigationVersion } from "../../app/routes.js";
+import { sourceVersion } from "./settings.js";
 
 import { drawMeter } from "./meter.js";
 
@@ -20,6 +22,13 @@ import { state as pronunciationSessionState } from "./session.js";
 import { state as pronunciationStorageState } from "./storage.js";
 
 import { state as pronunciationUtilsState, esc, toast } from "./utils.js";
+let assessmentVersion = 0;
+export function cancelAssessment() {
+  assessmentVersion++;
+  pronunciationSessionState.S.busy = false;
+  pronunciationMicrophoneState.PronMic?.cancelPending();
+  pronunciationRecognitionState.PronAsr?.cancelPending?.();
+}
 
 /* ═══════════════════════════════════════════════════════════
    Luồng ghi âm
@@ -52,8 +61,10 @@ export function fmtSec(ms) {
 }
 
 export async function beginRecording() {
+  const navigation = navigationVersion(), source = sourceVersion(), attempt = assessmentVersion;
   if (!await requireAccount(() => beginRecording())) return;
-  if (pronunciationSessionState.S.busy) return;
+  if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) return;
+  if (pronunciationSessionState.S.busy || ['requesting', 'analyzing'].includes(pronunciationSessionState.S.phase)) return;
   if (pronunciationSessionState.S.phase === 'recording') {
     stopRecording('manual');
     return;
@@ -72,6 +83,7 @@ export async function beginRecording() {
   try {
     stream = await pronunciationMicrophoneState.PronMic.acquire();
   } catch (e) {
+    if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) return;
     const name = e && e.name || '';
     if (name === 'NotAllowedError' || name === 'SecurityError') {
       setPhase('error', '🚫 Micro chưa được cấp quyền. Bấm vào biểu tượng <b>🔒</b> cạnh thanh địa chỉ → cho phép <b>Micro</b>, rồi thử lại.');
@@ -82,6 +94,7 @@ export async function beginRecording() {
     }
     return;
   }
+  if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) { pronunciationMicrophoneState.PronMic.hardRelease(); return; }
 
   /* lượt mới — không dùng lại âm thanh / kết quả của lượt trước */
   pronunciationSessionState.S.record = null;
@@ -112,6 +125,7 @@ export async function beginRecording() {
 
 export async function stopRecording(reason) {
   if (pronunciationSessionState.S.phase !== 'recording') return;
+  const version = assessmentVersion, item = currentItem(), source = sourceVersion(), navigation = navigationVersion();
   if (pronunciationSessionState.S.timer) {
     clearInterval(pronunciationSessionState.S.timer);
     pronunciationSessionState.S.timer = 0;
@@ -129,6 +143,7 @@ export async function stopRecording(reason) {
 
   /* chờ kết quả nhận dạng cuối cùng (tối đa 2.5s để không treo UI) */
   await pronunciationRecognitionState.PronAsr.wait(2500);
+  if (version !== assessmentVersion || item !== currentItem() || source !== sourceVersion() || navigation !== navigationVersion()) return;
   const transcript = (pronunciationSessionState.S.asrText || '').trim();
 
   /* ★ Chỉ coi là "quá ngắn" khi KHÔNG có cả nội dung nhận dạng lẫn tín hiệu
@@ -167,6 +182,8 @@ export async function finishAssessment(transcript, conf) {
     return;
   }
   const uid = currentUser()?.id;
+  const version = ++assessmentVersion;
+  const items = pronunciationSessionState.S.items, source = sourceVersion(), navigation = navigationVersion();
   pronunciationSessionState.S.busy = true;
 
   /* 1) Thử dịch vụ chấm phát âm thật (nếu có cấu hình) */
@@ -180,6 +197,7 @@ export async function finishAssessment(transcript, conf) {
     result = null;
   }
 
+  if (version !== assessmentVersion || items !== pronunciationSessionState.S.items || currentItem() !== item || source !== sourceVersion() || navigation !== navigationVersion()) return;
   if (!isStudyAllowed() || currentUser()?.id !== uid) { pronunciationSessionState.S.busy = false; return; }
   /* 2) Không có → đánh giá sơ bộ độ khớp nội dung từ văn bản nhận dạng */
   if (!result) result = pronunciationAssessmentState.PronAssess.local(item, transcript, conf);

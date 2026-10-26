@@ -9,8 +9,9 @@ import { currentItem, prevItem, skipItem, nextItem, gotoItem, rebuildOrder } fro
 import { startSource } from "./library.js";
 
 import { state as pronunciationMicrophoneState } from "./microphone.js";
+import { state as pronunciationRecognitionState } from "./recognition.js";
 
-import { stopRecording, beginRecording, setPhase } from "./recording.js";
+import { stopRecording, beginRecording, setPhase, cancelAssessment } from "./recording.js";
 
 import { renderResult, renderHanzi, renderCard, renderStats, showDetail, hideDetail } from "./render.js";
 
@@ -68,6 +69,7 @@ export function wire() {
   });
   on('pronPrevBtn', 'click', prevItem);
   on('pronRetryBtn', 'click', () => {
+    cancelAssessment();
     pronunciationSessionState.S.result = null;
     pronunciationSessionState.S.record = null;
     renderResult();
@@ -104,11 +106,16 @@ export function wire() {
       const lvl = Number(v.slice(4).replace(/[^0-9]/g, '')) || 0;
     }
     pronunciationMicrophoneState.PronMic.release();
+    pronunciationRecognitionState.PronAsr.stop();
     pronunciationSessionState.S.lastSource = v;
     await loadSource(v);
     syncToolbar();
   });
   on('pronFilter', 'change', e => {
+    cancelAssessment();
+    pronunciationMicrophoneState.PronMic.release();
+    pronunciationRecognitionState.PronAsr.stop();
+    setPhase('idle', '');
     pronunciationSessionState.S.settings.filter = e.target.value;
     saveSettings();
     const keep = currentItem() && currentItem().id;

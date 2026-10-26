@@ -18,11 +18,15 @@ export function initializePronunciationMicrophone() {
      PronMic — quyền micro · thu âm · đo âm lượng · phát lại
      ═══════════════════════════════════════════════════════════ */
   pronunciationMicrophoneState.PronMic = {
+    requestVersion: 0,
+    cancelPending() { this.requestVersion++; },
     supported() {
       return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     },
     async acquire() {
+      const request = this.requestVersion;
       if (!await requireAccount()) throw new Error('Cần đăng nhập và có mạng để mở micro.');
+      if (request !== this.requestVersion) throw new Error('Phiên luyện đã kết thúc.');
       /* ★ Dùng lại stream đang mở nếu còn sống.
          Người dùng phàn nàn: "mỗi lần sang một câu lại phải cấp quyền cho
          micro". Nguyên nhân là release() cũ DỪNG hết track sau MỖI lượt nói,
@@ -45,7 +49,7 @@ export function initializePronunciationMicrophone() {
           autoGainControl: true
         }
       });
-      if (!isStudyAllowed() || currentUser()?.id !== uid) { stream.getTracks().forEach(t => t.stop()); throw new Error('Phiên luyện đã kết thúc.'); }
+      if (request !== this.requestVersion || !isStudyAllowed() || currentUser()?.id !== uid) { stream.getTracks().forEach(t => t.stop()); throw new Error('Phiên luyện đã kết thúc.'); }
       pronunciationSessionState.S.stream = stream;
       /* Thiết bị bị rút / quyền bị thu hồi giữa phiên → lần sau xin lại */
       try {
@@ -182,6 +186,7 @@ export function initializePronunciationMicrophone() {
     },
     /* Đóng micro thật — chỉ gọi khi rời màn luyện phát âm / rời trang */
     hardRelease() {
+      this.requestVersion++;
       this.stopMeter();
       this.stopRecorder();
       if (pronunciationSessionState.S.stream) {
