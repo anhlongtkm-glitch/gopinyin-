@@ -1,5 +1,5 @@
-import { dataOwner, listRecords, writeRecord, setDatasetLoader } from "./account-data.js";
-import { findVocabSource, fetchVocabItems } from "../../features/library/catalog.js";
+import { dataOwner, listRecords, readRecord, writeRecord, setDatasetLoader } from "./account-data.js";
+import { findVocabSource, fetchVocabItems, srcCount } from "../../features/library/catalog.js";
 import { fixPinyin } from "../language/pinyin.js";
 // State and behavior owned by shared/storage/lesson-repository. Initialization is orchestrated by app/bootstrap.js.
 
@@ -83,23 +83,39 @@ export async function legacyDatasets() {
   });
 }
 
-export async function dbGetAll() {
+export async function dbList() {
   if (!dataOwner()) return [];
-  const result = [];
-  for (const ds of listRecords('dataset')) {
-    if (ds.builtin && !ds.rows) {
-      const src = findVocabSource(ds.id.replace(/^vocab:/, ''));
-      if (!src) continue;
-      try { ds.rows = (await fetchVocabItems(src.file)).map((it, i) => ({ id:i, vi:it.m, py:fixPinyin(it.p), zh:it.w, wv:[] })); }
-      catch { continue; }
-    }
-    result.push(ds);
+  return listRecords('dataset', ds => {
+    const { rows, ...metadata } = ds;
+    return { ...metadata, rowCount: Array.isArray(rows) ? rows.length : srcCount(ds.id.replace(/^vocab:/, '')) || Number(ds.rowCount) || 0 };
+  });
+}
+export async function dbGet(id) {
+  const uid = dataOwner();
+  if (!uid) return null;
+  const ds = readRecord('dataset', id);
+  if (!ds) return null;
+  if (ds.builtin && !ds.rows) {
+    const src = findVocabSource(ds.id.replace(/^vocab:/, ''));
+    if (!src) return null;
+    const items = await fetchVocabItems(src.file);
+    if (dataOwner() !== uid || !readRecord('dataset', id)) return null;
+    ds.rows = items.map((it, i) => ({ id:i, vi:it.m, py:fixPinyin(it.p), zh:it.w, wv:[] }));
+  }
+  return ds;
+}
+export async function dbGetAll() {
+  const uid = dataOwner(), result = [];
+  for (const entry of await dbList()) {
+    try { const ds = await dbGet(entry.id); if (ds) result.push(ds); } catch { /* Keep other available datasets. */ }
+    if (dataOwner() !== uid) return [];
   }
   return result;
 }
 export async function dbPut(value) {
   if (!dataOwner()) throw new Error('Cần đăng nhập để lưu bộ câu.');
   const stored = structuredClone(value);
+  if (Array.isArray(stored.rows)) stored.rowCount = stored.rows.length;
   if (stored.builtin) delete stored.rows;
   writeRecord('dataset', value.id, stored);
   return value;

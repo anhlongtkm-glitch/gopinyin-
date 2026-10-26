@@ -12,7 +12,7 @@ Yêu cầu Node.js 20+ và npm; máy hiện tại đã kiểm tra bằng Node 22
 | `npm run serve` | Build và phục vụ dist, không mở trình duyệt, không watch |
 | `npm run build` | Tạo website tĩnh trong dist; không cần Node ở hosting tĩnh |
 | `node server/serve.js --no-open` | Tự build rồi mở server; giữ cách gọi trực tiếp |
-| `npm test` | Tự mở server cổng trống, chạy 17 bộ kiểm thử, đóng server |
+| `npm test` | Tự mở server cổng trống, chạy 18 bộ kiểm thử, đóng server |
 | `npm run test:build` | Kiểm tra ghép HTML, tài nguyên công khai, classic JS, chạy file:// |
 
 Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy trình build/watch. Khi thiếu dependency, chạy `npm install`; không cần cài framework hoặc trình duyệt mới. `npm start` tự build lại, sau đó bạn tải lại trang; chưa có hot reload giữ trạng thái DOM.
@@ -48,6 +48,8 @@ Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy 
 | Proxy AI/chấm phát âm backend | `server/pro-server.js`, xác thực ở `server/account-auth.js` |
 
 Mỗi chức năng có HTML riêng và các module theo trách nhiệm. Không cần tạo một file cho mỗi hàm nhỏ.
+
+Kho bài dùng `dbList()` để lấy metadata và `dbGet(id)` để chuẩn bị nội dung một bộ; tránh gọi `dbGetAll()` khi chỉ cần vẽ tên/số câu hoặc mở một bài. `dbGetAll()` giữ cho xuất dữ liệu và tương thích cũ. Sau lần kéo tài khoản đầu tiên, đồng bộ nền đối chiếu version rồi mới lấy payload đã thay đổi; xem `docs/WEB-PERFORMANCE-PHASE-2.md`.
 
 ### Những chức năng lớn
 

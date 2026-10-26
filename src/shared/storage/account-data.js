@@ -1,6 +1,7 @@
 // Only whitelisted learning records enter the account cache or cloud outbox.
 const ALLOWED = /^(cts:(progress:|history:|weak|speed:)|gp:(pron:|dailyGoal$|daily$|streak$|bestScore$|lbGame$|lbStudy$|lbSeed$)|gopinyin:game:)/;
 let owner = null, client = null, records = {}, generation = 0, timer, inflight, pulling, synchronizing;
+let hasSnapshot = false;
 let datasetLoader = async () => [], conflictResolver = async () => 'cancel', status = 'guest';
 const listeners = new Set();
 function report(value) { status = value; window.dispatchEvent(new CustomEvent('gp:sync', { detail: value })); }
@@ -21,8 +22,8 @@ export function readRecord(kind, id) {
   const r = records[keyOf(kind, id)];
   return !r || r.deleted ? null : structuredClone(r.payload);
 }
-export function listRecords(kind) {
-  return Object.values(records).filter(r => r.kind === kind && !r.deleted).map(r => structuredClone(r.payload));
+export function listRecords(kind, project = value => value) {
+  return Object.values(records).filter(r => r.kind === kind && !r.deleted).map(r => structuredClone(project(r.payload)));
 }
 export function listRecordEntries(kind) {
   return Object.values(records).filter(r => r.kind === kind && !r.deleted).map(r => ({ record_id: r.record_id, payload: structuredClone(r.payload) }));
@@ -44,6 +45,7 @@ export const learningStorage = {
 };
 export function detachAccountData() {
   generation++; clearTimeout(timer); owner = null; client = null; records = {}; inflight = null; pulling = null; synchronizing = null;
+  hasSnapshot = false;
   report('guest'); notify();
 }
 export async function attachAccountData(uid, connection) {
@@ -52,6 +54,7 @@ export async function attachAccountData(uid, connection) {
   await pullAccountData(); await flushAccountData(); notify();
 }
 async function reconcile(remote, epoch, fromConflict = false) {
+  if (epoch !== generation) return;
   const key = keyOf(remote.kind, remote.record_id), local = records[key];
   if (local && !local.dirty && local.version === remote.version) return;
   if (!fromConflict && local && local.version > remote.version) return; // A stale pull cannot roll back an acknowledged save.
@@ -59,12 +62,13 @@ async function reconcile(remote, epoch, fromConflict = false) {
   if (local?.dirty && local.version !== remote.version) {
     report('conflict'); const choice = await conflictResolver({ local: structuredClone(local), remote });
     if (epoch !== generation) return;
-    if (choice === 'local') { local.version = remote.version; return; }
+    if (choice === 'local') { local.version = remote.version; return true; }
     if (choice !== 'remote') throw new Error('Cần giải quyết xung đột trước khi tiếp tục.');
     remoteChosen = true;
   } else if (local?.dirty) return;
   records[key] = { ...remote, dirty: false };
   if (remoteChosen) window.dispatchEvent(new CustomEvent('gp:remote-record', { detail: remote.record_id }));
+  return true;
 }
 export async function pullAccountData() {
   if (pulling) return pulling;
@@ -74,19 +78,50 @@ export async function pullAccountData() {
 async function performPull() {
   if (!owner || !client) return;
   if (!navigator.onLine) { report('offline'); throw new Error('Cần kết nối mạng để đồng bộ.'); }
-  const epoch = generation; report('loading');
+  const epoch = generation;
+  // A background version check must not interrupt a lesson that is already synced.
+  if (!hasSnapshot) report('loading');
   try {
-    let offset = 0;
+    let offset = 0, changed = false;
+    const incremental = hasSnapshot;
     while (true) {
-      const { data, error } = await client.from('learning_records').select('*').eq('user_id', owner).order('kind').order('record_id').range(offset, offset + 499);
+      if (epoch !== generation) return;
+      const { data, error } = await client.from('learning_records').select(incremental ? 'kind,record_id,version,deleted' : '*').eq('user_id', owner).order('kind').order('record_id').range(offset, offset + 499);
       if (error) throw error;
       if (epoch !== generation) return;
-      for (const remote of data) await reconcile(remote, epoch);
+      if (!incremental) {
+        for (const remote of data) changed = await reconcile(remote, epoch) || changed;
+      } else {
+        // Compare versions, not timestamps: late commits cannot fall behind a cursor.
+        const needed = data.filter(remote => {
+          const local = records[keyOf(remote.kind, remote.record_id)];
+          return !local || local.version < remote.version;
+        });
+        for (const kind of ['kv', 'dataset']) {
+          const ids = needed.filter(row => row.kind === kind).map(row => row.record_id);
+          for (let start = 0; start < ids.length;) {
+            const batch = [];
+            let urlLength = 0;
+            while (start < ids.length && batch.length < 100) {
+              const length = encodeURIComponent(JSON.stringify(ids[start])).length + 1;
+              if (batch.length && urlLength + length > 5000) break;
+              batch.push(ids[start++]); urlLength += length;
+            }
+            const response = await client.from('learning_records').select('*').eq('user_id', owner).eq('kind', kind).in('record_id', batch).range(0, batch.length - 1);
+            if (response.error) throw response.error;
+            if (epoch !== generation) return;
+            for (const remote of response.data) changed = await reconcile(remote, epoch) || changed;
+          }
+        }
+      }
       if (data.length < 500) break;
       offset += 500;
     }
     if (epoch !== generation) return;
-    persist(); report(Object.values(records).some(r => r.dirty) ? 'pending' : 'saved'); notify();
+    hasSnapshot = true;
+    if (changed) persist();
+    report(Object.values(records).some(r => r.dirty) ? 'pending' : 'saved');
+    if (changed) notify();
   } catch (error) { if (epoch === generation) report('error'); throw error; }
 }
 export async function flushAccountData() {

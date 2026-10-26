@@ -22,14 +22,14 @@ export function initializePronunciationRepository() {
       });
       let sets = [];
       try {
-        sets = await b.dbGetAll();
+        sets = await (b.dbList ? b.dbList() : b.dbGetAll());
       } catch (e) {}
       for (const s of sets) {
-        if (!s || !Array.isArray(s.rows) || !s.rows.length) continue;
+        if (!s || !(s.rowCount || s.rows?.length)) continue;
         if (s.kind === 'ai' || String(s.id || '').startsWith('ai:')) continue;
         out.push({
           id: 'ds:' + s.id,
-          label: '💾 ' + (s.name || 'Bộ đã lưu') + ' (' + s.rows.length + ')'
+          label: '💾 ' + (s.name || 'Bộ đã lưu') + ' (' + (s.rowCount || s.rows?.length) + ')'
         });
       }
       const H = b.hskData() || {};
@@ -93,17 +93,17 @@ export function initializePronunciationRepository() {
       };
       let sets = [];
       try {
-        sets = await b.dbGetAll();
+        sets = await (b.dbList ? b.dbList() : b.dbGetAll());
       } catch (e) {}
       for (const s of sets) {
-        if (!s || !Array.isArray(s.rows) || !s.rows.length) continue;
+        if (!s || !(s.rowCount || s.rows?.length)) continue;
         /* ★ D.1: bộ AI đã lưu (kind==='ai') CHỈ hiện ở màn "AI sinh câu",
            không hiện ở Luyện phát âm. (sources() đã lọc, catalog() cũng phải lọc.) */
         if (s.kind === 'ai' || String(s.id || '').startsWith('ai:')) continue;
         out.sets.push({
           id: 'ds:' + s.id,
           name: s.name || 'Bộ đã lưu',
-          count: s.rows.length,
+          count: s.rowCount || s.rows?.length,
           locked: false
         });
       }
@@ -134,11 +134,10 @@ export function initializePronunciationRepository() {
         }));
       } else if (srcId.startsWith('ds:')) {
         const id = srcId.slice(3);
-        let sets = [];
+        let ds = null;
         try {
-          sets = await b.dbGetAll();
+          ds = b.dbGet ? await b.dbGet(id) : (await b.dbGetAll()).find(x => x && x.id === id);
         } catch (e) {}
-        const ds = sets.find(x => x && x.id === id);
         raw = (ds && ds.rows || []).map((r, i) => ({
           id: 'd' + i + ':' + (r.id != null ? r.id : i),
           zh: r.zh,

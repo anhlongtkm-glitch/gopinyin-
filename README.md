@@ -11,7 +11,7 @@ npm install       # lần đầu; dùng npm ci khi cài đúng lockfile
 npm start         # build + localhost:8080 + theo dõi thay đổi
 npm run serve     # build + server, không tự mở trình duyệt
 npm run build     # tạo dist/ để triển khai hoặc mở dist/index.html
-npm test          # tự mở server riêng, chạy 17 bộ hồi quy
+npm test          # tự mở server riêng, chạy 18 bộ hồi quy
 npm run test:build
 ```
 
@@ -33,7 +33,7 @@ npm run test:build
 |---|---|
 | **Đăng nhập & hồ sơ** | Supabase email/mật khẩu, xác minh email, khôi phục mật khẩu, sửa tên và ảnh đại diện. Khách chỉ xem; học/chơi cần đăng nhập và mạng. Xem [hướng dẫn cấu hình](docs/accounts-setup.md). |
 | **Bảng điều khiển (Dashboard)** | Lộ trình hàng ngày, chuỗi ngày học (streak), tiến độ, thống kê, bài gần đây. |
-| **Thư viện & Luyện gõ** | Bộ câu HSK 1–9 (**5.012 câu**), gõ Pinyin tự động thêm dấu thanh, dịch nhanh Google Translate popup. **Toàn bộ HSK 1–9 miễn phí.** Màn luyện dùng **chung khung với Luyện phát âm** (xem mục *Khung học dùng chung*): thống kê + tiến độ → 3 nhóm công cụ → thẻ câu → chân thẻ, và **vừa đúng 1 khung hình, không phải cuộn**. Nhóm **📚 Nội dung** có sẵn danh sách bộ câu nên đổi bộ ngay tại chỗ. |
+| **Thư viện & Luyện gõ** | Bộ câu HSK 1–9 (**4.969 câu**), gõ Pinyin tự động thêm dấu thanh, dịch nhanh Google Translate popup. **Toàn bộ HSK 1–9 miễn phí.** Màn luyện dùng **chung khung với Luyện phát âm** (xem mục *Khung học dùng chung*): thống kê + tiến độ → 3 nhóm công cụ → thẻ câu → chân thẻ, và **vừa đúng 1 khung hình, không phải cuộn**. Nhóm **📚 Nội dung** có sẵn danh sách bộ câu nên đổi bộ ngay tại chỗ. |
 | **Từ vựng theo chủ đề** | **206 chủ đề · 41.621 từ** (chữ Hán + pinyin + nghĩa Việt) nhúng sẵn trong `assets/vocab-pack.js`, có thể duyệt khi đã tải; bắt đầu học cần mạng. File được nạp lười khi mở chủ đề lần đầu nên không làm chậm trang. Thẻ chủ đề hiện số từ. |
 | **Bàn phím ảo** | Nút ⌨️ cạnh ô gõ và trên thanh công cụ game → bật/tắt bàn phím QWERTY ngay trong trang, dùng được trên **máy tính bảng / điện thoại không có bàn phím**. Trong game, phím cần gõ tiếp theo được tô sáng; bật bàn phím ảo thì bàn phím hệ thống không bật lên nữa (`inputmode="none"`). |
 | **Nhận mặt chữ Hán (mới)** | 4 chế độ: Hán→Việt, Việt→Hán, Nghe→Chọn, Từ vựng. 3 mạng sống, combo, điểm, HSK 1–9 miễn phí. |

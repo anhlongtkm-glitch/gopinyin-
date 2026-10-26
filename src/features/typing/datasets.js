@@ -22,7 +22,7 @@ import { populateVoiceSelect } from "../../shared/audio/tts.js";
 
 import { state as domState } from "../../shared/dom.js";
 
-import { dbGetAll, progressKey } from "../../shared/storage/lesson-repository.js";
+import { dbList, dbGet, progressKey } from "../../shared/storage/lesson-repository.js";
 
 import { shuffle, escapeHtml } from "../../shared/utils.js";
 
@@ -32,9 +32,8 @@ export async function openDataset(id, options = {}) {
   if (!await requireAccount(() => openDataset(id, options))) return;
   if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
-  const sets = await dbGetAll();
+  const ds = await dbGet(id);
   if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
-  const ds = sets.find(x => x.id === id);
   if (!ds) return false;
   /* Ghi nhớ đang mở từ màn nào để nút "← ..." quay lại đúng chỗ */
   const aiVisible = !!(domState.$('aiCard') && !domState.$('aiCard').classList.contains('hidden'));
@@ -158,13 +157,13 @@ export async function fillAppSource() {
   }
   let sets = [];
   try {
-    sets = await dbGetAll();
+    sets = await dbList();
   } catch (e) {
     sets = [];
   }
-  sets.filter(ds => ds && ds.builtin && Array.isArray(ds.rows) && ds.rows.length && ds.id !== cur).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).forEach(ds => out.push({
+  sets.filter(ds => ds && ds.builtin && ds.rowCount && ds.id !== cur).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).forEach(ds => out.push({
     v: 'id:' + ds.id,
-    t: '💾 ' + ds.name + ' (' + ds.rows.length + ')'
+    t: '💾 ' + ds.name + ' (' + ds.rowCount + ')'
   }));
   /* Cấp HSK nào đã tạo bộ (id "vocab:hskN") thì thôi, không liệt kê 2 lần */
   const have = new Set(sets.map(ds => ds && ds.id));

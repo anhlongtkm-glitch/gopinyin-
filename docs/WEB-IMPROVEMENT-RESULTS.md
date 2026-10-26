@@ -2,6 +2,8 @@
 
 Ngày: 26/10/2026. Triển khai trong workspace; chưa phát hành production hoặc sửa dữ liệu Supabase thật.
 
+Đã tiếp tục tối ưu đồng bộ theo phiên bản và chỉ tải nội dung bộ câu khi cần học. Xem [kết quả đợt 2](WEB-PERFORMANCE-PHASE-2.md). Các số đo và số lượng kiểm thử bên dưới ghi nhận đợt triển khai đầu.
+
 ## Các thay đổi đã thực hiện
 
 | Nhóm | Kết quả |
@@ -16,7 +18,7 @@ Ngày: 26/10/2026. Triển khai trong workspace; chưa phát hành production ho
 | Điều hướng | Link `#/study?dataset=...`, Back/Forward, khôi phục bài sau reload với phiên hợp lệ; hủy việc mở bài nếu người dùng đã chuyển màn trong khi tải |
 | Hộp thoại/mobile | Giữ Tab trong app modal, trả focus về nút mở; điều chỉnh nút đóng và tiêu đề/thanh trạng thái trên màn nhỏ |
 | Lịch ôn | Hai lối vào từ Dashboard: mục đến hạn và câu còn sai; mỗi phiên tối đa 20 câu; không ghi đè vị trí bài chính |
-| Nội dung/tài liệu | Số câu Dashboard tính từ catalog (hiện tại 5.012); sửa domain ảnh chia sẻ; cập nhật tài liệu kiến trúc, tài khoản và biến môi trường |
+| Nội dung/tài liệu | Số câu Dashboard tính từ catalog; đợt 2 sửa cách lọc để chỉ tính 4.969 câu HSK, không cộng 43 mục luyện thanh; sửa domain ảnh chia sẻ; cập nhật tài liệu kiến trúc, tài khoản và biến môi trường |
 
 ## Quy tắc lịch ôn
 

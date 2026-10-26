@@ -13,7 +13,7 @@ import { state as domState } from "../../shared/dom.js";
 
 import { appPrompt, appConfirm } from "../../shared/modal.js";
 
-import { dbGetAll, dbPut, dbDelete, progressKey } from "../../shared/storage/lesson-repository.js";
+import { dbList, dbGet, dbPut, dbDelete, progressKey } from "../../shared/storage/lesson-repository.js";
 
 import { toast } from "../../shared/toast.js";
 
@@ -27,7 +27,7 @@ import { escapeHtml } from "../../shared/utils.js";
 export async function renderAiSets() {
   const grid = domState.$('aiSets');
   if (!grid) return;
-  let sets = await dbGetAll();
+  let sets = await dbList();
   sets = sets.filter(ds => ds && ds.kind === 'ai');
   sets.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
   if (!sets.length) {
@@ -35,7 +35,7 @@ export async function renderAiSets() {
     return;
   }
   grid.innerHTML = sets.map(ds => {
-    const total = (ds.rows || []).length;
+    const total = ds.rowCount;
     const p = loadProgress(ds.id);
     const done = Math.min(p?.mainIndex || 0, total);
     const pct = total ? Math.round(done / total * 100) : 0;
@@ -56,8 +56,7 @@ export function aiSetsWire() {
     if (!b) return;
     const id = b.dataset.id,
       act = b.dataset.aiact;
-    const sets = await dbGetAll();
-    const ds = sets.find(x => x.id === id);
+    const ds = await dbGet(id);
     if (!ds) return;
     if (act === 'study') {
       await openDataset(id);

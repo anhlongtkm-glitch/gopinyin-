@@ -22,6 +22,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } }), errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.goto(process.env.TEST_URL, { waitUntil: 'networkidle' });
+    assert.equal(await page.locator('[data-catalog-sentences]').textContent(), '4.969', 'HSK total must exclude 43 tone-pair exercises');
     await page.evaluate(() => localStorage.setItem('cts:progress:legacy', JSON.stringify({ mainIndex: 999, stats: { correct: 999, combo: 999 } })));
     await register(page, 'Roadmap learner');
     await page.click('.ws-navItem[data-view="library"]'); await page.click('[data-vsrc="hsk1"]');

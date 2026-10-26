@@ -33,6 +33,7 @@ const root = path.resolve(__dirname, '..');
     assert.equal(await page.evaluate(()=>typeof window.showView),'function');
     assert.equal(await page.evaluate(()=>!!window.__pron&&!!window.__game&&!!window.VK&&!!window.__gpBridge),true);
     assert(await page.locator('#dashView').isVisible(),'file:// guest dashboard works');
+    assert.equal(await page.locator('[data-catalog-sentences]').textContent(),'4.969','Only HSK lessons contribute to the HSK sentence total');
     await page.locator('.ws-navItem[data-view="library"]').click();
     await page.locator('#vocabList [data-vsrc="hsk1"]').click();
     assert(await page.locator('#authModal').isVisible(),'file:// practice requires configured online authentication');

@@ -16,7 +16,7 @@ import { normalize } from "../../shared/language/normalization.js";
 
 import { fixPinyin } from "../../shared/language/pinyin.js";
 
-import { vcacheGet, vcachePut, dbGetAll, dbPut } from "../../shared/storage/lesson-repository.js";
+import { vcacheGet, vcachePut, dbList, dbPut } from "../../shared/storage/lesson-repository.js";
 
 import { toast } from "../../shared/toast.js";
 
@@ -142,7 +142,7 @@ export async function openVocabSource(srcId) {
   const src = findVocabSource(srcId);
   if (!src) return;
   const id = 'vocab:' + srcId;
-  const existing = (await dbGetAll()).find(x => x.id === id);
+  const existing = (await dbList()).find(x => x.id === id);
   if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
   if (existing) {
     await openDataset(id);

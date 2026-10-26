@@ -68,9 +68,13 @@ async function startSupabaseFixture() {
     if(url.pathname==='/rest/v1/learning_records') {
       if(!account)return denied();
       if(req.method!=='GET')return json(403,{message:'Use versioned RPC'});
-      const all=[...records.values()].filter(r=>r.user_id===account.user.id).sort((a,b)=>a.kind.localeCompare(b.kind)||a.record_id.localeCompare(b.record_id));
+      const kind=url.searchParams.get('kind')?.replace(/^eq\./,'');
+      const filter=url.searchParams.get('record_id');
+      const ids=filter?.startsWith('in.(')?(filter.slice(4,-1).match(/"(?:\\.|[^"])*"|[^,]+/g)||[]).map(value=>value.startsWith('"')?JSON.parse(value):value):null;
+      const all=[...records.values()].filter(r=>r.user_id===account.user.id&&(!kind||r.kind===kind)&&(!ids||ids.includes(r.record_id))).sort((a,b)=>a.kind.localeCompare(b.kind)||a.record_id.localeCompare(b.record_id));
       const offset=Number(url.searchParams.get('offset')||0),limit=Number(url.searchParams.get('limit')||500);
-      return json(200,all.slice(offset,offset+limit));
+      const fields=url.searchParams.get('select')||'*';
+      return json(200,all.slice(offset,offset+limit).map(row=>fields==='*'?row:Object.fromEntries(fields.split(',').map(key=>[key,row[key]]))));
     }
     if(url.pathname==='/rest/v1/rpc/put_learning_record') {
       if(!account)return denied();

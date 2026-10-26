@@ -1,7 +1,7 @@
 // State and behavior owned by features/dashboard/controller. Initialization is orchestrated by app/bootstrap.js.
 
 import { lessonRepository } from "../../shared/lesson-bridge.js";
-import { listRecordEntries } from "../../shared/storage/account-data.js";
+import { listRecordEntries, listRecords } from "../../shared/storage/account-data.js";
 import { openDataset } from "../typing/datasets.js";
 import { state as dataCatalogState } from "../../data/catalog.js";
 
@@ -165,7 +165,7 @@ export function refreshDash() {
 }
 
 function refreshReviewPlan() {
-  const available = new Set(listRecordEntries('dataset').map(r => r.record_id));
+  const available = new Set(listRecords('dataset', ds => ds.id));
   const due = [], weak = [];
   for (const entry of listRecordEntries('kv')) {
     if (!entry.record_id.startsWith('cts:progress:')) continue;
@@ -227,7 +227,7 @@ export function initializeDashboardController() {
   /* ★ Đếm số chạy lên cho các ô thống kê (chỉ chạy khi giá trị thay đổi) */
   dashboardControllerState._countCache = new WeakMap();
   dashboardControllerState.countFrames = new WeakMap();
-  const count = Object.values(dataCatalogState.HSK_DATA || {}).reduce((sum, rows) => sum + rows.filter(row => row && row[0] && row[2]).length, 0);
+  const count = Object.entries(dataCatalogState.HSK_DATA || {}).filter(([key]) => /^hsk[1-9]$/.test(key)).reduce((sum, [, rows]) => sum + rows.filter(row => row && row[0] && row[2]).length, 0);
   document.querySelectorAll('[data-catalog-sentences]').forEach(el => { el.textContent = count.toLocaleString('vi-VN'); });
   setInterval(() => { if (!accountStorageState.$('dashView').classList.contains('hidden')) refreshReviewPlan(); }, 60000);
   for (const id of ['dashReviewBtn', 'dashWeakBtn']) {

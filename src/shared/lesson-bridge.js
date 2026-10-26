@@ -16,7 +16,7 @@ import { state as typingSessionState } from "../features/typing/session.js";
 
 import { getChineseVoices } from "./audio/tts.js";
 
-import { dbGetAll } from "./storage/lesson-repository.js";
+import { dbGetAll, dbList, dbGet } from "./storage/lesson-repository.js";
 
 import { toast } from "./toast.js";
 
@@ -39,10 +39,12 @@ export function initializeLessonBridge() {
     activeDataset: () => typingSessionState.activeDataset,
     hskData: () => typeof dataCatalogState.HSK_DATA !== 'undefined' ? dataCatalogState.HSK_DATA : {},
     dbGetAll: () => dbGetAll(),
+    dbList: () => dbList(),
+    dbGet: id => dbGet(id),
     /* tiến độ luyện gõ của 1 bộ — để màn Luyện phát âm biết bộ nào đã học */
     loadProgress: id => loadProgress(id),
     continueDataset: async () => {
-      const sets = await dbGetAll();
+      const sets = await dbList();
       const candidates = sets.map(ds => ({
         ds,
         progress: loadProgress(ds.id)
@@ -64,7 +66,7 @@ export function initializeLessonBridge() {
       };
     },
     resumeDataset: async id => {
-      const sets = await dbGetAll();
+      const sets = await dbList();
       if (!sets.some(ds => ds.id === id)) throw new Error('Bộ học này không còn trong thư viện.');
       await openDataset(id);
     },
