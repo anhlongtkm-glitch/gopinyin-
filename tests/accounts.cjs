@@ -5,7 +5,13 @@ const path = require('node:path');
 const { chromium } = require('playwright-core');
 const { register } = require('./helpers/supabase-fixture.cjs');
 const root = path.resolve(__dirname,'..');
-const saved = page => page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
+const saved = async page => {
+  try { await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ'); }
+  catch (error) {
+    const detail=await page.evaluate(()=>({status:document.querySelector('#accountSyncStatus')?.textContent,conflictVisible:!document.querySelector('#syncConflictModal')?.hidden,record:document.querySelector('#syncConflictRecord')?.textContent,alerts:[...document.querySelectorAll('[role=alert]')].filter(e=>!e.hidden).map(e=>e.textContent)}));
+    throw new Error('Account did not synchronize: '+JSON.stringify(detail),{cause:error});
+  }
+};
 async function session(page) {
   return page.evaluate(() => JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.startsWith('sb-')&&k.endsWith('-auth-token')))));
 }
