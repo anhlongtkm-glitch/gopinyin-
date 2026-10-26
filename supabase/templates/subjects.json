@@ -1,0 +1,26 @@
+{
+  "confirmation": {
+    "route": "confirm-sign-up",
+    "subject": "Xác minh email của bạn | GoPinyin"
+  },
+  "recovery": {
+    "route": "reset-password",
+    "subject": "Đặt lại mật khẩu tài khoản | GoPinyin"
+  },
+  "invite": {
+    "route": "invite-user",
+    "subject": "Lời mời tạo tài khoản | GoPinyin"
+  },
+  "magic_link": {
+    "route": "magic-link-or-otp",
+    "subject": "Liên kết đăng nhập của bạn | GoPinyin"
+  },
+  "email_change": {
+    "route": "change-email-address",
+    "subject": "Xác nhận thay đổi email | GoPinyin"
+  },
+  "reauthentication": {
+    "route": "reauthentication",
+    "subject": "Mã xác minh tài khoản của bạn | GoPinyin"
+  }
+}
