@@ -1,22 +1,14 @@
-/* ═══════════════════════════════════════════════════════════════
-   ★ LUYỆN PHÁT ÂM — 1) MÀN CHỌN BỘ CÂU
-   Dùng lại .libraryHead/.vocabGrid/.vocabCard của Thư viện để người dùng
-   thấy quen ngay: chọn cấp → mới vào học (giống bên Luyện gõ).
-   ═══════════════════════════════════════════════════════════════ */
-#pronLibCard{margin:0 auto;width:100%;max-width:1180px;padding:clamp(18px,3vw,34px)}
-#pronLibCard .libraryHead{margin-bottom:6px}
-.pronLibGrid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:10px 0 18px}
-.pronLibGrid .vocabCard{min-height:78px;text-align:left;align-items:flex-start}
-/* ★ THANH TIẾN ĐỘ TRÊN THẺ (dùng chung cho Thư viện + Luyện phát âm) —
-   thay cho khối "Bộ câu của bạn (đã học)" đã bỏ. */
-.vocabCard .vocabProg{margin-top:6px;height:5px;border-radius:99px;background:var(--card-3);overflow:hidden;width:100%}
-.vocabCard .vocabProg i{display:block;height:100%;background:var(--brand-grad);border-radius:99px;transition:width .35s var(--ease,ease)}
-/* thẻ chưa học: rãnh rỗng, không tô */
-.vocabCard .vocabProg.isZero{opacity:.55}
-/* thanh xám = mới GÕ bên Luyện gõ, chưa luyện nói bên này */
-.vocabCard .vocabProg.isType i{background:linear-gradient(90deg,#94A3B8,#CBD5E1)}
-.vocabCard .vocabMeta{display:flex;gap:6px;align-items:center;margin-top:4px;font-size:10.5px;font-weight:700;color:var(--muted);flex-wrap:wrap}
+/* Speaking catalog shares the same card grammar as typing. */
+#pronLibCard .libraryHead{margin-bottom:24px}
+.pronLibGrid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin:16px 0 24px}
+.pronLibGrid .vocabCard{min-height:140px;text-align:left;align-items:flex-start}
+.vocabCard .vocabProg{margin-top:auto;height:8px;border-radius:var(--r-pill);background:var(--card-3);overflow:hidden;width:100%}
+.vocabCard .vocabProg i{display:block;height:100%;background:var(--primary);border-radius:inherit;transition:width .3s var(--ease)}
+.vocabCard .vocabProg.isZero{opacity:.65}
+.vocabCard .vocabProg.isType i{background:var(--muted)}
+.vocabCard .vocabMeta{display:flex;gap:8px;align-items:center;margin-top:2px;font-size:12px;font-weight:600;color:var(--muted);flex-wrap:wrap;line-height:1.5}
 .vocabCard .vocabMeta b{color:var(--ok);font-weight:800}
-.vocabCard .vocabMeta em{font-style:normal;color:var(--warn,#b45309);font-weight:800}
-#pronLibCard .sectionTitle{margin:14px 0 2px}
-
+.vocabCard .vocabMeta em{font-style:normal;color:var(--warn);font-weight:750}
+#pronLibCard .sectionTitle{margin:16px 0 0;font-size:16px;font-weight:800}
+#pronLibCard .sectionTitle .muted{font-size:14px;font-weight:500;color:var(--muted)}
+@media(max-width:600px){.pronLibGrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}.pronLibGrid .vocabCard{min-height:150px}}

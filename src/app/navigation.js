@@ -2,6 +2,7 @@
 
 import { publishLegacy, legacy } from "./compatibility.js";
 import { writeRoute, markNavigation, navigationVersion } from "./routes.js";
+import { rememberLibraryPosition, restoreLibraryPosition } from "./view-context.js";
 import { aiEndSession } from "../features/ai/session.js";
 
 import { currentUser, requireAccount } from "../features/auth/service.js";
@@ -50,14 +51,19 @@ export function renderUserChip() {
 }
 
 export async function showView(v, options = {}) {
+  const practice = v === 'practice';
+  if (practice) v = 'library';
   const navigation = options.navigation ?? markNavigation();
   if (navigation !== navigationVersion()) return false;
-  aiEndSession();
+  if (!options.preserveStudy) aiEndSession();
   if (['game', 'pronStudy'].includes(v) && !await requireAccount(() => showView(v, { ...options, navigation: undefined }))) return false;
   if (navigation !== navigationVersion()) return false;
   /* ★ Chốt an toàn: tên view lạ → về Bảng điều khiển. Nếu không, mọi section
      đều bị ẩn và người dùng chỉ thấy một khung trắng. */
   if (!appNavigationState.VIEW_META[v]) v = 'dash';
+  document.dispatchEvent(new CustomEvent('gp:view-leaving',{detail:v}));
+  if (appNavigationState.currentView === 'library') rememberLibraryPosition();
+  if (appNavigationState.currentView === 'pron') rememberLibraryPosition('pronLibCard');
 
   /* rời màn luyện phát âm → TẮT MIC ngay (không ghi âm ngoài ý muốn) */
   if ((appNavigationState.currentView === 'pron' || appNavigationState.currentView === 'pronStudy') && v !== 'pronStudy' && legacy.__pron) {
@@ -84,8 +90,11 @@ export async function showView(v, options = {}) {
   accountStorageState.$('rankCard').classList.toggle('hidden', v !== 'rank');
   accountStorageState.$('aiCard').classList.toggle('hidden', v !== 'ai');
   accountStorageState.$('pronLibCard')?.classList.toggle('hidden', v !== 'pron');
-  accountStorageState.$('pronCard')?.classList.toggle('hidden', v !== 'pronStudy');
+  // Expose the speaking controls only after settings/source initialization settles.
+  // Otherwise a quick shortcut can be overwritten by the late loadSettings().
+  accountStorageState.$('pronCard')?.classList.add('hidden');
   accountStorageState.$('appCard').classList.toggle('hidden', true);
+  for (const key of ['readings','tones','shadow','shadowVideo','shadowText','bear']) accountStorageState.$(key+'Card')?.classList.toggle('hidden',v!==key);
   accountStorageState.$('gamesCard')?.classList.toggle('hidden', v !== 'games');
   accountStorageState.$('gameCard').classList.toggle('hidden', v !== 'game');
   if (v === 'library') {
@@ -119,33 +128,41 @@ export async function showView(v, options = {}) {
      Chọn bộ ở đây rồi mới vào học — giống luồng của màn Luyện gõ. */
   if (v === 'pron' && legacy.__pron) {
     try {
-      legacy.__pron.openLib();
+      await legacy.__pron.openLib();
     } catch (e) {}
   }
   if (v === 'pronStudy' && legacy.__pron) {
     try {
-      legacy.__pron.open();
+      await legacy.__pron.open();
     } catch (e) {}
   }
+  if (navigation !== navigationVersion()) return false;
+  if (v === 'pronStudy') accountStorageState.$('pronCard')?.classList.remove('hidden');
   accountStorageState.$('backLibrary').classList.toggle('hidden', v !== 'game');
   const meta = appNavigationState.VIEW_META[v] || appNavigationState.VIEW_META.dash;
   accountStorageState.$('wsViewTitle').textContent = meta[0];
   accountStorageState.$('wsViewSub').textContent = meta[1];
   /* "pronStudy" là màn con của mục "pron"; "game" là màn con của mục "games"
      → vẫn tô sáng đúng mục cha trên thanh bên khi đang ở màn con. */
-  const navKey = v === 'pronStudy' ? 'pron' : v === 'game' ? 'games' : v;
+  const navKey = ['pronStudy','pron','library'].includes(v) ? 'practice' : v === 'game' ? 'games' : ['shadowVideo','shadowText'].includes(v) ? 'shadow' : v;
   accountStorageState.$$('.ws-navItem').forEach(b => b.classList.toggle('active', b.dataset.view === navKey));
   if (v === 'game' && legacy.__game && legacy.__game.openGame) legacy.__game.openGame();
   if (v === 'dash') refreshDash();
   /* ★ phát lại hiệu ứng xuất hiện mỗi lần chuyển mục */
   if (v !== 'game') replayFx(viewEl(v));
   audioEffectsState.Sfx.page();
-  if (options.route !== false) writeRoute(v === 'pronStudy' ? 'pron' : v);
+  if (options.route !== false) writeRoute(practice ? 'practice' : v === 'pronStudy' ? 'pron' : v);
+  if (v === 'library') restoreLibraryPosition();
+  else if (v !== 'pron' && !options.preserveStudy) window.scrollTo({top:0,behavior:'instant'});
+  document.dispatchEvent(new CustomEvent('gp:view-changed', { detail: v }));
   return true;
 }
 /* ★ expose cho app-core gọi (vd nút Quay lại trong appCard khi đang học bộ câu cá nhân) */
 
 export function viewEl(v) {
+  if (['readings','tones','shadow','shadowVideo','shadowText','bear'].includes(v)) return accountStorageState.$(v+'Card');
+  if (v === 'pronStudy') return accountStorageState.$('pronCard');
+  if (v === 'pron') return accountStorageState.$('pronLibCard');
   return v === 'dash' ? accountStorageState.$('dashView') : v === 'ai' ? accountStorageState.$('aiCard') : v === 'rank' ? accountStorageState.$('rankCard') : v === 'games' ? accountStorageState.$('gamesCard') : accountStorageState.$('libraryCard');
 }
 
@@ -162,8 +179,14 @@ export function replayFx(el) {
 export function initializeAppNavigation() {
   /* ═══════════════ ĐIỀU HƯỚNG LANDING ↔ WORKSPACE ═══════════════ */
   appNavigationState.VIEW_META = {
-    dash: ['Bảng điều khiển', 'Tổng quan hành trình học tập của bạn'],
-    library: ['Luyện gõ', 'Thư viện câu HSK — gõ chữ Hán của cả câu, app tự chấm'],
+    readings: ['Bài khóa','Đọc, nghe và hiểu những đoạn hội thoại HSK 1'],
+    tones: ['Thanh điệu','Nghe và nhận biết 5 thanh cơ bản'],
+    shadow: ['Shadowing','Chọn video YouTube theo HSK 1–4 và chủ đề giao tiếp'],
+    shadowVideo: ['Shadowing Video','Nghe, nói theo và viết chính tả với video YouTube'],
+    shadowText: ['Shadowing Bài khóa','Nghe mẫu, nói theo và tự đối chiếu bản ghi'],
+    bear: ['Gấu của bạn','Nhiệm vụ, thử thách và hành trình lên cấp'],
+    dash: ['Tổng quan', 'Một bài học nhỏ, một bước tiến mỗi ngày'],
+    library: ['Luyện tập', 'Chọn HSK hoặc chủ đề, luyện Gõ / Nói trong cùng một bộ'],
     pron: ['Luyện phát âm', 'Chọn bộ câu theo cấp HSK — nói bằng micro, chấm điểm từng chữ'],
     pronStudy: ['Luyện phát âm', 'Nói tiếng Trung bằng micro — chấm điểm từng chữ, nghe lại và sửa ngay'],
     rank: ['Bảng xếp hạng', 'Bảng xếp hạng luyện gõ theo ngày / tuần — tính theo số câu luyện được'],

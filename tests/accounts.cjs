@@ -28,8 +28,8 @@ async function login(page,email,password='password123') {
     await page.goto(process.env.TEST_URL,{waitUntil:'networkidle'});
     assert(await page.locator('#dashView').isVisible());
     assert.equal(await page.locator('#authGoogleBtn,#authGuestBtn,#landing,#proModal').count(),0);
-    for(const [view,selector] of [['library','#libraryCard'],['pron','#pronLibCard'],['games','#gamesCard'],['rank','#rankCard']]) {
-      await page.click(`.ws-navItem[data-view="${view}"]`);assert(await page.locator(selector).isVisible());
+    for(const [view,selector] of [['practice','#libraryCard'],['readings','#readingsCard'],['games','#gamesCard'],['rank','#rankCard']]) {
+      if(view==='rank')await page.click('.workspaceTools summary');await page.click(`.ws-navItem[data-view="${view}"]`);assert(await page.locator(selector).isVisible());
     }
     await page.evaluate(()=>window.showView('game'));
     assert(await page.locator('#authModal').isVisible());
@@ -37,7 +37,7 @@ async function login(page,email,password='password123') {
     await page.evaluate(()=>window.__pron.open());
     assert(await page.locator('#authModal').isVisible());
     await page.click('#authModal .modalClose');
-    await page.click('[data-view="library"]');await page.click('[data-vsrc="hsk9"]');
+    await page.click('[data-view="practice"]');await page.click('[data-vsrc="hsk9"]');
     assert(await page.locator('#authModal').isVisible());assert.equal(await page.locator('#appCard').isVisible(),false);
     console.log('  PASS public browsing and internal practice guards');
     // Register while a protected action is pending: it must resume the selected HSK level.
@@ -61,7 +61,7 @@ async function login(page,email,password='password123') {
     const secondContext=await browser.newContext(),second=await secondContext.newPage();
     await second.goto(process.env.TEST_URL,{waitUntil:'networkidle'});await login(second,email);
     assert.equal(await second.locator('#wsUserName').textContent(),'Updated learner');
-    await second.click('[data-view="library"]');await second.click('[data-vsrc="hsk9"]');await second.locator('#appCard').waitFor({state:'visible'});
+    await second.click('[data-view="practice"]');await second.click('[data-vsrc="hsk9"]');await second.locator('#appCard').waitFor({state:'visible'});
     assert.equal(await second.evaluate(()=>window.index),3);
     // Force genuine CAS conflict between devices without changing either UI's cache.
     const config=await page.evaluate(()=>window.APP_CONFIG);
@@ -133,7 +133,7 @@ async function login(page,email,password='password123') {
       await ctx.route('**/assets/config.js',route=>route.fulfill({contentType:'text/javascript',body:'window.APP_CONFIG = {};'}));
       const p=await ctx.newPage();await p.goto(process.env.TEST_URL,{waitUntil:'networkidle'});
       assert(await p.locator('#dashView').isVisible());assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-      await p.click('[data-view="library"]');await p.click('[data-vsrc="hsk4"]');assert(await p.locator('#authModal').isVisible());
+      await p.click(device==='mobile'?'[data-mobile-view="practice"]':'.ws-navItem[data-view="practice"]');await p.click('[data-vsrc="hsk4"]');assert(await p.locator('#authModal').isVisible());
       fs.mkdirSync(path.join(root,'.cache/accounts'),{recursive:true});
       await p.screenshot({path:path.join(root,`.cache/accounts/${theme}-${device}.png`),fullPage:true});
       await ctx.close();

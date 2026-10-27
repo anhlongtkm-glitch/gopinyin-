@@ -1,6 +1,9 @@
 // State and behavior owned by features/pronunciation/render. Initialization is orchestrated by app/bootstrap.js.
 
 import { currentItem } from "./lesson.js";
+import { navigationVersion } from "../../app/routes.js";
+import { setMascot, renderVisibleMascots } from "../../shared/mascot.js";
+import { studyOverlayOpen, ensureStudyControlVisible } from "../../shared/study/interactions.js";
 
 import { state as pronunciationRepositoryState } from "./repository.js";
 
@@ -82,19 +85,29 @@ export function renderCard() {
     return;
   }
   area.classList.remove('hidden');
+  const foot = pronunciationUtilsState.$('pronCard')?.querySelector('.studyFoot');
+  if (foot) foot.hidden = false;
   if (comp) comp.classList.add('hidden');
   const viLine = pronunciationUtilsState.$('pronViLine'),
     hanLine = pronunciationUtilsState.$('pronHanLine'),
     pyLine = pronunciationUtilsState.$('pronPyLine');
   if (viLine) viLine.classList.toggle('hidden', !pronunciationSessionState.S.settings.showVi);
-  if (hanLine) hanLine.classList.toggle('hidden', !pronunciationSessionState.S.settings.showHan);
-  if (pyLine) pyLine.classList.toggle('hidden', !pronunciationSessionState.S.settings.showPy);
+  if (hanLine) hanLine.classList.toggle('hidden', !pronunciationSessionState.S.settings.showHan && !pronunciationSessionState.S.settings.showPy);
+  // Pinyin appears once, immediately below its matching glyph.
+  if (pyLine) pyLine.classList.add('hidden');
   const vi = pronunciationUtilsState.$('pronVi');
   if (vi) vi.textContent = it.vi || '—';
   renderHanzi();
   const py = pronunciationUtilsState.$('pronPy');
   if (py) py.textContent = it.py || '';
+  if (pronunciationSessionState.S.phase === 'idle' && !pronunciationSessionState.S.result) setMascot('pronStudyMascot', 'reading');
+  renderVisibleMascots();
   updateMicLabel();
+  const navigation = navigationVersion(), activeBefore = document.activeElement;
+  requestAnimationFrame(() => {
+    if (navigation !== navigationVersion() || it !== currentItem() || studyOverlayOpen() || document.getElementById('pronSettings')?.open || document.activeElement !== activeBefore) return;
+    ensureStudyControlVisible(pronunciationUtilsState.$('pronMicBtn'));
+  });
 }
 
 /* Chữ Hán từng chữ — bấm vào để xem chi tiết.
@@ -126,7 +139,11 @@ export function hanziHtml(zh, statusOf) {
     const st = c ? c.status : 'idle';
     const py = syl[hi] || '';
     const label = st === 'good' ? 'tốt' : st === 'warn' ? 'cần chú ý' : st === 'bad' ? 'chưa tốt' : st === 'unknown' ? 'chưa đánh giá' : 'chưa luyện';
-    out += '<button type="button" class="pronChar st-' + st + '" data-ci="' + hi + '"' + ' title="' + esc(ch + ' · ' + py + ' — ' + label) + '"' + ' aria-label="' + esc(ch + ', ' + py + ', ' + label) + '">' + '<span class="pronCharGlyph">' + esc(ch) + '</span>' + '<span class="pronCharPy">' + esc(py) + '</span>' + '<span class="pronCharDot" aria-hidden="true"></span>' + '</button>';
+    const visibleParts = [];
+    if (pronunciationSessionState.S?.settings?.showHan !== false) visibleParts.push(ch);
+    if (pronunciationSessionState.S?.settings?.showPy !== false && py) visibleParts.push(py);
+    const accessibleLabel = visibleParts.concat(label).join(' · ');
+    out += '<button type="button" class="pronChar st-' + st + '" data-ci="' + hi + '"' + ' title="' + esc(accessibleLabel) + '"' + ' aria-label="' + esc(accessibleLabel) + '">' + '<span class="pronCharGlyph">' + esc(ch) + '</span>' + '<span class="pronCharPy">' + esc(py) + '</span>' + '<span class="pronCharDot" aria-hidden="true"></span>' + '</button>';
     hi++;
   }
   return out;
@@ -136,6 +153,8 @@ export function renderHanzi() {
   const it = currentItem();
   const host = pronunciationUtilsState.$('pronHanzi');
   if (!host || !it) return;
+  host.classList.toggle('pron-hide-han', !pronunciationSessionState.S.settings.showHan);
+  host.classList.toggle('pron-hide-py', !pronunciationSessionState.S.settings.showPy);
   const statusOf = {};
   if (pronunciationSessionState.S.result && pronunciationSessionState.S.result.chars) for (const c of pronunciationSessionState.S.result.chars) statusOf[c.i] = c;
   host.innerHTML = hanziHtml(it.zh, statusOf) || '<span class="pronPunct">—</span>';
@@ -148,7 +167,8 @@ export function updateMicLabel() {
   const txt = btn.querySelector('.pronMicTxt');
   const sub = btn.querySelector('.pronMicSub');
   if (txt) txt.textContent = pronunciationSessionState.S.result ? 'Nhấn để nói lại' : 'Nhấn để bắt đầu nói';
-  if (sub) sub.innerHTML = 'hoặc nhấn <b>Enter</b>';
+  btn.setAttribute('aria-label', pronunciationSessionState.S.result ? 'Nói lại câu này' : 'Bắt đầu nói');
+  if (sub) sub.innerHTML = 'hoặc nhấn <kbd>Enter</kbd>';
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -213,14 +233,20 @@ export function renderResult() {
     host.insertAdjacentHTML('beforeend', '<div class="pronNote" role="status">' + esc(pronunciationSessionState.S.serverAssess.note) + ' <button type="button" class="btn secondary" data-pron-service-retry>Thử dịch vụ lại và nói lại</button></div>');
   }
 
+  setMascot('pronStudyMascot', r.score >= pronunciationSessionState.GOOD ? 'clap' : 'encourage', {animate:true,eventKey:'result:' + pronunciationSessionState.S.startedAt + ':' + pronunciationSessionState.S.sessionTries});
+
   /* Kết quả nằm dưới thẻ câu → cuộn tới để người dùng THẤY ngay,
      không phải tự mò xuống (chỉ cuộn khi chưa hiện đủ trong màn hình). */
+  const navigation = navigationVersion(), item = currentItem();
+  const activeBefore = document.activeElement, scrollBefore = window.scrollY;
   setTimeout(() => {
+    if (navigation !== navigationVersion() || item !== currentItem() || r !== pronunciationSessionState.S.result || studyOverlayOpen()) return;
+    if (!host.getClientRects().length || activeBefore !== document.activeElement || Math.abs(window.scrollY - scrollBefore) > 8 || document.getElementById('pronSettings')?.open) return;
     try {
       const r2 = host.getBoundingClientRect();
-      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const vh = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
       if (r2.top > vh - 140 || r2.top < 0) host.scrollIntoView({
-        behavior: 'smooth',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
         block: 'center'
       });
     } catch (e) {}
@@ -232,6 +258,12 @@ export function renderComplete() {
     msg = pronunciationUtilsState.$('pronCompleteMsg');
   const s = stats();
   if (comp) comp.classList.remove('hidden');
+  pronunciationUtilsState.$('pronArea')?.classList.add('hidden');
+  const foot = pronunciationUtilsState.$('pronCard')?.querySelector('.studyFoot');
+  if (foot) foot.hidden = true;
+  setMascot('pronCompleteMascot', 'celebrate', {animate:true,eventKey:'complete:' + pronunciationSessionState.S.source + ':' + pronunciationSessionState.S.sessionTries});
+  document.dispatchEvent(new CustomEvent('gp:celebrate',{detail:{id:'pron-complete:'+pronunciationSessionState.S.source+':'+pronunciationSessionState.S.startedAt+':'+pronunciationSessionState.S.sessionTries,kind:'complete',title:'Đã đi hết lượt luyện Nói. Hãy tiếp tục giữ nhịp nhé!'}}));
+  renderVisibleMascots();
   if (msg) {
     msg.innerHTML = s.total ? 'Bạn đã đi hết ' + s.total + ' câu của bộ này. Đã luyện <b>' + s.attempted + '</b> câu, đạt mục tiêu <b>' + s.good + '</b> câu (ngưỡng ' + pronunciationSessionState.GOOD + '/100).' : 'Chưa có câu nào trong bộ lọc hiện tại.';
   }
@@ -274,8 +306,11 @@ export function showDetail(ci) {
 export function hideDetail() {
   const host = pronunciationUtilsState.$('pronDetail');
   if (host) {
+    const returnFocus = host.contains(document.activeElement);
+    const index = host.dataset.ci;
     host.classList.add('hidden');
     host.innerHTML = '';
+    if (returnFocus) pronunciationUtilsState.$('pronHanzi')?.querySelector('[data-ci="' + index + '"]')?.focus({preventScroll:true});
   }
   pronunciationSessionState.S.detailIdx = -1;
 }

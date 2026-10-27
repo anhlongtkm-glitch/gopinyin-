@@ -8,7 +8,8 @@ import { answerWords, updateChineseHighlight, updateWrongBadge } from "./answers
 
 import { save, resetSessionRuntime } from "./progress.js";
 
-import { render } from "./render.js";
+import { render, renderStatsOnly } from "./render.js";
+import { setMascot } from "../../shared/mascot.js";
 
 import { markSentenceWrong } from "./scoring.js";
 
@@ -34,9 +35,26 @@ export function hint() {
   if (!isStudyAllowed()) return;
   if (typingSessionState.index >= typingSessionState.order.length) return;
   typingSessionState.pinyinHint = !typingSessionState.pinyinHint; // giữ trạng thái qua các câu trong phiên — mặc định ẩn khi mới vào
-  domState.$('chinese').classList.toggle('show-pinyin', typingSessionState.pinyinHint);
-  domState.$('hintBtn').textContent = typingSessionState.pinyinHint ? '💡 Ẩn Pinyin' : '💡 Hiện Pinyin';
-  domState.$('pinyinInput').focus();
+  syncPinyinHintUI();
+}
+
+export function syncPinyinHintUI() {
+  domState.$('chinese')?.classList.toggle('show-pinyin', typingSessionState.pinyinHint);
+  const main = domState.$('hintBtn');
+  if (main) {
+    let label = main.querySelector('[data-hint-label],.tgTxt');
+    if (!label) {
+      label = document.createElement('span');
+      label.dataset.hintLabel = '';
+      for (const child of Array.from(main.childNodes)) if (child.nodeType === 3) child.remove();
+      main.prepend(label);
+    }
+    label.textContent = 'Pinyin';
+    main.setAttribute('aria-pressed', String(typingSessionState.pinyinHint));
+    main.title = 'Ẩn/hiện Pinyin dưới chữ Hán (2)';
+  }
+  setToggleUI('typingPyToggle', typingSessionState.pinyinHint);
+  updateHanUI();
 }
 
 export function skip() {
@@ -75,6 +93,9 @@ export function retrySentence() {
   domState.$('feedback').innerHTML = '';
   renderChineseWords(q); // xoá tô đỏ/vàng
   updateChineseHighlight();
+  renderStatsOnly();
+  setMascot('typingStudyMascot', 'reading');
+  setMascot('typingFeedbackMascot', 'face-focus');
   inp.focus();
 }
 
@@ -196,7 +217,6 @@ export function toggleAutoSound() {
   if (!typingSessionState.autoSound && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   updateSoundUI();
   save();
-  domState.$('pinyinInput').focus();
 }
 /* ── Nút "Đọc khi gõ": đọc chữ Hán ngay khi gõ đúng ── */
 
@@ -211,7 +231,6 @@ export function toggleReadType() {
   if (!typingSessionState.readOnType && 'speechSynthesis' in window) window.speechSynthesis.cancel();
   updateReadTypeUI();
   save();
-  domState.$('pinyinInput').focus();
 }
 
 /* Gợi ý khi ẩn cả hai dòng */
@@ -219,7 +238,7 @@ export function toggleReadType() {
 /* Gợi ý khi ẩn cả hai dòng */
 export function syncQuizHint() {
   const h = domState.$('quizEmptyHint');
-  if (h) h.hidden = typingSessionState.showVietnamese || typingSessionState.showHanzi;
+  if (h) h.hidden = typingSessionState.showVietnamese || typingSessionState.showHanzi || typingSessionState.pinyinHint;
 }
 
 /* ── Vietnamese Toggle ── */
@@ -236,7 +255,6 @@ export function toggleVietnamese() {
   typingSessionState.showVietnamese = !typingSessionState.showVietnamese;
   updateViUI();
   save();
-  domState.$('pinyinInput').focus();
 }
 
 /* ── Hanzi (chữ Hán) Toggle ── */
@@ -244,7 +262,8 @@ export function toggleVietnamese() {
 /* ── Hanzi (chữ Hán) Toggle ── */
 export function updateHanUI() {
   setToggleUI('hanToggle', typingSessionState.showHanzi, '🀄', '🀄');
-  domState.$('hanLine')?.classList.toggle('vi-hidden', !typingSessionState.showHanzi);
+  domState.$('chinese')?.classList.toggle('hanzi-hide-glyphs', !typingSessionState.showHanzi);
+  domState.$('hanLine')?.classList.toggle('vi-hidden', !typingSessionState.showHanzi && !typingSessionState.pinyinHint);
   syncQuizHint();
 }
 
@@ -252,7 +271,6 @@ export function toggleHanziLine() {
   typingSessionState.showHanzi = !typingSessionState.showHanzi;
   updateHanUI();
   save();
-  domState.$('pinyinInput').focus();
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -266,13 +284,13 @@ export function toggleHanziLine() {
 
 export function initializeTypingControls() {
   /* ── Hint / Skip / Reset ── */
-  /* Cho bàn phím ảo / nơi khác gọi được (ẩn/hiện pinyin — chỉ Enter và nút 💡) */
+  // Explicit Pinyin action shared with the virtual keyboard and the number shortcut.
   publishLegacy("__gpToggleHint", function () {
     hint();
   });
 }
 
-export function initializeTypingControls2() {
+export function initializeTypingControlEvents() {
   /* ★ Tra nghĩa online: luôn bật (đã bỏ nút bật/tắt) — gọi thẳng MyMemory qua HTTPS */
   // ★ Gõ BẤT KỲ phím nào → tự tắt popup (Esc cũng tắt)
   document.addEventListener('keydown', e => {
@@ -295,14 +313,12 @@ export function initializeTypingControls2() {
   domState.$('rateSelect').onchange = e => {
     typingSessionState.speechRate = Number(e.target.value) || .8;
     save();
-    domState.$('pinyinInput').focus();
   };
   domState.$('voiceSelect').onchange = e => {
     typingSessionState.selectedVoiceName = e.target.value;
     save();
     const q = typingSessionState.index < typingSessionState.order.length ? typingSessionState.rows[typingSessionState.order[typingSessionState.index]] : null;
     if (q && q.zh && q.zh !== '—') speakText(q.zh, false);
-    domState.$('pinyinInput').focus();
   };
   if ('speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = populateVoiceSelect;

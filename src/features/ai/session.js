@@ -1,4 +1,5 @@
 import { requireAccount, currentUser } from "../auth/service.js";
+import { setMascot } from "../../shared/mascot.js";
 import { aiProxyUrl } from "../../shared/service-config.js";
 import { markNavigation, navigationVersion, writeRoute } from "../../app/routes.js";
 // State and behavior owned by features/ai/session. Initialization is orchestrated by app/bootstrap.js.
@@ -53,6 +54,7 @@ export function aiSetStatus(msg, cls) {
   if (!el) return;
   el.className = 'aiStatus' + (cls ? ' ' + cls : '');
   el.innerHTML = msg;
+  if (cls === 'err') setMascot('aiMascot', 'encourage', { animate: true });
 }
 /* ★ Thanh trạng thái AI trên màn hình học */
 
@@ -69,7 +71,7 @@ export function aiShowGen(msg, cls, retry) {
   }
   el.classList.remove('hidden');
   el.className = 'aiGenBar' + (cls ? ' ' + cls : '');
-  el.innerHTML = msg + (retry ? '<button type="button" class="aiRetryBtn" id="aiRetryBtn">Thử lại</button>' : '');
+  el.innerHTML = msg + (retry ? '<button type="button" class="btn secondary aiRetryBtn" id="aiRetryBtn">Thử lại</button>' : '');
   if (retry && domState.$('aiRetryBtn')) domState.$('aiRetryBtn').onclick = () => {
     if (!aiSessionState.aiSession) return;
     aiSessionState.aiSession.stopped = false;
@@ -216,6 +218,7 @@ export async function aiMaybeFill() {
   if (!s || !s.live || s.stopped || s.pending) return;
   if (typingSessionState.order.length - typingSessionState.index >= 3) return; // còn đủ mục chưa cần gọi AI
   s.pending++;
+  setMascot('aiMascot', 'thinking');
   const unit = aiUnitOf(s.kind);
   // ★ Ghi nhớ TRƯỚC khi thêm: người dùng có đang ở màn chờ mục mới không?
   const wasWaiting = typingSessionState.index >= typingSessionState.order.length;
@@ -240,6 +243,7 @@ export async function aiMaybeFill() {
     if (s.empty >= 2) s.stopped = true;
   }
   s.pending--;
+  setMascot('aiMascot', s.stopped ? 'encourage' : 'ready');
   if (s.stopped) aiShowGen('🤖 AI tạm hết ' + unit + ' mới cho chủ đề này — bạn đã học <b>' + typingSessionState.rows.length + '</b> ' + unit + '. Đổi chủ đề khác hoặc bấm thử lại.', 'err', true);else aiShowGen(''); // xoá thanh khi đã xong/đang gõ dở
   aiRefreshAfterAppend(wasWaiting); // ★ không phá nội dung đang gõ
 }
@@ -281,8 +285,10 @@ export async function aiStartStudy() {
   if (!aiProxyUrl()) aiKeyStore(provider, key);
   if (btn) {
     btn.disabled = true;
-    btn.textContent = '⏳ Đang nhờ AI viết ' + unit + '…';
+    btn.setAttribute('aria-busy', 'true');
+    btn.textContent = 'Đang tạo ' + unit + '…';
   }
+  setMascot('aiMascot', 'thinking', { animate: true, eventKey: 'ai-request:' + requestId });
   aiValidationState.aiVerifyFixedCount = 0; // đếm riêng số nghĩa được soát lại trong lần này
   aiSessionState.aiSession = {
     prompt: prompt,
@@ -306,6 +312,7 @@ export async function aiStartStudy() {
     const res = await aiCollect(provider, key, prompt, batch, level, session.seen, null, kind, active);
     if (!active()) return;
     if (!res.items.length) throw new Error(res.stopped || 'AI chưa trả về ' + unit + ' nào cho chủ đề này.');
+    setMascot('aiMascot', 'ready');
 
     /* ★ HỎI LƯU NGAY SAU KHI TẠO — trước khi vào học.
        · "Lưu lại"     → đặt tên → ghi vào thư viện → học tiếp lần sau đúng câu đang dở.
@@ -417,7 +424,8 @@ export async function aiStartStudy() {
   } finally {
     if (btn && requestId === aiRequestId) {
       btn.disabled = false;
-      btn.textContent = '🚀 Viết prompt rồi học ngay';
+      btn.removeAttribute('aria-busy');
+      btn.textContent = 'Tạo câu và học';
     }
   }
 }
@@ -433,8 +441,9 @@ export function aiEndSession() {
   }
   aiSessionState.aiSession = null;
   aiShowGen('');
+  setMascot('aiMascot', 'ready');
   const button = domState.$('aiStartBtn');
-  if (button) { button.disabled = false; button.textContent = '🚀 Viết prompt rồi học ngay'; }
+  if (button) { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = 'Tạo câu và học'; }
 }
 
 export function aiSessionLive() {

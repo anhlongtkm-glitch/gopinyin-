@@ -38,7 +38,7 @@ function check(name, ok, detail) {
     }))
   );
   console.log('\n  Mục điều hướng:', views.map(v => v.view).join(' · '));
-  const coreViews = ['dash', 'library', 'pron', 'rank', 'ai', 'games'];
+  const coreViews = ['dash', 'practice', 'readings', 'tones', 'shadow', 'bear', 'rank', 'ai', 'games'];
   const missing = coreViews.filter(v => !views.some(x => x.view === v));
   check('Đủ các mục điều hướng cốt lõi', missing.length === 0, { missing });
   check('Không còn mục Vườn Pinyin / Cung thủ', !views.some(x => x.view === 'garden' || x.view === 'archer'), views.map(v => v.view));
@@ -52,7 +52,7 @@ function check(name, ok, detail) {
     await page.waitForTimeout(600);
 
     const info = await page.evaluate(() => {
-      const secs = [...document.querySelectorAll('main section, section.card, #dashView')]
+      const secs = [...document.querySelectorAll('.ws-main > section')]
         .filter(s => !s.classList.contains('hidden'));
       let best = { w: 0, h: 0, id: '' };
       secs.forEach(s => {

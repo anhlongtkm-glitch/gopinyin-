@@ -14,7 +14,7 @@ import { loadSource, syncToolbar } from "./settings.js";
 
 import { state as pronunciationStorageState } from "./storage.js";
 
-import { esc, state as pronunciationUtilsState, toast } from "./utils.js";
+import { esc, state as pronunciationUtilsState } from "./utils.js";
 
 /* ═══════════════════════════════════════════════════════════
    Màn CHỌN BỘ CÂU — vào đây trước, chọn cấp rồi mới luyện
@@ -22,6 +22,7 @@ import { esc, state as pronunciationUtilsState, toast } from "./utils.js";
    vào một bộ câu ngẫu nhiên)
    ═══════════════════════════════════════════════════════════ */
 export function libStats(id) {
+  if (!pronunciationStorageState.PronStore || !pronunciationRepositoryState.PronRepo) return {attempted:0,good:0,index:0};
   const p = pronunciationStorageState.PronStore.load(pronunciationRepositoryState.PronRepo.keyOf(id));
   let attempted = 0,
     good = 0;
@@ -73,9 +74,9 @@ export async function renderLib() {
      luyện nói TÁCH RIÊNG khỏi Luyện gõ, nên người dùng chọn bộ ngay tại đây. */
 }
 
-export async function startSource(srcId) {
+export async function startSource(srcId, options = {}) {
   const navigation = markNavigation();
-  if (!await requireAccount(() => startSource(srcId))) return;
+  if (!await requireAccount(() => startSource(srcId, options))) return;
   if (navigation !== navigationVersion()) return;
   if (!srcId) return;
   pronunciationControllerState.Pron.leave();
@@ -87,7 +88,7 @@ export async function startSource(srcId) {
   syncToolbar();
   if (typeof legacy.showView === 'function') {
     try {
-      await legacy.showView('pronStudy', { navigation });
+      await legacy.showView('pronStudy', { navigation, preserveStudy:options.preserveStudy });
       return;
     } catch (e) {}
   }

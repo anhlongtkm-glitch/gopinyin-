@@ -1,66 +1,21 @@
 <section id="dashView" class="dash">
-      <div class="dashHero">
-        <div class="dashHello">
-          <h2>Xin chào, <span id="dashName">bạn</span> 👋</h2>
-          <p>Mỗi ngày một bước nhỏ. Tiếp tục bài đang học hoặc chọn một lộ trình phù hợp với mục tiêu của bạn.</p>
-        </div>
-        <div class="dashGoal">
-          <svg viewBox="0 0 120 120" class="dashRing" aria-hidden="true"><defs><linearGradient id="dashGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC9A1"/><stop offset="1" stop-color="#2A8770"/></linearGradient></defs>
-            <circle class="dashRingBg" cx="60" cy="60" r="52" />
-            <circle class="dashRingFg" id="dashRingFg" cx="60" cy="60" r="52" />
-          </svg>
-          <div class="dashGoalInfo"><b id="dashGoalNum">0/20</b><span>mục tiêu hôm nay</span></div>
-        </div>
-      </div>
-
-      <button class="dashResume" id="dashContinueBtn" type="button" aria-label="Khám phá thư viện học tập">
-        <span class="dashResumeIcon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="5" width="18" height="14" rx="2.5"/>
-            <path d="M7 9h.01M11 9h.01M15 9h.01M7 13h.01M15 13h.01M9.5 13h5"/>
-          </svg>
-        </span>
-        <span class="dashResumeContent">
-          <span class="dashResumeEyebrow" id="dashContinueEyebrow">Lộ trình học tập</span>
-          <b id="dashContinueTitle">Chọn bài học đầu tiên</b>
-          <small id="dashContinueSub">Khám phá thư viện HSK và chủ đề từ vựng để bắt đầu.</small>
-          <span class="dashResumeProgress" id="dashContinueProgress" role="progressbar" aria-label="Tiến độ bộ đang học" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="dashContinueProgressFill"></i></span>
-        </span>
-        <span class="dashResumeAction" id="dashContinueAction">Khám phá thư viện <span aria-hidden="true">→</span></span>
-      </button>
-
-      <div class="dashReview" aria-label="Kế hoạch ôn tập hôm nay">
+<div class="dashHero">
+ <div class="dashHello"><span class="featureEyebrow">HỌC TIẾNG TRUNG · GẤU XANH ĐỒNG HÀNH</span><h2>Gõ từng câu nhỏ.<br>Nhớ thêm mỗi ngày.</h2><p>Luyện gõ vẫn là góc học quen thuộc của bạn. Chọn cấp HSK hoặc chủ đề, gấu xanh sẽ học cùng bạn.</p>
+ <div class="dashHeroActions"><button class="btn primary dashResume" id="dashContinueBtn" type="button"><span id="dashContinueAction">Bắt đầu luyện gõ <span aria-hidden="true">→</span></span></button><div class="dashResumeMeta"><span id="dashContinueEyebrow" class="featureEyebrow">Cùng bắt đầu nhé</span><b id="dashContinueTitle">Chọn bài học đầu tiên</b><small id="dashContinueSub">HSK hoặc chủ đề bạn thích</small><span class="dashResumeProgress" id="dashContinueProgress" role="progressbar" aria-label="Tiến độ bộ đang học" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="dashContinueProgressFill"></i></span></div></div>
+ <div class="dashHeroFoot"><span>Xin chào, <b id="dashName">bạn</b> · Học theo nhịp của mình</span><span id="dashGoalNum">0/20</span><span>câu hôm nay</span><svg class="studyVisuallyHidden" aria-hidden="true"><circle id="dashRingFg"/></svg></div></div>
+ <div class="dashHeroArt"><span class="dashHanDecor" lang="zh-CN" aria-hidden="true">学</span><div class="dashArtOrbit"></div><div class="dashWelcomeArt" data-mascot="typing" data-mascot-size="hero" aria-hidden="true"></div><span class="dashBearBubble">Gõ một câu nữa cùng mình nhé!</span><span class="dashArtTag">HỌC MỖI NGÀY · TIẾN TỪNG CHÚT</span></div>
+</div>
+<section class="dashChoose"><div><span class="featureEyebrow">CHỌN NỘI DUNG LUYỆN TẬP</span><h3>Học theo cấp. Hoặc theo điều bạn thích.</h3></div><button type="button" class="dashFeature dashChooseLink" data-view="practice" data-vtab="hsk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4zm10 3a3 3 0 0 1 3-3h4v15h-3a4 4 0 0 0-4 2"/></svg><span><b>Theo HSK</b><small>HSK 1–9 · Gõ và Nói cùng một bộ</small></span><span aria-hidden="true">→</span></button><button type="button" class="dashFeature dashChooseLink matcha" data-view="practice" data-vtab="topic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h14v18H5zm4 5h6m-6 4h6m-6 4h4"/></svg><span><b>Theo chủ đề</b><small>Gia đình, học tập, du lịch…</small></span><span aria-hidden="true">→</span></button></section>
+<div class="dashColumns"><section class="dashQuestPanel"><span class="featureEyebrow">BA NHIỆM VỤ HÔM NAY</span><h3>Việc nhỏ thôi. Tiến bộ là thật.</h3><div id="dashQuests" class="dashQuestList"></div></section><aside class="dashBearPanel"><span class="featureEyebrow">BẠN ĐỒNG HÀNH</span><div class="dashBearSummary"><span data-mascot="star" data-mascot-size="inline" aria-hidden="true"></span><div><b id="dashBearLevel">Gấu cấp 1 · 0 XP</b><p id="dashBearNext">Cùng gấu bắt đầu hành trình.</p></div></div><progress id="dashBearXp" value="0" max="100" aria-label="Tiến độ lên cấp của gấu"></progress><button type="button" class="btn ghost dashFeature" data-view="bear">Xem gấu &amp; huy hiệu →</button></aside></div>
+<div class="dashColumns"><section class="dashSkills"><span class="featureEyebrow">LUYỆN THÊM MỘT KỸ NĂNG</span><h3>Nghe, nói và hiểu sâu hơn.</h3><div class="dashSkillGrid"><button type="button" class="dashFeature dashSkill" data-view="practice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6a3 3 0 0 1 6 0v6a3 3 0 0 1-6 0zM5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8"/></svg><b>Gõ / Nói</b><small>Theo câu HSK</small></button><button type="button" class="dashFeature dashSkill" data-view="tones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h3l3-7 4 14 3-7h3"/></svg><b>Thanh điệu</b><small>Nghe và phân biệt</small></button><button type="button" class="dashFeature dashSkill" data-view="shadow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6a3 3 0 0 1 6 0v6a3 3 0 0 1-6 0zM5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8"/></svg><b>Shadowing</b><small>Nghe cụm, nói theo</small></button><button type="button" class="dashFeature dashSkill" data-view="readings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4zm10 3a3 3 0 0 1 3-3h4v15h-3a4 4 0 0 0-4 2"/></svg><b>Bài khóa</b><small>Đọc hiểu HSK 1</small></button></div></section><aside class="dashGamePanel"><span class="featureEyebrow">GAME LÀ MỘT MỤC RIÊNG</span><h3>Chơi vui, nhớ thêm.</h3><p>Vào Game bất cứ lúc nào. XP Game tối đa 20 mỗi ngày.</p><button type="button" class="btn secondary dashFeature" data-view="games">Khám phá Game <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10a5 5 0 0 1 5 5v3a4 4 0 0 1-7 2H9a4 4 0 0 1-7-2v-3a5 5 0 0 1 5-5zm0 3v5m-2-2h4m7-1h.1m2 2h.1"/></svg></button></aside></div>
+<details class="dashDetails"><summary>Tiến độ &amp; kế hoạch ôn tập</summary>      <div class="dashReview" aria-label="Kế hoạch ôn tập hôm nay">
         <button type="button" class="btn secondary" id="dashReviewBtn" disabled>Ôn mục đến hạn <span id="dashReviewCount">0</span></button>
         <button type="button" class="btn secondary" id="dashWeakBtn" disabled>Luyện câu còn sai <span id="dashWeakCount">0</span></button>
         <small>Mỗi lượt tối đa 20 câu. Câu sai được hẹn ôn lại sau 10 phút.</small>
-      </div>
-      <div class="dashStats" id="dashStats">
+      </div>      <div class="dashStats" id="dashStats">
         <div class="dashStat"><div class="dashStatIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v13A2.5 2.5 0 0 1 6.5 16H20"/></svg></div><div><b id="dashLearned">0</b><span>câu đã học</span></div></div>
         <div class="dashStat"><div class="dashStatIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16.5 8"/></svg></div><div><b id="dashAcc">—</b><span>độ chính xác</span></div></div>
         <div class="dashStat"><div class="dashStatIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1.2 3 4.5 4.6 4.5 8.2a4.5 4.5 0 1 1-9 0C7.5 8.7 10.8 6.8 12 3Z"/><path d="M12 13c1.2 1 1.7 2 1.7 3a1.7 1.7 0 1 1-3.4 0c0-1 .5-2 1.7-3Z"/></svg></div><div><b id="dashCombo">0</b><span>combo cao nhất</span></div></div>
         <div class="dashStat"><div class="dashStatIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></div><div><b id="dashBest">0</b><span>điểm game cao nhất</span></div></div>
-      </div>
-
-      <div class="dashGrid">
-        <button type="button" class="dashCard" data-view="library">
-          <span class="dashCardIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 9h.01M11 9h.01M15 9h.01M7 13h.01M15 13h.01M9.5 13h5"/></svg></span>
-          <b>Luyện gõ</b>
-          <small>Thực hành <span data-catalog-sentences>các</span> câu HSK, từ cơ bản đến nâng cao</small>
-        </button>
-        <button type="button" class="dashCard" data-view="library" data-vtab="topic">
-          <span class="dashCardIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H10l2 2h6.5A2.5 2.5 0 0 1 21 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><path d="M3 10h18"/></svg></span>
-          <b>Từ vựng theo chủ đề</b>
-          <small>206 chủ đề · 41.621 từ kèm pinyin và nghĩa Việt</small>
-        </button>
-        <button type="button" class="dashCard" data-view="pron">
-          <span class="dashCardIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11v1a6.5 6.5 0 0 0 13 0v-1M12 18.5V22M8.5 22h7"/></svg></span>
-          <b>Luyện phát âm</b>
-          <small>Luyện nói theo câu, nghe mẫu và nhận phản hồi từng chữ</small>
-        </button>
-        <button type="button" class="dashCard" data-view="rank">
-          <span class="dashCardIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M17 5h2.5a1.5 1.5 0 0 1 0 3H17M7 5H4.5a1.5 1.5 0 0 0 0 3H7"/></svg></span>
-          <b>Bảng xếp hạng</b>
-          <small>Xem số câu bạn đã luyện hôm nay và tuần này</small>
-        </button>
-      </div>
-    </section>
+      </div><span class="small">Thực hành <span data-catalog-sentences>các</span> câu HSK trong thư viện của bạn.</span><button type="button" class="btn ghost dashFeature" data-view="rank">Xem bảng xếp hạng →</button></details>
+</section>

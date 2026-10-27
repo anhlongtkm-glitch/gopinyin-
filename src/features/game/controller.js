@@ -1,4 +1,5 @@
 import { requireAccount, isStudyAllowed } from "../auth/service.js";
+import { setMascot, renderVisibleMascots } from "../../shared/mascot.js";
 // State and behavior owned by features/game/controller. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy } from "../../app/compatibility.js";
@@ -130,6 +131,8 @@ export function showOverlay(emoji, title, msg, isOver, stats) {
   const ov = gameSessionState.$('gaOverlay');
   if (!ov) return;
   ov.classList.remove('hidden');
+  setMascot('gameMascot', isOver ? 'trophy' : 'ready', { animate: !!isOver });
+  renderVisibleMascots();
   gameSessionState.$('gaOverlayEmoji').textContent = emoji;
   gameSessionState.$('gaOverlayTitle').textContent = title;
   gameSessionState.$('gaOverlayMsg').innerHTML = msg;

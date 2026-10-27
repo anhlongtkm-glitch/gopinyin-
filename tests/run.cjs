@@ -4,8 +4,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const net = require('node:net');
 const root=path.resolve(__dirname,'..');
-const suites=['database.cjs','account-sync.cjs','account-api.cjs','serverless.cjs','service-reliability.cjs','pronunciation-races.cjs','accounts.cjs','auth-navigation.cjs','improvements.cjs','navigation-races.cjs','progress-restore.cjs','data-performance.cjs','app_regress.js','study_shell.js','pronounce.js','pron_picker_d.js','verify_pron_studied.js','games_hub.js','read_on_type.js','space_key.js','ai_save_flow.js','ai_meaning_check.js','ai_vocab_mode.js'];
+const suites=['database.cjs','account-sync.cjs','account-api.cjs','serverless.cjs','service-reliability.cjs','pronunciation-races.cjs','accounts.cjs','auth-navigation.cjs','improvements.cjs','navigation-races.cjs','progress-restore.cjs','data-performance.cjs','app_regress.js','study_shell.js','pronounce.js','pron_picker_d.js','verify_pron_studied.js','games_hub.js','read_on_type.js','study-shortcuts.cjs','ai_save_flow.js','ai_meaning_check.js','ai_vocab_mode.js','ui-experience.cjs'];
 const output=path.join(root,'.cache/test-run');
+suites.push('journey.cjs');
+suites.push('approved-layout.cjs');
+suites.push('shadow-video.cjs');
 const requested=process.argv.slice(2);
 if(requested.length){if(requested.some(file=>!suites.includes(file)))throw new Error('Unknown test suite');suites.splice(0,suites.length,...requested);}
 async function freePort(){const probe=net.createServer();await new Promise(r=>probe.listen(0,'127.0.0.1',r));const port=probe.address().port;await new Promise(r=>probe.close(r));return port;}

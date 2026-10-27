@@ -11,7 +11,7 @@ npm install       # lần đầu; dùng npm ci khi cài đúng lockfile
 npm start         # build + localhost:8080 + theo dõi thay đổi
 npm run serve     # build + server, không tự mở trình duyệt
 npm run build     # tạo dist/ để triển khai hoặc mở dist/index.html
-npm test          # tự mở server riêng, chạy 21 bộ hồi quy
+npm test          # tự mở server riêng, chạy 27 bộ hồi quy
 npm run test:build
 ```
 

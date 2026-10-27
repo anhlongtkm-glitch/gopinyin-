@@ -1,4 +1,6 @@
 import { requireAccount, isStudyAllowed, currentUser } from "../auth/service.js";
+import { setMascot } from "../../shared/mascot.js";
+import { studyOverlayOpen } from "../../shared/study/interactions.js";
 // State and behavior owned by features/pronunciation/recording. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationAssessmentState } from "./assessment.js";
@@ -41,10 +43,13 @@ export function setPhase(p, msg) {
     btn.classList.toggle('is-rec', p === 'recording');
     btn.classList.toggle('is-busy', p === 'analyzing' || p === 'requesting');
     btn.disabled = p === 'analyzing' || p === 'requesting';
+    btn.setAttribute('aria-label', p === 'recording' ? 'Dừng ghi âm' : p === 'analyzing' ? 'Đang phân tích phát âm' : p === 'requesting' ? 'Đang xin quyền micro' : pronunciationSessionState.S.result ? 'Nói lại câu này' : 'Bắt đầu nói');
+    btn.setAttribute('aria-busy', p === 'analyzing' || p === 'requesting' ? 'true' : 'false');
+    btn.setAttribute('aria-pressed', p === 'recording' ? 'true' : 'false');
     const txt = btn.querySelector('.pronMicTxt');
     const sub = btn.querySelector('.pronMicSub');
     if (txt) txt.textContent = p === 'recording' ? 'Đang nghe… bấm để dừng' : p === 'analyzing' ? 'Đang phân tích…' : p === 'requesting' ? 'Đang xin quyền micro…' : pronunciationSessionState.S.result ? 'Nhấn để nói lại' : 'Nhấn để bắt đầu nói';
-    if (sub) sub.innerHTML = p === 'recording' ? 'hoặc nhấn <b>Enter</b> để dừng' : p === 'idle' ? 'hoặc nhấn <b>Enter</b>' : '';
+    if (sub) sub.innerHTML = p === 'recording' ? 'hoặc nhấn <kbd>Enter</kbd> để dừng' : p === 'idle' ? 'hoặc nhấn <kbd>Enter</kbd>' : '';
   }
   if (st) {
     st.className = 'pronStatus' + (p === 'error' ? ' is-err' : p === 'result' ? ' is-ok' : p === 'analyzing' ? ' is-busy' : '');
@@ -52,6 +57,8 @@ export function setPhase(p, msg) {
   }
   const tm = pronunciationUtilsState.$('pronTimer');
   if (tm) tm.classList.toggle('hidden', p !== 'recording');
+  const pose = p === 'recording' ? 'speaking' : p === 'analyzing' || p === 'requesting' ? 'thinking' : p === 'error' ? 'encourage' : p === 'result' ? (pronunciationSessionState.S.result?.score >= pronunciationSessionState.GOOD ? 'clap' : 'encourage') : 'reading';
+  setMascot('pronStudyMascot', pose, {animate:p === 'error',eventKey:'phase:' + p + ':' + pronunciationSessionState.S.startedAt + ':' + pronunciationSessionState.S.sessionTries});
   /* đổi trạng thái → vẽ lại "đường nền" (khi không ghi âm) hoặc để vòng lặp sóng tiếp quản */
   if (p !== 'recording') drawMeter(0);
 }
@@ -206,6 +213,7 @@ export async function finishAssessment(transcript, conf) {
   pronunciationSessionState.S.busy = false;
   pronunciationMicrophoneState.PronMic.release();
   pronunciationStorageState.PronStore.add(item, result.score, result.score >= pronunciationSessionState.GOOD);
+  if (typeof document !== 'undefined') document.dispatchEvent(new CustomEvent('gp:activity',{detail:{kind:'voice',id:JSON.stringify([item.zh,item.py])}}));
   pronunciationSessionState.S.record = result;
   renderStats();
   renderHanzi();
@@ -215,7 +223,7 @@ export async function finishAssessment(transcript, conf) {
   if (pronunciationSessionState.S.settings.autoNext) {
     if (pronunciationSessionState.S.silenceTimer) clearTimeout(pronunciationSessionState.S.silenceTimer);
     pronunciationSessionState.S.silenceTimer = setTimeout(() => {
-      if (pronunciationSessionState.S.phase === 'result' && pronunciationSessionState.S.settings.autoNext) nextItem();
+      if (version === assessmentVersion && item === currentItem() && navigation === navigationVersion() && pronunciationSessionState.S.phase === 'result' && pronunciationSessionState.S.settings.autoNext && !studyOverlayOpen() && !document.getElementById('pronSettings')?.open) nextItem();
     }, 3600);
   }
 }

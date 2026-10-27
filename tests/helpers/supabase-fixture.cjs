@@ -114,7 +114,12 @@ async function startSupabaseFixture() {
   return {url:origin,key:'fixture-publishable-key',users,tokens,records,session,close:()=>new Promise(resolve=>server.close(resolve))};
 }
 async function register(page,name='Regression learner') {
-  await page.click('#wsLoginBtn');
+  if (await page.locator('#wsLoginBtn').isVisible()) {
+    await page.click('#wsLoginBtn');
+  } else {
+    await page.click('#mobileMoreBtn');
+    await page.click('#mobileAccountBtn');
+  }
   await page.click('[data-authtab="register"]');
   await page.fill('#authName',name);
   await page.fill('#authEmail','regression-'+crypto.randomUUID()+'@example.test');

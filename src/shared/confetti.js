@@ -7,12 +7,17 @@ export const state = {};
 const confettiState = state;
 
 export function fireConfetti(count) {
+  if (document.hidden || document.documentElement.dataset.effects === 'off' || document.documentElement.dataset.effects === 'reduced') return;
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
   if (!confettiState.confettiCanvas || !confettiState.confettiCtx) return;
   confettiState.confettiCanvas.width = innerWidth;
   confettiState.confettiCanvas.height = innerHeight;
   confettiState.confettiCanvas.classList.add('fire');
-  const colors = ['#6d5ff5', '#8b5cf6', '#f472b6', '#fbbf24', '#34d399', '#e8567f'];
-  for (let i = 0; i < (count || 140); i++) {
+  const colors = ['#087866', '#14a890', '#f3b85a', '#88d7b8', '#dff3eb', '#a9dcca'];
+  stopConfetti();
+  confettiState.confettiCanvas.classList.add('fire');
+  confettiState.until = performance.now() + 1500;
+  for (let i = 0; i < Math.min(count || 60, innerWidth <= 860 ? 24 : 60); i++) {
     confettiState.confettiPieces.push({
       x: Math.random() * confettiState.confettiCanvas.width,
       y: -20 - Math.random() * confettiState.confettiCanvas.height * .4,
@@ -30,6 +35,7 @@ export function fireConfetti(count) {
 }
 
 export function confettiTick() {
+  if (document.hidden || performance.now() >= confettiState.until) { stopConfetti(); return; }
   confettiState.confettiCtx.clearRect(0, 0, confettiState.confettiCanvas.width, confettiState.confettiCanvas.height);
   confettiState.confettiPieces.forEach(p => {
     p.x += p.vx;
@@ -53,6 +59,14 @@ export function confettiTick() {
   }
 }
 
+export function stopConfetti() {
+  if (confettiState.confettiRAF) cancelAnimationFrame(confettiState.confettiRAF);
+  confettiState.confettiRAF = null;
+  confettiState.confettiPieces = [];
+  confettiState.confettiCtx?.clearRect(0,0,confettiState.confettiCanvas.width,confettiState.confettiCanvas.height);
+  confettiState.confettiCanvas?.classList.remove('fire');
+}
+
 /* ═══════════════ XÁC THỰC (demo local — sẵn sàng nối API) ═══════════════ */
 
 export function initializeConfetti() {
@@ -61,4 +75,5 @@ export function initializeConfetti() {
   confettiState.confettiCtx = confettiState.confettiCanvas ? confettiState.confettiCanvas.getContext('2d') : null;
   confettiState.confettiPieces = [];
   confettiState.confettiRAF = null;
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopConfetti(); });
 }

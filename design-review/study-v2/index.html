@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GoPinyin — Mẫu duyệt hai màn luyện tập</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="interactions.js" defer></script>
+</head>
+<body data-mode="typing">
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 5-6 4H2v6h3l6 4Zm4 3a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-retry" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 2 8M3 3v7h7"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3-1 3-3 1-2 3 2 2-1 3 3 3 3-1 2 2 3-2 3 1 2-3-1-3 2-2-2-3-3-1-1-3Z"/><circle cx="12" cy="11" r="3"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5c-3-2-6-2-10-2v16c4 0 7 0 10 2 3-2 6-2 10-2V3c-4 0-7 0-10 2Zm0 0v16"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 3h10v5a5 5 0 0 1-10 0Zm0 2H3v2a4 4 0 0 0 4 4m10-6h4v2a4 4 0 0 1-4 4m-5 2v7m-4 0h8"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6Zm-5 10 3 3 7-7"/></symbol>
+  </defs></svg>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><img src="../../assets/logo-full.png" width="150" height="39" alt="GoPinyin"></a>
+      <span class="nav-caption">KHÔNG GIAN HỌC</span>
+      <nav aria-label="Điều hướng chính">
+        <button class="nav-item" type="button"><svg><use href="#i-grid"/></svg><span>Tổng quan</span></button>
+        <button class="nav-item" type="button" data-mode-link="typing"><svg><use href="#i-keyboard"/></svg><span>Luyện gõ</span><i></i></button>
+        <button class="nav-item" type="button" data-mode-link="pron"><svg><use href="#i-mic"/></svg><span>Luyện phát âm</span><i></i></button>
+        <button class="nav-item" type="button"><svg><use href="#i-book"/></svg><span>Thư viện</span></button>
+        <button class="nav-item" type="button"><svg><use href="#i-trophy"/></svg><span>Thành tích</span></button>
+      </nav>
+      <div class="sidebar-note"><img src="../../assets/mascot/reading-small.webp" width="88" height="88" alt=""><b>Từng câu một,<br>tiến bộ mỗi ngày.</b><p>Gấu xanh luôn học cùng bạn.</p></div>
+      <div class="profile"><span class="avatar">B</span><div><b>Bạn học GoPinyin</b><span>Hành trình tiếng Trung</span></div></div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div><span class="breadcrumb">HỌC TIẾNG TRUNG</span><h1 id="view-title">Luyện gõ</h1></div>
+        <div class="topbar-right"><span class="saved-status"><i></i> Tiến độ đã lưu</span><span class="top-avatar">B</span></div>
+      </header>
+
+      <div class="study-page">
+        <div class="lesson-toolbar">
+          <button class="button back-button" type="button" aria-label="Quay lại chọn bộ khác" title="Bộ khác"><svg><use href="#i-back"/></svg><span>Bộ khác</span></button>
+          <button class="course-picker" type="button"><svg><use href="#i-book"/></svg><span><small>Bộ đang học</small><b id="course-title">HSK 2 · Giao tiếp hằng ngày</b></span><svg><use href="#i-chevron"/></svg></button>
+          <button class="button options-trigger" id="options-trigger" type="button" aria-haspopup="dialog" aria-controls="lesson-options"><svg><use href="#i-settings"/></svg><span>Tùy chọn</span></button>
+        </div>
+
+        <div class="progress-strip"><span id="lesson-counter">07 / 20 câu</span><div class="progress-track" role="progressbar" aria-label="Tiến độ bài học" aria-valuemin="0" aria-valuemax="20" aria-valuenow="7"><span id="progress-fill"></span></div><span class="accuracy"><svg><use href="#i-check"/></svg><span>Chính xác <b id="accuracy-value">94%</b></span></span><span class="streak">Chuỗi <b id="streak-value">5</b></span></div>
+
+        <section class="lesson-card" aria-label="Nội dung luyện tập">
+          <div class="card-heading"><div class="lesson-companion"><img src="../../assets/mascot/face-focus-small.webp" width="44" height="44" alt=""><div><span class="eyebrow">CÂU ĐANG HỌC</span><b class="typing-only">Nhìn câu, luyện gõ chính xác</b><b class="pron-only">Nghe mẫu, luyện nói tự nhiên</b></div></div><span class="level-tag">HSK 2</span></div>
+
+          <div class="sentence-zone">
+            <div class="sentence-tools"><button class="quiet-button" id="listen-btn" type="button"><svg><use href="#i-sound"/></svg><span id="listen-label">Nghe mẫu</span></button><button class="quiet-button" id="quick-pinyin" type="button" aria-pressed="false"><svg><use href="#i-eye"/></svg><span id="pinyin-label">Hiện Pinyin</span></button></div>
+            <div class="sentence-pairs" id="sentence-pairs" lang="zh-CN"></div>
+            <div class="meaning-line"><span class="meaning-label">NGHĨA TIẾNG VIỆT</span><p id="meaning-text">Hôm nay tôi rất vui.</p></div>
+          </div>
+
+          <div class="practice-zone">
+            <div class="practice-label"><b class="typing-only">Gõ chữ Hán</b><b class="pron-only">Đọc câu bằng micro</b><span class="typing-only" id="typing-input-state">Sử dụng bàn phím tiếng Trung</span><span class="pron-only" id="pron-state">Sẵn sàng</span></div>
+            <div class="typing-only typing-field"><input id="typing-answer" type="text" placeholder="Nhập câu tiếng Trung…" autocomplete="off" spellcheck="false" aria-label="Gõ câu bằng chữ Hán"><span class="input-keyboard" aria-hidden="true"><svg><use href="#i-keyboard"/></svg></span></div>
+            <div class="pron-only recording-field"><button id="pron-action" class="microphone" type="button" aria-label="Bắt đầu nói"><svg><use href="#i-mic"/></svg></button><div class="recording-copy"><b id="pron-label">Nhấn để bắt đầu nói</b><div class="waveform" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>hoặc nhấn <kbd>Enter</kbd></span></div><span class="recording-time">0:00</span></div>
+            <div class="feedback-strip" id="feedback-strip" data-state="neutral" role="status"><svg><use href="#i-shield"/></svg><span id="feedback-text">Gõ đúng cả câu để chuyển sang câu tiếp theo.</span></div>
+          </div>
+
+          <footer class="action-dock"><div class="secondary-actions"><button id="prev-btn" class="button" type="button" aria-label="Câu trước" title="Câu trước"><svg><use href="#i-back"/></svg><span>Câu trước</span></button><button id="retry-btn" class="button" type="button" aria-label="Làm lại câu này" title="Làm lại"><svg><use href="#i-retry"/></svg><span>Làm lại</span></button><button id="skip-btn" class="text-button" type="button">Bỏ qua</button></div><button id="next-btn" class="button primary" type="button">Câu tiếp<svg><use href="#i-next"/></svg></button></footer>
+        </section>
+
+        <div class="page-foot"><span><svg><use href="#i-shield"/></svg> Tiến độ được lưu tự động</span><span class="keyboard-hints"><kbd>Space</kbd> Câu tiếp <i></i><kbd>F1</kbd> Nghe mẫu</span></div>
+      </div>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Điều hướng trên điện thoại"><button type="button"><svg><use href="#i-grid"/></svg><span>Tổng quan</span></button><button type="button" data-mode-link="typing"><svg><use href="#i-keyboard"/></svg><span>Luyện gõ</span></button><button type="button" data-mode-link="pron"><svg><use href="#i-mic"/></svg><span>Phát âm</span></button><button type="button"><svg><use href="#i-more"/></svg><span>Thêm</span></button></nav>
+
+  <dialog id="lesson-options" class="options-dialog" aria-labelledby="options-title">
+    <div class="options-heading"><div><span class="eyebrow">THIẾT LẬP CỦA BẠN</span><h2 id="options-title">Tùy chọn bài học</h2></div><button class="icon-button" id="options-close" type="button" aria-label="Đóng tùy chọn"><svg><use href="#i-close"/></svg></button></div>
+    <div class="options-tabs" role="tablist" aria-label="Nhóm tùy chọn"><button type="button" role="tab" data-options-tab="display" aria-selected="true">Hiển thị</button><button type="button" role="tab" data-options-tab="audio" aria-selected="false">Âm thanh</button><button type="button" role="tab" data-options-tab="lesson" aria-selected="false">Bài học</button></div>
+    <div class="options-body">
+      <section data-options-panel="display" role="tabpanel" aria-label="Hiển thị"><label class="option-row"><span><b>Chữ Hán</b><small>Hiện câu mẫu tiếng Trung</small></span><input id="opt-han" type="checkbox" role="switch" checked></label><label class="option-row"><span><b>Pinyin</b><small>Phiên âm ngay dưới từng chữ</small></span><input id="opt-pinyin" type="checkbox" role="switch"></label><label class="option-row"><span><b>Nghĩa tiếng Việt</b><small>Giải nghĩa câu đang học</small></span><input id="opt-vi" type="checkbox" role="switch" checked></label><p class="option-note">Bật hoặc tắt gợi ý bất cứ lúc nào, bài học vẫn giữ nguyên.</p></section>
+      <section data-options-panel="audio" role="tabpanel" aria-label="Âm thanh" hidden><label class="option-row"><span><b>Tốc độ đọc</b></span><select aria-label="Tốc độ đọc"><option>0.8× · Chậm</option><option selected>1× · Bình thường</option><option>1.2× · Nhanh</option></select></label><label class="option-row"><span><b>Giọng đọc</b></span><select aria-label="Giọng đọc"><option>Tiếng Trung · Tự động</option><option>Giọng nữ</option><option>Giọng nam</option></select></label><label class="option-row"><span><b>Tự nghe mẫu</b><small>Đọc mẫu khi chuyển câu</small></span><input id="opt-auto-sample" type="checkbox" role="switch" checked></label><label class="option-row"><span><b class="typing-only">Đọc khi gõ</b><b class="pron-only">Tự chuyển câu</b><small class="typing-only">Đọc chữ sau khi nhập đúng</small><small class="pron-only">Sau khi đạt mục tiêu phát âm</small></span><input id="opt-read-type" type="checkbox" role="switch"></label></section>
+      <section data-options-panel="lesson" role="tabpanel" aria-label="Bài học" hidden><label class="option-row"><span><b>Nội dung luyện</b></span><select aria-label="Lọc câu"><option>Tất cả câu</option><option>Câu cần ôn</option><option>Chưa luyện</option></select></label><div class="detail-stats"><span>Đúng<b>12</b></span><span>Cần luyện<b>1</b></span><span class="typing-only">Tốc độ<b>38 CPM</b></span><span class="pron-only">Điểm TB<b>86 / 100</b></span></div><div class="lesson-tools"><button type="button" class="button"><svg><use href="#i-book"/></svg>Câu đã làm</button><button type="button" class="button">Hướng dẫn</button></div><button class="reset-button" type="button">Xóa tiến độ bộ này</button></section>
+    </div>
+    <footer class="options-footer"><span>Thiết lập áp dụng ngay</span><button id="options-done" class="button primary" type="button">Xong<svg><use href="#i-check"/></svg></button></footer>
+  </dialog>
+</body>
+</html>

@@ -4,11 +4,6 @@ import { rememberFocus, restoreFocus } from "../../shared/focus.js";
 
 import { aiSessionLive, state as aiSessionState } from "../ai/session.js";
 
-export function initializeTypingHistoryState() {
-  state.typingHistory = [];
-  state.histFilter = 'done';
-}
-
 import { resetProgress, switchMode, toggleAutoSound, toggleReadType, toggleVietnamese, toggleHanziLine } from "./controls.js";
 
 import { gotoRowById, buildWeakDataset } from "./input.js";
@@ -28,6 +23,12 @@ import { escapeHtml } from "../../shared/utils.js";
 export const state = {};
 
 const typingHistoryState = state;
+
+export function initializeTypingHistoryState() {
+  state.typingHistory = [];
+  state.histFilter = 'done';
+  state.HIST_KEY_PREFIX = 'cts:history:';
+}
 
 export function histKey() {
   if (aiSessionLive()) return typingHistoryState.HIST_KEY_PREFIX + 'ai:' + (aiSessionState.aiSession && aiSessionState.aiSession.prompt ? String(aiSessionState.aiSession.prompt).slice(0, 40) : 'default');
@@ -190,18 +191,7 @@ export function showHistoryPanel() {
   openHistModal();
 }
 
-export function initializeTypingHistory() {
-  /* ═══════════════════════════════════════════════════════════
-     ★ LỊCH SỬ GÕ — side panel "Câu đã gõ"
-     Theo dõi mỗi câu đã gõ (đúng / sai / khó), lưu localStorage theo
-     từng bộ, lọc Hôm nay / Sai / Khó; bấm vào để làm lại, ⭐ để đánh
-     dấu khó. Tham khảo quy trình các app học từ vựng (Anki / Duolingo /
-     Hack Chinese): gom câu sai + câu đánh dấu khó để ôn lại dễ dàng.
-     ═══════════════════════════════════════════════════════════ */
-  typingHistoryState.HIST_KEY_PREFIX = 'cts:history:';
-}
-
-export function initializeTypingHistory2() {
+export function initializeTypingHistoryEvents() {
   /* ★ Side panel "Câu đã gõ": click để làm lại */
   typingHistoryState.histPanel = domState.$('app-history-panel');
   if (typingHistoryState.histPanel) {

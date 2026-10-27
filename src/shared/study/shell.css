@@ -1,163 +1,105 @@
-/* ═══════════════════════════════════════════════════════════════
-   ★ KHUNG HỌC DÙNG CHUNG — Luyện gõ (#appCard) & Luyện phát âm (#pronCard)
-   Hai màn chỉ được phép KHÁC NHAU ở THÂN THẺ (ô gõ chữ Hán vs nút micro +
-   sóng âm) và vài nút chức năng. Mọi thứ còn lại dùng đúng một bộ số đo:
-     · đầu thẻ  : 6 ô thống kê + thanh tiến độ
-     · công cụ  : 3 nhóm Nội dung · Âm thanh · Hiển thị
-     · thẻ câu  : nhãn + nội dung, hàng nghe mẫu, gợi ý phím
-     · chân thẻ : nút điều hướng câu (trái) · tên bộ + Xoá tiến độ (phải)
-   Sửa một chỗ là cả hai màn đổi theo — không để lệch như trước.
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Khoá workspace = đúng 1 khung hình (bật bằng body.studyFit):
-   thẻ tự chia chiều cao, chỉ thân thẻ cuộn nếu màn hình quá thấp. */
-body.studyFit{overflow:hidden}
-body.studyFit .ws-main{height:100dvh;overflow:hidden}
-body.studyFit .ws-side{height:100dvh}
-
-/* id + class để thắng dòng `#libraryCard,#aiCard,#appCard,#gameCard{padding:…}` */
-#appCard.studyShell,#pronCard.studyShell{
-  flex:1 1 auto;min-height:0;max-width:1180px;width:100%;margin:0 auto;
-  padding:clamp(10px,1.5vh,16px) clamp(14px,2.4vw,26px);
-  display:flex;flex-direction:column;gap:clamp(7px,1.1vh,11px);overflow:hidden;
-}
-
-/* ── 1. Đầu thẻ ── */
-.studyShell .studyHead{flex:none;display:flex;flex-direction:column;gap:6px}
-.studyShell .stats{gap:8px;margin-bottom:0}
-.studyShell .stats .stat{padding:5px 6px;border-radius:var(--r-md)}
-.studyShell .stats .stat b{font-size:clamp(15px,1.7vh,19px)}
-.studyShell .stats .stat span{font-size:10px}
-.studyShell .progress{height:7px;margin-bottom:0}
-
-/* ── 2. Thanh công cụ (3 nhóm) ── */
-.studyShell .studyControls{margin-bottom:0;padding-bottom:0;gap:8px 14px;flex:none}
-.studyShell .studyControls .ctrlZoneLabel{font-size:9.5px}
-.studyShell .studyControls .select,
-.studyShell .studyControls .toggleBtn{font-size:11.5px;padding:5px 10px}
-.studyShell .studyControls .select{padding-right:26px}
-.studyShell .studyControls .selectVoice{max-width:168px}
-.studyShell .btnSm{padding:6px 11px;font-size:11.5px}
-
-/* ── 3. Thân thẻ ── */
-.studyShell .studyBody{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-.studyShell .studyArea{
-  flex:1 1 auto;min-height:0;display:grid;
-  grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:12px;
-}
-/* Luyện phát âm có kết quả → thẻ câu bên trái, phân tích bên phải */
-.studyShell .studyArea.has-result{grid-template-columns:minmax(0,1fr) minmax(296px,36%)}
-/* Màn "đã hết danh sách" (#completeArea / #pronComplete) là anh em của vùng
-   học, hiện thay chỗ vùng học → cho nó tự căn giữa phần còn lại. */
-.studyShell .studyBody>.complete{margin:auto;padding:0 16px;max-width:560px}
-.studyShell .questionBox{
-  min-height:0;overflow:auto;display:flex;flex-direction:column;justify-content:center;
-  padding:clamp(10px,1.7vh,22px) clamp(14px,2.4vw,26px);
-}
-.studyShell .questionBox .qbRow+.qbRow{margin-top:7px}
-.studyShell .questionBox .label{margin-bottom:4px}
-.studyShell .prompt{font-size:clamp(19px,min(2.4vw,3.1vh),28px)}
-.studyShell .hanzi{font-size:clamp(26px,min(3.9vw,4.7vh),42px);line-height:1.4}
-.studyShell .inputWrap{margin-top:10px}
-/* Cỡ chữ ô gõ co theo BỀ NGANG nữa, nếu không trên điện thoại chữ trong ô
-   bị cắt mất ("Gõ chữ Hán của…") vì ô chỉ còn ~300px. */
-.studyShell .typingStage .input{font-size:clamp(16px,min(4vw,2.7vh),26px);padding:11px 16px}
-.studyShell .feedback{margin-top:8px;padding:10px 14px;font-size:13px}
-.studyShell .audioRow{margin-top:6px;gap:10px;flex-wrap:wrap}
-.studyShell .audioBtn{padding:9px 18px;font-size:13px}
-.studyShell .kbdHint{margin-top:6px}
-
-/* ── 4. Chân thẻ ── */
-.studyShell .studyFoot{
-  flex:none;display:flex;align-items:center;gap:12px;flex-wrap:nowrap;
-  padding-top:7px;border-top:1px dashed var(--line);
-}
-/* Nút ở chân thẻ gọn hơn nút thường để 6 nút vẫn nằm chung 1 hàng với
-   tên bộ + Xoá tiến độ (nếu để cỡ mặc định thì màn 1280px sẽ gãy dòng). */
-.studyShell .studyFoot .btn{padding:8px 13px;font-size:12.5px;gap:6px}
-.studyShell .studyFoot .actions{margin-top:0;justify-content:flex-start;flex:0 1 auto;min-width:0}
-.studyShell .studyFootRight{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0;flex:0 1 auto}
-.studyShell .studyFootRight .fileinfo{
-  font-size:11px;flex:1 1 0;min-width:0;max-width:52ch;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-
-/* ── 5. Riêng màn phát âm: cỡ chữ co theo cả chiều cao khung ── */
-.studyShell .pronCharGlyph{font-size:clamp(24px,min(3.7vw,4.5vh),40px)}
-.studyShell .pronPy{font-size:clamp(14px,min(1.6vw,2.1vh),17px);line-height:1.5}
-.studyShell .pronMicIco{width:clamp(72px,min(7.6vw,10vh),96px);height:clamp(72px,min(7.6vw,10vh),96px);font-size:clamp(26px,min(3vw,4vh),36px)}
-.studyShell .pronMicRing{width:calc(clamp(72px,min(7.6vw,10vh),96px) + 14px);height:calc(clamp(72px,min(7.6vw,10vh),96px) + 14px);margin-left:calc((clamp(72px,min(7.6vw,10vh),96px) + 14px) / -2)}
-.studyShell .pronStage{gap:6px;margin:10px 0 2px}
-.studyShell .pronMeter{max-width:460px;width:100%}
-.studyShell .pronStatus{min-height:0;margin:4px 0}
-.studyShell .pronResult{margin-top:0;min-height:0;max-height:100%;overflow:auto;align-self:start}
-.studyShell .pronComplete{margin:0}
-.studyShell .pronDetailHead{margin-bottom:2px}
-
-/* Màn hẹp / thấp: bỏ cột phải, cho phép cuộn trong thân thẻ */
-@media (max-width:900px), (max-height:700px){
-  .studyShell .studyArea.has-result{grid-template-columns:minmax(0,1fr)}
-  .studyShell .studyBody{overflow:auto}
-  .studyShell .questionBox{overflow:visible}
-}
-/* Màn thấp (laptop 720p/768p): nén dọc để vẫn thấy đủ nút, không phải cuộn */
-@media (max-height:820px) and (min-width:721px){
-  .studyShell .kbdHint{display:none}
-  .studyShell .stats .stat{padding:4px 6px}
-  .studyShell .stats .stat b{font-size:14.5px}
-  .studyShell .stats .stat span{font-size:9.5px}
-  .studyShell .studyBody{overflow:auto}
-  .studyShell .pronCharGlyph{font-size:clamp(22px,min(3.3vw,3.9vh),34px)}
-  .studyShell .pronMicTxt{font-size:12.5px}
-  .studyShell .pronMicSub{font-size:10.5px}
-}
-/* Kết quả gọn hơn ở màn thấp — để không phải cuộn trong cột phải */
-@media (max-height:820px) and (min-width:721px){
-  .studyShell .pronResult{padding:11px 12px}
-  .studyShell .pronScoreWrap{gap:10px}
-  .studyShell .pronRing{width:84px;height:84px}
-  .studyShell .pronRingIn{width:66px;height:66px}
-  .studyShell .pronRingIn b{font-size:20px}
-  .studyShell .pronScoreTitle{font-size:16px}
-  .studyShell .pronChips{margin:5px 0 4px;gap:4px}
-  .studyShell .pronChip{font-size:10px;padding:2px 7px}
-  .studyShell .pronHeard{font-size:11px}
-  .studyShell .pronNote{font-size:11px;line-height:1.5;margin-top:4px}
-  .studyShell .pronErrBlock{margin-top:8px;padding-top:7px}
-  .studyShell .pronLegend{margin-top:8px;font-size:10px;gap:8px}
-  .studyShell .pronHonest{font-size:10.5px;line-height:1.5;padding:6px 8px;margin-top:7px}
-}
-/* Điện thoại: thẻ cao theo nội dung, mỗi nhóm công cụ 1 dòng, nút chia 2 cột */
-@media (max-width:720px){
-  body.studyFit{overflow:auto}
-  body.studyFit .ws-main{height:auto;overflow:visible}
-  .studyShell{height:auto;max-height:none;overflow:visible}
-  .studyShell .studyBody{overflow:visible}
-  /* Không có bàn phím vật lý nên bỏ hàng gợi ý phím */
-  .studyShell .kbdHint{display:none}
-  /* min-width:0 là BẮT BUỘC: <select> có min-content bằng độ dài option dài
-     nhất (tên giọng đọc), nếu không nó sẽ đẩy cả nhóm rộng hơn thẻ. */
-  .studyShell .ctrlZone{flex:1 1 100%;min-width:0}
-  .studyShell .ctrlZone .select{min-width:0;flex:1 1 120px;max-width:100%}
-  .studyShell .ctrlZone .selectVoice{max-width:none}
-  /* Nhãn nhóm luôn nằm TRÊN cùng của nhóm (trong HTML nút "← Bộ khác" đứng
-     trước nhãn để hàng ngang trên máy tính đọc tự nhiên). */
-  .studyShell .ctrlZoneLabel{flex:1 1 100%;order:-1}
-  .studyShell .hanzi{font-size:clamp(21px,6.2vw,30px)}
-  .studyShell .stats{gap:6px}
-  .studyShell .stats .stat b{font-size:14px}
-  .studyShell .stats .stat span{font-size:9px}
-  .studyShell .audioRow .btn,.studyShell .audioRow .audioBtn{min-width:0;flex:1 1 140px;justify-content:center}
-  .studyShell .studyFoot{gap:8px;flex-wrap:wrap}
-  .studyShell .studyFoot .actions{flex-direction:column;align-items:stretch;gap:8px;flex:1 1 100%}
-  .studyShell .actGroup{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .studyShell .actGroup .btn{justify-content:center;min-width:0}
-  /* nhóm có số nút lẻ → nút cuối chiếm trọn hàng cho khỏi trống */
-  .studyShell .actGroup>.btn:last-child:nth-child(odd){grid-column:1/-1}
-  .studyShell .actDivider{display:none}
-  .studyShell .studyFootRight{width:100%;margin-left:0;justify-content:space-between}
-  .studyShell .studyFootRight .fileinfo{max-width:100%;white-space:normal;font-size:10.5px}
-}
-/* Nút "Học tiếp bộ đang mở" khi chưa có bộ nào được mở */
+/* Shared study frame: same reading order, type sizes and actions in both modes. */
+body.studyFit{overflow:auto}
+body.studyFit .ws-main{height:auto;min-height:0;overflow:visible}
+#appCard.studyShell,#pronCard.studyShell{width:calc(100% - 80px);max-width:1360px;margin:24px auto 40px;padding:0;display:flex;flex-direction:column;gap:24px;overflow:visible;background:none;border:0;box-shadow:none;border-radius:0}
+.studyShell .studyHead{display:flex;align-items:center;gap:12px;min-height:24px;padding:0 2px}
+.studyProgressCount,.studyMetric{font-size:13px;line-height:1.4;white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+.studyProgressCount{font-weight:700;min-width:42px}
+.studyMetric b{color:var(--text-2);font-weight:700}
+.studyShell .studyHead>.progress{flex:1;height:5px;min-width:24px;margin:0;border:0;background:var(--card-3)}
+.studyShell .bar{box-shadow:none;background:var(--primary)}
+.studyShell .studyBody{display:flex;flex-direction:column;min-width:0}
+.studyShell .studyArea{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;min-width:0}
+.studyShell .studyArea.has-result{grid-template-columns:minmax(0,1fr);align-items:start}
+.studyShell .questionBox{min-width:0;overflow:visible;padding:28px 28px 0;display:flex;flex-direction:column;justify-content:flex-start;border-radius:0;background:transparent;border:0;box-shadow:none;text-align:center}
+.studyShell .questionBox::before,.studyShell .questionBox>.qbScenery{display:none}
+.studyShell .studyCompanion{display:flex;gap:10px;align-items:center;text-align:left;margin:0;padding:0;border:0}
+.studyCompanion [data-mascot]{flex:0 0 44px;width:44px;height:44px}
+.studyEyebrow{font-size:10px;line-height:1.5;letter-spacing:.1em;font-weight:800;color:var(--muted)}
+.studyCompanion p{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--text-2);font-weight:500}
+.studyShell .studySentenceZone{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:252px;padding:20px 0 24px;gap:18px}
+.studyShell .studySentenceTools{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.studyShell .studySentenceTools .audioBtn,.studyShell .studyQuickHint{min-height:44px;padding:8px 12px;border:0;box-shadow:none;font-size:13px;border-radius:10px;background:none;gap:8px;display:inline-flex;align-items:center;color:var(--muted)}
+.studyShell .studyQuickHint{background:var(--primary-soft);color:var(--primary);font-weight:700}
+.studyShell .studySentenceTools .audioBtn:hover{background:var(--card-2);color:var(--primary)}
+.studyShell .questionBox .qbRow{margin:0;max-width:100%;width:100%}
+.studyShell .questionBox .studyHanRow{padding:0}
+.studyShell .questionBox .label{font-size:13px;line-height:1.5;margin-bottom:8px}
+.studyShell .questionBox .studyMeaningRow .label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px}
+.studyShell .prompt{font-size:18px;line-height:1.6;font-weight:600;color:var(--text-2);overflow-wrap:anywhere}
+.studyShell .hanzi{font-family:var(--font-cjk);font-size:40px;font-weight:600;line-height:1.4;letter-spacing:0;text-shadow:none;display:flex;align-items:flex-start;flex-wrap:wrap;justify-content:center;gap:3px;padding:0}
+.studyShell .hanzi:hover{text-shadow:none}
+.studyShell .hanzi-pair{display:inline-flex;flex-direction:column;justify-content:flex-start;align-items:center;gap:5px;padding:4px 5px;border-radius:10px;vertical-align:top;min-height:84px;line-height:1.2}
+.studyShell .hanzi-word{order:0;font-size:40px;line-height:1.25;font-weight:600}
+.studyShell .pinyin-guide{order:1;font-family:var(--font-pinyin);font-size:17px;line-height:1.5;font-weight:400;min-height:26px;white-space:nowrap;margin:0;padding:0;transform:none;color:var(--muted)}
+.studyShell .hanzi-punct{font-size:40px;line-height:1.25;align-self:flex-start;padding-top:4px;opacity:.65}
+.studyShell .pronHanzi{gap:3px;align-items:flex-start}
+.studyShell .pronChar{min-width:36px;min-height:84px;padding:4px 5px;gap:5px;border-radius:10px}
+.studyShell .pronCharGlyph{font-size:40px;line-height:1.25;font-weight:600}
+.studyShell .pronCharPy{font-family:var(--font-pinyin);font-size:17px;line-height:1.5;font-weight:400;min-height:26px;white-space:nowrap;color:var(--muted)}
+.studyShell .pronCharDot{width:5px;height:5px;margin-top:0}
+.studyShell .pronChar.is-punct .pronCharGlyph{transform:none}
+.studyShell .studyLegacyPyRow{display:none!important}
+.hanzi-hide-glyphs .hanzi-word,.hanzi-hide-glyphs .hanzi-punct,.pron-hide-han .pronCharGlyph,.pron-hide-py .pronCharPy{visibility:hidden}
+.studyShell .studyPracticeZone{display:flex;flex-direction:column;min-height:178px;border-top:1px solid var(--line);padding:18px 0 16px;text-align:left}
+.studyShell .inputWrap{margin:0}
+.studyShell .typingStage .input{font-family:var(--font-cjk),var(--font-ui);font-size:24px;font-weight:400;text-align:left;letter-spacing:0;min-height:60px;padding:12px 56px 12px 14px;background:var(--card-2);border-radius:12px;box-shadow:none}
+.studyShell .typingStage .input::placeholder{font-family:var(--font-ui);font-size:14px;font-weight:400;font-style:normal;letter-spacing:0}
+.studyShell .inputWrap>label{text-transform:none;letter-spacing:0;font-size:13px;font-weight:500}
+.studyMoreKeys summary{display:flex;align-items:center;cursor:pointer;min-height:44px;padding:8px 16px;color:var(--primary);font-size:12px}
+.studyShell .studyContext .pronResult{width:100%;max-width:100%;margin:0}
+.studyContext.has-feedback .studyContextCard{display:none}
+.studyShell .vkToggleBtn{min-width:44px;min-height:44px;right:5px}
+.studyShell .studyFeedbackRow{display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;align-items:center;min-height:44px;margin:16px 0 0}
+.studyShell .studyFeedbackRow[hidden]{display:none}
+.studyShell .studyFeedbackMascot{width:24px;height:24px;align-self:center}
+.studyShell .studyFeedbackRow .feedback{margin:0;padding:0;border:0;box-shadow:none;background:none;font-size:13px;line-height:1.6}
+.studyShell .studyPracticeLabel{font-size:13px;font-weight:700;margin-bottom:10px;line-height:1.5;color:var(--text-2)}
+.studyShell .pronStage{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;margin:0;position:relative;min-height:66px}
+.studyShell .pronMic{display:grid;grid-template-columns:60px minmax(0,1fr);column-gap:12px;row-gap:4px;text-align:left;align-items:center;min-width:172px;flex:0 1 auto}
+.studyShell .pronMicIco{grid-column:1;grid-row:1/3;width:60px;height:60px;font-size:25px;box-shadow:0 3px 0 var(--button-primary-base)}
+.studyShell .pronMicRing{width:72px;height:72px;top:-6px;left:30px;margin-left:-36px}
+.studyShell .pronMicTxt{font-size:14px;align-self:end;white-space:normal}
+.studyShell .pronMicSub{font-size:11px;line-height:1.6;align-self:start;white-space:nowrap}
+.studyShell .pronMeter{width:auto;min-width:0;max-width:240px;flex:1;gap:6px}
+.studyShell .pronMeter canvas{height:34px;min-width:0}
+.studyShell #pronPlayMineBtn{font-size:12px;min-height:44px;padding:6px 10px;white-space:normal;line-height:1.4;max-width:142px}
+.studyShell .pronStatus{margin-top:auto;padding:12px 0 0;text-align:left;font-size:13px;line-height:1.6;min-height:33px}
+.studyShell .studyFoot{display:flex;flex-direction:column;align-items:stretch;gap:0;margin:0;padding:0 28px 18px;background:transparent;border:0;border-radius:0}
+.studyShell .studyFoot[hidden]{display:none}
+.studyShell .studyFoot .actions{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0;padding-top:12px;border-top:1px solid var(--line)}
+.studyShell .actGroup{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.studyShell .actDivider{display:none}
+.studyShell .studyFoot .btn{min-height:44px;font-size:13px;padding:10px 12px;gap:7px;border-radius:10px;white-space:nowrap}
+.studyShell .studyFoot .btn.primary{min-height:48px;order:1;margin-left:auto;min-width:120px}
+.studyShell .studySkipBtn{background:transparent;border-color:transparent;box-shadow:none;color:var(--muted)}
+.studyShell .studyFootRight{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:0;padding-top:8px}
+.studyShell .fileinfo,.studyNextHint{font-size:11px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere;white-space:normal;max-width:100%}
+.studyShell .kbdHint{display:flex;align-items:flex-start;flex-direction:column;gap:8px;margin:0;padding:12px 16px;font-size:12px;line-height:1.6;color:var(--muted)}
+.studyShell .kbdHint>span,.studyShell .kbdHint>button{display:inline-flex;align-items:center;gap:6px}
+.studyShell .kbdHint>button{min-height:32px;padding:0 2px;font-size:12px;color:var(--primary)}
+.studyShell kbd{font-family:var(--font-ui);font-size:10px;font-weight:500;line-height:1.5;padding:1px 4px;border:1px solid var(--line);border-radius:4px;background:var(--card-2);color:var(--muted);white-space:nowrap}
+.studyShell kbd:empty{display:none}
+.studyShell .btn.primary kbd{color:inherit;border-color:currentColor;background:transparent;opacity:.85}
+.studyVisuallyHidden{position:absolute!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;border:0!important}
+.studyShell .studyBody>.complete{align-self:center;max-width:560px;width:100%;padding:24px 16px;text-align:center}
+.studyShell .complete [data-mascot]{margin:0 auto 16px}
+.studyShell .complete h2{font-family:'Baloo 2',var(--font-ui);font-size:32px}
+.studyShell .complete p{font-size:16px;line-height:1.7}
+.studyShell .pronResult{margin:0;padding:20px;max-height:none;overflow:visible;align-self:start;background:var(--card);border-color:var(--line)}
+.studyShell .pronScoreTitle small,.studyShell .pronChip,.studyShell .pronHeard,.studyShell .pronNote,.studyShell .pronLegend,.studyShell .pronHonest{font-size:13px;line-height:1.6}
+.studyShell .pronRingIn span{font-size:12px}
+.studyShell .pronScoreWrap{align-items:flex-start;flex-wrap:wrap}
 #pronLibContinue:disabled{background:var(--card-3);color:var(--muted);box-shadow:none;cursor:not-allowed;transform:none}
 
+/* Shared structure matches the approved typing and speaking screens. */
+.studyPageHeading{display:flex;align-items:center;justify-content:space-between;gap:24px}.studyPageHeading h2{font-family:var(--font-display);font-size:32px;line-height:1.25;letter-spacing:-.04em;margin:10px 0 0}.studyPageHeading .practiceModeBar{margin:0}.studyPageHeading .practiceModeBar>span{display:none}.studyPageHeading .practiceModeBar>div{padding:4px;background:var(--primary-soft);border-color:var(--line);border-radius:16px}.studyPageHeading .practiceModeBar button{min-height:44px;min-width:78px;border-radius:12px}.studyPageHeading .practiceModeBar button.selected{background:var(--card);box-shadow:none}
+.studyLayout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}.studyMainPanel{min-width:0;border:1px solid var(--line);border-radius:24px;background:var(--card);overflow:hidden}.studyContext{display:flex;flex-direction:column;gap:18px;min-width:0}.studyContextCard{padding:28px 24px;background:var(--primary-soft);border:1px solid var(--line);border-radius:24px}.studyContextCard>[data-mascot]{width:180px;height:180px;margin:0 auto 20px}.studyContextCard h3{font-family:var(--font-display);font-size:24px;line-height:1.35;margin:12px 0;letter-spacing:-.03em;overflow-wrap:anywhere}.studyContextCard p{font-size:13px;line-height:1.8;color:var(--muted)}.contextProgress{height:5px;background:var(--line);border-radius:8px;margin:22px 0 16px;overflow:hidden}.contextProgress i{height:100%;background:var(--primary);display:block;width:0}.contextStats{display:flex;gap:24px}.contextStats span{font-size:11px;line-height:1.6;color:var(--muted)}.contextStats b{display:block;font-size:18px;color:var(--primary);margin-bottom:4px}.studyKeyGuide{display:flex;flex-direction:column;gap:10px;padding:8px 16px;color:var(--muted);font-size:12px}.studyKeyGuide span{display:flex;gap:10px;align-items:center}.studyKeyGuide kbd{display:inline-grid;place-items:center;min-width:34px;min-height:23px;font-size:11px;border-color:var(--line-2)}
+.studyShell .studyHead{gap:16px}.studyShell .studyHead>.progress{order:0;height:6px}.studyShell .studyProgressCount{order:1;font-size:12px}.studyHead>.studyMetric{display:none}.studyShell .studySentenceZone{min-height:280px;padding:24px 0 28px;gap:22px}.studyShell .studyCompanion [data-mascot]{width:52px;height:52px;flex-basis:52px}.studyShell .studyPracticeZone{min-height:158px}.studyShell .studyFoot .btn{font-size:14px;min-height:44px}.studyShell .studyFoot .btn.primary{min-height:52px;min-width:150px;border-radius:14px}.studyShell .studySentenceTools{gap:8px;flex-wrap:nowrap;max-width:100%}.studyShell .studySentenceTools .audioBtn,.studyShell .studyQuickHint{font-size:13px;min-height:44px;padding:8px 12px;gap:6px;white-space:nowrap;box-shadow:none}.studyShell .studyQuickHint[aria-pressed=false]{background:var(--card-2);color:var(--muted)}.studyShell .studyQuickHint[aria-pressed=true]{background:var(--primary-soft);color:var(--primary)}.studyShell .hanzi-pair{padding-bottom:14px}.studyShell .pronResult{border-radius:18px;margin:0 24px 24px;max-width:calc(100% - 48px)}
+@media(max-width:1100px){#appCard.studyShell,#pronCard.studyShell{width:calc(100% - 48px)}.studyLayout{grid-template-columns:minmax(0,1fr) 250px;gap:20px}.studyContextCard{padding:22px}.studyPageHeading h2{font-size:28px}.studyShell .studySentenceTools{gap:4px}.studyShell .studySentenceTools .audioBtn,.studyShell .studyQuickHint{padding:8px;font-size:12px}}
+@media(max-width:860px){#appCard.studyShell,#pronCard.studyShell{width:calc(100% - 32px);margin:16px auto 28px;gap:16px}.studyContext{display:none}.studyLayout{grid-template-columns:minmax(0,1fr);gap:0}.studyPageHeading h2{font-size:25px}.studyPageHeading{gap:12px;align-items:end}.studyPageHeading .practiceModeBar button{min-width:56px;font-size:13px;padding:8px 12px}.studyShell .questionBox{padding:20px 20px 0}.studyShell .studyFoot{padding:0 20px 14px}.studyShell .studySentenceZone{min-height:230px;padding:20px 0;gap:18px}.studyShell .hanzi,.studyShell .hanzi-word,.studyShell .hanzi-punct,.studyShell .pronCharGlyph{font-size:34px}.studyShell .hanzi-pair,.studyShell .pronChar{min-width:28px;min-height:75px;padding:4px 3px 10px;gap:5px}.studyShell .pinyin-guide,.studyShell .pronCharPy{font-size:15px;min-height:23px}.studyShell .studyFoot .btn.primary{min-width:116px}.studyShell .pronStage{flex-wrap:wrap}.studyShell .pronMeter{max-width:none}.studyShell #pronPlayMineBtn{min-height:44px}.studyShell .fileinfo{display:none}}
+@media(max-width:500px){.studyPageHeading{flex-wrap:wrap;align-items:center}.studyPageHeading>div:first-child{flex:1;min-width:150px}.studyPageHeading h2{font-size:23px;max-width:230px}.studyPageHeading .featureEyebrow{font-size:9px}.studyPageHeading .practiceModeBar button{min-width:48px;padding:8px 10px}.studyShell .questionBox{padding:18px 16px 0}.studyShell .studySentenceZone{min-height:230px;gap:18px}.studyShell .studySentenceTools{gap:4px}.studyShell .studySentenceTools .audioBtn,.studyShell .studyQuickHint{font-size:12px;padding:8px 7px;gap:5px}.studyShell .studySentenceTools kbd{font-size:10px;padding:1px 3px}.studyShell .studySentenceTools .control-icon{width:15px;height:15px}.studyShell .hanzi,.studyShell .hanzi-word,.studyShell .hanzi-punct,.studyShell .pronCharGlyph{font-size:30px}.studyShell .pinyin-guide,.studyShell .pronCharPy{font-size:14px;min-height:21px}.studyShell .prompt{font-size:16px}.studyShell .studyPracticeZone{padding:16px 0;min-height:160px}.studyShell .typingStage .input{font-size:18px;min-height:54px}.studyShell .studyFoot{padding:0 16px 14px}.studyShell .studyFoot .actions{gap:8px;flex-wrap:nowrap}.studyShell .studyFoot .actGroup{gap:6px;flex-wrap:nowrap}.studyShell .studyFoot .btn{font-size:12px;padding:8px}.studyShell .studyFoot .btn.primary{min-width:100px;min-height:48px}.studyShell .studyPrevBtn,.studyShell .studyRetryBtn{font-size:0!important;min-width:44px;padding:8px!important}.studyShell .studyPrevBtn::before{content:'←';font-size:18px}.studyShell .studyRetryBtn::before{content:'↺';font-size:20px}.studyShell .studyPrevBtn>.control-icon,.studyShell .studyRetryBtn>.control-icon{display:none}.studyShell .studyNextHint{font-size:11px}.studyShell .pronMicTxt{font-size:13px}.studyShell .pronMicSub{font-size:11px}.studyShell .pronStatus{font-size:12px}.studyShell .pronResult{margin:0 16px 16px;max-width:calc(100% - 32px)}}
+@media(max-height:600px){.studyShell .studySentenceZone{min-height:180px;gap:12px;padding:12px 0}.studyShell .studyPracticeZone{min-height:140px}}
+@media(prefers-reduced-motion:reduce){.studyShell .pronMicIco,.studyShell .pronMicRing{animation:none!important}}
+
+@media(max-width:860px){.studyContext.has-feedback{display:flex}.studyContext.has-feedback .studyKeyGuide,.studyContext.has-feedback .studyMoreKeys{display:none}.studyLayout:has(.studyContext.has-feedback){gap:16px}}

@@ -1,6 +1,6 @@
 const triggers = new WeakMap();
-export function rememberFocus(modal) {
-  if (!modal.contains(document.activeElement)) triggers.set(modal, document.activeElement);
+export function rememberFocus(modal, trigger = document.activeElement) {
+  if (modal && !modal.contains(trigger)) triggers.set(modal, trigger);
 }
 export function restoreFocus(modal) {
   const trigger = triggers.get(modal);

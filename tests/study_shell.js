@@ -24,7 +24,7 @@ const check = (n, ok, d) => { if (ok) { pass++; console.log('  PASS  ' + n + (d 
   await page.click('#authSubmit'); await page.waitForTimeout(1500);
   await page.evaluate(() => { const m = document.querySelector('#proModal'); if (m) { m.classList.remove('show'); m.classList.add('hidden'); } });
 
-  await page.evaluate(() => document.querySelector('[data-view="library"]').click());
+  await page.evaluate(() => document.querySelector('[data-view="practice"]').click());
   await page.waitForTimeout(600);
   await page.evaluate(() => document.querySelector('#vocabList [data-vsrc="hsk1"]').click());
   await page.waitForTimeout(1600);

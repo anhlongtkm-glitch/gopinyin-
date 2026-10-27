@@ -182,13 +182,6 @@ export function initializeAiController() {
     }
   }, true);
   domState.$('audioBtn').onclick = speakChinese;
-  document.addEventListener('keydown', e => {
-    if (e.key === 'F1') {
-      e.preventDefault();
-      speakChinese();
-      setTimeout(() => domState.$('pinyinInput')?.focus(), 0);
-    }
-  });
   /* ★ Gõ sai → có HIỆU ỨNG LỖI (rung ô gõ + báo bằng chứng), ký tự sai vẫn
      KHÔNG vào ô gõ. Người dùng không bị "mất chữ" mà vẫn biết mình gõ sai. */
 }

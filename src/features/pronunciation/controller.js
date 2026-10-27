@@ -1,4 +1,5 @@
 import { requireAccount } from "../auth/service.js";
+import { restoreLibraryPosition } from "../../app/view-context.js";
 // State and behavior owned by features/pronunciation/controller. Initialization is orchestrated by app/bootstrap.js.
 
 import { publishLegacy } from "../../app/compatibility.js";
@@ -25,6 +26,7 @@ import { state as pronunciationSessionState } from "./session.js";
 
 import { loadSettings, fillVoices, fillSources, loadSource, syncToolbar, cancelSourceLoad } from "./settings.js";
 import { navigationVersion } from "../../app/routes.js";
+import { ensureStudyControlVisible, studyOverlayOpen } from "../../shared/study/interactions.js";
 
 export const state = {};
 
@@ -37,6 +39,7 @@ export function initializePronunciationController() {
   pronunciationControllerState.Pron = {
     /* Màn CHỌN BỘ CÂU (view "pron") */
     async openLib() {
+      const navigation = navigationVersion();
       if (!pronunciationSessionState.S.ready) {
         pronunciationSessionState.S.ready = true;
         loadSettings();
@@ -48,6 +51,7 @@ export function initializePronunciationController() {
       syncFileWarn();
       loadSettings();
       await renderLib();
+      if (navigation === navigationVersion()) restoreLibraryPosition('pronLibCard');
     },
     /* Màn LUYỆN (view "pronStudy") */
     async open() {
@@ -61,7 +65,7 @@ export function initializePronunciationController() {
         wire();
         fillVoices();
       }
-      /* Khoá trang đúng 1 khung hình — thẻ tự chia chiều cao, không phải cuộn */
+      /* Shared study styling keeps controls readable and allows short screens to scroll. */
       document.body.classList.add('studyFit');
       syncFileWarn();
       await fillSources();
@@ -73,6 +77,13 @@ export function initializePronunciationController() {
       syncToolbar();
       drawMeter(0);
       renderStats();
+      // Source loading can render the question before this view becomes visible.
+      const source = pronunciationSessionState.S.source, activeBefore = document.activeElement;
+      const scrollBefore = window.scrollY;
+      requestAnimationFrame(() => {
+        if (navigation !== navigationVersion() || source !== pronunciationSessionState.S.source || document.activeElement !== activeBefore || window.scrollY !== scrollBefore || studyOverlayOpen() || document.getElementById('pronSettings')?.open) return;
+        ensureStudyControlVisible(document.getElementById('pronMicBtn'));
+      });
       /* giọng đọc thường nạp trễ */
       setTimeout(fillVoices, 500);
     },

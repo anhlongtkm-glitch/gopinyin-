@@ -1,8 +1,10 @@
+import { libStats as speakingStats } from '../pronunciation/library.js';
+import { learningStorage } from '../../shared/storage/account-data.js';
 import { requireAccount, currentUser } from "../auth/service.js";
 import { navigationVersion, markNavigation } from "../../app/routes.js";
+import { setMascot } from "../../shared/mascot.js";
 // State and behavior owned by features/library/catalog. Initialization is orchestrated by app/bootstrap.js.
 
-import { legacy } from "../../app/compatibility.js";
 
 import { state as dataCatalogState } from "../../data/catalog.js";
 
@@ -134,9 +136,10 @@ export async function fetchVocabItems(file) {
 // ★ Bấm 1 mục trong kho → tạo bộ luyện (lưu vào thư viện) rồi mở luôn
 
 // ★ Bấm 1 mục trong kho → tạo bộ luyện (lưu vào thư viện) rồi mở luôn
-export async function openVocabSource(srcId) {
+export async function openVocabSource(srcId, options = {}) {
+  const practiceMode = options.practiceMode || learningStorage.getItem('cts:progress:practice-mode:vocab:'+srcId) || 'typing';
   const navigation = markNavigation();
-  if (!await requireAccount(() => openVocabSource(srcId))) return;
+  if (!await requireAccount(() => openVocabSource(srcId,{practiceMode}))) return;
   if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
   const src = findVocabSource(srcId);
@@ -145,7 +148,7 @@ export async function openVocabSource(srcId) {
   const existing = (await dbList()).find(x => x.id === id);
   if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
   if (existing) {
-    await openDataset(id, { navigation });
+    await openDataset(id, { navigation, practiceMode });
     return;
   }
   const list = domState.$('vocabList');
@@ -173,8 +176,9 @@ export async function openVocabSource(srcId) {
     if (currentUser()?.id !== accountId || navigation !== navigationVersion()) return;
     await dbPut(ds);
     toast('Đã tạo bộ "' + src.label + '" (' + rows.length + ' mục).', 'ok');
-    await openDataset(id, { navigation });
+    await openDataset(id, { navigation, practiceMode });
   } catch (e) {
+    if (navigation !== navigationVersion() || currentUser()?.id !== accountId) return;
     if (list) list.innerHTML = prev;
     toast('Không tải được "' + src.label + '": ' + e.message + '. Kiểm tra kết nối mạng rồi thử lại.', 'bad', 5500);
   }
@@ -187,9 +191,11 @@ export function renderVocab() {
   const q = libraryCatalogState.vocabQuery.trim().toLowerCase();
   if (q) items = items.filter(x => x[1].toLowerCase().includes(q) || normalize(x[1]).includes(normalize(q)));
   if (!items.length) {
+    setMascot('libraryMascot', 'search');
     list.innerHTML = '<div class="vocabEmpty">Không tìm thấy mục nào phù hợp.</div>';
     return;
   }
+  setMascot('libraryMascot', 'reading');
   list.innerHTML = items.map(x => {
     const cnt = srcCount(x[0]);
     const unit = /^hsk[1-9]$/.test(String(x[0])) ? 'câu' : 'từ';
@@ -199,7 +205,10 @@ export function renderVocab() {
     const cat = x[2] && !/^\s*\d+\s*(câu|từ)\s*$/i.test(x[2]) ? x[2] : '';
     /* ★ Tiến độ đã học hiện NGAY trên thẻ (thay mục "Bộ câu của bạn" đã bỏ) */
     const prog = srcProgress(x[0], cnt, unit);
-    return '<button class="vocabCard' + '" type="button" data-vsrc="' + escapeHtml(x[0]) + '" title="' + 'Tạo bộ luyện: ' + escapeHtml(x[1]) + (cnt ? ' · ' + cnt + ' ' + unit : '') + '">' + (cat ? '<span class="vocabCat">' + escapeHtml(cat) + '</span>' : '') + '<span class="vocabCard-title">' + escapeHtml(x[1]) + '</span>' + cntTxt + prog + '</button>';
+    const source = /^hsk[1-9]$/.test(x[0]) ? 'hsk:' + x[0] : 'ds:vocab:' + x[0];
+    const spoken = speakingStats(source).attempted;
+    const modeActions = '<div class="practiceTileActions"><button type="button" data-practice-source="' + escapeHtml(x[0]) + '" data-start-mode="typing">Gõ</button><button type="button" data-practice-source="' + escapeHtml(x[0]) + '" data-start-mode="speaking">Nói <small>' + spoken + '/' + cnt + '</small></button></div>';
+    return '<div class="practiceTile"><button class="vocabCard' + '" type="button" data-vsrc="' + escapeHtml(x[0]) + '" title="' + 'Tạo bộ luyện: ' + escapeHtml(x[1]) + (cnt ? ' · ' + cnt + ' ' + unit : '') + '">' + (cat ? '<span class="vocabCat">' + escapeHtml(cat) + '</span>' : '') + '<span class="vocabCard-title">' + escapeHtml(x[1]) + '</span>' + cntTxt + prog + '</button>' + modeActions + '</div>';
   }).join('');
 }
 

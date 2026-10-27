@@ -53,13 +53,13 @@
   .personalDropTitle{font-size:14.5px}
   .personalDropSub{font-size:12px}
 }
-.libraryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.libraryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:16px}
 .libraryItem{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:19px;
   display:flex;flex-direction:column;gap:10px;transition:all var(--d) var(--ease)}
-.libraryItem:hover{transform:translateY(-3px);border-color:rgba(31,200,162,.4);box-shadow:var(--sh-2)}
+.libraryItem:hover{background:var(--card-2);border-color:rgba(31,200,162,.4);box-shadow:var(--sh-2)}
 .libraryItem h3{margin:0;font-size:15.5px;font-weight:800;line-height:1.4}
 .libraryMeta{display:flex;gap:6px;flex-wrap:wrap}
-.libraryMeta span{font-size:11px;font-weight:700;color:var(--muted);background:var(--card-3);padding:3px 9px;border-radius:99px}
+.libraryMeta span{font-size:12px;font-weight:700;color:var(--muted);background:var(--card-3);padding:3px 9px;border-radius:99px}
 .libraryActions{margin-top:auto;display:flex;gap:8px}
 .badgeBuiltin{font-size:10.5px;font-weight:800;color:var(--primary);background:var(--primary-soft);padding:3px 9px;border-radius:99px;align-self:flex-start}
 .badgeAi{color:var(--accent);background:rgba(244,114,182,.13)}

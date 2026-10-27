@@ -1,6 +1,6 @@
 // State and behavior owned by features/game/events. Initialization is orchestrated by app/bootstrap.js.
 
-import { legacy, publishLegacy } from "../../app/compatibility.js";
+import { publishLegacy } from "../../app/compatibility.js";
 
 import { state as gameControllerState, resumeGame, startGame, watchAd, leaveGame, togglePause, openGame } from "./controller.js";
 

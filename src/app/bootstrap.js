@@ -2,9 +2,7 @@ import { initializeDataCatalog } from "../data/catalog.js";
 import { initializeDom } from "../shared/dom.js";
 import { initializeStorageLessonRepository } from "../shared/storage/lesson-repository.js";
 import { initializeTypingSession } from "../features/typing/session.js";
-import { initializeStorageLessonRepository2 } from "../shared/storage/lesson-repository.js";
-import { initializeTypingHistoryState } from "../features/typing/history.js";
-import { initializeStorageLessonRepository3 } from "../shared/storage/lesson-repository.js";
+import { initializeTypingHistoryState, initializeTypingHistoryEvents } from "../features/typing/history.js";
 import { initializeLanguageNormalization } from "../shared/language/normalization.js";
 import { initializeTypingWeakness } from "../features/typing/weakness.js";
 import { initializeTheme } from "../shared/theme.js";
@@ -19,16 +17,13 @@ import { initializeLanguagePinyin } from "../shared/language/pinyin.js";
 import { initializeAiValidation } from "../features/ai/validation.js";
 import { initializeStorageImportFiles } from "../shared/storage/import-files.js";
 import { initializeTypingDatasets } from "../features/typing/datasets.js";
-import { initializeTypingHistory } from "../features/typing/history.js";
 import { initializeTypingInput } from "../features/typing/input.js";
 import { initializeAudioTypingSfx } from "../shared/audio/typing-sfx.js";
-import { initializeTypingControls } from "../features/typing/controls.js";
+import { initializeTypingControls, initializeTypingControlEvents } from "../features/typing/controls.js";
 import { initializeTypingNavigation } from "../features/typing/navigation.js";
 import { initializeAiController } from "../features/ai/controller.js";
 import { initializeTypingEvents } from "../features/typing/events.js";
 import { initializeHelp } from "../shared/help.js";
-import { initializeTypingHistory2 } from "../features/typing/history.js";
-import { initializeTypingControls2 } from "../features/typing/controls.js";
 import { initializeAppLayout } from "./layout.js";
 import { initializeAppCoreStartup } from "./core-startup.js";
 import { initializeLessonBridge } from "../shared/lesson-bridge.js";
@@ -64,18 +59,23 @@ import { initializePronunciationController } from "../features/pronunciation/con
 import { initializeVirtualKeyboard } from "../shared/virtual-keyboard.js";
 import { exposeCoreGlobals } from "./compatibility.js";
 import { initializeRouteRestoration } from "./route-restoration.js";
-
-function initializeData(){
-  initializeDataCatalog();
-}
-
-function initializeCore(){
+import { initializeMascots } from "../shared/mascot.js";
+import { initializeControlIcons } from "../shared/control-icons.js";
+import { initializeMobileNavigation } from "./mobile-navigation.js";
+import { initializeViewContext } from "./view-context.js";
+import { initializeStudyShortcuts } from "../shared/study/shortcuts.js";
+import { initializeStudySettings } from "../shared/study/settings.js";
+import { initializePracticeBridge } from "../features/practice/bridge.js";
+import { initializeStudyPresentation } from "../shared/study/presentation.js";
+import { initializePracticeCatalog } from "../features/practice/catalog-controller.js";
+import { initializeShadowing } from "../features/shadowing/controller.js";
+import { initializeJourney } from "../features/journey/controller.js";
+import { initializeCelebrations } from "../shared/celebrations.js";
+function initializeCore() {
   initializeDom();
   initializeStorageLessonRepository();
   initializeTypingSession();
-  initializeStorageLessonRepository2();
   initializeTypingHistoryState();
-  initializeStorageLessonRepository3();
   initializeLanguageNormalization();
   initializeTypingWeakness();
   initializeTheme();
@@ -90,7 +90,6 @@ function initializeCore(){
   initializeAiValidation();
   initializeStorageImportFiles();
   initializeTypingDatasets();
-  initializeTypingHistory();
   initializeTypingInput();
   initializeAudioTypingSfx();
   initializeTypingControls();
@@ -99,31 +98,27 @@ function initializeCore(){
   initializeAiController();
   initializeTypingEvents();
   initializeHelp();
-  initializeTypingHistory2();
-  initializeTypingControls2();
+  initializeTypingHistoryEvents();
+  initializeTypingControlEvents();
   initializeAppLayout();
   initializeAppCoreStartup();
   initializeLessonBridge();
 }
-
-function initializeShell(){
+function initializeShell() {
   initializeAccountStorage();
   initializeAudioEffects();
   initializeConfetti();
   initializeAuthService();
-
   initializeAppNavigation();
   initializeDialogs();
   initializeAuthController();
-
   initializeAppNavigationEvents();
   initializeDashboardController();
   initializeRankingController();
   initializeAppShellStartup();
 }
-
-function initializeGame(){
-  if (!document.getElementById('gameCard') || !document.getElementById('gaCanvas')) return;
+function initializeGame() {
+  if (!document.getElementById("gameCard") || !document.getElementById("gaCanvas")) return;
   initializeGameSession();
   initializeGameWords();
   initializeGameEngine();
@@ -132,8 +127,7 @@ function initializeGame(){
   initializeGameController();
   initializeGameEvents();
 }
-
-function initializePron(){
+function initializePron() {
   initializePronunciationSession();
   initializePronunciationUtils();
   initializePronunciationRepository();
@@ -146,20 +140,30 @@ function initializePron(){
   initializePronunciationFileTransfer();
   initializePronunciationController();
 }
-
-function initializeKeyboard(){
-  initializeVirtualKeyboard();
-}
-
 let initialized = false;
-export function initializeApplication(){
- if(initialized)return;
- initialized=true;
- initializeData();
- exposeCoreGlobals();
- initializeCore();
- initializeShell();
- initializePron();
- initializeKeyboard();
- initializeRouteRestoration();
+function initializeApplication() {
+  if (initialized) return;
+  initialized = true;
+  initializeDataCatalog();
+  exposeCoreGlobals();
+  initializeCore();
+  initializeShell();
+  initializePron();
+  initializeVirtualKeyboard();
+  initializeMascots();
+  initializeControlIcons();
+  initializeMobileNavigation();
+  initializeViewContext();
+  initializeStudySettings();
+  initializeStudyShortcuts();
+  initializePracticeBridge();
+  initializeStudyPresentation();
+  initializePracticeCatalog();
+  initializeCelebrations();
+  initializeJourney();
+  initializeShadowing();
+  initializeRouteRestoration();
 }
+export {
+  initializeApplication
+};

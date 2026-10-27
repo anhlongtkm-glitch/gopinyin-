@@ -1,0 +1,597 @@
+{
+  "cases": [
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "next": {
+        "top": 782,
+        "bottom": 826,
+        "width": 140,
+        "height": 44
+      },
+      "options": {
+        "top": 108,
+        "bottom": 156,
+        "width": 122.28125,
+        "height": 48
+      },
+      "sentence": {
+        "top": 281,
+        "bottom": 548,
+        "width": 1118,
+        "height": 267
+      },
+      "practice": {
+        "top": 548,
+        "bottom": 764,
+        "width": 1062,
+        "height": 216
+      },
+      "nav": {
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 218.75,
+        "bottom": 681.25,
+        "viewport": 900
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 218.75,
+        "bottom": 681.25,
+        "viewport": 900
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 467,
+        "clientHeight": 467,
+        "top": 215.5,
+        "bottom": 684.5,
+        "viewport": 900
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "next": {
+        "top": 782,
+        "bottom": 826,
+        "width": 140,
+        "height": 44
+      },
+      "options": {
+        "top": 108,
+        "bottom": 156,
+        "width": 122.28125,
+        "height": 48
+      },
+      "sentence": {
+        "top": 281,
+        "bottom": 548,
+        "width": 1118,
+        "height": 267
+      },
+      "practice": {
+        "top": 548,
+        "bottom": 764,
+        "width": 1062,
+        "height": 216
+      },
+      "nav": {
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 218.75,
+        "bottom": 681.25,
+        "viewport": 900
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 218.75,
+        "bottom": 681.25,
+        "viewport": 900
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 467,
+        "clientHeight": 467,
+        "top": 215.5,
+        "bottom": 684.5,
+        "viewport": 900
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "next": {
+        "top": 680,
+        "bottom": 724,
+        "width": 112,
+        "height": 44
+      },
+      "options": {
+        "top": 71,
+        "bottom": 115,
+        "width": 93.8125,
+        "height": 44
+      },
+      "sentence": {
+        "top": 208.5,
+        "bottom": 487,
+        "width": 360,
+        "height": 278.5
+      },
+      "practice": {
+        "top": 487,
+        "bottom": 666,
+        "width": 328,
+        "height": 179
+      },
+      "nav": {
+        "top": 774,
+        "bottom": 844,
+        "width": 390,
+        "height": 70
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 464,
+        "clientHeight": 464,
+        "top": 188.953125,
+        "bottom": 655.046875,
+        "viewport": 844
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 469,
+        "clientHeight": 469,
+        "top": 186.453125,
+        "bottom": 657.546875,
+        "viewport": 844
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 465,
+        "clientHeight": 465,
+        "top": 188.703125,
+        "bottom": 655.296875,
+        "viewport": 844
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "next": {
+        "top": 680,
+        "bottom": 724,
+        "width": 112,
+        "height": 44
+      },
+      "options": {
+        "top": 71,
+        "bottom": 115,
+        "width": 93.8125,
+        "height": 44
+      },
+      "sentence": {
+        "top": 208.5,
+        "bottom": 487,
+        "width": 360,
+        "height": 278.5
+      },
+      "practice": {
+        "top": 487,
+        "bottom": 666,
+        "width": 328,
+        "height": 179
+      },
+      "nav": {
+        "top": 774,
+        "bottom": 844,
+        "width": 390,
+        "height": 70
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 464,
+        "clientHeight": 464,
+        "top": 188.953125,
+        "bottom": 655.046875,
+        "viewport": 844
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 469,
+        "clientHeight": 469,
+        "top": 186.453125,
+        "bottom": 657.546875,
+        "viewport": 844
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 465,
+        "clientHeight": 465,
+        "top": 188.703125,
+        "bottom": 655.296875,
+        "viewport": 844
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "width": 1280,
+      "height": 720,
+      "scrollWidth": 1280,
+      "scrollHeight": 720,
+      "next": {
+        "top": 615,
+        "bottom": 659,
+        "width": 140,
+        "height": 44
+      },
+      "options": {
+        "top": 92,
+        "bottom": 140,
+        "width": 122.28125,
+        "height": 48
+      },
+      "sentence": {
+        "top": 240,
+        "bottom": 432,
+        "width": 982,
+        "height": 192
+      },
+      "practice": {
+        "top": 432,
+        "bottom": 604,
+        "width": 926,
+        "height": 172
+      },
+      "nav": {
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 128.75,
+        "bottom": 591.25,
+        "viewport": 720
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 128.75,
+        "bottom": 591.25,
+        "viewport": 720
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 467,
+        "clientHeight": 467,
+        "top": 125.5,
+        "bottom": 594.5,
+        "viewport": 720
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "width": 1280,
+      "height": 720,
+      "scrollWidth": 1280,
+      "scrollHeight": 720,
+      "next": {
+        "top": 615,
+        "bottom": 659,
+        "width": 140,
+        "height": 44
+      },
+      "options": {
+        "top": 92,
+        "bottom": 140,
+        "width": 122.28125,
+        "height": 48
+      },
+      "sentence": {
+        "top": 240,
+        "bottom": 432,
+        "width": 982,
+        "height": 192
+      },
+      "practice": {
+        "top": 432,
+        "bottom": 604,
+        "width": 926,
+        "height": 172
+      },
+      "nav": {
+        "top": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 128.75,
+        "bottom": 591.25,
+        "viewport": 720
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 461,
+        "clientHeight": 461,
+        "top": 128.75,
+        "bottom": 591.25,
+        "viewport": 720
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 467,
+        "clientHeight": 467,
+        "top": 125.5,
+        "bottom": 594.5,
+        "viewport": 720
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "width": 360,
+      "height": 740,
+      "scrollWidth": 360,
+      "scrollHeight": 740,
+      "next": {
+        "top": 576,
+        "bottom": 620,
+        "width": 112,
+        "height": 44
+      },
+      "options": {
+        "top": 71,
+        "bottom": 115,
+        "width": 93.8125,
+        "height": 44
+      },
+      "sentence": {
+        "top": 208.5,
+        "bottom": 383,
+        "width": 330,
+        "height": 174.5
+      },
+      "practice": {
+        "top": 383,
+        "bottom": 562,
+        "width": 298,
+        "height": 179
+      },
+      "nav": {
+        "top": 670,
+        "bottom": 740,
+        "width": 360,
+        "height": 70
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 464,
+        "clientHeight": 464,
+        "top": 136.953125,
+        "bottom": 603.046875,
+        "viewport": 740
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 469,
+        "clientHeight": 469,
+        "top": 134.453125,
+        "bottom": 605.546875,
+        "viewport": 740
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 465,
+        "clientHeight": 465,
+        "top": 136.703125,
+        "bottom": 603.296875,
+        "viewport": 740
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "width": 360,
+      "height": 740,
+      "scrollWidth": 360,
+      "scrollHeight": 740,
+      "next": {
+        "top": 576,
+        "bottom": 620,
+        "width": 112,
+        "height": 44
+      },
+      "options": {
+        "top": 71,
+        "bottom": 115,
+        "width": 93.8125,
+        "height": 44
+      },
+      "sentence": {
+        "top": 208.5,
+        "bottom": 383,
+        "width": 330,
+        "height": 174.5
+      },
+      "practice": {
+        "top": 383,
+        "bottom": 562,
+        "width": 298,
+        "height": 179
+      },
+      "nav": {
+        "top": 670,
+        "bottom": 740,
+        "width": 360,
+        "height": 70
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "settings": "display",
+      "dialog": {
+        "scrollHeight": 464,
+        "clientHeight": 464,
+        "top": 136.953125,
+        "bottom": 603.046875,
+        "viewport": 740
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "settings": "audio",
+      "dialog": {
+        "scrollHeight": 469,
+        "clientHeight": 469,
+        "top": 134.453125,
+        "bottom": 605.546875,
+        "viewport": 740
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "settings": "lesson",
+      "dialog": {
+        "scrollHeight": 465,
+        "clientHeight": 465,
+        "top": 136.703125,
+        "bottom": 603.296875,
+        "viewport": 740
+      }
+    }
+  ],
+  "errors": []
+}

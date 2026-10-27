@@ -5,6 +5,7 @@ import { aiSessionLive, aiMaybeFill, aiSavedSet, state as aiSessionState, aiShow
 import { currentTotal, updateWrongBadge } from "./answers.js";
 
 import { save } from "./progress.js";
+import { syncPinyinHintUI } from "./controls.js";
 
 import { state as typingSessionState, currentRow } from "./session.js";
 
@@ -17,6 +18,9 @@ import { state as domState } from "../../shared/dom.js";
 import { renderChineseWords } from "../../shared/language/hanzi.js";
 
 import { gtReset } from "../../shared/translation.js";
+import { setMascot, renderVisibleMascots } from "../../shared/mascot.js";
+import { navigationVersion } from "../../app/routes.js";
+import { canFocusStudyInput, studyOverlayOpen, ensureStudyControlVisible } from "../../shared/study/interactions.js";
 
 /* ★ Hệ thống điểm mới:
    • Đúng  = số CÂU gõ đúng (hoàn thành)
@@ -41,6 +45,15 @@ export function renderStatsOnly() {
     cpm.title = 'Tốc độ trung bình: ' + v + ' ký tự/phút (tính cả phiên này, lưu trên máy)';
   }
   updateWrongBadge();
+  const next = domState.$('typingNextBtn');
+  if (next) {
+    next.disabled = !typingSessionState.awaitingEnter || typingSessionState.composing;
+    next.hidden = typingSessionState.index >= total;
+  }
+  const foot = domState.$('appCard')?.querySelector('.studyFoot');
+  if (foot) foot.hidden = typingSessionState.index >= total;
+  const nextHint = domState.$('typingNextHint');
+  if (nextHint) nextHint.textContent = typingSessionState.awaitingEnter ? 'Đúng rồi! Bấm Câu tiếp hoặc nhấn Enter.' : 'Gõ đúng cả câu để tiếp tục.';
 }
 
 export function render() {
@@ -66,6 +79,9 @@ export function render() {
       domState.$('chinese').textContent = '⏳';
       domState.$('feedback').className = 'feedback hidden';
       domState.$('feedback').innerHTML = '';
+      setMascot('typingStudyMascot', 'thinking');
+      setMascot('typingFeedbackMascot', 'face-thinking');
+      renderVisibleMascots();
       aiShowGen('<span class="aiSpinner">AI đang viết câu tiếp theo…</span> (đã có <b>' + typingSessionState.rows.length + '</b> câu)');
       return;
     }
@@ -73,8 +89,12 @@ export function render() {
     domState.$('completeArea').classList.remove('hidden');
     const doneMsg = aiSavedSet() ? 'Bạn đã học hết ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' của bộ “' + aiSavedSet().name + '”. Vào lại màn AI sinh câu để tạo thêm bộ mới nhé.' : aiSessionLive() ? 'Bạn đã học ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' do AI tạo cho chủ đề “' + String(aiSessionState.aiSession.prompt).slice(0, 60) + '”. AI đã hết nội dung mới — đổi chủ đề khác để học tiếp nhé.' : typingSessionState.mode === 'wrong' ? 'Bạn đã hoàn thành lượt luyện các câu sai.' : 'Bạn đã hoàn thành lượt học này. Các câu sẽ không lặp lại cho đến khi bạn bấm Xóa tiến độ.';
     domState.$('completeArea').querySelector('p').textContent = doneMsg;
+    if (typingSessionState.linkedPractice) domState.$('completeArea').querySelector('p').textContent = 'Đã hoàn thành lượt luyện từ câu bạn chọn. Tiến độ Gõ trước đó được giữ nguyên.';
     if (typingSessionState.mode === 'review') domState.$('completeArea').querySelector('p').textContent = 'Đã hoàn thành phiên ôn ' + total + ' câu. Về Bảng điều khiển để chọn bài tiếp theo. Lịch ôn đã được cập nhật theo kết quả của bạn.';
     domState.$('restartBtn').textContent = typingSessionState.studyOrigin === 'ai' ? '← AI sinh câu' : typingSessionState.mode === 'wrong' ? 'Quay lại tất cả câu' : '← Thư viện';
+    setMascot('typingCompleteMascot', 'celebrate', {animate:true, eventKey:'complete:' + typingSessionState.sentStartTs});
+    renderVisibleMascots();
+    document.dispatchEvent(new CustomEvent('gp:celebrate',{detail:{id:'typing-complete:'+typingSessionState.sentStartTs,kind:'complete',title:'Hoàn thành bài học! Gấu tự hào về bạn.'}}));
     aiShowGen(aiSessionLive() && !aiSavedSet() ? 'Phiên học AI đã kết thúc — không lưu tiến độ.' : '');
     return;
   }
@@ -95,7 +115,7 @@ export function render() {
   typingSessionState.lastValidInput = '';
   inp.className = 'input';
   /* Gợi ý trong ô gõ khớp nội dung: bộ từ vựng thì "của từ", bộ câu thì "cả câu" */
-  inp.placeholder = aiCurrentKind() === 'word' ? 'Gõ chữ Hán của từ — gõ đúng là tự báo Đúng' : 'Gõ chữ Hán của cả câu — gõ đúng là tự báo Đúng';
+  inp.placeholder = aiCurrentKind() === 'word' ? 'Nhập chữ Hán của từ này…' : 'Nhập chữ Hán của câu này…';
   const kbdNext = domState.$('kbdNextLabel');
   if (kbdNext) kbdNext.textContent = 'Sang ' + aiCurrentUnit();
   resetTypedSpeech(); // câu mới → đếm lại chữ đã đọc từ đầu
@@ -111,12 +131,20 @@ export function render() {
   domState.$('feedback').className = 'feedback hidden';
   domState.$('feedback').innerHTML = '';
   // ★ Pinyin mặc định ẨN mỗi khi vào chế độ gõ — bấm nút gợi ý (hoặc 💡 trên bàn phím ảo) để bật
-  domState.$('chinese').classList.toggle('show-pinyin', typingSessionState.pinyinHint);
-  domState.$('hintBtn').textContent = typingSessionState.pinyinHint ? '💡 Ẩn Pinyin' : '💡 Hiện Pinyin';
+  syncPinyinHintUI();
   domState.$('fileInfo').textContent = aiSavedSet() ? '🤖 ' + aiSavedSet().name + ' • ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' • đã lưu' : aiSessionLive() ? '🤖 ' + String(aiSessionState.aiSession.prompt).slice(0, 60) + ' • ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' (không lưu tiến độ)' : typingSessionState.activeDataset ? typingSessionState.activeDataset.name + ' • ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' • ' + typingSessionState.wrongIds.size + ' câu cần ôn' : typingSessionState.rows.length + ' ' + aiCurrentUnit();
   gtReset();
+  setMascot('typingStudyMascot', 'reading');
+  setMascot('typingFeedbackMascot', 'face-focus');
+  renderVisibleMascots();
+  const navigation = navigationVersion(), rows = typingSessionState.rows;
+  const activeBefore = document.activeElement, inputBefore = inp.value;
   setTimeout(() => {
-    inp.focus();
+    if (navigation !== navigationVersion() || rows !== typingSessionState.rows || q !== currentRow() || !inp.getClientRects().length || studyOverlayOpen()) return;
+    if (inp.value !== inputBefore || typingSessionState.composing || typingSessionState.awaitingEnter) return;
+    if (!canFocusStudyInput(inp, activeBefore)) return;
+    inp.focus({preventScroll:true});
+    ensureStudyControlVisible(inp);
     if (typingSessionState.autoSound && q.zh && q.zh !== '—') speakText(q.zh, false);
   }, 180);
   save();

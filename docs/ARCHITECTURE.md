@@ -4,7 +4,7 @@ GoPinyin vẫn là website một trang bằng JavaScript thuần. Không đổi 
 
 ## Bắt đầu
 
-Yêu cầu Node.js 20+ và npm; máy hiện tại đã kiểm tra bằng Node 22. Chạy `npm install` lần đầu hoặc `npm ci` để cài đúng lockfile.
+Yêu cầu Node.js 24.x theo `package.json` và npm. Chạy `npm ci` để cài đúng lockfile.
 
 | Lệnh | Kết quả |
 |---|---|
@@ -12,7 +12,7 @@ Yêu cầu Node.js 20+ và npm; máy hiện tại đã kiểm tra bằng Node 22
 | `npm run serve` | Build và phục vụ dist, không mở trình duyệt, không watch |
 | `npm run build` | Tạo website tĩnh trong dist; không cần Node ở hosting tĩnh |
 | `node server/serve.js --no-open` | Tự build rồi mở server; giữ cách gọi trực tiếp |
-| `npm test` | Tự mở server cổng trống, chạy 21 bộ kiểm thử, đóng server |
+| `npm test` | Tự mở server cổng trống, chạy 27 bộ kiểm thử, đóng server |
 | `npm run test:build` | Kiểm tra ghép HTML, tài nguyên công khai, classic JS, chạy file:// |
 
 Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy trình build/watch. Khi thiếu dependency, chạy `npm install`; không cần cài framework hoặc trình duyệt mới. `npm start` tự build lại, sau đó bạn tải lại trang; chưa có hot reload giữ trạng thái DOM.
@@ -34,6 +34,9 @@ Windows dùng `start.bat`; Linux/macOS dùng `start.sh`. Hai launcher dùng quy 
 | Sảnh game | `src/features/games/` |
 | Game bắn chữ | `src/features/game/` |
 | Lịch ôn theo kết quả luyện gõ | `src/features/typing/review.js`, lưu trong `cts:progress:<dataset>` |
+| Nhóm HSK/chủ đề và Học tiếp | `src/features/practice/catalog-controller.js` |
+| Bài khóa, thanh điệu, nhiệm vụ và cấp gấu | `src/features/journey/` |
+| Thư viện YouTube, phụ đề và thu âm Shadowing | `src/features/shadowing/`; loader API riêng ở `youtube-api.js` |
 | URL màn/bài học, Back/Forward | `src/app/routes.js`, `bootstrap.js` |
 | Modal, toast, dịch nhanh, hướng dẫn | `src/shared/` |
 | IndexedDB, cache từ vựng, đọc file | `src/shared/storage/` |
@@ -64,7 +67,7 @@ Luồng chọn bài/chuyển màn dùng ticket điều hướng từ `markNaviga
 
 1. HTML nguồn dùng marker `<!-- @include features/typing/view.html -->`. Build ghép sẵn nên không có fetch HTML khi vào màn. Marker `@inline` giữ script theme và nhập dữ liệu trong head, trước khi app đọc localStorage.
 2. Import/export module trực tiếp. State được export từ module sở hữu, không tạo biến nghiệp vụ mới trên `window`. Việc ghi state trong cùng một tính năng phải đi cùng các thao tác lưu/render hiện có.
-3. `src/app/bootstrap.js` là nơi duy nhất sắp thứ tự khởi tạo. Hàm `initializeApplication()` có guard để không gắn sự kiện hai lần. Một số initializer có hậu tố `2`/`3`: các bước này giữ vị trí khởi tạo của mã cũ; không gom hoặc đảo thứ tự nếu chưa kiểm tra phụ thuộc.
+3. `src/app/bootstrap.js` là nơi duy nhất sắp thứ tự khởi tạo. Hàm `initializeApplication()` có guard để không gắn sự kiện hai lần. Kho bài khởi tạo state trong một hàm; phần lịch sử và điều khiển gõ tách rõ state/API với `initializeTypingHistoryEvents()` và `initializeTypingControlEvents()`, giữ thời điểm gắn sự kiện sau phần API nền.
 4. `src/app/compatibility.js` là ranh giới công bố API cũ lên window. Giữ bridge/test/integration hiện có; mã tính năng dùng import. Proxy `legacy` đọc API công khai khi cần lifecycle/bridge động, không giữ một bản state nghiệp vụ khác.
 5. `src/shared/lesson-bridge.js` cung cấp `lessonRepository` dùng chung cho dashboard và phát âm, trỏ về cùng kho câu/tiến độ luyện gõ; `window.__gpBridge` chỉ là bí danh tương thích.
 6. CSS giữ nguyên thứ tự qua `src/styles/index.css`. `responsive`, `brand`, `polish`, `shell` là override cũ được đặt đúng thứ tự. Không gộp theo tên selector hoặc đảo import vì sẽ đổi cascade.

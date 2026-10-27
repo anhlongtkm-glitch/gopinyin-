@@ -28,7 +28,9 @@ export function save() {
   if (!typingSessionState.activeDataset) return;
   if (typingSessionState.mode === 'all') {
     typingSessionState.mainOrder = [...typingSessionState.order];
-    typingSessionState.mainIndex = Math.min(typingSessionState.index + (typingSessionState.awaitingEnter ? 1 : 0), typingSessionState.order.length);
+    // Following a pronunciation cursor must not mark earlier typing questions done.
+    if (typingSessionState.index === typingSessionState.mainIndex) typingSessionState.linkedPractice = false;
+    if (!typingSessionState.linkedPractice) typingSessionState.mainIndex = Math.min(typingSessionState.index + (typingSessionState.awaitingEnter ? 1 : 0), typingSessionState.order.length);
   }
   learningStorage.setItem(progressKey(typingSessionState.activeDataset.id), JSON.stringify({
     mainOrder: typingSessionState.mainOrder,

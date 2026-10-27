@@ -135,18 +135,18 @@ const isVerifyPrompt = (p) => /CẦN SOÁT|soát lỗi NGHĨA/i.test(p);
   check('Có toast báo đã sửa nghĩa', /sửa/i.test(toastTxt) && /nghĩa/i.test(toastTxt), toastTxt.slice(0, 140));
 
   /* ═══ C. Nghĩa đúng thì giữ nguyên ═══
-     Space CHỈ sang mục khi đã gõ đúng mục hiện tại (awaitingEnter) — nên phải
+     Enter CHỈ sang mục khi đã gõ đúng mục hiện tại (awaitingEnter) — nên phải
      gõ xong 批量 trước, đúng như người dùng thật vẫn làm. */
   section('C. Nghĩa vốn đúng được giữ nguyên');
   await page.focus('#pinyinInput');
   await page.keyboard.insertText('批量');
   await page.waitForTimeout(700);
-  const beforeSpace = await page.evaluate(() => ({
+  const beforeNext = await page.evaluate(() => ({
     fb: (document.querySelector('#feedback') || {}).textContent || '',
     readOnly: (document.querySelector('#pinyinInput') || {}).readOnly
   }));
-  check('Gõ đúng 批量 → báo Chính xác & khoá ô gõ', /Chính xác/.test(beforeSpace.fb) && beforeSpace.readOnly === true, beforeSpace);
-  await page.keyboard.press('Space');   // sang mục 2 = 纸箱
+  check('Gõ đúng 批量 → báo Chính xác & khoá ô gõ', /Chính xác/.test(beforeNext.fb) && beforeNext.readOnly === true, beforeNext);
+  await page.keyboard.press('Enter');   // sang mục 2 = 纸箱
   await page.waitForTimeout(700);
   const second = await page.evaluate(() => ({
     zh: [...(document.querySelector('#chinese') || {}).textContent || ''].filter(c => /[\u3400-\u9fff]/.test(c)).join(''),

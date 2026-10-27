@@ -16,7 +16,7 @@ export function currentRow() {
 }
 /* ── Trạng thái phiên luyện (không lưu) ──
    ★ MỘT kiểu gõ duy nhất: gõ trực tiếp CHỮ HÁN của cả câu → TỰ CHẤM khi gõ,
-     gõ đúng hết mới được sang câu. Space = sang câu · Enter = ẩn/hiện gợi ý Pinyin. */
+     gõ đúng hết mới được sang câu. Enter = sang câu · 2 = ẩn/hiện gợi ý Pinyin. */
 
 export function initializeTypingSession() {
   typingSessionState.activeDataset = null;
@@ -26,6 +26,7 @@ export function initializeTypingSession() {
   typingSessionState.mainOrder = [];
   typingSessionState.mainIndex = 0;
   typingSessionState.mode = 'all';
+  typingSessionState.linkedPractice = false;
   typingSessionState.wrongIds = new Set();
   typingSessionState.reviewById = {};
   typingSessionState.stats = {
@@ -54,7 +55,7 @@ export function initializeTypingSession() {
   typingSessionState.hanWrongSig = '';
   /* ── Trạng thái phiên luyện (không lưu) ──
      ★ MỘT kiểu gõ duy nhất: gõ trực tiếp CHỮ HÁN của cả câu → TỰ CHẤM khi gõ,
-       gõ đúng hết mới được sang câu. Space = sang câu · Enter = ẩn/hiện gợi ý Pinyin. */
+       gõ đúng hết mới được sang câu. Enter = sang câu · 2 = ẩn/hiện gợi ý Pinyin. */
   typingSessionState.sentStartTs = 0;
 }
 

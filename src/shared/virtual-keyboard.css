@@ -37,11 +37,11 @@
 .vkRow{display:flex;gap:6px;justify-content:center}
 .vkRow2{padding:0 12px}
 .vkRow4{gap:8px;margin-top:2px}
-/* ★ Chế độ gõ CHỮ HÁN: chữ Latin không tạo được chữ Hán → ẩn 3 hàng chữ cái,
-   chỉ giữ ⌫ / ␣ / 💡. Tránh việc bấm phím mà không có gì xảy ra. */
+/* Typing uses the system Chinese IME and explicit lesson actions. */
 .vkbd--hanzi .vkRow1,.vkbd--hanzi .vkRow2,.vkbd--hanzi .vkRow3{display:none}
 .vkHanziOnly{display:none}
 .vkbd--hanzi .vkHanziOnly{display:flex;flex:0 0 auto;min-width:64px}
+.vkbd--hanzi .vkGameOnly{display:none}
 
 .vkKey{flex:1 1 0;min-width:0;height:46px;appearance:none;cursor:pointer;
   display:grid;place-items:center;font:inherit;font-size:17px;font-weight:800;text-transform:lowercase;

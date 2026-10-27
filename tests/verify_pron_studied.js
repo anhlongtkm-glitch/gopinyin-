@@ -121,7 +121,7 @@ const txt = (s) => (s || '').replace(/\s+/g, ' ').trim();
     await inp.type(answer.zh, { delay: 30 });
     await page.waitForTimeout(400);
     const okFb = await page.evaluate(() => /Chính xác/.test(document.querySelector('#feedback')?.innerText || ''));
-    await inp.press('Space');
+    await inp.press('Enter');
     await page.waitForTimeout(700);
     const moved = await page.evaluate((vi) => (document.querySelector('#vietnamese')?.innerText || '').trim() !== vi, (answer.vi || '').trim());
     typedOk = okFb && moved;

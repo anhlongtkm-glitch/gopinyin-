@@ -13,6 +13,10 @@ import { normalize } from "../language/normalization.js";
 import { toast } from "../toast.js";
 
 import { escapeHtml } from "../utils.js";
+import { setMascot } from "../mascot.js";
+import { navigationVersion } from "../../app/routes.js";
+
+let sampleVersion = 0;
 
 /* ── Speech Synthesis ── */
 export function getChineseVoices() {
@@ -81,8 +85,23 @@ export function speakQueue(texts) {
   }
 }
 
+function setSampleLabel(button, text) {
+  if (!button) return;
+  let label = button.querySelector('[data-audio-label]');
+  if (!label) {
+    label = document.createElement('span');
+    label.dataset.audioLabel = '';
+    button.prepend(label);
+  }
+  const playing = text !== 'Nghe';
+  label.textContent = 'Nghe';
+  button.setAttribute('aria-label', playing ? 'Đang phát câu mẫu' : 'Nghe mẫu');
+  button.setAttribute('aria-busy', String(playing));
+}
+
 export function speakText(text, showButtonState = false) {
   if (!text || !('speechSynthesis' in window)) return;
+  const version = ++sampleVersion;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'zh-CN';
@@ -92,14 +111,22 @@ export function speakText(text, showButtonState = false) {
   if (typingSessionState.selectedVoiceName === '__male__' && voiceGender(voice || {}) !== 'male') utter.pitch = 0.78;
   const btn = domState.$('audioBtn');
   if (showButtonState) {
+    const item = currentRow(), navigation = navigationVersion();
+    const current = () => version === sampleVersion && item === currentRow() && navigation === navigationVersion() && domState.$('appCard')?.getClientRects().length;
     btn.classList.add('speaking');
-    btn.innerHTML = '🔊 <span>Đang phát...</span>';
+    setSampleLabel(btn, 'Đang phát…');
+    utter.onstart = () => { if (current() && !typingSessionState.composing) setMascot('typingStudyMascot', 'listening'); };
     const reset = () => {
+      if (version !== sampleVersion) return;
       btn.classList.remove('speaking');
-      btn.innerHTML = '🔊 <span>Nghe câu tiếng Trung</span>';
+      setSampleLabel(btn, 'Nghe');
+      if (current()) setMascot('typingStudyMascot', typingSessionState.awaitingEnter ? 'approve' : 'reading');
     };
     utter.onend = reset;
     utter.onerror = reset;
+  } else {
+    btn?.classList.remove('speaking');
+    setSampleLabel(btn, 'Nghe');
   }
   window.speechSynthesis.speak(utter);
 }

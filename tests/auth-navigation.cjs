@@ -34,7 +34,7 @@ async function routeScenario(options = {}) {
   if (!('client' in options)) fixture.client = { auth: { getSession: async () => ({ data: { session: {} } }) } };
   Object.defineProperties(globalThis, {
     window: { configurable: true, value: new EventTarget() },
-    location: { configurable: true, value: { hash: '#/study?dataset=saved-set', pathname: '/', search: '' } },
+    location: { configurable: true, value: { hash: options.hash || '#/study?dataset=saved-set', pathname: '/', search: '' } },
     history: { configurable: true, value: Object.fromEntries(['pushState', 'replaceState'].map(method => [method, (state, title, url) => {
       fixture.writes.push({ method, url }); location.hash = url.includes('#') ? url.slice(url.indexOf('#')) : '';
     }])) },
@@ -42,6 +42,7 @@ async function routeScenario(options = {}) {
   });
   const routeImport = JSON.stringify(path.resolve('src/app/routes.js'));
   const api = await bundleActual(`export * from ${JSON.stringify(path.resolve('src/app/route-restoration.js'))}; export * as routes from ${routeImport};`, {
+    [path.resolve('src/features/shadowing/controller.js')]: 'export async function openShadowVideo(id,options){globalThis.routeRestoreFixture.calls.push({view:"shadowVideo",id,options});}',
     [path.resolve('src/features/auth/client.js')]: 'export const getAccountClient=()=>globalThis.routeRestoreFixture.client;',
     [path.resolve('src/features/auth/service.js')]: 'export const state=globalThis.routeRestoreFixture.authState;',
     [path.resolve('src/app/navigation.js')]: `import {markNavigation,navigationVersion} from ${routeImport}; export async function showView(view,options={}){const nav=options.navigation??markNavigation();if(nav!==navigationVersion())return false;globalThis.routeRestoreFixture.calls.push({view,options});return true;}`,
@@ -180,6 +181,12 @@ const drain = () => new Promise(resolve => setImmediate(resolve));
     assert.equal(scenario.fixture.calls[0].options.navigation, scenario.fixture.calls[1].options.navigation);
     assert.deepEqual(scenario.fixture.writes, [{ method: 'replaceState', url: '/#/library' }]);
     console.log('  PASS missing lessons redirect current routes while stale failures cannot replace newer navigation');
+
+    scenario = await routeScenario({ hash: '#/shadowVideo?video=4xuzuLAAzt8' });
+    await drain();
+    assert.deepEqual(scenario.fixture.calls.map(call => [call.view, call.id]), [['shadowVideo','4xuzuLAAzt8']]);
+    assert.equal(scenario.fixture.calls[0].options.route, false);
+    console.log('  PASS video deep links restore the exact selection without pushing duplicate history');
   } finally {
     for (const [key, descriptor] of originalGlobals) {
       if (descriptor) Object.defineProperty(globalThis, key, descriptor);

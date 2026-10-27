@@ -63,7 +63,7 @@ export function gotoItem(pos) {
   if (pronunciationSessionState.S.settings.autoSample) {
     const item = currentItem(), navigation = navigationVersion();
     setTimeout(() => {
-      if (navigation === navigationVersion() && item === currentItem() && !document.getElementById('pronCard')?.classList.contains('hidden')) pronunciationTtsState.PronTts.speak(item?.zh);
+      if (navigation === navigationVersion() && item === currentItem() && !document.getElementById('pronCard')?.classList.contains('hidden') && !document.querySelector('.modal:not([hidden]),.appModal.show')) pronunciationTtsState.PronTts.speak(item?.zh);
     }, 220);
   }
 }

@@ -1,41 +1,34 @@
-/* ═══════════════════════════════════════════════════════════════
-   THƯ VIỆN (libraryCard)
-   ═══════════════════════════════════════════════════════════════ */
-#libraryCard,#aiCard,#appCard,#gameCard{margin:0 auto;width:100%;max-width:1180px;padding:clamp(18px,3vw,34px)}
-.aiViewHead{margin-bottom:20px}
-.aiViewHead h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
-.aiViewHead .small{font-size:13px;font-weight:600;color:var(--muted);line-height:1.5;max-width:640px}
-.libraryHead{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:22px}
-.libraryHead h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
-.libraryHeadActions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-.storageWarn{background:var(--warn-soft);border:1px solid rgba(251,191,36,.4);color:var(--warn);
-  border-radius:var(--r-lg);padding:13px 17px;font-size:13px;margin-bottom:18px;line-height:1.6}
-.libTabs{margin-bottom:20px;flex-wrap:wrap}
+/* Lesson catalog: direct selection with progress visible on every card. */
+.libraryHead{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.libraryHead>div:first-child{flex:1;min-width:180px}
+.libraryHeadActions{display:flex;gap:8px;flex-wrap:wrap;flex-basis:100%;padding-top:4px}
+.libraryHeadActions .btn{font-size:14px}
+.aiViewHead{margin-bottom:24px}
+.storageWarn{background:var(--warn-soft);border:1px solid var(--line-2);color:var(--warn);border-radius:var(--r-lg);padding:16px;font-size:14px;margin-bottom:24px;line-height:1.6}
+.libTabs,.vocabTabs{margin-bottom:16px;flex-wrap:wrap}
 .libraryImport{display:none}
-
-/* Kho câu giao tiếp */
-.vocabTabs{margin-bottom:16px;flex-wrap:wrap}
-.vocabNote{margin-top:18px;background:var(--primary-soft);border:1px solid rgba(31,200,162,.25);
-  border-radius:var(--r-lg);padding:15px 18px;font-size:13px;color:var(--text-2);line-height:1.7}
-.vocabNote b{color:var(--primary)}
-.vocabGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px;margin-top:18px}
-.vocabCard{
-  display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;
-  background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:17px;
-  transition:all var(--d) var(--ease);position:relative;overflow:hidden;
-}
-.vocabCard::after{content:'→';position:absolute;right:14px;top:14px;color:var(--faint);font-weight:800;transition:all var(--d)}
-.vocabCard:hover{transform:translateY(-3px);border-color:rgba(31,200,162,.45);box-shadow:var(--sh-2),var(--glow-soft)}
-.vocabCard:hover::after{color:var(--primary);transform:translateX(3px)}
-.vocabCat{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);
-  background:var(--primary-soft);padding:3px 9px;border-radius:99px}
-.vocabCard-title{font-size:14.5px;font-weight:700;line-height:1.35}
-.vocabEmpty{grid-column:1/-1;text-align:center;color:var(--muted);padding:36px;font-size:14px}
-.vocabLoading{grid-column:1/-1;text-align:center;color:var(--muted);padding:36px;font-size:14px}
-.vocabLoading::after{content:'…';animation:dots 1.2s steps(4) infinite}
-@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
-
-/* Bộ câu của tôi */
-.libraryTools{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.vocabTabs{gap:8px}
+.vocabTabs .modeBtn{flex:0 1 auto}
+.vocabGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:24px}
+.vocabCard{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:148px;min-width:0;text-align:left;background:var(--card);border:1px solid var(--line-2);border-bottom-width:3px;border-radius:var(--r-lg);padding:20px;transition:border-color var(--d),background var(--d);position:relative;overflow:hidden}
+.vocabCard::after{content:'\2192';position:absolute;right:16px;top:16px;color:var(--primary);font-size:20px;font-weight:800}
+.vocabCard:hover{border-color:var(--primary);background:var(--card-2)}
+.vocabCard:active{border-bottom-width:1px;padding-bottom:22px}
+.vocabCat{font-size:12px;font-weight:750;color:var(--primary);background:var(--primary-soft);padding:4px 10px;border-radius:var(--r-pill);max-width:calc(100% - 20px)}
+.vocabCard-title{font-size:17px;font-weight:800;line-height:1.4;padding-right:20px;overflow-wrap:anywhere}
+.vocabEmpty,.vocabLoading{grid-column:1/-1;text-align:center;color:var(--muted);padding:32px 24px;font-size:15px;border:1px dashed var(--line-2);border-radius:var(--r-lg);background:var(--card-2)}
+.vocabHelp{margin-top:24px;border-top:1px solid var(--line);padding-top:12px}
+.vocabHelp>summary{cursor:pointer;color:var(--primary);font-size:14px;font-weight:700;min-height:44px;padding:10px 0;line-height:1.6}
+.vocabNote{margin-top:12px;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;font-size:14px;color:var(--text-2);line-height:1.8}
+.vocabNote b{color:var(--text)}
+.libraryTools{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
 .libraryTools .librarySearch{flex:1;min-width:220px}
+@media(max-width:600px){.libraryHead{gap:16px}.libraryHead>div:first-child{min-width:0;flex-basis:calc(100% - 100px)}.libraryHeadActions{gap:8px}.libraryHeadActions .btn{flex:1;padding-inline:10px}.vocabTabs{display:grid;grid-template-columns:1fr 1fr;width:100%}.vocabTabs .modeBtn{white-space:normal;text-align:center;padding:10px;font-size:14px}.vocabGrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:20px}.vocabCard{padding:16px;min-height:160px}.vocabCard:active{padding-bottom:18px}.vocabCard-title{font-size:16px}.vocabCat{font-size:11px}.vocabCard::after{right:12px;top:12px}}
 
+
+/* Approved library: title, compact tools, level pills, resume strip, topic cards. */
+.libraryHead{align-items:flex-start;flex-wrap:nowrap;margin-bottom:28px}.libraryHeadActions{position:relative;flex:none;flex-basis:auto;margin-left:auto;padding:0}.libraryHeadActions summary{cursor:pointer;display:flex;align-items:center;min-height:44px;padding:10px 16px;font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;white-space:nowrap}.libraryHeadActions>div{position:absolute;z-index:12;right:0;top:52px;padding:16px;display:flex;gap:12px;background:var(--card);border:1px solid var(--line);box-shadow:var(--sh-2);border-radius:16px}.libraryControls{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px}.libraryControls .vocabTabs{width:auto;background:var(--matcha);border-radius:16px;padding:5px;margin:0;gap:4px}.libraryControls .vocabTabs .modeBtn{min-height:44px;padding:10px 22px;border-radius:12px;font-size:14px;background:transparent;color:var(--muted);border:0;box-shadow:none}.libraryControls .vocabTabs .modeBtn.active{background:var(--card);color:var(--primary)}.libraryControls .librarySearch{width:330px;max-width:45%;margin:0;min-height:48px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 18px;font-size:14px}.hskLevelPicker{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}.hskLevelPicker[hidden]{display:none}.hskLevelPicker button{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 20px;min-height:44px;font-size:14px;font-weight:700}.hskLevelPicker button.selected{background:var(--button-primary);color:var(--button-primary-text);border-color:var(--button-primary)}.libraryResume{display:flex;align-items:center;gap:24px;padding:24px 32px;background:var(--primary-soft);border:1px solid var(--line);border-radius:24px;margin:0 0 28px}.libraryResume>[data-mascot]{width:108px;height:108px;flex:none}.libraryResume>div{flex:1;min-width:0}.libraryResume h3{font-family:var(--font-display);font-size:25px;line-height:1.3;margin:10px 0}.libraryResume p{font-size:13px;line-height:1.7;color:var(--muted);margin:0}.libraryResume>.btn{flex:none;min-height:52px}.practiceGroupsHeading{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:24px 0 20px}.practiceGroupsHeading h3{font-family:var(--font-display);font-size:24px;letter-spacing:-.03em;margin:0}.practiceGroupsHeading small{font-size:11px;color:var(--muted)}.practiceGroupList{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-bottom:36px}.practiceGroupCard{display:flex;align-items:flex-start;flex-direction:column;gap:12px;text-align:left;padding:24px;min-height:235px;border:1px solid var(--line);border-radius:24px;background:var(--card)}.practiceGroupCard:hover{background:var(--primary-soft);border-color:var(--line-2)}.practiceGroupCard .groupIcon{width:46px;height:46px;padding:12px;background:var(--primary-soft);color:var(--primary);border-radius:14px;margin-bottom:4px}.practiceGroupCard:nth-child(3n) .groupIcon{background:var(--matcha);color:var(--matcha-text)}.groupIcon svg{width:100%;height:100%}.practiceGroupCard b{font-family:var(--font-display);font-size:22px;letter-spacing:-.03em}.practiceGroupCard>span:not(.groupIcon):not(.featureEyebrow){font-size:13px;color:var(--muted)}.practiceGroupCard small{display:flex;justify-content:space-between;width:100%;font-size:13px;color:var(--primary);margin-top:auto}.vocabGrid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px}.practiceExtra{margin:0}.practiceExtra summary{font-size:13px}
+@media(max-width:860px){.libraryHead{gap:12px}.libraryHead h2{font-size:29px}.libraryHeadActions summary{font-size:11px;padding:8px 10px}.libraryControls{gap:12px;flex-wrap:wrap}.libraryControls .vocabTabs{display:flex;flex:1}.libraryControls .librarySearch{width:100%;max-width:none;flex-basis:100%}.libraryControls .vocabTabs .modeBtn{flex:1;padding:10px}.hskLevelPicker{gap:8px}.hskLevelPicker button{padding:8px 14px;font-size:12px}.libraryResume{padding:20px;gap:16px;flex-wrap:wrap}.libraryResume>[data-mascot]{width:80px;height:80px}.libraryResume h3{font-size:21px}.libraryResume>.btn{margin-left:auto;min-height:48px}.practiceGroupList,.vocabGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.practiceGroupCard{padding:18px;min-height:215px}.practiceGroupCard b{font-size:19px}.practiceGroupCard .featureEyebrow{font-size:9px}.practiceGroupsHeading{align-items:start;flex-direction:column;gap:8px}.practiceGroupsHeading h3{font-size:22px}}
+@media(max-width:390px){.libraryHead{flex-wrap:wrap}.libraryHeadActions{margin-left:0}.practiceGroupCard{padding:16px}.practiceGroupCard b{font-size:18px}.practiceGroupCard>span:not(.groupIcon):not(.featureEyebrow){font-size:12px}}
+
+.practiceGroupCard progress{appearance:none;width:100%;height:4px;border:0;border-radius:8px;background:var(--line)}.practiceGroupCard progress::-webkit-progress-bar{background:var(--line);border-radius:8px}.practiceGroupCard progress::-webkit-progress-value{background:var(--primary);border-radius:8px}

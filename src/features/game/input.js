@@ -1,4 +1,5 @@
 import { isStudyAllowed } from "../auth/service.js";
+import { studyOverlayOpen, studyControlOwnsKeys } from "../../shared/study/interactions.js";
 // State and behavior owned by features/game/input. Initialization is orchestrated by app/bootstrap.js.
 
 
@@ -50,7 +51,8 @@ export function updateHud() {
 }
 
 export function handleKey(e) {
-  if (!isGameVisible()) return;
+  if (!isGameVisible() || studyOverlayOpen() || studyControlOwnsKeys(e.target)) return;
+  if (e.isComposing || e.keyCode === 229) return;
   if (e.key === 'Escape') {
     /* đang toàn màn hình → để trình duyệt tự thoát, không tạm dừng game */
     if (isFs()) return;

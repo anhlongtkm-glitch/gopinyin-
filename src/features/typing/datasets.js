@@ -44,6 +44,7 @@ export async function openDataset(id, options = {}) {
   aiEndSession(); // rời phiên AI (không lưu gì) nếu đang học câu do AI tạo
   resetSessionRuntime();
   typingSessionState.activeDataset = ds;
+  typingSessionState.linkedPractice = false;
   typingSessionState.awaitingEnter = false;
   typingSessionState.curHadError = false;
   typingSessionState.rows = ds.rows;
@@ -103,6 +104,11 @@ export async function openDataset(id, options = {}) {
   loadHistory();
   renderAppHistory();
   if (options.route !== false) writeRoute('study', id, false, options.review);
+  if (typeof document.dispatchEvent === 'function') {
+    document.dispatchEvent(new CustomEvent('gp:view-changed',{detail:'study'}));
+    document.dispatchEvent(new CustomEvent('gp:typing-opened', {detail:id}));
+    if (options.practiceMode === 'speaking') document.dispatchEvent(new CustomEvent('gp:practice-restore',{detail:'speaking'}));
+  }
   return true;
 }
 

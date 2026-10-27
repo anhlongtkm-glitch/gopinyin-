@@ -200,7 +200,7 @@ const FAKE = [
     await page.focus('#pinyinInput');
     await page.keyboard.insertText(chars);
     await page.waitForTimeout(500);
-    await page.keyboard.press('Space');       // sang câu tiếp
+    await page.keyboard.press('Enter');       // sang câu tiếp
     await page.waitForTimeout(700);
   }
   const afterTwo = await page.evaluate(() => ({

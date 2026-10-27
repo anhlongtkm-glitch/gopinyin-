@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
    BẢNG XẾP HẠNG — số câu đúng + điểm game (ngày / tuần)
    ═══════════════════════════════════════════════════════════════ */
-.rankView{display:flex;flex-direction:column;gap:18px}
+.rankView{display:flex;flex-direction:column;gap:20px}
 
 /* ★ Panel BXH bên trong Game: trượt từ phải, không che toàn bộ sân chơi */
 .gaLbPanel{
@@ -19,7 +19,7 @@
 .gaLbPanel.hidden{display:none}
 .gaLbHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .gaLbHead h3{margin:0;font-family:var(--font-display);font-size:clamp(16px,2vw,18px);letter-spacing:-.01em}
-.gaLbHead .gaIconBtn{width:30px;height:30px;font-size:14px}
+.gaLbHead .gaIconBtn{width:44px;height:44px;font-size:16px}
 .gaLbNote{color:var(--muted);font-size:11.5px;line-height:1.45}
 .gaLbNote b{color:var(--text-2)}
 .gaLbScroll{overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:4px;flex:1 1 auto}
@@ -52,13 +52,13 @@
 .rankHead h2{margin:0 0 6px;font-family:var(--font-display);font-size:clamp(20px,2.4vw,26px);letter-spacing:-.01em}
 .rankHeadText .small{max-width:56ch;line-height:1.55}
 .rankHeadText .small b{color:var(--text-2)}
-.rankTabs{display:inline-flex;gap:4px;padding:4px;border-radius:var(--r-pill);background:var(--card-2);border:1px solid var(--line)}
-.rankTab{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;font-weight:800;
-  padding:8px 16px;border-radius:var(--r-pill);cursor:pointer;white-space:nowrap;
+.rankTabs{display:inline-flex;gap:8px;padding:4px;border-radius:var(--r-md);background:var(--card-2);border:1px solid var(--line)}
+.rankTab{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:800;min-height:44px;
+  padding:10px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;
   transition:color var(--d) var(--ease),background var(--d),box-shadow var(--d),transform var(--d-fast)}
 .rankTab:hover{color:var(--text-2)}
-.rankTab:active{transform:scale(.96)}
-.rankTab.active{background:var(--brand-grad);color:#fff;box-shadow:0 6px 18px rgba(11,164,136,.35)}
+.rankTab:active{background:var(--primary-soft)}
+.rankTab.active{background:var(--button-primary);color:var(--button-primary-text);box-shadow:none}
 
 /* ── Bục vinh danh top 3 ── */
 .rankPodium{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:end}
@@ -145,7 +145,7 @@
   .rankYouTag{font-size:8px;padding:1px 5px}
   .rankHead{gap:10px}
   .rankTabs{width:100%;justify-content:space-between}
-  .rankTab{flex:1;padding:8px 10px;font-size:12px}
+  .rankTab{flex:1;padding:8px 10px;font-size:14px}
   .rankFoot{font-size:10.5px;align-items:flex-start}
   .rankFootDot{margin-top:5px}
 }
@@ -157,3 +157,5 @@
   .rankPodium.p1,.rankPodium.p2{grid-template-columns:1fr}
 }
 
+
+#rankCard .featureIntro{margin-bottom:0}.rankView .rankTabs{align-self:flex-start}.rankView .rankTab{min-height:44px;font-size:14px}.rankView .rankTableHead{font-size:12px;color:var(--muted)}.rankView .rankName{font-size:14px}.rankView .rankFoot{font-size:13px;color:var(--muted)}.rankView .rankPodStats{font-size:13px}.rankView .rankPodStats b{font-size:14px}.rankView .rankPodName{font-size:14px}

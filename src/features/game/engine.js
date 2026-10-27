@@ -2,7 +2,6 @@ import { isStudyAllowed, currentUser } from "../auth/service.js";
 import { learningStorage } from "../../shared/storage/account-data.js";
 // State and behavior owned by features/game/engine. Initialization is orchestrated by app/bootstrap.js.
 
-import { legacy } from "../../app/compatibility.js";
 
 import { showOverlay } from "./controller.js";
 

@@ -9,7 +9,7 @@
   box-shadow:var(--sh-4);padding:clamp(26px,4vw,40px);animation:modalPop .35s var(--spring);margin:auto}
 .modalClose{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--card-3);
   border:1px solid var(--line);color:var(--muted);font-size:13px;transition:all var(--d);z-index:2}
-.modalClose:hover{background:var(--bad-soft);color:var(--bad);transform:rotate(90deg)}
+.modalClose:hover{background:var(--bad-soft);color:var(--bad)}
 
 /* ★ Modal hướng dẫn (nút 💡) — cơ chế gỗ & phím tắt */
 .helpCard{max-width:600px}
@@ -22,7 +22,7 @@
 .helpSection{background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:14px}
 .helpSection h3{font-size:15px;font-weight:800;margin:0 0 10px;color:var(--text)}
 .helpList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
-.helpList li{position:relative;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--text-2)}
+.helpList li{position:relative;padding-left:18px;font-size:14px;line-height:1.6;color:var(--text-2)}
 .helpList li::before{content:'▸';position:absolute;left:0;top:0;color:var(--primary);font-weight:800}
 .helpList b{color:var(--text)}
 .helpList li.helpWarn{background:var(--bad-soft);border:1px solid rgba(251,113,133,.4);border-radius:var(--r-md);
@@ -31,20 +31,32 @@
 .helpGotIt{margin-top:4px}
 @media (prefers-reduced-motion: reduce){.helpBulb{animation:none!important}}
 
+/* Compact reference uses the same numbered labels as lesson controls. */
+.shortcutRows{display:grid;gap:0}
+.shortcutRow{display:grid;grid-template-columns:58px minmax(0,1fr);gap:14px;align-items:center;padding:9px 0;font-size:14px;line-height:1.5;color:var(--text-2)}
+.shortcutRow+.shortcutRow{border-top:1px solid var(--line)}
+.shortcutRow kbd,.shortcutNativeHint kbd,.helpTypingDetails kbd{font-family:var(--font-ui,Inter,sans-serif);font-weight:700;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:7px;background:var(--card);color:var(--text);padding:3px 8px;text-align:center;white-space:nowrap}
+.shortcutNativeHint{font-size:13px;line-height:1.9;color:var(--muted);margin:12px 0}
+.helpTypingDetails{margin:12px 0 20px;font-size:14px;line-height:1.6;color:var(--text-2)}
+.helpTypingDetails summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700;color:var(--text)}
+.helpTypingDetails p{margin:8px 0}
+.helpCard .shortcutGuide{padding:8px 18px;margin-bottom:10px}
+@media(max-width:480px){.shortcutRow{grid-template-columns:52px minmax(0,1fr);gap:10px;padding:8px 0}.helpHead .helpMascot{width:48px;height:48px}.helpHead{margin-bottom:14px}}
+
 /* Auth */
-.authCard{max-width:430px}
-.authHead{text-align:center;margin-bottom:20px}
-.authHead img{margin:0 auto 12px;filter:drop-shadow(0 6px 18px rgba(11,164,136,.35))}
-.authHead h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 6px}
-.authHead p{color:var(--muted);font-size:13.5px;margin:0}
+.authCard{max-width:460px}
+.authHead{position:relative;text-align:center;margin-bottom:24px}
+.authHead img{position:absolute;top:0;left:0;width:32px;height:32px;margin:0;filter:none}
+.authHead h2{font-family:var(--font-friendly);font-size:28px;line-height:1.3;font-weight:800;margin:0 0 6px}
+.authHead p{color:var(--muted);font-size:14px;margin:0}
 .authTabs{display:flex;background:var(--card-3);border:1px solid var(--line);border-radius:var(--r-pill);padding:4px;margin-bottom:20px}
-.authTab{flex:1;padding:9px;border-radius:var(--r-pill);font-size:13.5px;font-weight:800;color:var(--muted);transition:all var(--d)}
-.authTab.active{background:var(--brand-grad);color:#fff;box-shadow:0 4px 12px rgba(11,164,136,.35)}
+.authTab{flex:1;min-height:44px;padding:10px;border-radius:var(--r-pill);font-size:13.5px;font-weight:800;color:var(--muted);transition:all var(--d)}
+.authTab.active{background:var(--button-primary);color:var(--button-primary-text);box-shadow:none}
 .authForm{display:flex;flex-direction:column;gap:14px}
 .authField{display:flex;flex-direction:column;gap:6px}
-.authField span{font-size:12.5px;font-weight:800;color:var(--text-2)}
+.authField span{font-size:14px;font-weight:800;color:var(--text-2)}
 .authField input{background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-md);color:var(--text);
-  font-size:14.5px;padding:12px 15px;transition:all var(--d)}
+  min-height:48px;font-size:16px;padding:12px 15px;transition:all var(--d)}
 .authField input:focus{outline:none;border-color:var(--primary);box-shadow:var(--ring)}
 .authError{background:var(--bad-soft);border:1px solid rgba(251,113,133,.4);color:var(--bad);border-radius:var(--r-md);
   padding:10px 14px;font-size:13px;font-weight:600}
@@ -54,7 +66,10 @@
   background:var(--card-2);border:1px solid var(--line-2);border-radius:var(--r-pill);font-size:14px;font-weight:700;
   transition:all var(--d)}
 .authGoogle:hover{border-color:var(--primary);box-shadow:var(--glow-soft)}
-.authGuest{width:100%;margin-top:12px;font-size:13px;font-weight:700;color:var(--muted);padding:6px;transition:color var(--d)}
+.authGuest{width:100%;min-height:44px;margin-top:12px;font-size:14px;font-weight:700;color:var(--muted);padding:6px;transition:color var(--d)}
 .authGuest:hover{color:var(--primary)}
-.authNote{margin:16px 0 0;font-size:11.5px;color:var(--faint);text-align:center;line-height:1.6}
+.authNote{margin:16px 0 0;font-size:13px;color:var(--faint);text-align:center;line-height:1.6}
 
+
+.authHead .authMascot{width:112px;height:112px;margin:0 auto 12px}.profileIntro{display:flex;align-items:center;gap:16px;padding-right:32px;margin-bottom:20px}.profileIntro>div:first-child{flex:1;min-width:0}.profileIntro h2{margin:0;font-size:24px}.profileIntro p{overflow-wrap:anywhere;margin:8px 0 0}.profileIntro [data-mascot]{width:72px;height:72px;flex:none}.helpHead .helpMascot{width:80px;height:80px;flex:none}.helpHead{align-items:center}.helpHeadText p{font-size:14px}.helpHeadText h2{font-size:22px}.helpList li{font-size:14px}.authTabs{border-radius:var(--r-md)}.authTab{border-radius:10px;font-size:14px}
+@media(max-width:480px){.helpHead{gap:12px;align-items:flex-start}.helpHead .helpMascot{width:64px;height:64px}.helpHeadText h2{font-size:20px}.modalCard{padding:24px 20px}.authHead .authMascot{width:96px;height:96px}.authHead{padding-top:16px}.profileIntro [data-mascot]{width:56px;height:56px}}

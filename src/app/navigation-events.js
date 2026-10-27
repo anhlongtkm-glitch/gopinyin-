@@ -12,6 +12,12 @@ import { openModal } from "../shared/dialogs.js";
 import { toast } from "../shared/toast.js";
 
 export function initializeAppNavigationEvents() {
+  const tools=document.querySelector('.workspaceTools');
+  if(tools){
+    document.addEventListener('click',event=>{if(tools.open&&!tools.contains(event.target))tools.open=false;});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&tools.open){tools.open=false;tools.querySelector('summary').focus();event.stopPropagation();}});
+    document.addEventListener('gp:view-changed',()=>{tools.open=false;});
+  }
   accountStorageState.$$('[data-open="auth"]').forEach(b => b.addEventListener('click', () => openModal('authModal')));
   accountStorageState.$$('.ws-navItem').forEach(b => {
     const label = b.querySelector('.ws-navLabel')?.textContent.trim() || b.dataset.view;

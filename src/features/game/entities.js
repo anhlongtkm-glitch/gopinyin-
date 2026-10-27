@@ -127,6 +127,7 @@ export function shoot(it) {
   } catch (e) {}
   // ★ Qua chặng mới (mỗi STAGE_SIZE từ) → đổi nền + hiện banner
   if (gameSessionState.state.stageWords >= gameSessionState.STAGE_SIZE) {
+    document.dispatchEvent(new CustomEvent('gp:activity',{detail:{kind:'game',id:'stage:'+gameSessionState.state.level+':'+gameSessionState.state.stage}}));
     gameSessionState.state.stageWords = 0;
     advanceStage((gameSessionState.state.stage || 1) + 1);
   }

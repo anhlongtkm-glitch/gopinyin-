@@ -1,0 +1,17 @@
+.practiceModeBar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:4px}
+.practiceModeBar>span{font-size:14px;color:var(--muted)}
+.practiceModeBar>div{display:flex;gap:4px;border:1px solid var(--line);padding:4px;border-radius:13px;background:var(--card-2)}
+.practiceModeBar button{min-height:40px;min-width:68px;border-radius:9px;font-size:14px;font-weight:750;padding:8px 16px;color:var(--muted)}
+.practiceModeBar button.selected{background:var(--primary-soft);color:var(--primary);box-shadow:var(--sh-1)}
+.practiceTile{display:flex;flex-direction:column;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:border-color var(--d)}
+.practiceTile:hover{border-color:var(--primary)}
+.practiceTile>.vocabCard{border:0;box-shadow:none;border-radius:0;background:transparent;flex:1;width:100%;min-width:0;min-height:120px;transform:none}
+.practiceTileActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px}
+.practiceTileActions>button{min-height:44px;font-size:14px;font-weight:700;border:1px solid var(--line);border-radius:10px;color:var(--primary);background:var(--primary-soft)}
+.practiceTileActions>button:last-child{background:var(--card-2);color:var(--text-2)}
+.practiceTileActions small{font-size:12px;font-weight:500;margin-left:4px;color:var(--muted)}
+.practiceExtra{margin:12px 0;font-size:13px;color:var(--muted)}
+.practiceExtra summary{min-height:44px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.practiceExtra summary::after{content:'+';font-size:18px}.practiceExtra[open] summary::after{content:'−'}
+.practiceExtra .segmented{margin:8px 0 12px}
+@media(max-width:600px){.practiceModeBar{gap:8px}.practiceModeBar>span{font-size:12px}.practiceModeBar button{font-size:14px;min-width:56px;min-height:44px;padding:8px 12px}.practiceTileActions{padding:0 12px 12px;gap:8px}.practiceTileActions button{font-size:14px}.practiceTileActions small{font-size:12px}}

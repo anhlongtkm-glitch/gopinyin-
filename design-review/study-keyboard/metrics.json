@@ -1,0 +1,957 @@
+{
+  "metrics": [
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "pageWidth": 1440,
+      "pageHeight": 905,
+      "viewportWidth": 1440,
+      "viewportHeight": 900,
+      "toolbar": {
+        "x": 695.25,
+        "y": 289.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 289.59375,
+        "right": 1000.75,
+        "bottom": 333.59375,
+        "left": 695.25
+      },
+      "sentence": {
+        "x": 315,
+        "y": 269.59375,
+        "width": 1066,
+        "height": 272.796875,
+        "top": 269.59375,
+        "right": 1381,
+        "bottom": 542.390625,
+        "left": 315
+      },
+      "next": {
+        "x": 1261,
+        "y": 747.390625,
+        "width": 120,
+        "height": 48,
+        "top": 747.390625,
+        "right": 1381,
+        "bottom": 795.390625,
+        "left": 1261
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 214.203125,
+      "bottom": 685.796875,
+      "viewport": 900
+    },
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 202.703125,
+      "bottom": 697.296875,
+      "viewport": 900
+    },
+    {
+      "device": "desktop",
+      "mode": "typing",
+      "tab": "lesson",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 214.203125,
+      "bottom": 685.796875,
+      "viewport": 900
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "pageWidth": 1440,
+      "pageHeight": 905,
+      "viewportWidth": 1440,
+      "viewportHeight": 900,
+      "toolbar": {
+        "x": 695.25,
+        "y": 289.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 289.59375,
+        "right": 1000.75,
+        "bottom": 333.59375,
+        "left": 695.25
+      },
+      "sentence": {
+        "x": 315,
+        "y": 269.59375,
+        "width": 1066,
+        "height": 272.796875,
+        "top": 269.59375,
+        "right": 1381,
+        "bottom": 542.390625,
+        "left": 315
+      },
+      "next": {
+        "x": 1261,
+        "y": 747.390625,
+        "width": 120,
+        "height": 48,
+        "top": 747.390625,
+        "right": 1381,
+        "bottom": 795.390625,
+        "left": 1261
+      }
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 214.203125,
+      "bottom": 685.796875,
+      "viewport": 900
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 202.703125,
+      "bottom": 697.296875,
+      "viewport": 900
+    },
+    {
+      "device": "desktop",
+      "mode": "pron",
+      "tab": "lesson",
+      "scrollHeight": 527,
+      "clientHeight": 527,
+      "top": 185.5,
+      "bottom": 714.484375,
+      "viewport": 900
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "pageWidth": 1280,
+      "pageHeight": 841,
+      "viewportWidth": 1280,
+      "viewportHeight": 720,
+      "toolbar": {
+        "x": 615.25,
+        "y": 281.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 281.59375,
+        "right": 920.75,
+        "bottom": 325.59375,
+        "left": 615.25
+      },
+      "sentence": {
+        "x": 313,
+        "y": 269.59375,
+        "width": 910,
+        "height": 240.796875,
+        "top": 269.59375,
+        "right": 1223,
+        "bottom": 510.390625,
+        "left": 313
+      },
+      "next": {
+        "x": 1103,
+        "y": 683.390625,
+        "width": 120,
+        "height": 48,
+        "top": 683.390625,
+        "right": 1223,
+        "bottom": 731.390625,
+        "left": 1103
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 124.203125,
+      "bottom": 595.796875,
+      "viewport": 720
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 112.703125,
+      "bottom": 607.296875,
+      "viewport": 720
+    },
+    {
+      "device": "laptop",
+      "mode": "typing",
+      "tab": "lesson",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 124.203125,
+      "bottom": 595.796875,
+      "viewport": 720
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "pageWidth": 1280,
+      "pageHeight": 858,
+      "viewportWidth": 1280,
+      "viewportHeight": 720,
+      "toolbar": {
+        "x": 615.25,
+        "y": 281.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 281.59375,
+        "right": 920.75,
+        "bottom": 325.59375,
+        "left": 615.25
+      },
+      "sentence": {
+        "x": 313,
+        "y": 269.59375,
+        "width": 910,
+        "height": 240.796875,
+        "top": 269.59375,
+        "right": 1223,
+        "bottom": 510.390625,
+        "left": 313
+      },
+      "next": {
+        "x": 1103,
+        "y": 700.890625,
+        "width": 120,
+        "height": 48,
+        "top": 700.890625,
+        "right": 1223,
+        "bottom": 748.890625,
+        "left": 1103
+      }
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 124.203125,
+      "bottom": 595.796875,
+      "viewport": 720
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 112.703125,
+      "bottom": 607.296875,
+      "viewport": 720
+    },
+    {
+      "device": "laptop",
+      "mode": "pron",
+      "tab": "lesson",
+      "scrollHeight": 527,
+      "clientHeight": 527,
+      "top": 95.5,
+      "bottom": 624.484375,
+      "viewport": 720
+    },
+    {
+      "device": "compact",
+      "mode": "typing",
+      "pageWidth": 1024,
+      "pageHeight": 905,
+      "viewportWidth": 1024,
+      "viewportHeight": 768,
+      "toolbar": {
+        "x": 487.25,
+        "y": 289.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 289.59375,
+        "right": 792.75,
+        "bottom": 333.59375,
+        "left": 487.25
+      },
+      "sentence": {
+        "x": 313,
+        "y": 269.59375,
+        "width": 654,
+        "height": 272.796875,
+        "top": 269.59375,
+        "right": 967,
+        "bottom": 542.390625,
+        "left": 313
+      },
+      "next": {
+        "x": 847,
+        "y": 747.390625,
+        "width": 120,
+        "height": 48,
+        "top": 747.390625,
+        "right": 967,
+        "bottom": 795.390625,
+        "left": 847
+      }
+    },
+    {
+      "device": "compact",
+      "mode": "typing",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 148.203125,
+      "bottom": 619.796875,
+      "viewport": 768
+    },
+    {
+      "device": "compact",
+      "mode": "typing",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 136.703125,
+      "bottom": 631.296875,
+      "viewport": 768
+    },
+    {
+      "device": "compact",
+      "mode": "typing",
+      "tab": "lesson",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 148.203125,
+      "bottom": 619.796875,
+      "viewport": 768
+    },
+    {
+      "device": "compact",
+      "mode": "pron",
+      "pageWidth": 1024,
+      "pageHeight": 905,
+      "viewportWidth": 1024,
+      "viewportHeight": 768,
+      "toolbar": {
+        "x": 487.25,
+        "y": 289.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 289.59375,
+        "right": 792.75,
+        "bottom": 333.59375,
+        "left": 487.25
+      },
+      "sentence": {
+        "x": 313,
+        "y": 269.59375,
+        "width": 654,
+        "height": 272.796875,
+        "top": 269.59375,
+        "right": 967,
+        "bottom": 542.390625,
+        "left": 313
+      },
+      "next": {
+        "x": 847,
+        "y": 747.390625,
+        "width": 120,
+        "height": 48,
+        "top": 747.390625,
+        "right": 967,
+        "bottom": 795.390625,
+        "left": 847
+      }
+    },
+    {
+      "device": "compact",
+      "mode": "pron",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 148.203125,
+      "bottom": 619.796875,
+      "viewport": 768
+    },
+    {
+      "device": "compact",
+      "mode": "pron",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 136.703125,
+      "bottom": 631.296875,
+      "viewport": 768
+    },
+    {
+      "device": "compact",
+      "mode": "pron",
+      "tab": "lesson",
+      "scrollHeight": 527,
+      "clientHeight": 527,
+      "top": 119.5,
+      "bottom": 648.484375,
+      "viewport": 768
+    },
+    {
+      "device": "tablet",
+      "mode": "typing",
+      "pageWidth": 768,
+      "pageHeight": 1096,
+      "viewportWidth": 768,
+      "viewportHeight": 1024,
+      "toolbar": {
+        "x": 231.25,
+        "y": 257.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 257.59375,
+        "right": 536.75,
+        "bottom": 301.59375,
+        "left": 231.25
+      },
+      "sentence": {
+        "x": 33,
+        "y": 237.59375,
+        "width": 702,
+        "height": 244.09375,
+        "top": 237.59375,
+        "right": 735,
+        "bottom": 481.6875,
+        "left": 33
+      },
+      "next": {
+        "x": 632.703125,
+        "y": 673.6875,
+        "width": 102.296875,
+        "height": 48,
+        "top": 673.6875,
+        "right": 735,
+        "bottom": 721.6875,
+        "left": 632.703125
+      }
+    },
+    {
+      "device": "tablet",
+      "mode": "typing",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 276.203125,
+      "bottom": 747.796875,
+      "viewport": 1024
+    },
+    {
+      "device": "tablet",
+      "mode": "typing",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 264.703125,
+      "bottom": 759.296875,
+      "viewport": 1024
+    },
+    {
+      "device": "tablet",
+      "mode": "typing",
+      "tab": "lesson",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 276.203125,
+      "bottom": 747.796875,
+      "viewport": 1024
+    },
+    {
+      "device": "tablet",
+      "mode": "pron",
+      "pageWidth": 768,
+      "pageHeight": 1096,
+      "viewportWidth": 768,
+      "viewportHeight": 1024,
+      "toolbar": {
+        "x": 231.25,
+        "y": 257.59375,
+        "width": 305.5,
+        "height": 44,
+        "top": 257.59375,
+        "right": 536.75,
+        "bottom": 301.59375,
+        "left": 231.25
+      },
+      "sentence": {
+        "x": 33,
+        "y": 237.59375,
+        "width": 702,
+        "height": 244.09375,
+        "top": 237.59375,
+        "right": 735,
+        "bottom": 481.6875,
+        "left": 33
+      },
+      "next": {
+        "x": 632.703125,
+        "y": 673.6875,
+        "width": 102.296875,
+        "height": 48,
+        "top": 673.6875,
+        "right": 735,
+        "bottom": 721.6875,
+        "left": 632.703125
+      }
+    },
+    {
+      "device": "tablet",
+      "mode": "pron",
+      "tab": "display",
+      "scrollHeight": 470,
+      "clientHeight": 470,
+      "top": 276.203125,
+      "bottom": 747.796875,
+      "viewport": 1024
+    },
+    {
+      "device": "tablet",
+      "mode": "pron",
+      "tab": "audio",
+      "scrollHeight": 493,
+      "clientHeight": 493,
+      "top": 264.703125,
+      "bottom": 759.296875,
+      "viewport": 1024
+    },
+    {
+      "device": "tablet",
+      "mode": "pron",
+      "tab": "lesson",
+      "scrollHeight": 527,
+      "clientHeight": 527,
+      "top": 247.5,
+      "bottom": 776.484375,
+      "viewport": 1024
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "pageWidth": 390,
+      "pageHeight": 916,
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "toolbar": {
+        "x": 46.25,
+        "y": 258.28125,
+        "width": 297.5,
+        "height": 44,
+        "top": 258.28125,
+        "right": 343.75,
+        "bottom": 302.28125,
+        "left": 46.25
+      },
+      "sentence": {
+        "x": 33,
+        "y": 238.28125,
+        "width": 324,
+        "height": 244.09375,
+        "top": 238.28125,
+        "right": 357,
+        "bottom": 482.375,
+        "left": 33
+      },
+      "next": {
+        "x": 254.703125,
+        "y": 674.375,
+        "width": 102.296875,
+        "height": 48,
+        "top": 674.375,
+        "right": 357,
+        "bottom": 722.375,
+        "left": 254.703125
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "tab": "display",
+      "scrollHeight": 472,
+      "clientHeight": 472,
+      "top": 185.21875,
+      "bottom": 658.78125,
+      "viewport": 844
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "tab": "audio",
+      "scrollHeight": 481,
+      "clientHeight": 481,
+      "top": 180.40625,
+      "bottom": 663.59375,
+      "viewport": 844
+    },
+    {
+      "device": "mobile",
+      "mode": "typing",
+      "tab": "lesson",
+      "scrollHeight": 454,
+      "clientHeight": 454,
+      "top": 193.90625,
+      "bottom": 650.09375,
+      "viewport": 844
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "pageWidth": 390,
+      "pageHeight": 930,
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "toolbar": {
+        "x": 46.25,
+        "y": 258.28125,
+        "width": 297.5,
+        "height": 44,
+        "top": 258.28125,
+        "right": 343.75,
+        "bottom": 302.28125,
+        "left": 46.25
+      },
+      "sentence": {
+        "x": 33,
+        "y": 238.28125,
+        "width": 324,
+        "height": 244.09375,
+        "top": 238.28125,
+        "right": 357,
+        "bottom": 482.375,
+        "left": 33
+      },
+      "next": {
+        "x": 254.703125,
+        "y": 691.375,
+        "width": 102.296875,
+        "height": 48,
+        "top": 691.375,
+        "right": 357,
+        "bottom": 739.375,
+        "left": 254.703125
+      }
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "tab": "display",
+      "scrollHeight": 472,
+      "clientHeight": 472,
+      "top": 185.21875,
+      "bottom": 658.78125,
+      "viewport": 844
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "tab": "audio",
+      "scrollHeight": 481,
+      "clientHeight": 481,
+      "top": 180.40625,
+      "bottom": 663.59375,
+      "viewport": 844
+    },
+    {
+      "device": "mobile",
+      "mode": "pron",
+      "tab": "lesson",
+      "scrollHeight": 516,
+      "clientHeight": 516,
+      "top": 163.203125,
+      "bottom": 680.78125,
+      "viewport": 844
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "pageWidth": 360,
+      "pageHeight": 812,
+      "viewportWidth": 360,
+      "viewportHeight": 740,
+      "toolbar": {
+        "x": 33,
+        "y": 235.6875,
+        "width": 294,
+        "height": 44,
+        "top": 235.6875,
+        "right": 327,
+        "bottom": 279.6875,
+        "left": 33
+      },
+      "sentence": {
+        "x": 33,
+        "y": 227.6875,
+        "width": 294,
+        "height": 204.09375,
+        "top": 227.6875,
+        "right": 327,
+        "bottom": 431.78125,
+        "left": 33
+      },
+      "next": {
+        "x": 224.703125,
+        "y": 598.78125,
+        "width": 102.296875,
+        "height": 48,
+        "top": 598.78125,
+        "right": 327,
+        "bottom": 646.78125,
+        "left": 224.703125
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "tab": "display",
+      "scrollHeight": 472,
+      "clientHeight": 472,
+      "top": 133.21875,
+      "bottom": 606.78125,
+      "viewport": 740
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "tab": "audio",
+      "scrollHeight": 481,
+      "clientHeight": 481,
+      "top": 128.40625,
+      "bottom": 611.59375,
+      "viewport": 740
+    },
+    {
+      "device": "small-mobile",
+      "mode": "typing",
+      "tab": "lesson",
+      "scrollHeight": 454,
+      "clientHeight": 454,
+      "top": 141.90625,
+      "bottom": 598.09375,
+      "viewport": 740
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "pageWidth": 360,
+      "pageHeight": 846,
+      "viewportWidth": 360,
+      "viewportHeight": 740,
+      "toolbar": {
+        "x": 33,
+        "y": 235.6875,
+        "width": 294,
+        "height": 44,
+        "top": 235.6875,
+        "right": 327,
+        "bottom": 279.6875,
+        "left": 33
+      },
+      "sentence": {
+        "x": 33,
+        "y": 227.6875,
+        "width": 294,
+        "height": 204.09375,
+        "top": 227.6875,
+        "right": 327,
+        "bottom": 431.78125,
+        "left": 33
+      },
+      "next": {
+        "x": 224.703125,
+        "y": 608.78125,
+        "width": 102.296875,
+        "height": 48,
+        "top": 608.78125,
+        "right": 327,
+        "bottom": 656.78125,
+        "left": 224.703125
+      }
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "tab": "display",
+      "scrollHeight": 472,
+      "clientHeight": 472,
+      "top": 133.21875,
+      "bottom": 606.78125,
+      "viewport": 740
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "tab": "audio",
+      "scrollHeight": 481,
+      "clientHeight": 481,
+      "top": 128.40625,
+      "bottom": 611.59375,
+      "viewport": 740
+    },
+    {
+      "device": "small-mobile",
+      "mode": "pron",
+      "tab": "lesson",
+      "scrollHeight": 516,
+      "clientHeight": 516,
+      "top": 111.203125,
+      "bottom": 628.78125,
+      "viewport": 740
+    },
+    {
+      "device": "landscape",
+      "mode": "typing",
+      "pageWidth": 844,
+      "pageHeight": 810,
+      "viewportWidth": 844,
+      "viewportHeight": 390,
+      "toolbar": {
+        "x": 269.25,
+        "y": 16,
+        "width": 305.5,
+        "height": 44,
+        "top": 16,
+        "right": 574.75,
+        "bottom": 60,
+        "left": 269.25
+      },
+      "sentence": {
+        "x": 33,
+        "y": 8,
+        "width": 778,
+        "height": 204.09375,
+        "top": 8,
+        "right": 811,
+        "bottom": 212.09375,
+        "left": 33
+      },
+      "next": {
+        "x": 708.703125,
+        "y": 379.09375,
+        "width": 102.296875,
+        "height": 48,
+        "top": 379.09375,
+        "right": 811,
+        "bottom": 427.09375,
+        "left": 708.703125
+      }
+    },
+    {
+      "device": "landscape",
+      "mode": "typing",
+      "tab": "display",
+      "scrollHeight": 314,
+      "clientHeight": 314,
+      "top": 36.90625,
+      "bottom": 353.09375,
+      "viewport": 390
+    },
+    {
+      "device": "landscape",
+      "mode": "typing",
+      "tab": "audio",
+      "scrollHeight": 287,
+      "clientHeight": 287,
+      "top": 50.5,
+      "bottom": 339.5,
+      "viewport": 390
+    },
+    {
+      "device": "landscape",
+      "mode": "typing",
+      "tab": "lesson",
+      "scrollHeight": 329,
+      "clientHeight": 329,
+      "top": 29.296875,
+      "bottom": 360.6875,
+      "viewport": 390
+    },
+    {
+      "device": "landscape",
+      "mode": "pron",
+      "pageWidth": 844,
+      "pageHeight": 805,
+      "viewportWidth": 844,
+      "viewportHeight": 390,
+      "toolbar": {
+        "x": 269.25,
+        "y": 5,
+        "width": 305.5,
+        "height": 44,
+        "top": 5,
+        "right": 574.75,
+        "bottom": 49,
+        "left": 269.25
+      },
+      "sentence": {
+        "x": 33,
+        "y": -3,
+        "width": 778,
+        "height": 204.09375,
+        "top": -3,
+        "right": 811,
+        "bottom": 201.09375,
+        "left": 33
+      },
+      "next": {
+        "x": 708.703125,
+        "y": 378.09375,
+        "width": 102.296875,
+        "height": 48,
+        "top": 378.09375,
+        "right": 811,
+        "bottom": 426.09375,
+        "left": 708.703125
+      }
+    },
+    {
+      "device": "landscape",
+      "mode": "pron",
+      "tab": "display",
+      "scrollHeight": 314,
+      "clientHeight": 314,
+      "top": 36.90625,
+      "bottom": 353.09375,
+      "viewport": 390
+    },
+    {
+      "device": "landscape",
+      "mode": "pron",
+      "tab": "audio",
+      "scrollHeight": 287,
+      "clientHeight": 287,
+      "top": 50.5,
+      "bottom": 339.5,
+      "viewport": 390
+    },
+    {
+      "device": "landscape",
+      "mode": "pron",
+      "tab": "lesson",
+      "scrollHeight": 337,
+      "clientHeight": 337,
+      "top": 25.296875,
+      "bottom": 364.6875,
+      "viewport": 390
+    }
+  ],
+  "errors": []
+}

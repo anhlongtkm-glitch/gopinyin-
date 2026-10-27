@@ -1,6 +1,7 @@
 // State and behavior owned by shared/theme. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as domState } from "./dom.js";
+import { setControlIcon } from "./control-icons.js";
 
 export const state = {};
 
@@ -10,9 +11,10 @@ export function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   const btn = domState.$('themeToggle');
   if (btn) {
-    btn.textContent = t === 'dark' ? '☀️' : '🌙';
+    setControlIcon(btn, t === 'dark' ? 'sun' : 'moon');
     btn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
     btn.title = t === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối';
+    btn.setAttribute('aria-label', btn.title);
   }
 }
 

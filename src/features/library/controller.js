@@ -1,6 +1,7 @@
 // State and behavior owned by features/library/controller. Initialization is orchestrated by app/bootstrap.js.
 
 import { renderVocab } from "./catalog.js";
+import { restoreLibraryPosition } from "../../app/view-context.js";
 
 import { loadProgress } from "../typing/progress.js";
 
@@ -18,6 +19,7 @@ export function renderLibrary() {
   document.body.classList.remove('studyFit');
   window.speechSynthesis?.cancel();
   renderVocab();
+  restoreLibraryPosition();
 }
 /* ═══════════════════════════════════════════════════════════
    ★ TIẾN ĐỘ NGAY TRÊN THẺ CHỦ ĐỀ / CẤP HSK

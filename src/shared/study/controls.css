@@ -1,29 +1,62 @@
-/* ═══════════════════════════════════════════════════════════
-   THANH ĐIỀU KHIỂN — 3 NHÓM CHỨC NĂNG (Chế độ · Âm thanh · Hiển thị)
-   Thiết kế theo nguyên tắc "nhóm theo việc người dùng đang muốn làm":
-   mỗi nhóm là 1 khối có nhãn riêng, các công tắc cùng loại nằm cạnh nhau.
-   Nhờ vậy nút "Chữ Hán" luôn ở nhóm Hiển thị (cạnh "Nghĩa"), không bị rơi
-   xuống dòng một mình như trước.
-   ═══════════════════════════════════════════════════════════ */
-.studyControls{display:flex;gap:16px;flex-wrap:wrap;align-items:center;
-  margin-bottom:14px;padding-bottom:14px}
-.ctrlZone{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  min-height:36px}
-.ctrlZoneLabel{font-size:10.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--muted);padding-right:2px;white-space:nowrap}
-.ctrlZone .segmented{background:transparent;border:0;padding:0}
-.studyControls .modeBtn{padding:6px 13px;font-size:12.5px}
-.studyControls .select{font-size:12.5px;padding:6px 30px 6px 10px}
-.studyControls .selectVoice{max-width:170px}
-.studyControls .toggleBtn{padding:6px 12px;font-size:12.5px}
-/* Màn hình hẹp: mỗi nhóm chiếm trọn 1 dòng cho dễ bấm */
-@media (max-width:720px){
-  .ctrlZone{flex:1 1 100%}
-  .studyControls .selectVoice{max-width:none;flex:1 1 auto}
+/* Study controls and one-screen, keyboard-accessible lesson settings. */
+.studyControls{display:flex;gap:12px;align-items:center;margin:0;padding:0;min-width:0}
+.ctrlZone{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;min-height:44px}
+.ctrlZoneLabel,.controlLabel{font-size:14px;font-weight:700;color:var(--muted)}
+.studyShell .studySourceBar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px}
+.studyShell .studySourceBar .btn{min-height:44px;padding:9px 12px;border-radius:10px;font-size:13px;white-space:nowrap;background:var(--card);box-shadow:none;border-color:var(--line)}
+.studySourcePicker{display:flex;flex-direction:column;justify-content:center;min-width:0;max-width:520px;min-height:44px;padding:4px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.studySourcePicker>span{font-size:10px;color:var(--muted);line-height:1.3}
+.studyShell .studySourcePicker .select{min-height:24px;padding:0 24px 0 0;font-size:13px;font-weight:700;background-color:transparent;border:0;box-shadow:none;min-width:0;max-width:100%;width:100%;border-radius:0;color:var(--text)}
+.studySourcePicker:focus-within{outline:3px solid var(--primary);outline-offset:2px}
+.studyShell .studyBackBtn>.control-icon{flex:none}
+.studySettings{width:min(460px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;margin:auto;border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--text);box-shadow:var(--sh-4);overflow:auto;font-family:var(--font-ui)}
+.studySettings::backdrop{background:rgba(14,41,34,.35);backdrop-filter:blur(5px)}
+.studySettings[open]{display:flex;flex-direction:column}
+.studySettingsHead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 20px 14px;flex-shrink:0}
+.studySettingsHead h2{font-size:20px;line-height:1.4;margin:3px 0 0;font-weight:800;letter-spacing:-.03em}
+.studySettingsClose{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;font-size:26px;line-height:1;color:var(--muted);background:var(--card-2);border-radius:10px}
+.studySettingsTabs{display:flex;gap:4px;flex-shrink:0;margin:0 20px;padding:4px;border-radius:10px;background:var(--card-2)}
+.studySettingsTabs [role=tab]{min-height:42px;flex:1;padding:8px 4px;font-size:14px;font-weight:700;color:var(--muted);border-radius:8px}
+.studySettingsTabs [aria-selected=true]{background:var(--card);color:var(--primary);box-shadow:var(--sh-1)}
+.studySettingsBody{padding:8px 20px 12px;min-width:0;min-height:256px;flex:0 0 auto}
+.studySettingsBody [hidden]{display:none!important}
+.studySettingsBody [role=tabpanel]{min-width:0}
+.studyOptionRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;min-height:57px;border-bottom:1px solid var(--line);font-size:14px;text-align:left}
+.studyOptionRow:last-child{border-bottom:0}
+.studyOptionRow>div,.studyOptionRow>span{min-width:0;flex:1}
+.studyOptionRow b{display:block;font-size:14px;font-weight:600;line-height:1.45;color:var(--text-2)}
+.studyOptionRow small{display:block;margin-top:4px;font-size:12px;line-height:1.4;color:var(--muted)}
+.studySettings .studyOptionRow .select{min-height:44px;max-width:180px;width:48%;padding:8px 28px 8px 10px;font-size:12px;text-overflow:ellipsis;white-space:nowrap;background-color:var(--card-2);border-radius:9px;flex-shrink:0}
+.studySettings .studyOptionRow .toggleBtn{flex:0 0 auto;max-width:48%;min-height:44px;font-size:12px;border-radius:9px;padding:8px 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:normal;line-height:1.4;background:var(--primary-soft);color:var(--primary);border:1px solid var(--line);box-shadow:none}
+.studySettings .studyOptionRow .toggleBtn.off{background:var(--card-2);color:var(--muted)}
+.studySettings .toggleBtn .tgIco{display:none}
+.studySettings .toggleBtn::after{content:'Bật';font-size:10px;font-weight:700;padding:2px 5px;border-radius:4px;background:var(--primary);color:var(--bg)}
+.studySettings .toggleBtn.off::after{content:'Tắt';background:var(--line);color:var(--text-2)}
+[data-theme=light] .studySettings .toggleBtn:not(.off)::after{color:#fff}
+.studyOptionNote{font-size:12px;line-height:1.6;color:var(--muted);margin:12px 0 4px}
+.studyDetailsBlock{width:100%;min-width:0;padding:12px 0}
+.studyDetailsBlock h3{font-size:13px;font-weight:700;margin:0 0 8px;color:var(--text-2)}
+.studyShell .studySettings .studyDetailsStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0}
+.studyShell .studySettings .stat{padding:10px 4px;border-radius:10px;box-shadow:none;background:var(--card-2);border:0;transform:none}
+.studyShell .studySettings .stat b{font-size:20px;line-height:1.3;display:block;font-weight:700}
+.studyShell .studySettings .stat span{font-size:11px;line-height:1.5;color:var(--muted)}
+.studyLessonTools{display:flex;gap:8px;margin:4px 0 12px}
+.studyLessonTools .btn{flex:1;min-width:0;min-height:44px;font-size:12px;padding:8px 10px;border-radius:10px;white-space:normal}
+.studySettingsBody>.btn.danger,.studySettingsBody [role=tabpanel]>.btn.danger{font-size:12px;min-height:44px;padding:8px 12px;border-radius:10px}
+.studySettingsFoot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0;padding:14px 20px;border-top:1px solid var(--line);background:var(--card-2)}
+.studySettingsFoot>span{font-size:12px;color:var(--muted)}
+.studySettingsFoot .btn{min-height:44px;padding:10px 20px;border-radius:10px;font-size:14px}
+.controlGroup{display:flex;align-items:center;gap:8px}
+.wrongBadge{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;margin-left:4px;border-radius:99px;background:var(--bad);color:#fff;font-size:14px;font-weight:800}
+.studyKey{font-family:var(--font-ui);font-size:10px;line-height:1.5;padding:1px 4px;border:1px solid var(--line);border-radius:4px;background:var(--card-2);color:var(--muted);white-space:nowrap}
+.studySwitchMode{display:inline-flex;align-items:center;gap:6px}
+@media(max-width:480px){
+ .studyShell .studySourceBar{gap:7px;grid-template-columns:44px minmax(0,1fr) auto}.studyShell .studySourceBar .btn{font-size:12px;padding:9px 10px}.studyShell .studyBackBtn{font-size:0!important;padding:0!important}.studyShell .studyBackBtn::before{content:'←';font-size:20px}.studySourcePicker{padding:5px 8px}.studySourcePicker>span{font-size:9px}.studyShell .studySourcePicker .select{font-size:11px}
+ .studySettingsHead{padding:16px 16px 12px}.studySettingsHead h2{font-size:19px}.studySettingsTabs{margin:0 16px}.studySettingsTabs [role=tab]{font-size:13px}.studySettingsBody{padding:8px 16px 12px;min-height:252px}.studyOptionRow{gap:8px}.studyOptionRow b{font-size:13px}.studyOptionRow small{font-size:11px}.studySettings .studyOptionRow .toggleBtn{padding:8px;font-size:11px}.studySettings .studyOptionRow .select{font-size:11px}.studySettingsFoot{padding:12px 16px}.studySettingsFoot>span{font-size:11px}
 }
-.studyControls .toggleBtn{font-size:12px;padding:6px 11px;gap:5px}
-.studyControls .controlLabel{font-size:11px}
-.controlGroup{display:flex;align-items:center;gap:7px}
-.controlLabel{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.wrongBadge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:5px;border-radius:99px;background:var(--bad);color:#fff;font-size:10.5px;font-weight:800}
+@media(max-height:590px){
+ .studySettings{max-height:calc(100dvh - 16px);width:min(660px,calc(100vw - 24px))}.studySettingsHead{padding:10px 16px 6px}.studySettingsHead .studyEyebrow{display:none}.studySettingsHead h2{font-size:17px}.studySettingsTabs{margin:0 16px}.studySettingsTabs [role=tab]{min-height:36px;padding:5px}.studySettingsBody{padding:4px 16px 8px;min-height:0}.studySettingsBody [role=tabpanel]:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;align-items:center}.studyOptionRow{min-height:50px;padding:6px 0}.studyOptionRow small{display:none}.studyOptionNote{grid-column:1/-1;margin:4px 0}.studySettingsBody .studyDetailsBlock{padding:6px 0}.studySettingsBody .studyLessonTools{margin:4px 0}.studySettingsFoot{padding:8px 16px}.studySettingsFoot .btn{min-height:40px;padding:7px 18px}
+}
+@media(prefers-reduced-motion:reduce){.studySettings::backdrop{backdrop-filter:none}}
 
+@media(max-width:860px){.studyShell .studyBackBtn>.control-icon{display:none}}

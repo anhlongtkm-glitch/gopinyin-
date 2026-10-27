@@ -1,35 +1,23 @@
 <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
   <div class="modalBackdrop" data-close="helpModal"></div>
   <div class="modalCard helpCard">
-    <button class="modalClose" type="button" data-close="helpModal" aria-label="Đóng">✕</button>
+    <button class="modalClose" type="button" data-close="helpModal" aria-label="Đóng hướng dẫn">✕</button>
     <div class="helpHead">
-      <span class="helpBulb" aria-hidden="true">💡</span>
+      <div class="helpMascot" data-mascot="guide" data-mascot-size="inline" aria-hidden="true"></div>
       <div class="helpHeadText">
-        <h2 id="helpTitle">Cơ chế gõ &amp; phím tắt</h2>
-        <p><b>Tự chấm khi gõ</b>: gõ <b>trực tiếp chữ Hán</b> của cả câu — gõ đủ và đúng là app lập tức báo <b>✓ Đúng</b>, <b>không cần nhấn Enter kiểm tra</b>. Khi app báo <b>✓ Đúng</b> thì nhấn <span class="kbd">Space</span> để sang câu tiếp theo. <span class="kbd">Enter</span> = ẩn/hiện gợi ý pinyin.</p>
+        <h2 id="helpTitle">Học bằng bàn phím</h2>
+        <p>Phím số ở hàng trên hoặc bàn phím số. Cùng một cách dùng ở cả Gõ và Nói.</p>
       </div>
     </div>
-
-    <section class="helpSection">
-      <h3>🀄 Cách gõ CHỮ HÁN</h3>
-      <ul class="helpList">
-        <li><b>Cách gõ:</b> nhìn nghĩa tiếng Việt (và/hoặc chữ Hán), gõ trực tiếp <b>chữ Hán của cả câu</b> — dùng IME tiếng Trung của máy hoặc bấm <b>⌨️</b> để mở bàn phím ảo của app. <b>Không cần gõ dấu câu</b>, cũng không cần bấm khoảng trắng.</li>
-        <li><b>Tự chấm:</b> gõ <b>đủ và đúng</b> cả câu → app lập tức báo <b>✓ Đúng</b> và đọc lại câu.</li>
-        <li><b>Gõ sai?</b> Chữ sai hiện <b style="color:#e11d48">đỏ</b> và <b>không sang câu được</b> cho đến khi sửa đúng (hoặc bấm <b>Bỏ qua</b> để xem đáp án rồi đi tiếp).</li>
-        <li class="helpWarn">⚠️ Hãy <b>tắt gõ tiếng Việt</b> (Telex / VNI / UniKey / Gboard) và chuyển bàn phím sang <b>tiếng Trung</b> trước khi gõ chữ Hán.</li>
-      </ul>
+    <section class="helpSection shortcutGuide" aria-label="Bộ phím tắt">
+      <div id="helpShortcutRows" class="shortcutRows"></div>
     </section>
-
-    <section class="helpSection">
-      <h3>📖 Dùng chung &amp; phím tắt</h3>
-      <ul class="helpList">
-        <li><b>Phím tắt:</b> <span class="kbd">Space</span> sang câu/từ tiếp theo (chỉ khi đã gõ <b>Đúng</b>) · <span class="kbd">Enter</span> ẩn/hiện gợi ý Pinyin · <span class="kbd">F1</span> nghe lại câu.</li>
-        <li><b>🎯 Điểm yếu &amp; tốc độ:</b> nút <b>“📜 Câu đã làm”</b> mở <b>bảng lớn</b> liệt kê <b>tất cả câu bạn đã làm</b> — có tab <b>Đã làm</b> / <b>Sai</b> / <b>Điểm yếu</b> (những âm tiết bạn hay gõ sai), bấm vào 1 câu để làm lại, và nút <b>“Tạo bộ ôn điểm yếu”</b>. Ô <b>Tốc độ (CPM)</b> trên thanh thống kê đo số chữ gõ đúng mỗi phút.</li>
-        <li><b>Ẩn/hiện dòng:</b> nút <b>👁️ Nghĩa</b> và <b>🀄 Chữ Hán</b> — ẩn cả hai dòng để gõ theo trí nhớ, nhấn <span class="kbd">F1</span> để nghe lại câu.</li>
-        <li><b>Tiện ích khác:</b> <b>↺ Làm lại câu này</b> · <b>Bỏ qua</b> · <b>⌨️</b> bàn phím ảo · bấm vào chữ Hán để tra nghĩa online.</li>
-      </ul>
-    </section>
-
-    <button class="btn primary lg full helpGotIt" type="button" data-close="helpModal">Đã hiểu, bắt đầu gõ!</button>
+    <p class="shortcutNativeHint"><kbd>Tab</kbd> / <kbd>Shift + Tab</kbd> chọn nút · <kbd>Enter</kbd> kích hoạt nút đang chọn · <kbd>Esc</kbd> đóng bảng.</p>
+    <details class="helpTypingDetails">
+      <summary>Cách gõ và chọn chữ bằng IME</summary>
+      <p>Nhập trực tiếp chữ Hán bằng bàn phím tiếng Trung hoặc bàn phím ảo. Gõ đúng cả câu sẽ tự chấm; không cần nhập dấu câu. Nhấn <kbd>5</kbd> hoặc <kbd>Enter</kbd> khi báo đúng để sang câu.</p>
+      <p>Khi IME đang chọn chữ, phím số và Enter dành cho IME. Phím tắt cũng tạm ngưng khi mở bảng tùy chọn hoặc nhập vào ô khác. Dùng <kbd>Tab</kbd> để tới Tùy chọn, Làm lại, Câu trước và Bỏ qua.</p>
+    </details>
+    <button class="btn primary full helpGotIt" type="button" data-close="helpModal">Đã hiểu, tiếp tục học</button>
   </div>
 </div>

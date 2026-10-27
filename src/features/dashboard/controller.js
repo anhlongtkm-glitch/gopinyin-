@@ -4,6 +4,7 @@ import { lessonRepository } from "../../shared/lesson-bridge.js";
 import { listRecordEntries, listRecords } from "../../shared/storage/account-data.js";
 import { openDataset } from "../typing/datasets.js";
 import { state as dataCatalogState } from "../../data/catalog.js";
+import { setMascot } from "../../shared/mascot.js";
 
 
 import { state as accountStorageState } from "../../shared/account-storage.js";
@@ -64,11 +65,11 @@ export async function refreshDashContinue() {
     const fill = accountStorageState.$('dashContinueProgressFill');
     if (!next) {
       button.dataset.datasetId = '';
-      button.setAttribute('aria-label', 'Khám phá thư viện học tập');
+      button.setAttribute('aria-label', 'Bắt đầu học, chọn bài trong thư viện');
       eyebrow.textContent = 'Lộ trình học tập';
       title.textContent = 'Chọn bài học đầu tiên';
       sub.textContent = 'Khám phá thư viện HSK và chủ đề từ vựng để bắt đầu.';
-      action.firstChild.nodeValue = 'Khám phá thư viện ';
+      action.firstChild.nodeValue = 'Bắt đầu luyện gõ ';
       progress.hidden = true;
       fill.style.width = '0%';
       progress.setAttribute('aria-valuenow', '0');
@@ -77,11 +78,11 @@ export async function refreshDashContinue() {
     const completed = Math.min(next.completed, next.total);
     const percent = next.total ? Math.round(completed / next.total * 100) : 0;
     button.dataset.datasetId = next.id;
-    button.setAttribute('aria-label', 'Tiếp tục học ' + next.name + ', tiến độ ' + completed + ' trên ' + next.total);
+    button.setAttribute('aria-label', 'Tiếp tục luyện gõ ' + next.name + ', tiến độ ' + completed + ' trên ' + next.total);
     eyebrow.textContent = 'Đang học';
     title.textContent = next.name;
     sub.textContent = completed.toLocaleString('vi-VN') + ' / ' + next.total.toLocaleString('vi-VN') + ' câu đã hoàn thành · ' + percent + '%';
-    action.firstChild.nodeValue = 'Tiếp tục học ';
+    action.firstChild.nodeValue = 'Tiếp tục luyện gõ ';
     progress.hidden = false;
     progress.setAttribute('aria-valuenow', String(percent));
     fill.style.width = percent + '%';
@@ -143,6 +144,8 @@ export function refreshDash() {
     count: 0
   };
   const cnt = d.date === todayKey() ? d.count : 0;
+  const heroMascot = document.querySelector('#dashView [data-mascot]');
+  if (heroMascot) setMascot(heroMascot, cnt >= dashboardControllerState.DAILY_GOAL ? 'star' : 'typing', { eventKey: todayKey() + ':' + (cnt >= dashboardControllerState.DAILY_GOAL), animate: cnt >= dashboardControllerState.DAILY_GOAL });
   accountStorageState.$('dashGoalNum').textContent = Math.min(cnt, dashboardControllerState.DAILY_GOAL) + '/' + dashboardControllerState.DAILY_GOAL;
   const ring = accountStorageState.$('dashRingFg'),
     C = 326.7;
@@ -179,6 +182,8 @@ function refreshReviewPlan() {
     } catch { /* Ignore individual damaged records. */ }
   }
   due.sort((a, b) => a.at - b.at); weak.sort((a, b) => b.count - a.count);
+  const details = document.querySelector('.dashDetails');
+  if (details && (due.length || weak.length)) details.open = true;
   for (const [kind, items, buttonId, countId] of [['due', due, 'dashReviewBtn', 'dashReviewCount'], ['weak', weak, 'dashWeakBtn', 'dashWeakCount']]) {
     const button = accountStorageState.$(buttonId);
     if (!button) continue;

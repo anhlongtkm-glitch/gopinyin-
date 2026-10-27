@@ -1,6 +1,11 @@
 // State and behavior owned by features/pronunciation/tts. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationSessionState } from "./session.js";
+import { setMascot } from "../../shared/mascot.js";
+import { currentItem } from "./lesson.js";
+import { navigationVersion } from "../../app/routes.js";
+
+let utteranceVersion = 0;
 
 export const state = {};
 
@@ -21,14 +26,27 @@ export function initializePronunciationTts() {
         window.speechSynthesis.cancel();
       } catch (e) {}
       const u = new SpeechSynthesisUtterance(String(text));
+      const version = ++utteranceVersion, item = currentItem(), navigation = navigationVersion();
+      const visible = () => version === utteranceVersion && item === currentItem() && navigation === navigationVersion() && document.getElementById('pronCard')?.getClientRects().length;
+      u.onstart = () => {
+        if (visible() && !['recording','analyzing','requesting'].includes(pronunciationSessionState.S.phase)) setMascot('pronStudyMascot', 'listening');
+      };
       u.lang = 'zh-CN';
       u.rate = Number(o.rate) || pronunciationSessionState.S.settings.rate || 1;
       const v = this.pickVoice();
       if (v) u.voice = v;
-      if (o.onend) {
-        u.onend = o.onend;
-        u.onerror = o.onend;
-      }
+      let finished = false;
+      const finish = event => {
+        if (finished) return;
+        finished = true;
+        if (visible() && !['recording','analyzing','requesting'].includes(pronunciationSessionState.S.phase)) {
+          const result = pronunciationSessionState.S.result;
+          setMascot('pronStudyMascot', result ? result.score >= pronunciationSessionState.GOOD ? 'approve' : 'encourage' : 'reading');
+        }
+        o.onend?.(event);
+      };
+      u.onend = finish;
+      u.onerror = finish;
       try {
         window.speechSynthesis.speak(u);
       } catch (e) {}

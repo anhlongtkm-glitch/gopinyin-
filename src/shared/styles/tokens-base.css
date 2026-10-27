@@ -1,141 +1,58 @@
-/* ═══════════════════════════════════════════════════════════════
-   GOPINYIN — DESIGN SYSTEM
-   ═══════════════════════════════════════════════════════════════ */
+/* GoPinyin: one palette and rhythm for every learning surface. */
 :root{
-  /* Surfaces */
-  --bg:#0a0e1a;
-  --bg-2:#0e1424;
-  --card:#131a2c;
-  --card-2:#182137;
-  --card-3:#1e2942;
-  --glass:rgba(19,26,44,.78);
-  --line:rgba(148,163,184,.14);
-  --line-2:rgba(148,163,184,.22);
-
-  /* Text */
-  --text:#eef2fb;
-  --text-2:#b8c2d6;
-  --muted:#8b98b5;
-  --faint:#5d6b8a;
-
-  /* Brand — lấy đúng màu từ logo: teal #0BA488 + than #3D464D */
-  --ink:#3D464D;
-  --primary:#22B99B;
-  --primary-2:#45D3B2;
-  --primary-deep:#0A7868;
-  --primary-soft:rgba(34,185,155,.14);
-  --accent:#D97745;
-  --gold:#fbbf24;
-  --gold-2:#f59e0b;
-  --brand-grad:linear-gradient(135deg,#0B806D 0%,#076456 100%);
-  --brand-grad-v:linear-gradient(180deg,#0B806D 0%,#076456 100%);
-  --brand-grad-2:linear-gradient(135deg,#D97745 0%,#B75C2C 100%);
-  --gold-grad:linear-gradient(135deg,#fbbf24 0%,#f59e0b 50%,#FF8A5B 100%);
-  --shadow-brand:0 6px 18px rgba(11,164,136,.22);
-
-  /* Cảnh nền: núi non · rừng trúc · sương */
-  --sc-far:#0E4A3E;   --sc-far-o:.34;
-  --sc-mid:#0A342C;   --sc-mid-o:.58;
-  --sc-near:#04120F;  --sc-near-o:.82;
-  --sc-bamboo:#041713;--sc-bamboo-o:.55;
-  --sc-mist:rgba(120,200,180,.10);
-  --sc-sun:#DFF7EE;   --sc-sun-o:0;
-  --sc-bird:#9FE6D2;  --sc-bird-o:.30;
-
-  /* Semantic */
-  --ok:#10b981; --ok-deep:#059669; --ok-soft:rgba(16,185,129,.13);
-  --bad:#fb7185; --bad-deep:#e11d48; --bad-soft:rgba(251,113,133,.13);
-  --warn:#fbbf24; --warn-soft:rgba(251,191,36,.13);
-
-  /* Lines/glow */
-  --ring:0 0 0 3px rgba(11,164,136,.35);
-  --glow-soft:0 0 24px rgba(11,164,136,.22);
-
-  /* Radius */
-  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-2xl:24px; --r-pill:999px;
-
-  /* Shadows */
-  --sh-1:0 1px 2px rgba(0,0,0,.25);
-  --sh-2:0 4px 14px rgba(0,0,0,.3);
-  --sh-3:0 12px 32px rgba(0,0,0,.38);
-  --sh-4:0 24px 64px rgba(0,0,0,.45);
-
-  /* Motion */
-  --ease:cubic-bezier(.22,1,.36,1);
-  --spring:cubic-bezier(.34,1.56,.64,1);
-  --d-fast:.15s; --d:.24s; --d-slow:.45s;
-
-  --font-ui:'Inter','Segoe UI',system-ui,sans-serif;
-  --font-display:'Inter','Segoe UI',system-ui,sans-serif;
+  color-scheme:dark;
+  --bg:#070d0b;--bg-2:#0b1410;--card:#101b17;--card-2:#17261f;--card-3:#203329;
+  --glass:rgba(16,27,23,.97);--line:#294135;--line-2:#476a56;
+  --text:#edf6ed;--text-2:#c4d8c9;--muted:#b7cbbc;--faint:#9bb6a2;
+  --brand-jade:#0ba488;--matcha:#293522;--matcha-text:#c4d5ac;--hero-bg:#13372b;
+  --ink:#24443a;--primary:#42cba7;--primary-2:#88e0c3;--primary-deep:#087d69;
+  --primary-soft:rgba(84,214,163,.12);--accent:#f0b66b;--gold:#f6c66b;--gold-2:#e8ae42;
+  --button-primary-edge:#42cba7;--button-primary:#42cba7;--button-primary-hover:#67d9b9;--button-primary-base:#188369;--button-primary-text:#062d23;
+  --brand-grad:linear-gradient(135deg,#087866,#096e5d);--brand-grad-v:linear-gradient(180deg,#087866,#096e5d);
+  --brand-grad-2:linear-gradient(135deg,#b36325,#924c1b);--gold-grad:linear-gradient(135deg,#f9d58a,#e8b14e);
+  --shadow-brand:0 4px 0 var(--button-primary-base);
+  --sc-far:#3fa98f;--sc-far-o:.15;--sc-mid:#2a8571;--sc-mid-o:.13;--sc-near:#124f44;--sc-near-o:.12;
+  --sc-bamboo:#16594a;--sc-bamboo-o:.12;--sc-mist:rgba(150,235,210,.08);--sc-sun:#dff7ee;--sc-sun-o:0;--sc-bird:#9fe6d2;--sc-bird-o:.18;
+  --ok:#7de0ac;--ok-deep:#18844e;--ok-soft:rgba(73,195,128,.14);
+  --bad:#ff9ca8;--bad-deep:#b33249;--bad-soft:rgba(255,119,144,.12);
+  --warn:#f6c66b;--warn-soft:rgba(245,183,69,.14);
+  --ring:0 0 0 3px rgba(100,221,179,.32);--glow-soft:0 0 0 3px var(--primary-soft);
+  --r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:24px;--r-2xl:24px;--r-pill:999px;
+  --sh-1:0 2px 0 rgba(0,0,0,.12);--sh-2:0 6px 18px rgba(0,0,0,.12);--sh-3:0 12px 30px rgba(0,0,0,.2);--sh-4:0 24px 60px rgba(0,0,0,.3);
+  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);--d-fast:.12s;--d:.2s;--d-slow:.35s;
+  --font-ui:'Be Vietnam Pro','Segoe UI',system-ui,sans-serif;--font-display:'Manrope','Segoe UI',system-ui,sans-serif;
+  --font-friendly:'Baloo 2','Inter','Segoe UI',sans-serif;
   --font-cjk:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
-  /* pinyin cần bộ ký tự Latin mở rộng (ā ī ō ū ǖ) — Baloo 2 KHÔNG có, dùng là dấu thanh bị rời */
-  --font-pinyin:'Inter','Segoe UI','Noto Sans',Arial,sans-serif;
-
-  --side-w:264px;
+  --font-pinyin:'Be Vietnam Pro','Segoe UI','Noto Sans',Arial,sans-serif;
+  --side-w:256px;--space-1:8px;--space-2:16px;--space-3:24px;--space-4:32px;
 }
 [data-theme="light"]{
-  --bg:#f2f4fb;
-  --bg-2:#eceff9;
-  --card:#ffffff;
-  --card-2:#f7f9ff;
-  --card-3:#eef2fb;
-  --glass:rgba(255,255,255,.82);
-  --line:rgba(30,41,82,.09);
-  --line-2:rgba(30,41,82,.16);
-  --text:#161b2e;
-  --text-2:#3d4a68;
-  --muted:#5a6685;   /* #66739a chỉ đạt 4.26:1 trên nền sáng — dưới WCAG AA 4.5:1 */
-  --faint:#93a0be;
-  --primary:#087866;
-  --primary-2:#0A9078;
-  --primary-deep:#076456;
-  --primary-soft:rgba(8,120,102,.09);
-  --accent:#B75C2C;
-  /* Cảnh nền cho giao diện sáng: mực loãng trên giấy */
-  --sc-far:#9CC0B7;   --sc-far-o:.40;
-  --sc-mid:#67948A;   --sc-mid-o:.26;
-  --sc-near:#2F5B51;  --sc-near-o:.55;
-  --sc-bamboo:#2F6E5F;--sc-bamboo-o:.26;
-  --sc-mist:rgba(255,255,255,.5);
-  --sc-sun:#F6B67A;   --sc-sun-o:.34;
-  --sc-bird:#2E8A76;  --sc-bird-o:.3;
-  --ok:#059669; --ok-soft:rgba(5,150,105,.1);
-  --bad:#e11d48; --bad-soft:rgba(225,29,72,.09);
-  --warn:#d97706; --warn-soft:rgba(217,119,6,.1);
-  --sh-1:0 1px 2px rgba(22,27,46,.06);
-  --sh-2:0 4px 14px rgba(22,27,46,.08);
-  --sh-3:0 12px 32px rgba(22,27,46,.12);
-  --sh-4:0 24px 64px rgba(22,27,46,.16);
+  color-scheme:light;
+  --bg:#fdfbf6;--bg-2:#f6f1e6;--card:#fff;--card-2:#faf8f0;--card-3:#ebf0de;
+  --glass:rgba(255,255,255,.97);--line:#dde7dc;--line-2:#a4c4ad;
+  --text:#223d31;--text-2:#3e5b49;--muted:#596f60;--faint:#657863;
+  --matcha:#ebf0de;--matcha-text:#526b42;--hero-bg:#c9eee2;
+  --button-primary-edge:#087d69;--button-primary:#087d69;--button-primary-hover:#076e5d;--button-primary-base:#055c4f;--button-primary-text:#fff;
+  --primary:#087d69;--primary-2:#096f5d;--primary-deep:#065c4f;--primary-soft:#e0f3eb;--accent:#94612c;
+  --gold:#95600d;--gold-2:#b87918;
+  --ok:#177547;--ok-soft:#e7f5eb;--bad:#b33249;--bad-soft:#fff0f2;--warn:#8a5a0c;--warn-soft:#fff5dc;
+  --sc-far:#9cc0b7;--sc-mid:#67948a;--sc-near:#2f5b51;--sc-bamboo:#2f6e5f;
+  --sh-1:0 2px 0 rgba(33,73,48,.04);--sh-2:0 6px 18px rgba(33,73,48,.06);--sh-3:0 12px 30px rgba(33,73,48,.1);--sh-4:0 24px 60px rgba(33,73,48,.16);
 }
-
-/* ── Reset & base ── */
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0;
-  font-family:var(--font-ui);
-  background:var(--bg);
-  color:var(--text);
-  font-size:15px;
-  line-height:1.55;
-  min-height:100vh;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:96px}
+body{margin:0;font-family:var(--font-ui);background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;touch-action:manipulation}
 input,select,textarea{font-family:inherit;color:inherit}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
-::selection{background:rgba(31,200,162,.4)}
+::selection{background:rgba(31,200,162,.3)}
 ::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-thumb{background:var(--card-3);border-radius:99px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:99px;border:2px solid var(--bg)}
 ::-webkit-scrollbar-thumb:hover{background:var(--primary)}
 ::-webkit-scrollbar-track{background:transparent}
-:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
-
-[hidden]{display:none!important}
-.hidden{display:none!important}
+:focus-visible{outline:3px solid var(--primary);outline-offset:3px;border-radius:6px}
+[hidden],.hidden{display:none!important}
 .full{width:100%}
-.small{font-size:12.5px;color:var(--muted)}
+.small{font-size:14px;color:var(--muted);line-height:1.6}
 b{font-weight:700}
-

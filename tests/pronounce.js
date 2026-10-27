@@ -90,10 +90,10 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
 
   /* ═══ A. Điều hướng + tương thích ═══ */
   section('A. Mục mới + tương thích Luyện gõ');
-  const navHas = await page.evaluate(() => !!document.querySelector('[data-view="pron"]'));
-  check('Sidebar có mục "Luyện phát âm"', navHas, navHas);
+  const navHas = await page.evaluate(() => !!document.querySelector('[data-view="practice"]'));
+  check('Sidebar có mục Luyện tập chung', navHas, navHas);
 
-  await page.evaluate(() => document.querySelector('[data-view="pron"]').click());
+  await page.evaluate(() => window.showView('pron'));
   await page.waitForTimeout(900);
   /* ★ Mới: vào mục là màn CHỌN BỘ CÂU trước (giống Thư viện bên Luyện gõ),
      không nhảy thẳng vào một bộ câu ngẫu nhiên. */
@@ -131,16 +131,16 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   check('Có nút quay lại chọn bộ khác', opened.hasBack, opened.hasBack);
   check('Tiêu đề đổi đúng', /phát âm/i.test(opened.title), opened.title);
   check('Có nút micro', opened.hasMic, opened.hasMic);
-  check('Đủ 6 ô thống kê', opened.stats.length === 6, opened.stats);
+  check('Ba thống kê chi tiết được gom trong Tùy chọn', opened.stats.length === 3 && opened.stats.includes('Phát âm tốt') && opened.stats.includes('Lượt nói'), opened.stats);
   check('Có nguồn dữ liệu để chọn', opened.srcOptions >= 3, opened.srcOptions);
   check('Dùng chung kho câu (hiện số câu)', /\d+\s*câu/.test(opened.info), opened.info);
 
   /* Luyện gõ vẫn hoạt động */
-  await page.evaluate(() => document.querySelector('[data-view="library"]').click());
+  await page.evaluate(() => document.querySelector('[data-view="practice"]').click());
   await page.waitForTimeout(700);
   const libOk = await page.evaluate(() => !document.querySelector('#libraryCard').classList.contains('hidden'));
   check('Chuyển lại Luyện gõ vẫn bình thường', libOk, libOk);
-  await page.evaluate(() => document.querySelector('[data-view="pron"]').click());
+  await page.evaluate(() => window.showView('pron'));
   await page.waitForTimeout(700);
   /* quay lại thì vẫn là màn chọn bộ — chọn lại HSK 1 để vào luyện */
   await page.evaluate(() => {
@@ -285,13 +285,16 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   await page.waitForTimeout(500);
   check('Câu trước → quay lại', await page.evaluate(() => window.__pron._state.index) === nav.idx);
 
+  await page.click('#pronOptionsBtn');
+  await page.click('#pronSettings [data-settings-tab="display"]');
   await page.click('#pronPyToggle');
   await page.waitForTimeout(300);
-  const pyHidden = await page.evaluate(() => document.querySelector('#pronPyLine').classList.contains('hidden'));
+  const pyHidden = await page.evaluate(() => [...document.querySelectorAll('#pronHanzi .pronCharPy')].every(element => getComputedStyle(element).visibility === 'hidden' || getComputedStyle(element).display === 'none'));
   check('Ẩn được pinyin', pyHidden, pyHidden);
   await page.click('#pronPyToggle');
   await page.waitForTimeout(300);
-  check('Hiện lại pinyin', await page.evaluate(() => !document.querySelector('#pronPyLine').classList.contains('hidden')));
+  check('Hiện lại pinyin', await page.evaluate(() => [...document.querySelectorAll('#pronHanzi .pronCharPy')].some(element => getComputedStyle(element).visibility !== 'hidden' && getComputedStyle(element).display !== 'none')));
+  await page.keyboard.press('Escape');
 
   /* Bỏ qua phải thử trên câu CHƯA luyện (câu đã luyện rồi thì giữ nguyên kết quả) */
   await page.click('#pronNextBtn');
@@ -328,8 +331,8 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 
-  /* ═══ H. Micro chỉ xin quyền 1 lần + màn học vừa 1 khung hình + lỗi hiển thị ═══ */
-  section('H. Không xin lại quyền micro + vừa khung hình + sửa lỗi hiển thị');
+  /* ═══ H. Micro chỉ xin quyền 1 lần + màn học dễ đọc, cuộn được + lỗi hiển thị ═══ */
+  section('H. Không xin lại quyền micro + màn học dễ đọc + sửa lỗi hiển thị');
 
   /* (1) Stream được giữ lại giữa các câu → không gọi getUserMedia lần nữa */
   const gum = await page.evaluate(() => ({ calls: window.__gumCalls, alive: window.__pron._state.stream ? window.__pron._state.stream.active : false }));
@@ -349,7 +352,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   const gum2 = await page.evaluate(() => window.__gumCalls);
   check('Sang câu mới KHÔNG xin lại quyền micro', gum2 <= 1, gum2);
 
-  /* (3) Màn học vừa đúng 1 khung hình, không phải cuộn trang */
+  /* (3) Màn học giữ kích thước điều khiển; nội dung dài được cuộn thay vì ép nhỏ. */
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.waitForTimeout(500);
   const fit = await page.evaluate(() => {
@@ -359,13 +362,22 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
     return {
       vh,
       pageScroll: document.documentElement.scrollHeight - vh,
+      bodyOverflow: getComputedStyle(document.body).overflowY,
+      shellOverflow: getComputedStyle(document.querySelector('#pronCard')).overflowY,
+      nextHeight: next ? next.height : 0,
+      nextFont: parseFloat(getComputedStyle(document.querySelector('#pronNextBtn')).fontSize),
       nextBottom: next ? Math.round(next.bottom) : null,
       resBottom: res && res.height > 0 ? Math.round(res.bottom) : null,
       cardBottom: card ? Math.round(card.bottom) : null
     };
   });
-  check('Trang KHÔNG có thanh cuộn dọc', fit.pageScroll <= 2, fit.pageScroll);
-  check('Nút "Câu tiếp" nằm trong khung hình', fit.nextBottom !== null && fit.nextBottom <= fit.vh, { nut: fit.nextBottom, cao: fit.vh });
+  check('Nội dung dài có thể cuộn, không bị khóa hoặc cắt', fit.bodyOverflow !== 'hidden' && fit.shellOverflow !== 'hidden', { cuon:fit.pageScroll, body:fit.bodyOverflow, shell:fit.shellOverflow });
+  await page.locator('#pronNextBtn').scrollIntoViewIfNeeded();
+  const nextVisible = await page.locator('#pronNextBtn').evaluate(el => {
+    const r = el.getBoundingClientRect();
+    return r.top >= 0 && r.bottom <= window.innerHeight;
+  });
+  check('Nút "Câu tiếp" dễ đọc, đủ lớn và cuộn tới được', nextVisible && fit.nextHeight >= 44 && fit.nextFont >= 14, { cao:fit.nextHeight, chu:fit.nextFont, nhinThay:nextVisible });
   check('Bảng kết quả nằm trong khung hình (không phải cuộn)', fit.resBottom !== null && fit.resBottom <= fit.vh, { bang: fit.resBottom, cao: fit.vh });
 
   /* (4) Kết quả là CỘT PHẢI (desktop), không đẩy nội dung xuống dưới */
@@ -411,7 +423,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   await page.click('#pronBackBtn');
   await page.waitForTimeout(600);
   const back = await page.evaluate(() => ({
-    picker: !document.querySelector('#pronLibCard').classList.contains('hidden'),
+    picker: !document.querySelector('#libraryCard').classList.contains('hidden'),
     practice: document.querySelector('#pronCard').classList.contains('hidden'),
     fit: document.body.classList.contains('pronFit'),
     mic: window.__pron._state.stream ? window.__pron._state.stream.active : false

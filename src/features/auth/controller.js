@@ -1,5 +1,5 @@
 ﻿import { renderUserChip, showView } from '../../app/navigation.js';
-import { doRegister, doLogin, doLogout, currentUser, cancelPendingAction, resumePendingAction, requestPasswordReset, resetPassword, changePassword, state as authState } from './service.js';
+import { doRegister, doLogin, doLogout, currentUser, cancelPendingAction, resumePendingAction, requestPasswordReset, resetPassword, changePassword } from './service.js';
 import { getAccountClient } from './client.js';
 import { prepareAvatar, saveProfile, avatarUrl } from './profile.js';
 import { setConflictResolver, hasLegacyData, importLegacyData, onDataChange, syncStatus } from '../../shared/storage/account-data.js';

@@ -7,7 +7,7 @@ import { closeHistModal } from "../features/typing/history.js";
 import { goPrevSentence } from "../features/typing/input.js";
 
 import { state as domState } from "./dom.js";
-import { rememberFocus, restoreFocus } from "./focus.js";
+import { rememberFocus, restoreFocus, trapTab } from "./focus.js";
 
 /* ── ★ Modal hướng dẫn (nút 💡): giải thích toàn bộ cơ chế gõ + phím tắt ──
    Chỉ mở từ giao diện Luyện gõ (học câu) — không đặt trong game. */
@@ -31,10 +31,11 @@ export function closeHelpModal() {
 }
 
 export function initializeHelp() {
-  domState.$('helpBtn').onclick = openHelpModal;
+  document.querySelectorAll('#helpBtn,[data-open-study-help]').forEach(button => { button.onclick = openHelpModal; });
   /* nút ✕ / nền mờ / "Đã hiểu" → đóng (gopinyin.js cũng đóng lại lần nữa, không sao) */
   document.querySelectorAll('#helpModal [data-close]').forEach(el => el.addEventListener('click', closeHelpModal));
-  /* ★ Khi modal mở: nuốt phím để game / F1 / tra nghĩa không xử lý; Esc thì đóng */
+  // Keep native Enter/Space on dialog buttons; the shared overlay guard
+  // suppresses background lesson shortcuts without swallowing control keys.
   document.addEventListener('keydown', e => {
     const hm = domState.$('helpModal'),
       xm = domState.$('histModal');
@@ -42,11 +43,11 @@ export function initializeHelp() {
     if (!open) return;
     if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopImmediatePropagation();
       open === 'help' ? closeHelpModal() : closeHistModal();
       return;
     }
-    e.stopPropagation();
-    if (e.key !== 'Tab') e.preventDefault();
+    trapTab(e, open === 'help' ? hm : xm);
   }, true);
   domState.$('retrySentenceBtn').onclick = retrySentence;
   if (domState.$('prevSentenceBtn')) domState.$('prevSentenceBtn').onclick = goPrevSentence;

@@ -1,9 +1,11 @@
 <section id="aiCard" class="card hidden aiView">
-    <div class="aiViewHead">
+    <div class="aiViewHead featureIntro">
       <div>
-        <h2>🤖 AI sinh câu</h2>
+        <span class="featureEyebrow">Bài học theo ý bạn</span>
+        <h2>Cùng gấu tạo câu mới</h2>
         <div class="small">Viết chủ đề bạn muốn học → AI tạo câu mới kèm pinyin &amp; nghĩa tiếng Việt.</div>
       </div>
+      <div id="aiMascot" data-mascot="ready" data-mascot-size="card" aria-hidden="true"></div>
     </div>
 <div id="aiPane">
       <div class="aiBox">
@@ -44,7 +46,7 @@
         </div>
         <div id="aiKindHint" class="aiKindHint"></div>
         <div class="aiControls">
-          <button id="aiStartBtn" class="btn primary" type="button">🚀 Viết prompt rồi học ngay</button>
+          <button id="aiStartBtn" class="btn primary" type="button">Tạo câu và học</button>
         </div>
         <details class="aiDetails">
           <summary>Tuỳ chọn nâng cao</summary>
@@ -77,7 +79,7 @@
          Bấm "Học tiếp" là vào đúng câu đang học dở của bộ đó. -->
     <div id="aiSetsWrap" class="aiSetsWrap">
       <div class="aiSetsHead">
-        <h3>📚 Bộ AI đã lưu</h3>
+        <h3>Bộ AI đã lưu</h3>
         <span class="small">Bấm “Học tiếp” để làm tiếp đúng chỗ bạn đang dở.</span>
       </div>
       <div id="aiSets" class="libraryGrid aiSetsGrid"></div>

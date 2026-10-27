@@ -40,7 +40,7 @@ function check(name, ok, detail) {
   });
 
   // Mở một bộ HSK có sẵn (dữ liệu nhúng trong data.js — không cần mạng)
-  await page.evaluate(() => document.querySelector('[data-view="library"]')?.click());
+  await page.evaluate(() => document.querySelector('[data-view="practice"]')?.click());
   await page.waitForTimeout(900);
   const opened = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('#vocabList .vocabCard:not(.isLocked)')];
@@ -166,7 +166,10 @@ function check(name, ok, detail) {
     if (b) b.click();
   });
   await page.waitForTimeout(300);
+  await page.click('#typingOptionsBtn');
+  await page.click('#typingSettings [data-settings-tab="audio"]');
   await page.click('#readTypeToggle');
+  await page.keyboard.press('Escape');
   await page.waitForTimeout(200);
   const offState = await page.evaluate(() => document.querySelector('#readTypeToggle').getAttribute('aria-pressed'));
   check('Tắt công tắc → aria-pressed=false', offState === 'false', offState);
@@ -179,7 +182,10 @@ function check(name, ok, detail) {
   check('ĐÃ TẮT → gõ chữ không đọc', t5.length === 0, t5);
 
   // ---- TEST 6: BẬT LẠI → đọc tiếp ----
+  await page.click('#typingOptionsBtn');
+  await page.click('#typingSettings [data-settings-tab="audio"]');
   await page.click('#readTypeToggle');
+  await page.keyboard.press('Escape');
   await page.waitForTimeout(200);
   await page.evaluate(() => { window.__spoken = []; });
   await page.focus('#pinyinInput');

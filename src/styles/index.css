@@ -33,3 +33,10 @@
 @import "../features/dashboard/polish.css";
 
 @import "../features/auth/styles.css";
+@import "../shared/mascot.css";
+@import "../shared/control-icons.css";
+@import "../app/mobile-navigation.css";
+@import "../features/practice/styles.css";
+@import "../features/journey/styles.css";
+
+@import "../features/shadowing/styles.css";

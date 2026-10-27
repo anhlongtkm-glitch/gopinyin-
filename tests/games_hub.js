@@ -126,8 +126,8 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
     const b = [...document.querySelectorAll('.dashFeature')].find(x => x.dataset.view === 'games');
     return { exists: !!b, label: b ? (b.textContent || '').replace(/\s+/g, ' ').trim() : '' };
   });
-  // The current dashboard deliberately has no games shortcut (also true before this refactor).
-  check('Dashboard giữ nguyên việc không có thẻ game riêng', dash.exists === false, dash.exists);
+  // Approved Plan A includes a separate Game panel beside the extra skills.
+  check('Dashboard có lối vào Game riêng theo bản đã duyệt', dash.exists === true, dash.exists);
   check('Thanh bên vẫn có đường vào game', await page.locator('.ws-navItem[data-view="games"]').count() === 1);
   await page.evaluate(() => document.querySelector('.ws-navItem[data-view="games"]').click());
   await page.waitForTimeout(700);
@@ -144,7 +144,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
     return { running: !!st.running, stage: st.stage };
   });
   check('Ván game đang chạy', playing.running === true, playing);
-  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="library"]').click());
+  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="practice"]').click());
   await page.waitForTimeout(900);
   const away = await page.evaluate(() => {
     const st = window.__game._state;
@@ -157,7 +157,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   });
   check('Rời game → ván dừng lại (không chạy nền)', away.running === false, away.running);
   check('Rời game → màn game ẩn, thư viện hiện', away.gameHidden && away.libraryVisible, away);
-  check('Mục điều hướng chuyển sang "library"', away.navActive === 'library', away.navActive);
+  check('Mục điều hướng chuyển sang "practice"', away.navActive === 'practice', away.navActive);
   /* quay lại game → ván cũ được giữ (có thể hồi sinh) */
   await page.evaluate(() => document.querySelector('.ws-navItem[data-view="games"]').click());
   await page.waitForTimeout(600);
@@ -208,7 +208,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
 
   /* ═══ §8 — Nút cũng phải dùng lại được cho màn HỌC (không hỏng luồng cũ) */
   section('8 — Nút quay lại khi đang ở màn học');
-  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="library"]').click());
+  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="practice"]').click());
   await page.waitForTimeout(700);
   const fromLib = await page.evaluate(() => {
     const vis = id => !document.querySelector('#' + id).classList.contains('hidden');

@@ -25,7 +25,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert.equal(await page.locator('[data-catalog-sentences]').textContent(), '4.969', 'HSK total must exclude 43 tone-pair exercises');
     await page.evaluate(() => localStorage.setItem('cts:progress:legacy', JSON.stringify({ mainIndex: 999, stats: { correct: 999, combo: 999 } })));
     await register(page, 'Roadmap learner');
-    await page.click('.ws-navItem[data-view="library"]'); await page.click('[data-vsrc="hsk1"]');
+    await page.click('.ws-navItem[data-view="practice"]'); await page.click('[data-vsrc="hsk1"]');
     await page.locator('#appCard').waitFor({ state: 'visible' });
     await page.evaluate(() => { window.index = 3; window.stats = { correct: 7, wrong: 1, combo: 2, bestCombo: 9, attempts: 8 }; window.save(); });
     await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
@@ -35,7 +35,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert.equal(await page.locator('#dashAcc').textContent(), '88%');
     console.log('  PASS dashboard uses account progress and best combo; legacy storage excluded');
 
-    await page.click('.ws-navItem[data-view="library"]'); await page.click('[data-vsrc="hsk1"]');
+    await page.click('.ws-navItem[data-view="practice"]'); await page.click('[data-vsrc="hsk1"]');
     await page.locator('#appCard').waitFor({ state: 'visible' });
     await page.reload({ waitUntil: 'networkidle' });
     await page.locator('#appCard').waitFor({ state: 'visible' });
@@ -43,7 +43,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert.equal(await page.evaluate(() => window.index), 3);
     console.log('  PASS study deep link restores lesson and session after reload');
 
-    await page.click('.ws-navItem[data-view="library"]'); await page.click('.ws-navItem[data-view="ai"]');
+    await page.click('.ws-navItem[data-view="practice"]'); await page.click('.workspaceTools summary');await page.click('.ws-navItem[data-view="ai"]');
     await page.goBack(); await page.locator('#libraryCard').waitFor({ state: 'visible' });
     await page.goForward(); await page.locator('#aiCard').waitFor({ state: 'visible' });
     await page.focus('#aiStartBtn');
@@ -54,7 +54,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert.equal(await page.evaluate(() => document.activeElement.id), 'aiStartBtn');
     console.log('  PASS Back/Forward and modal Tab/Escape restore focus');
 
-    await page.click('.ws-navItem[data-view="library"]'); await page.click('[data-vsrc="hsk1"]');
+    await page.click('.ws-navItem[data-view="practice"]'); await page.click('[data-vsrc="hsk1"]');
     await page.locator('#appCard').waitFor({ state: 'visible' });
     await page.evaluate(() => { window.markSentenceWrong(); });
     await page.waitForFunction(() => document.querySelector('#accountSyncStatus').textContent === 'Đã đồng bộ');
@@ -75,7 +75,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert.equal(await page.locator('#dashLearned').textContent(), '3');
     console.log('  PASS weak-item review persists without overwriting main lesson position');
 
-    await page.click('.ws-navItem[data-view="library"]'); await page.click('[data-vsrc="hsk2"]');
+    await page.click('.ws-navItem[data-view="practice"]'); await page.click('[data-vsrc="hsk2"]');
     await page.locator('#appCard').waitFor({ state: 'visible' });
     await page.evaluate(() => window.markSentenceCorrect());
     const scored = await page.evaluate(() => ({ ...window.stats }));
@@ -106,10 +106,14 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     await page.locator('#completeArea').waitFor({ state: 'visible' });
     assert.equal(await page.evaluate(() => window.index), await page.evaluate(() => window.order.length));
     console.log('  PASS completed progress survives reload before Space, including the final sentence; late/duplicate errors do not inflate scores');
+    // Study tools belong to an active question; completion has its own actions.
+    await page.evaluate(() => { window.index = 0; window.render(); });
     for (const [trigger, modal] of [['helpBtn', 'helpModal'], ['historyBtn', 'histModal']]) {
+      await page.click('#typingOptionsBtn');
+      await page.click('#typingSettings [data-settings-tab="lesson"]');
       await page.click('#' + trigger); await page.locator('#' + modal).waitFor({ state: 'visible' });
       await page.keyboard.press('Escape');
-      assert.equal(await page.evaluate(() => document.activeElement.id), trigger);
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'typingOptionsBtn');
     }
     console.log('  PASS help and history dialogs restore keyboard focus');
     await page.evaluate(() => window.showView('dash'));
@@ -120,7 +124,9 @@ const { register } = require('./helpers/supabase-fixture.cjs');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
       await page.screenshot({ path: `.cache/roadmap/dashboard-${width}.png`, fullPage: true });
     }
-    await page.click('#wsLogoutBtn'); await page.waitForFunction(() => document.querySelector('#wsLoginBtn').hidden === false);
+    if (await page.locator('#wsLogoutBtn').isVisible()) await page.click('#wsLogoutBtn');
+    else { await page.click('#mobileMoreBtn'); await page.click('#mobileLogoutBtn'); }
+    await page.waitForFunction(() => document.querySelector('#wsLoginBtn').hidden === false);
     await register(page, 'Another learner');
     assert.equal(await page.locator('#dashLearned').textContent(), '0');
     assert.equal(await page.locator('#dashAcc').textContent(), '—');

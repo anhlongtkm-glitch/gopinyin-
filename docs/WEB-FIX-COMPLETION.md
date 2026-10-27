@@ -2,6 +2,8 @@
 
 Tài liệu này tổng hợp trạng thái mới nhất của lộ trình. Các báo cáo đợt trước giữ nguyên số đo và kết quả tại thời điểm thực hiện.
 
+Đợt đồng bộ giao diện và mascot tiếp theo đã bổ sung 16 tư thế gấu 3D, sáu biểu cảm, điều hướng mobile và các thao tác học thuận tiện; kết quả bản tích hợp là 24 suite, 369 checks đạt và kiểm tra build đạt. Chi tiết, ảnh đối chiếu và phần nghiệm thu thiết bị thật còn lại nằm tại [UI-MASCOT-RESULTS.md](UI-MASCOT-RESULTS.md). Các số liệu 354 checks bên dưới được giữ như kết quả lịch sử của đợt sửa trước.
+
 ## Bản sửa cuối trong đợt này
 
 - Thao tác chờ đăng nhập gắn với lần điều hướng đã tạo ra nó. Đăng nhập sau khi Back hoặc chọn màn khác không mở lại game/bài cũ. Đăng nhập và đăng ký có phiên hợp lệ vẫn tiếp tục thao tác đang chờ đúng một lần.

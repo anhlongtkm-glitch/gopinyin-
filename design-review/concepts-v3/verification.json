@@ -1,0 +1,589 @@
+{
+  "screens": [
+    {
+      "plan": "adventure",
+      "device": "desktop",
+      "screen": "dashboard",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollHeight": 1039,
+      "images": [],
+      "primary": [
+        {
+          "label": "Tiếp tục phiên học",
+          "x": 92,
+          "y": 382.28125,
+          "width": 207.421875,
+          "height": 50,
+          "top": 382.28125,
+          "right": 299.421875,
+          "bottom": 432.28125,
+          "left": 92
+        }
+      ]
+    },
+    {
+      "plan": "adventure",
+      "device": "desktop",
+      "screen": "study",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollHeight": 1030,
+      "images": [],
+      "primary": [
+        {
+          "label": "Câu tiếp 5",
+          "x": 873.640625,
+          "y": 868.390625,
+          "width": 161.359375,
+          "height": 50,
+          "top": 868.390625,
+          "right": 1035,
+          "bottom": 918.390625,
+          "left": 873.640625
+        }
+      ]
+    },
+    {
+      "plan": "adventure",
+      "device": "desktop",
+      "screen": "study",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "adventure",
+      "device": "desktop",
+      "screen": "study",
+      "options": "audio",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "adventure",
+      "device": "desktop",
+      "screen": "study",
+      "options": "lesson",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "adventure",
+      "device": "mobile",
+      "screen": "dashboard",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 1443,
+      "images": [],
+      "primary": [
+        {
+          "label": "Tiếp tục phiên học",
+          "x": 42,
+          "y": 350.5,
+          "width": 172.796875,
+          "height": 48,
+          "top": 350.5,
+          "right": 214.796875,
+          "bottom": 398.5,
+          "left": 42
+        }
+      ]
+    },
+    {
+      "plan": "adventure",
+      "device": "mobile",
+      "screen": "study",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 878,
+      "images": [],
+      "primary": [
+        {
+          "label": "Câu tiếp 5",
+          "x": 230.09375,
+          "y": 719.984375,
+          "width": 125.90625,
+          "height": 46,
+          "top": 719.984375,
+          "right": 356,
+          "bottom": 765.984375,
+          "left": 230.09375
+        }
+      ]
+    },
+    {
+      "plan": "adventure",
+      "device": "mobile",
+      "screen": "study",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "adventure",
+      "device": "mobile",
+      "screen": "study",
+      "options": "audio",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "adventure",
+      "device": "mobile",
+      "screen": "study",
+      "options": "lesson",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "jade",
+      "device": "desktop",
+      "screen": "dashboard",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollHeight": 1051,
+      "images": [],
+      "primary": [
+        {
+          "label": "Tiếp tục phiên học",
+          "x": 90,
+          "y": 414.78125,
+          "width": 207.421875,
+          "height": 50,
+          "top": 414.78125,
+          "right": 297.421875,
+          "bottom": 464.78125,
+          "left": 90
+        }
+      ]
+    },
+    {
+      "plan": "jade",
+      "device": "desktop",
+      "screen": "study",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollHeight": 1043,
+      "images": [],
+      "primary": [
+        {
+          "label": "Câu tiếp 5",
+          "x": 873.640625,
+          "y": 864.1875,
+          "width": 161.359375,
+          "height": 50,
+          "top": 864.1875,
+          "right": 1035,
+          "bottom": 914.1875,
+          "left": 873.640625
+        }
+      ]
+    },
+    {
+      "plan": "jade",
+      "device": "desktop",
+      "screen": "study",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "jade",
+      "device": "desktop",
+      "screen": "study",
+      "options": "audio",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "jade",
+      "device": "desktop",
+      "screen": "study",
+      "options": "lesson",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "jade",
+      "device": "mobile",
+      "screen": "dashboard",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 1677,
+      "images": [],
+      "primary": [
+        {
+          "label": "Tiếp tục phiên học",
+          "x": 43,
+          "y": 403.171875,
+          "width": 172.796875,
+          "height": 48,
+          "top": 403.171875,
+          "right": 215.796875,
+          "bottom": 451.171875,
+          "left": 43
+        }
+      ]
+    },
+    {
+      "plan": "jade",
+      "device": "mobile",
+      "screen": "study",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 931,
+      "images": [],
+      "primary": [
+        {
+          "label": "Câu tiếp 5",
+          "x": 230.09375,
+          "y": 756.375,
+          "width": 125.90625,
+          "height": 46,
+          "top": 756.375,
+          "right": 356,
+          "bottom": 802.375,
+          "left": 230.09375
+        }
+      ]
+    },
+    {
+      "plan": "jade",
+      "device": "mobile",
+      "screen": "study",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "jade",
+      "device": "mobile",
+      "screen": "study",
+      "options": "audio",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "jade",
+      "device": "mobile",
+      "screen": "study",
+      "options": "lesson",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "neon",
+      "device": "desktop",
+      "screen": "dashboard",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollHeight": 1033,
+      "images": [],
+      "primary": [
+        {
+          "label": "Vào tình huống",
+          "x": 89,
+          "y": 385.59375,
+          "width": 185.875,
+          "height": 50,
+          "top": 385.59375,
+          "right": 274.875,
+          "bottom": 435.59375,
+          "left": 89
+        }
+      ]
+    },
+    {
+      "plan": "neon",
+      "device": "desktop",
+      "screen": "study",
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollHeight": 1030,
+      "images": [],
+      "primary": [
+        {
+          "label": "Câu tiếp 5",
+          "x": 873.640625,
+          "y": 868.390625,
+          "width": 161.359375,
+          "height": 50,
+          "top": 868.390625,
+          "right": 1035,
+          "bottom": 918.390625,
+          "left": 873.640625
+        }
+      ]
+    },
+    {
+      "plan": "neon",
+      "device": "desktop",
+      "screen": "study",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "neon",
+      "device": "desktop",
+      "screen": "study",
+      "options": "audio",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "neon",
+      "device": "desktop",
+      "screen": "study",
+      "options": "lesson",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 271.5,
+      "bottom": 728.5,
+      "viewport": 1000
+    },
+    {
+      "plan": "neon",
+      "device": "mobile",
+      "screen": "dashboard",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 1469,
+      "images": [],
+      "primary": [
+        {
+          "label": "Vào tình huống",
+          "x": 43,
+          "y": 321.671875,
+          "width": 154.328125,
+          "height": 48,
+          "top": 321.671875,
+          "right": 197.328125,
+          "bottom": 369.671875,
+          "left": 43
+        }
+      ]
+    },
+    {
+      "plan": "neon",
+      "device": "mobile",
+      "screen": "study",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 909,
+      "images": [],
+      "primary": [
+        {
+          "label": "Câu tiếp 5",
+          "x": 230.09375,
+          "y": 750.78125,
+          "width": 125.90625,
+          "height": 46,
+          "top": 750.78125,
+          "right": 356,
+          "bottom": 796.78125,
+          "left": 230.09375
+        }
+      ]
+    },
+    {
+      "plan": "neon",
+      "device": "mobile",
+      "screen": "study",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "neon",
+      "device": "mobile",
+      "screen": "study",
+      "options": "audio",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "neon",
+      "device": "mobile",
+      "screen": "study",
+      "options": "lesson",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 193.5,
+      "bottom": 650.5,
+      "viewport": 844
+    },
+    {
+      "plan": "adventure",
+      "device": "extra",
+      "screen": "study",
+      "width": 360,
+      "height": 740,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "adventure",
+      "device": "extra",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 141.5,
+      "bottom": 598.5,
+      "viewport": 740
+    },
+    {
+      "plan": "adventure",
+      "device": "extra",
+      "screen": "study",
+      "width": 844,
+      "height": 390,
+      "scrollWidth": 844
+    },
+    {
+      "plan": "adventure",
+      "device": "extra",
+      "options": "display",
+      "scrollHeight": 278,
+      "clientHeight": 278,
+      "top": 55,
+      "bottom": 335,
+      "viewport": 390
+    },
+    {
+      "plan": "jade",
+      "device": "extra",
+      "screen": "study",
+      "width": 360,
+      "height": 740,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "jade",
+      "device": "extra",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 141.5,
+      "bottom": 598.5,
+      "viewport": 740
+    },
+    {
+      "plan": "jade",
+      "device": "extra",
+      "screen": "study",
+      "width": 844,
+      "height": 390,
+      "scrollWidth": 844
+    },
+    {
+      "plan": "jade",
+      "device": "extra",
+      "options": "display",
+      "scrollHeight": 278,
+      "clientHeight": 278,
+      "top": 55,
+      "bottom": 335,
+      "viewport": 390
+    },
+    {
+      "plan": "neon",
+      "device": "extra",
+      "screen": "study",
+      "width": 360,
+      "height": 740,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "neon",
+      "device": "extra",
+      "options": "display",
+      "scrollHeight": 455,
+      "clientHeight": 455,
+      "top": 141.5,
+      "bottom": 598.5,
+      "viewport": 740
+    },
+    {
+      "plan": "neon",
+      "device": "extra",
+      "screen": "study",
+      "width": 844,
+      "height": 390,
+      "scrollWidth": 844
+    },
+    {
+      "plan": "neon",
+      "device": "extra",
+      "options": "display",
+      "scrollHeight": 278,
+      "clientHeight": 278,
+      "top": 55,
+      "bottom": 335,
+      "viewport": 390
+    }
+  ],
+  "errors": [],
+  "applicationFilesChecked": 303,
+  "changedApplicationFiles": []
+}

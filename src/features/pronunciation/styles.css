@@ -58,7 +58,7 @@
 .pronMicIco{
   position:relative;width:104px;height:104px;border-radius:50%;
   display:grid;place-items:center;font-size:38px;line-height:1;
-  background:var(--brand-grad);color:#04120F;box-shadow:var(--shadow-brand);
+  background:var(--brand-grad);color:#fff;box-shadow:var(--shadow-brand);
   transition:transform var(--d) var(--spring),box-shadow var(--d) var(--ease),background var(--d) var(--ease);
   isolation:isolate;
 }

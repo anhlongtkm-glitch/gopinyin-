@@ -1,0 +1,240 @@
+{
+  "cases": [
+    {
+      "plan": "a",
+      "screen": "dashboard",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "hsk",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "tone",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "shadow",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "lesson",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "games",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "bear",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "dashboard",
+      "device": "mobile",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "bear",
+      "device": "mobile",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "dashboard",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "hsk",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "tone",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "shadow",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "lesson",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "games",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "bear",
+      "device": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "dashboard",
+      "device": "mobile",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": []
+    },
+    {
+      "plan": "b",
+      "screen": "bear",
+      "device": "mobile",
+      "width": 390,
+      "scrollWidth": 390,
+      "broken": []
+    },
+    {
+      "plan": "a",
+      "screen": "dashboard",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "a",
+      "screen": "tone",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "a",
+      "screen": "shadow",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "a",
+      "screen": "lesson",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "a",
+      "screen": "games",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "a",
+      "screen": "bear",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "b",
+      "screen": "dashboard",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "b",
+      "screen": "tone",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "b",
+      "screen": "shadow",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "b",
+      "screen": "lesson",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "b",
+      "screen": "games",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    },
+    {
+      "plan": "b",
+      "screen": "bear",
+      "device": "small-mobile",
+      "width": 360,
+      "scrollWidth": 360
+    }
+  ],
+  "errors": [],
+  "gallery": {
+    "plans": 2,
+    "width": 360,
+    "scrollWidth": 360
+  },
+  "applicationFilesChecked": 303,
+  "changedApplicationFiles": []
+}

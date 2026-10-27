@@ -1,0 +1,6 @@
+/* Decorative outline icons reserve space without changing control labels. */
+.control-icon{display:inline-block;vertical-align:middle;width:20px;height:20px;flex:none;pointer-events:none}
+.tgIco{display:inline-flex;align-items:center;justify-content:center;flex:none}
+.tgIco>.control-icon{width:18px;height:18px}
+.pronMicIco>.control-icon{width:40px;height:40px}
+.gaIconBtn>.control-icon,.modalClose>.control-icon,.gtHeader-close>.control-icon{width:20px;height:20px}

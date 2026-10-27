@@ -1,97 +1,28 @@
 <section id="gamesCard" class="card hidden gameHub">
-    <div class="gameHubHead">
+    <div class="gameHubHead featureIntro">
       <div>
-        <h2>🎲 Game từ vựng</h2>
-        <div class="small">Chọn một trò chơi để vừa chơi vừa nhớ chữ Hán. Mỗi game một cách luyện khác nhau — bạn sẽ tự thêm các game mới vào đây sau này.</div>
+        <span class="featureEyebrow">Vừa chơi vừa nhớ</span>
+        <h2>Chơi vui. Nhớ thêm một chút.</h2>
+        <div class="small">Luyện phản xạ với chữ Hán và pinyin. Sẵn sàng chinh phục kỷ lục của bạn?</div>
       </div>
+
     </div>
-    <div class="gameGrid">
+    <div class="gameRewardStrip"><b>XP Game hôm nay</b><span id="gameDailyXp">0 / 20 XP</span><small>Hết hạn mức vẫn chơi bình thường. Game không khóa nội dung HSK.</small></div><div class="gameGrid">
       <!-- ★ Game bắn chữ (đã có) — thẻ có ảnh đại diện SVG riêng -->
       <button type="button" class="gameTile" data-view="game" aria-label="Mở Game bắn chữ">
         <div class="gameTileArt">
-          <svg viewBox="0 0 320 180" class="gameTileSvg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Ảnh đại diện Game bắn chữ: tàu vũ trụ bắn nổ các thẻ chữ Hán rơi xuống">
-            <defs>
-              <linearGradient id="gtSky" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#070d1c"/>
-                <stop offset="0.5" stop-color="#0f2748"/>
-                <stop offset="1" stop-color="#1d3f74"/>
-              </linearGradient>
-              <linearGradient id="gtShip" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#93c5fd"/>
-                <stop offset="1" stop-color="#1e3a8a"/>
-              </linearGradient>
-              <radialGradient id="gtBoom" cx="0.5" cy="0.5" r="0.5">
-                <stop offset="0" stop-color="#fff7ae"/>
-                <stop offset="0.45" stop-color="#fbbf24"/>
-                <stop offset="0.75" stop-color="#fb923c" stop-opacity="0.65"/>
-                <stop offset="1" stop-color="#fb923c" stop-opacity="0"/>
-              </radialGradient>
-              <linearGradient id="gtBullet" x1="0" y1="1" x2="0" y2="0">
-                <stop offset="0" stop-color="#a5f3fc" stop-opacity="0"/>
-                <stop offset="1" stop-color="#e0f7ff"/>
-              </linearGradient>
-            </defs>
-
-            <rect x="0" y="0" width="320" height="180" fill="url(#gtSky)"/>
-            <!-- sao nền -->
-            <g fill="#cbd5e1">
-              <circle cx="28" cy="20" r="1.3" opacity=".85"/><circle cx="74" cy="46" r="1" opacity=".7"/>
-              <circle cx="124" cy="16" r="1.5" opacity=".9"/><circle cx="176" cy="40" r="1" opacity=".6"/>
-              <circle cx="228" cy="22" r="1.2" opacity=".8"/><circle cx="286" cy="44" r="1.4" opacity=".85"/>
-              <circle cx="46" cy="92" r="1" opacity=".55"/><circle cx="292" cy="104" r="1" opacity=".6"/>
-              <circle cx="100" cy="120" r="1.1" opacity=".5"/><circle cx="250" cy="76" r="1" opacity=".55"/>
-            </g>
-
-            <!-- Thẻ chữ Hán rơi xuống (góc trên bên phải, chừa chỗ cho nhãn "Đang mở") -->
-            <g font-family="'Noto Sans CJK SC','Microsoft YaHei','PingFang SC',sans-serif" text-anchor="middle">
-              <g transform="translate(196,34)">
-                <rect x="-25" y="-21" width="50" height="42" rx="11" fill="rgba(255,255,255,.12)" stroke="#5eead4" stroke-width="1.5"/>
-                <text x="0" y="9" font-size="25" font-weight="700" fill="#e2e8f0">学</text>
-                <text x="0" y="33" font-size="10.5" font-weight="600" fill="#5eead4">xué</text>
-              </g>
-              <g transform="translate(262,40)">
-                <rect x="-25" y="-21" width="50" height="42" rx="11" fill="rgba(255,255,255,.12)" stroke="#fca5a5" stroke-width="1.5"/>
-                <text x="0" y="9" font-size="25" font-weight="700" fill="#e2e8f0">中</text>
-                <text x="0" y="33" font-size="10.5" font-weight="600" fill="#fca5a5">zhōng</text>
-              </g>
-              <g transform="translate(228,96)">
-                <rect x="-25" y="-21" width="50" height="42" rx="11" fill="rgba(255,255,255,.12)" stroke="#fcd34d" stroke-width="1.5"/>
-                <text x="0" y="9" font-size="25" font-weight="700" fill="#e2e8f0">文</text>
-                <text x="0" y="33" font-size="10.5" font-weight="600" fill="#fcd34d">wén</text>
-              </g>
-            </g>
-            <!-- vụ nổ ở thẻ "中" -->
-            <circle cx="262" cy="34" r="26" fill="url(#gtBoom)"/>
-
-            <!-- Đạn bay lên từ nòng pháo -->
-            <g stroke="url(#gtBullet)" stroke-width="3.2" stroke-linecap="round">
-              <line x1="86" y1="146" x2="80" y2="116"/>
-              <line x1="86" y1="146" x2="86" y2="106"/>
-              <line x1="86" y1="146" x2="92" y2="118"/>
-            </g>
-
-            <!-- Tàu vũ trụ (giống hình trong game) -->
-            <g transform="translate(86,146) scale(0.92)">
-              <rect x="-2.5" y="-26" width="5" height="13" rx="2.5" fill="#9ad8ff"/>
-              <rect x="-0.7" y="-26" width="1.4" height="13" rx=".7" fill="#e0f2fe" opacity=".9"/>
-              <path d="M0 -20 L-14 -7 L-13 6 Q-12 17 0 17 Q12 17 13 6 L14 -7 Z" fill="url(#gtShip)" stroke="#9ad8ff" stroke-width="1.4"/>
-              <circle cx="0" cy="2" r="5" fill="#bfdbfe" stroke="#9ad8ff" stroke-width="1.2"/>
-              <path d="M-14 3 L-21 11 L-14 10 Z" fill="#1e3a8a"/><path d="M14 3 L21 11 L14 10 Z" fill="#1e3a8a"/>
-            </g>
-
-            <!-- vạch đích + nền chân trời -->
-            <rect x="0" y="163" width="320" height="3" fill="rgba(148,163,184,.35)"/>
-            <rect x="0" y="166" width="320" height="14" fill="rgba(2,6,23,.55)"/>
-          </svg>
+          <svg viewBox="0 0 900 300" class="gameTileSvg" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Minh họa Game bắn chữ: gõ Pinyin để chinh phục chữ Hán"><defs><linearGradient id="approvedGameSky" x2="1" y2="1"><stop stop-color="#153d31"/><stop offset="1" stop-color="#283c41"/></linearGradient><pattern id="approvedGameStars" width="52" height="45" patternUnits="userSpaceOnUse"><circle cx="18" cy="12" r=".8" fill="#b9dbc5" opacity=".4"/></pattern></defs><rect width="900" height="300" fill="url(#approvedGameSky)"/><rect width="900" height="300" fill="url(#approvedGameStars)"/><path d="M0 300Q440 170 900 300" fill="#486556" opacity=".24" stroke="#a7c7a4"/><g transform="translate(185 65) rotate(-10)"><rect width="84" height="84" rx="18" fill="#456454" stroke="#799b7c"/><text x="42" y="58" text-anchor="middle" fill="#e4e9c8" font-size="46" font-family="sans-serif">学</text><text x="42" y="114" text-anchor="middle" fill="#bdded0" font-size="15">xué</text></g><g transform="translate(433 122) rotate(11)"><rect width="84" height="84" rx="18" fill="#45584b" stroke="#839675"/><text x="42" y="58" text-anchor="middle" fill="#f1d7a0" font-size="46" font-family="sans-serif">家</text><text x="42" y="114" text-anchor="middle" fill="#bdded0" font-size="15">jiā</text></g><g transform="translate(696 40) rotate(-8)"><rect width="84" height="84" rx="18" fill="#3b584d" stroke="#799b7c"/><text x="42" y="58" text-anchor="middle" fill="#dce9ba" font-size="46" font-family="sans-serif">好</text><text x="42" y="114" text-anchor="middle" fill="#bdded0" font-size="15">hǎo</text></g><g transform="translate(278 238) rotate(-18)"><path d="M0 45V8a23 23 0 0 1 46 0v37z" fill="#adc6a2"/><path d="M23 30V0m-11 12L23 0l11 12" fill="none" stroke="#294e3b" stroke-width="3" stroke-linecap="round"/></g></svg>
           <span class="gameTileBadge">Đang mở</span>
         </div>
         <div class="gameTileBody">
-          <h3>🚀 Game bắn chữ</h3>
+          <h3>Game bắn chữ</h3>
           <p>Chữ Hán rơi xuống — gõ đúng pinyin để bắn nổ, cộng điểm theo combo.</p>
           <span class="gameTilePlay">Chơi ngay →</span>
         </div>
-      </button>
+      </button><aside class="gameCoach"><span data-mascot="ready" data-mascot-size="hero" aria-hidden="true"></span><span class="featureEyebrow">THỬ THÁCH GAME</span><h3>Một ván tập trung.</h3><p>Luyện phản xạ với chữ Hán, rồi trở lại bài học bất cứ khi nào bạn muốn.</p><small>Thành tích Game có khu riêng. Không bắt buộc chơi để học tiếp.</small></aside>
 
+    </div>
+    <div class="gameUpcoming">
       <!-- ★ Các game sắp ra mắt (placeholder — để sẵn chỗ cho 2–3 game sau này) -->
       <article class="gameTile gameTileSoon" aria-disabled="true">
         <div class="gameTileArt gameTileArtSoon"><span class="soonEmoji">🧩</span></div>

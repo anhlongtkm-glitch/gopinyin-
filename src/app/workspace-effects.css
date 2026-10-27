@@ -1,95 +1,10 @@
-@keyframes pulse{50%{opacity:.4;transform:scale(.8)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@keyframes floaty{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}}
-/* ═══════════════════════════════════════════════════════════════
-   ★ NÂNG CẤP GIAO DIỆN WORKSPACE (đồng bộ chất lượng với landing)
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Nền aurora chuyển động nhẹ phía sau nội dung.
-   ★ Không dùng position:absolute + inset:0 (bằng chiều cao TOÀN BỘ trang) vì lớp
-   gradient khổng lồ sẽ bị raster lại liên tục theo từng khung hình → cuộn bị
-   "dựt dựt". Chuyển sang position:fixed cố định theo khung nhìn + tối ưu GPU. */
+/* Short entrance feedback, without moving headers or interactive content. */
 .ws-main{position:relative;isolation:isolate}
-.ws-main::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  will-change:transform;backface-visibility:hidden;transform:translateZ(0);
-  background:
-    radial-gradient(620px 440px at 10% -8%,rgba(31,200,162,.18),transparent 66%),
-    radial-gradient(560px 400px at 92% 2%,rgba(244,114,182,.13),transparent 64%),
-    radial-gradient(min(760px,120vw) 520px at 55% 108%,rgba(16,185,129,.10),transparent 66%);
-  animation:auroraShift 20s ease-in-out infinite alternate}
-[data-theme="light"] .ws-main::before{opacity:.55}
-@keyframes auroraShift{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-1.2%,1.2%,0)}}
-.ws-main>*{position:relative;z-index:1}
-
-/* Thanh trên: kính mờ + gạch chân phát sáng */
-.top{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:var(--glass);
-  border-bottom:1px solid var(--line);transition:box-shadow var(--d),background var(--d)}
-.top.scrolled{box-shadow:0 10px 30px rgba(0,0,0,.22)}
-.brand .title{background:linear-gradient(100deg,var(--text),var(--primary-2) 70%,var(--accent));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-
-/* Vào trang: hiện dần + trồi lên, có nhịp so le */
-@keyframes fxRise{from{opacity:0;transform:translateY(16px) scale(.995)}to{opacity:1;transform:none}}
-.fx-in{animation:fxRise .5s var(--ease) both}
-.fx-in>*{animation:fxRise .55s var(--ease) both}
-.fx-in>*:nth-child(1){animation-delay:.02s}
-.fx-in>*:nth-child(2){animation-delay:.07s}
-.fx-in>*:nth-child(3){animation-delay:.12s}
-.fx-in>*:nth-child(4){animation-delay:.17s}
-.fx-in>*:nth-child(5){animation-delay:.22s}
-.fx-in>*:nth-child(6){animation-delay:.27s}
-
-/* Nav: gạch phát sáng + icon nhún khi active */
-.ws-navItem.active::before{box-shadow:0 0 14px var(--primary);animation:navGlow 2.8s ease-in-out infinite}
-@keyframes navGlow{0%,100%{opacity:.75}50%{opacity:1;box-shadow:0 0 20px var(--primary)}}
-.ws-navItem.active .ws-navIcon{animation:navPop .45s var(--spring)}
-@keyframes navPop{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
-
-/* Hero dashboard: vệt sáng quét + số liệu nổi */
-.dashHero{overflow:hidden}
-.dashHero::before{content:'';position:absolute;top:-60%;left:-30%;width:60%;height:220%;pointer-events:none;
-  background:linear-gradient(100deg,transparent,rgba(31,200,162,.16),transparent);
-  transform:rotate(12deg);animation:heroSheen 9s ease-in-out infinite}
-@keyframes heroSheen{0%{left:-40%}55%{left:120%}100%{left:120%}}
-.dashRingFg{transition:stroke-dashoffset .9s var(--ease);filter:drop-shadow(0 0 8px rgba(31,200,162,.55))}
-
-/* Thẻ thống kê: nhấc lên + icon xoay nhẹ */
-.dashStat{position:relative;overflow:hidden}
-.dashStat::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:radial-gradient(240px 120px at 90% 0%,rgba(31,200,162,.16),transparent 70%);
-  opacity:0;transition:opacity var(--d)}
-.dashStat:hover::after{opacity:1}
-.dashStat:hover .dashStatIcon{transform:rotate(-6deg) scale(1.06)}
-.dashStatIcon{transition:transform var(--d) var(--spring)}
-
-/* Thẻ nổi bật: vệt sáng chéo khi hover */
-.dashFeature::before{content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);
-  transform:translateX(-120%);transition:transform .7s var(--ease)}
-.dashFeature:hover::before{transform:translateX(120%)}
-.dashFeature .dfIcon{transition:transform var(--d) var(--spring)}
-.dashFeature:hover .dfIcon{transform:translateY(-3px) scale(1.12) rotate(-4deg)}
-
-
-
-
-@keyframes proShine{0%,70%{transform:translateX(-130%)}85%,100%{transform:translateX(130%)}}
-
-/* Thẻ từ vựng: nhấc lên + vệt sáng */
-.vocabCard:hover{box-shadow:var(--sh-3),0 0 0 1px rgba(31,200,162,.25),var(--glow-soft)}
-
-
-
-
-
-/* Nút bấm: phản hồi rõ hơn */
-.btn,.lp-btn,.gaBtn,.modeBtn{transition:transform var(--d-fast) var(--ease),box-shadow var(--d),background var(--d),border-color var(--d)}
-.btn:active,.lp-btn:active,.gaBtn:active{transform:scale(.97)}
-
-/* ── Game: chế độ toàn màn hình ── */
-.gameArena:fullscreen,.gameArena:-webkit-full-screen{
-  width:100vw;height:100vh;max-width:none;border-radius:0;border:0;margin:0;background:#0a1228;
-  padding:10px 16px 14px;gap:10px}
+.ws-main>section{position:relative;z-index:1}
+.top.scrolled{box-shadow:var(--sh-2)}
+@keyframes fxRise{from{opacity:0}to{opacity:1}}
+.fx-in{animation:fxRise .2s var(--ease)}
+/* Fullscreen game behavior remains independent of the learning shell. */
+.gameArena:fullscreen,.gameArena:-webkit-full-screen{width:100vw;height:100vh;max-width:none;border-radius:0;border:0;margin:0;background:#0a1228;padding:10px 16px 14px;gap:10px}
 .gameArena:fullscreen .gaHud,.gameArena:-webkit-full-screen .gaHud{padding:6px 6px 0}
 .gameArena:fullscreen .gaCanvas,.gameArena:-webkit-full-screen .gaCanvas{width:100%;height:100%}
-

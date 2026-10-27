@@ -65,7 +65,7 @@ export function wire() {
   on('pronLibHsk', 'click', pickClick);
   on('pronBackBtn', 'click', () => {
     pronunciationMicrophoneState.PronMic.hardRelease();
-    if (typeof legacy.showView === 'function') legacy.showView('pron');
+    if (typeof legacy.showView === 'function') legacy.showView('practice');
   });
   on('pronPrevBtn', 'click', prevItem);
   on('pronRetryBtn', 'click', () => {
@@ -227,40 +227,18 @@ export function wire() {
     if (document.visibilityState === 'hidden' && pronunciationSessionState.S.phase === 'recording') stopRecording('manual');
   });
 
-  /* ── Phím tắt: chỉ khi đang ở màn luyện phát âm ── */
+  // Lesson shortcuts are shared with typing; Escape only dismisses this popover.
   document.addEventListener('keydown', e => {
     const card = pronunciationUtilsState.$('pronCard');
     if (!card || card.classList.contains('hidden')) return;
     if (e.isComposing || e.keyCode === 229) return;
     if (e.ctrlKey || e.altKey || e.metaKey) return;
-    /* không cướp phím khi đang gõ ở ô nhập khác / mở hộp thoại */
-    if (document.querySelector('.modal:not([hidden])')) return;
-    const am = pronunciationUtilsState.$('appModal');
-    if (am && am.classList.contains('show')) return;
-    const ae = document.activeElement;
-    if (ae) {
-      const tag = (ae.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || tag === 'select' || ae.isContentEditable) return;
-    }
-    if (e.key === 'Enter') {
+    if (document.querySelector('.modal:not([hidden]),.appModal.show,dialog[open]')) return;
+    const detail = pronunciationUtilsState.$('pronDetail');
+    if (e.key === 'Escape' && detail && !detail.classList.contains('hidden')) {
       e.preventDefault();
-      if (pronunciationSessionState.S.phase === 'recording') stopRecording('manual');else beginRecording();
-      return;
+      hideDetail();
     }
-    if (e.key === ' ' || e.key === 'Spacebar') {
-      e.preventDefault();
-      nextItem();
-      return;
-    }
-    if (e.key === 'F1') {
-      e.preventDefault();
-      const it = currentItem();
-      if (it) pronunciationTtsState.PronTts.speak(it.zh, {
-        rate: pronunciationSessionState.S.settings.rate
-      });
-      return;
-    }
-    if (e.key === 'Escape') hideDetail();
   });
 }
 

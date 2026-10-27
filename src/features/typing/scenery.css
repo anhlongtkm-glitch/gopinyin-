@@ -28,9 +28,6 @@
 @media (max-width:560px){
   .qbScenery{opacity:.65}
 }
-@media (max-width:860px){
-  .ws-scenery{opacity:.45}
-}
 @media (prefers-reduced-motion:reduce){
   .ws-scenery .scFar,.ws-scenery .scMid,.ws-scenery .scBamboo{animation:none!important}
 }

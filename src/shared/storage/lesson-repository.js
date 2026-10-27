@@ -174,16 +174,10 @@ export function initializeStorageLessonRepository() {
   storageLessonRepositoryState.DB_VERSION = 2;
   storageLessonRepositoryState.STORE = 'datasets';
   storageLessonRepositoryState.VSTORE = 'vocabCache';
-}
-
-export function initializeStorageLessonRepository2() {
   storageLessonRepositoryState.db = null;
   /* ── IndexedDB (tự dự phòng bộ nhớ khi trình duyệt chặn lưu trữ) ── */
   storageLessonRepositoryState.dbReady = null;
   storageLessonRepositoryState.dbBroken = false;
-}
-
-export function initializeStorageLessonRepository3() {
   storageLessonRepositoryState.memDB = new Map();
   storageLessonRepositoryState.memVcache = new Map();
 }

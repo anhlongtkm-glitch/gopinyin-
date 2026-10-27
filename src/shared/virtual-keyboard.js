@@ -1,6 +1,8 @@
 // State and behavior owned by shared/virtual-keyboard. Initialization is orchestrated by app/bootstrap.js.
 
 import { legacy, publishLegacy } from "../app/compatibility.js";
+import { studyOverlayOpen } from "./study/interactions.js";
+import { state as typingSessionState } from "../features/typing/session.js";
 
 export const state = {};
 
@@ -56,8 +58,8 @@ export function build() {
     if (i === 2) html += '<button class="vkKey vkFn" type="button" data-vk="enter" aria-label="Enter">↵</button>';
     html += '</div>';
   });
-  html += '<div class="vkRow vkRow4">' + /* ⌫ chỉ hiện ở chế độ gõ chữ Hán (lúc đó 3 hàng chữ cái bị ẩn đi) */
-  '<button class="vkKey vkFn vkHanziOnly" type="button" data-vk="back" aria-label="Xoá lùi">⌫</button>' + '<button class="vkKey vkWide" type="button" data-vk="space" aria-label="Dấu cách">␣ dấu cách</button>' + '<button class="vkKey vkWide vkAccent" type="button" data-vk="hint" aria-label="Hiện gợi ý pinyin">💡 Pinyin</button>' + '</div></div>';
+  html += '<div class="vkRow vkRow4">' +
+  '<button class="vkKey vkFn vkHanziOnly" type="button" data-vk="back" aria-label="Xoá lùi">⌫</button>' + '<button class="vkKey vkWide vkGameOnly" type="button" data-vk="space" aria-label="Tạm dừng hoặc tiếp tục game">␣ tạm dừng</button>' + '<button class="vkKey vkWide vkHanziOnly" type="button" data-vk="next">Câu tiếp</button>' + '<button class="vkKey vkWide vkAccent" type="button" data-vk="hint" aria-label="Ẩn hoặc hiện Pinyin">💡 Pinyin</button>' + '</div></div>';
   virtualKeyboardState.root.innerHTML = html;
   document.body.appendChild(virtualKeyboardState.root);
 
@@ -72,7 +74,7 @@ export function build() {
   });
   /* hỗ trợ trình duyệt cũ không có PointerEvent */
   virtualKeyboardState.root.addEventListener('click', function (e) {
-    if (window.PointerEvent) return;
+    if (window.PointerEvent && e.detail !== 0) return;
     var k = e.target.closest('[data-vk]');
     if (!k) return;
     e.preventDefault();
@@ -160,28 +162,23 @@ export function press(k, btn) {
   }
   if (mode === 'input') {
     var inp = inputTarget();
-    if (!inp) return;
+    if (!inp || studyOverlayOpen() || inp.disabled || typingSessionState.composing) return;
+    if (k === 'next') {
+      $('typingNextBtn')?.click();
+      return;
+    }
+    if (k === 'hint') {
+      $('hintBtn')?.click();
+      return;
+    }
+    if (inp.readOnly) return;
     if (k === 'back') {
       deleteChar(inp);
       return;
     }
-    /* ★ Space / Enter: gửi keydown cho app-core tự route
-       (Space: sang câu/từ khi đã Đúng — KHÔNG ẩn/hiện pinyin nữa
-        Enter: ẩn/hiện gợi ý pinyin) */
-    if (k === 'space' || k === 'enter') {
-      inp.dispatchEvent(new KeyboardEvent('keydown', {
-        key: k === 'space' ? ' ' : 'Enter',
-        bubbles: true,
-        cancelable: true
-      }));
-      return;
-    }
-    if (k === 'hint') {
-      var hb = $('hintBtn');
-      if (hb) hb.click();
-      return;
-    }
-    insertChar(inp, k);
+    // A virtual Enter never toggles hints or advances a lesson implicitly.
+    if (k === 'enter') return;
+    insertChar(inp, k === 'space' ? ' ' : k);
   }
 }
 
@@ -197,7 +194,7 @@ export function syncHint() {
   var mode = activeMode();
   /* ★ Chế độ GÕ CHỮ HÁN: ẩn 3 hàng chữ cái Latin.
      Chữ Latin không thể tạo ra chữ Hán, nên các phím đó bấm vào cũng bị bộ
-     lọc chặn — hiện ra chỉ gây hiểu nhầm. Chỉ giữ ⌫ / ␣ / 💡 cho gọn. */
+     lọc chặn — hiện ra chỉ gây hiểu nhầm. Giữ Xóa lùi / Câu tiếp / Pinyin. */
   var wasHanzi = virtualKeyboardState.root.classList.contains('vkbd--hanzi');
   virtualKeyboardState.root.classList.toggle('vkbd--hanzi', mode === 'input');
   /* đổi chiều cao bàn phím → cập nhật biến --vk-h và cho game/sân chơi co lại */
@@ -216,7 +213,7 @@ export function syncHint() {
   }
   var tip = $('vkbdTip');
   if (tip) {
-    tip.textContent = mode === 'game' ? next ? 'Phím cần gõ tiếp theo: ' + next.toUpperCase() : 'Gõ chữ cái đầu của thẻ để khoá mục tiêu' : 'Gõ chữ Hán bằng bàn phím tiếng Trung của máy — 💡 Pinyin / ␣ để xem gợi ý';
+    tip.textContent = mode === 'game' ? next ? 'Phím cần gõ tiếp theo: ' + next.toUpperCase() : 'Gõ chữ cái đầu của thẻ để khoá mục tiêu' : 'Gõ chữ Hán bằng bàn phím tiếng Trung của máy · 2 Pinyin · 5 câu tiếp khi đúng';
   }
   if (next === virtualKeyboardState.hint) return;
   virtualKeyboardState.hint = next;

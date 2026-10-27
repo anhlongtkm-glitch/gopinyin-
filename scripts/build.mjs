@@ -14,6 +14,14 @@ const publicAssets = [
   'logo-icon.png', 'logo-mark.png', 'logo.png',
   'site.webmanifest', 'vocab-pack.js'
 ];
+// Keep the mascot allowlist explicit; never copy source sheets or arbitrary directories.
+const mascotPoses = [
+  'welcome', 'guide', 'search', 'connection', 'reading', 'typing', 'listening',
+  'speaking', 'thinking', 'ready', 'approve', 'encourage', 'clap', 'celebrate',
+  'star', 'trophy', 'face-neutral', 'face-focus', 'face-happy', 'face-thinking',
+  'face-encourage', 'face-excited'
+];
+publicAssets.push(...mascotPoses.flatMap(pose => ['mascot/' + pose + '.webp', 'mascot/' + pose + '-small.webp']));
 
 export async function renderHtml(file = 'index.html', ancestors = []) {
   const absolute = path.resolve(sourceRoot, file);
@@ -48,7 +56,11 @@ export async function build({ development = false, outputDirectory = outputRoot 
     legalComments: 'none',
     logLevel: 'warning'
   });
-  for (const file of publicAssets) await copyFile(path.join(projectRoot, 'assets', file), path.join(buildRoot, 'assets', file));
+  for (const file of publicAssets) {
+    const destination = path.join(buildRoot, 'assets', file);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await copyFile(path.join(projectRoot, 'assets', file), destination);
+  }
   for (const file of ['.env.local', '.env']) {
     try { process.loadEnvFile(path.join(projectRoot, file)); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   }

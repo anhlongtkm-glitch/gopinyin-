@@ -1,4 +1,6 @@
 import { isStudyAllowed } from "../auth/service.js";
+import { setMascot } from "../../shared/mascot.js";
+import { studyOverlayOpen } from "../../shared/study/interactions.js";
 import { nextReview } from "./review.js";
 // State and behavior owned by features/typing/scoring. Initialization is orchestrated by app/bootstrap.js.
 
@@ -53,13 +55,18 @@ export function markSentenceCorrect() {
   inp.classList.add('ok');
   inp.readOnly = true;
   domState.$('feedback').className = 'feedback ok';
-  domState.$('feedback').textContent = '✓ Chính xác — nhấn Space để sang ' + aiCurrentUnit() + ' tiếp theo';
+  domState.$('feedback').textContent = 'Chính xác! Bấm Câu tiếp hoặc nhấn Enter để sang ' + aiCurrentUnit() + ' tiếp theo.';
+  if (domState.$('typingFeedbackRow')) domState.$('typingFeedbackRow').hidden = false;
+  const eventKey = 'correct:' + typingSessionState.sentStartTs + ':' + completedRowIndex + ':' + typingSessionState.stats.attempts;
+  setMascot('typingStudyMascot', 'approve', {animate:true, eventKey});
+  setMascot('typingFeedbackMascot', 'face-happy', {animate:true, eventKey});
   save();
   renderStatsOnly();
   updateChineseHighlight();
   recordHistory(q, 'ok'); // ★ ghi câu vừa gõ đúng vào lịch sử bên phải
+  document.dispatchEvent(new CustomEvent('gp:activity',{detail:{kind:'typing',id:JSON.stringify([q.zh,q.py])}}));
   setTimeout(() => {
-    if (skipSpeech) return;
+    if (skipSpeech || studyOverlayOpen()) return;
     if (!domState.$('appCard').classList.contains('hidden') && typingSessionState.rows === completedRows && typingSessionState.awaitingEnter && typingSessionState.index < typingSessionState.order.length && typingSessionState.order[typingSessionState.index] === completedRowIndex && q.zh && q.zh !== '—') speakText(q.zh, false);
   }, 1000);
 }
@@ -89,7 +96,11 @@ export function markSentenceWrong() {
   }
   typingSessionState.stats.combo = 0;
   rememberCurrentWrong();
-  if (firstError) save();
+  if (firstError) {
+    if (domState.$('typingFeedbackRow')) domState.$('typingFeedbackRow').hidden = false;
+    setMascot('typingFeedbackMascot', 'face-encourage', {animate:true, eventKey:'error:' + typingSessionState.sentStartTs + ':' + typingSessionState.index + ':' + typingSessionState.stats.attempts});
+    save();
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════

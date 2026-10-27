@@ -1,0 +1,15 @@
+// Original GoPinyin HSK 1 practice. Vocabulary targets HSK 1; not an official exam paper.
+export const readings = [
+  {id:'hello',title:'Chào bạn mới',topic:'Chào hỏi',lines:[['你好！我叫小明。','Nǐ hǎo! Wǒ jiào Xiǎomíng.','Xin chào! Tôi tên Tiểu Minh.'],['我是学生。我学习汉语。','Wǒ shì xuésheng. Wǒ xuéxí Hànyǔ.','Tôi là học sinh. Tôi học tiếng Trung.'],['你叫什么名字？','Nǐ jiào shénme míngzi?','Bạn tên là gì?']],questions:[['Tiểu Minh là ai?',['Học sinh','Bác sĩ','Giáo viên'],0],['Bạn ấy học gì?',['Tiếng Anh','Tiếng Trung','Toán'],1],['Câu cuối hỏi về gì?',['Tuổi','Địa chỉ','Tên'],2]]},
+  {id:'family',title:'Gia đình của tôi',topic:'Gia đình',lines:[['我家有三个人。','Wǒ jiā yǒu sān ge rén.','Nhà tôi có ba người.'],['爸爸是医生，妈妈是老师。','Bàba shì yīshēng, māma shì lǎoshī.','Bố là bác sĩ, mẹ là giáo viên.'],['我爱爸爸妈妈。','Wǒ ài bàba māma.','Tôi yêu bố mẹ.']],questions:[['Gia đình có mấy người?',['Hai','Ba','Bốn'],1],['Bố làm nghề gì?',['Bác sĩ','Giáo viên','Đầu bếp'],0],['Mẹ làm nghề gì?',['Bác sĩ','Học sinh','Giáo viên'],2]]},
+  {id:'breakfast',title:'Một buổi sáng',topic:'Ăn uống',lines:[['现在是早上七点。','Xiànzài shì zǎoshang qī diǎn.','Bây giờ là bảy giờ sáng.'],['我喝水，吃米饭。','Wǒ hē shuǐ, chī mǐfàn.','Tôi uống nước, ăn cơm.'],['妈妈喝茶，不喝咖啡。','Māma hē chá, bù hē kāfēi.','Mẹ uống trà, không uống cà phê.']],questions:[['Bây giờ là mấy giờ?',['Sáu','Bảy','Tám'],1],['Tôi uống gì?',['Trà','Cà phê','Nước'],2],['Mẹ không uống gì?',['Cà phê','Nước','Trà'],0]]},
+  {id:'school',title:'Đến trường',topic:'Trường học',lines:[['今天我去学校。','Jīntiān wǒ qù xuéxiào.','Hôm nay tôi đến trường.'],['老师在学校里。','Lǎoshī zài xuéxiào lǐ.','Giáo viên ở trong trường.'],['我们看书，写汉字。','Wǒmen kàn shū, xiě Hànzì.','Chúng tôi đọc sách, viết chữ Hán.']],questions:[['Tôi đi đâu?',['Trường học','Bệnh viện','Cửa hàng'],0],['Ai ở trường?',['Bác sĩ','Giáo viên','Đầu bếp'],1],['Chúng tôi viết gì?',['Số điện thoại','Tên đường','Chữ Hán'],2]]},
+  {id:'shop',title:'Mua táo',topic:'Mua sắm',lines:[['我去商店买苹果。','Wǒ qù shāngdiàn mǎi píngguǒ.','Tôi đến cửa hàng mua táo.'],['一个苹果三块钱。','Yí ge píngguǒ sān kuài qián.','Một quả táo giá ba tệ.'],['我买两个苹果。','Wǒ mǎi liǎng ge píngguǒ.','Tôi mua hai quả táo.']],questions:[['Tôi mua gì?',['Táo','Trà','Sách'],0],['Một quả giá bao nhiêu?',['Hai tệ','Ba tệ','Năm tệ'],1],['Tôi mua mấy quả?',['Một','Ba','Hai'],2]]},
+  {id:'weekend',title:'Ngày nghỉ cùng bạn',topic:'Sinh hoạt',lines:[['今天是星期六。','Jīntiān shì xīngqīliù.','Hôm nay là thứ Bảy.'],['我和朋友去看电影。','Wǒ hé péngyou qù kàn diànyǐng.','Tôi và bạn đi xem phim.'],['下午我们回家。','Xiàwǔ wǒmen huí jiā.','Buổi chiều chúng tôi về nhà.']],questions:[['Hôm nay là ngày nào?',['Thứ Hai','Chủ nhật','Thứ Bảy'],2],['Chúng tôi đi làm gì?',['Xem phim','Mua sách','Đến trường'],0],['Khi nào về nhà?',['Buổi sáng','Buổi chiều','Buổi tối'],1]]}
+];
+export const tones = [
+  {han:'妈',py:'mā',vi:'mẹ',tone:0}, {han:'麻',py:'má',vi:'cây gai',tone:1},
+  {han:'马',py:'mǎ',vi:'ngựa',tone:2}, {han:'骂',py:'mà',vi:'mắng',tone:3},
+  {han:'吗',py:'ma',vi:'trợ từ nghi vấn',tone:4}
+];
+export const toneNames = ['Thanh 1 · ngang cao','Thanh 2 · đi lên','Thanh 3 · xuống rồi lên','Thanh 4 · đi xuống','Thanh nhẹ · ngắn, nhẹ'];

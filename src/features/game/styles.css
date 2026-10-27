@@ -70,33 +70,32 @@
   white-space:nowrap}
 
 /* Thanh công cụ bên phải */
-.gaTools{position:relative;z-index:5;display:flex;flex-direction:row;align-items:center;gap:6px;flex:none}
-.gaIconBtn{width:38px;height:38px;border-radius:50%;background:rgba(15,23,42,.6);
+.gaTools{position:relative;z-index:5;display:flex;flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap}
+.gaIconBtn{width:44px;height:44px;flex:none;border-radius:14px;background:rgba(15,23,42,.6);
   border:1px solid rgba(148,163,184,.25);color:#cbd5e1;font-size:15px;backdrop-filter:blur(6px);
   transition:all .18s ease;display:grid;place-items:center}
-.gaIconBtn:hover{background:rgba(96,165,250,.25);color:#fff;transform:scale(1.08);border-color:rgba(96,165,250,.5)}
-.gaIconBtn:active{transform:scale(.95)}
-.gaIconBtn.muted{opacity:.45}
+.gaIconBtn:not(:disabled):hover{background:rgba(96,165,250,.25);color:#fff;border-color:rgba(96,165,250,.5)}
+.gaIconBtn:not(:disabled):active{background:rgba(96,165,250,.35)}
+.gaIconBtn.muted{opacity:1;color:#94a3b8;background:#182033;border-style:dashed}
 /* Nút 🔒/拼 Pinyin: sáng lên khi đang hiện pinyin */
-.gaIconBtn.on{background:linear-gradient(135deg,rgba(59,130,246,.85),rgba(99,102,241,.85));
-  color:#fff;border-color:#60a5fa;box-shadow:0 0 14px rgba(96,165,250,.65)}
+.gaIconBtn.on{background:var(--button-primary);
+  color:#fff;border-color:#62d7ae;box-shadow:none}
 
 /* Bảng cài đặt (cấp + tốc độ) — góc trên-trái */
 .gaSettings{position:relative;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;
   background:none;border:0;padding:0;backdrop-filter:none}
-.gaSetRow{display:flex;align-items:center;gap:8px}
-.gaSetLabel{font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;min-width:54px}
-.gaLevels{display:flex;gap:4px;flex-wrap:wrap}
-.gaLevelBtn{width:28px;height:28px;border-radius:8px;background:rgba(30,41,59,.7);
-  border:1px solid rgba(148,163,184,.25);color:#cbd5e1;font-size:12px;font-weight:800;
+.gaSetRow{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.gaSetLabel{font-size:14px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;min-width:54px}
+.gaLevels{display:flex;gap:8px;flex-wrap:wrap;min-width:0}
+.gaLevelBtn{width:44px;height:44px;flex:none;border-radius:12px;background:rgba(30,41,59,.7);
+  border:1px solid rgba(148,163,184,.25);color:#cbd5e1;font-size:14px;font-weight:800;
   transition:all .15s ease}
 .gaLevelBtn:hover{background:rgba(96,165,250,.2);color:#fff}
-.gaLevelBtn.active{background:linear-gradient(135deg,#14B8A6,#0E9D6E);color:#fff;border-color:#5DD3C8;
-  box-shadow:0 0 10px rgba(96,165,250,.5)}
-.gaSetRow input[type=range]{width:120px;accent-color:#60a5fa;height:4px}
-.gaSpeedTag{font-size:11.5px;font-weight:800;color:#60a5fa;min-width:60px}
-.gaSelect{height:26px;border-radius:8px;background:rgba(30,41,59,.7);border:1px solid rgba(148,163,184,.25);
-  color:#e2e8f0;font-size:12px;font-weight:700;padding:0 8px;cursor:pointer}
+.gaLevelBtn.active{background:var(--button-primary);color:var(--button-primary-text);border-color:#62d7ae;box-shadow:none}
+.gaSetRow input[type=range]{width:120px;max-width:100%;accent-color:#60a5fa;height:44px;margin:0}
+.gaSpeedTag{font-size:14px;font-weight:800;color:#60a5fa;min-width:60px}
+.gaSelect{min-height:44px;max-width:100%;border-radius:12px;background:rgba(30,41,59,.7);border:1px solid rgba(148,163,184,.25);
+  color:#e2e8f0;font-size:14px;font-weight:700;padding:10px 12px;cursor:pointer}
 .gaSelect:hover{border-color:rgba(96,165,250,.5)}
 
 /* Canvas sân chơi */
@@ -187,15 +186,16 @@
 .gaOverlayEmoji{width:74px;height:74px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
   border-radius:50%;font-size:34px;
   background:radial-gradient(circle at 50% 38%,rgba(56,189,248,.30),rgba(15,23,42,.15) 72%);
-  box-shadow:inset 0 0 0 1px rgba(96,165,250,.28);animation:floaty 3s ease-in-out infinite}
+  box-shadow:inset 0 0 0 1px rgba(96,165,250,.28)}
 .gaOverlayCard h2{font-family:var(--font-display);font-size:24px;font-weight:800;margin:0 0 6px;color:#f1f5f9}
 .gaOverlayCard .gaSub{color:#93a4c3;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
 .gaOverlayActions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
   flex:0 0 auto;margin-top:4px}
-.gaBtn{padding:11px 26px;border-radius:99px;font-size:14px;font-weight:800;border:none;cursor:pointer;transition:all .2s ease}
-.gaBtn.primary{background:linear-gradient(135deg,#14B8A6,#0E9D6E);color:#fff;
-  box-shadow:0 6px 20px rgba(59,130,246,.45)}
-.gaBtn.primary:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(59,130,246,.6)}
+.gaBtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:44px;padding:12px 24px;border-radius:14px;font-size:14px;line-height:1.4;font-weight:800;border:1px solid rgba(148,163,184,.4);cursor:pointer;transition:background .15s,box-shadow .15s,transform .15s}
+.gaBtn.primary{min-height:48px;background:var(--button-primary);color:var(--button-primary-text);border-color:#62d7ae;
+  box-shadow:0 4px 0 var(--button-primary-base)}
+.gaBtn.primary:not(:disabled):hover{background:var(--button-primary-hover)}
+.gaBtn.primary:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 var(--button-primary-base)}
 .gaBtn.ghost{background:rgba(148,163,184,.15);color:#cbd5e1;border:1px solid rgba(148,163,184,.3)}
 .gaBtn.ghost:hover{background:rgba(148,163,184,.25)}
 

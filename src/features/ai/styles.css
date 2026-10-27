@@ -1,33 +1,33 @@
 /* ═══ AI box & Dịch box ═══ */
-.aiBox{display:flex;flex-direction:column;gap:14px;max-width:860px}
+.aiBox{display:flex;flex-direction:column;gap:20px;max-width:860px}
 .aiLabel{font-size:14px;font-weight:800}
-.aiLabel small{display:block;color:var(--muted);font-weight:600;font-size:12.5px;margin-top:2px}
+.aiLabel small{display:block;color:var(--muted);font-weight:600;font-size:14px;margin-top:2px}
 .aiPrompt{resize:vertical;min-height:74px}
-.aiControls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.aiField{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--text-2)}
-.aiCheck{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.aiControls{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.aiField{display:flex;flex-direction:column;align-items:flex-start;gap:8px;font-size:14px;font-weight:700;color:var(--text-2)}
+.aiCheck{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
 .aiCheck input{accent-color:var(--primary);width:15px;height:15px}
-.aiKey{max-width:340px;font-family:ui-monospace,monospace;font-size:13px}
-.aiStatus{font-size:13px;color:var(--text-2);min-height:20px;line-height:1.6}
+.aiKey{max-width:340px;font-family:ui-monospace,monospace;font-size:14px}
+.aiStatus{font-size:14px;color:var(--text-2);min-height:20px;line-height:1.6}
 .aiStatus b{color:var(--primary)}
 .aiHint{background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;
-  font-size:13px;color:var(--text-2);line-height:1.75}
+  font-size:14px;color:var(--text-2);line-height:1.75}
 .aiHint b{color:var(--primary)}
-.aiDetails summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);padding:4px 0}
+.aiDetails summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--primary);padding:10px 0;min-height:44px}
 .aiDetails summary:hover{color:var(--primary)}
 .aiDetails[open] summary{margin-bottom:10px}
 .aiGenBar{display:flex;align-items:center;gap:10px;background:var(--primary-soft);border:1px solid rgba(31,200,162,.3);
-  border-radius:var(--r-lg);padding:12px 16px;font-size:13px;color:var(--text-2);margin-top:16px}
+  border-radius:var(--r-lg);padding:12px 16px;font-size:14px;color:var(--text-2);margin-top:16px}
 .aiSpinner{width:16px;height:16px;flex:none;border:2px solid rgba(31,200,162,.3);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Dịch theo ngữ cảnh */
 .trModeBar{display:flex;gap:8px;margin-bottom:6px}
-.trModeBtn{padding:8px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;background:var(--card-3);color:var(--muted);transition:all var(--d)}
+.trModeBtn{padding:8px 16px;border-radius:var(--r-pill);font-size:14px;font-weight:700;background:var(--card-3);color:var(--muted);transition:all var(--d)}
 .trModeBtn.active{background:var(--brand-grad);color:#fff;box-shadow:0 4px 12px rgba(11,164,136,.3)}
 .trStack{display:flex;flex-direction:column;gap:14px}
 .trField{display:flex;flex-direction:column;gap:6px}
-.trField>span:first-child{font-size:13px;font-weight:800}
+.trField>span:first-child{font-size:14px;font-weight:800}
 .trSub{font-size:12px;color:var(--muted);font-weight:500;line-height:1.5}
 .trField textarea{width:100%;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-md);
   color:var(--text);font-size:14.5px;padding:12px 15px;resize:vertical;font-family:inherit;line-height:1.6}
@@ -38,17 +38,17 @@
 .trPyDot{width:8px;height:8px;border-radius:50%;background:var(--primary)}
 .trGocText{font-family:var(--font-cjk);font-size:16px;line-height:1.8}
 .trOutHead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.trOutHead>span:first-child{font-size:13px;font-weight:800}
+.trOutHead>span:first-child{font-size:14px;font-weight:800}
 .trBadge{font-size:10px;font-weight:900;letter-spacing:.08em;background:var(--brand-grad);color:#fff;padding:2px 8px;border-radius:99px}
 .trActions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-.trSwap{width:36px;height:36px;border-radius:50%;background:var(--card-2);border:1px solid var(--line);color:var(--primary);font-size:16px;font-weight:800;transition:all var(--d)}
+.trSwap{width:44px;height:44px;border-radius:50%;background:var(--card-2);border:1px solid var(--line);color:var(--primary);font-size:16px;font-weight:800;transition:all var(--d)}
 .trSwap:hover{transform:rotate(180deg);border-color:var(--primary)}
 .trPyWrap{margin-top:12px;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px}
 .trPyLine{font-family:var(--font-cjk);font-size:16px;line-height:1.8;margin-bottom:8px}
 .trPyWords{display:flex;flex-wrap:wrap;gap:8px}
-.trPyWords span{background:var(--card-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:5px 10px;font-size:13px;line-height:1.4}
+.trPyWords span{background:var(--card-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:5px 10px;font-size:14px;line-height:1.4}
 .trPyWords b{display:block;font-size:11px;color:var(--primary);font-weight:700}
-.trNote{margin-top:12px;font-size:13px;color:var(--text-2);background:var(--primary-soft);border-radius:var(--r-lg);padding:13px 16px;line-height:1.7}
+.trNote{margin-top:12px;font-size:14px;color:var(--text-2);background:var(--primary-soft);border-radius:var(--r-lg);padding:13px 16px;line-height:1.7}
 .trVerifyWrap{margin-top:14px;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px}
 .trVerifyBody{font-size:13.5px;line-height:1.7;color:var(--text-2)}
 .trVerifyReason{margin-bottom:8px}
@@ -60,8 +60,11 @@
 .trDropIcon{font-size:34px}
 .trDropText{font-size:14px;font-weight:700}
 .trDrop img{border-radius:var(--r-md);max-height:220px;margin:0 auto}
-.trImgClear{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--bad);color:#fff;font-size:12px}
+.trImgClear{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;background:var(--bad);color:#fff;font-size:12px}
 .trSlotImg{position:relative}
 .trImgHint{font-size:12px;color:var(--muted)}
 .trModeBar[data-active="text"] .trSlotImg{display:none}
 
+
+.aiSetsHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:32px 0 16px}.aiSetsHead h3{font-size:18px;margin:0}.aiControls>.btn.primary{min-width:200px}.aiDetails{border-top:1px solid var(--line);padding-top:12px}.aiDetails .aiControls{margin-bottom:16px}.aiField .select{width:100%}.aiCheck{min-height:44px;align-items:flex-start}.aiCheck input{width:20px;height:20px;flex:none;margin-top:2px}.aiPrompt{line-height:1.7;min-height:112px}.aiKindHint{font-size:14px;line-height:1.6;color:var(--muted)}
+@media(max-width:600px){.aiControls{gap:12px}.aiControls>.aiField{flex:1 1 100px}.aiControls>.btn.primary{width:100%}.aiKey{max-width:none}.libraryGrid.aiSetsGrid{grid-template-columns:minmax(0,1fr)}}
