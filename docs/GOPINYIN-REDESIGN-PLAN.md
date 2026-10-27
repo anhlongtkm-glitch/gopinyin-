@@ -13,6 +13,8 @@ Các quyết định dưới đây thay thế những mô tả cũ về HSK 1, A
 - Chữ và placeholder trong ô nhập luyện gõ căn giữa, chừa khoảng trống hai bên bằng nhau để nút bàn phím không làm lệch tâm.
 - Luyện nói tự đọc mẫu một lần khi vào câu mới. Mặc định tốc độ **1.0**, ưu tiên giọng **Google Mandarin**; khi thiết bị không có giọng Google, dùng giọng nữ tiếng Trung khả dụng. Lựa chọn rõ ràng của người dùng được ghi nhớ cho các chế độ học.
 - Không đọc mẫu trễ sang câu khác, sau khi rời màn hoặc trong lúc thu âm. Không đọc lại chỉ vì mở thiết lập hoặc cập nhật giao diện.
+- Chuyển mặc định tắt tự đọc của tài khoản cũ sang bật một lần; những lần người dùng chủ động đổi sau cập nhật được giữ. Câu đầu phát sau khi màn Nói đã hiện. Nếu trình duyệt chặn, hướng dẫn dùng nút Nghe.
+- Gõ/Nói dùng cùng bộ tách và căn Pinyin, giữ đúng dấu thanh/âm nhẹ, phân biệt `ér` độc lập và đuôi `r`. Không chia tỷ lệ hoặc lặp âm tiết để bù dữ liệu thiếu. Các sửa phiên âm nguồn đã xác minh cũng áp dụng cho bộ đã lưu; dữ liệu chưa căn khớp chỉ hiển thị phiên âm theo cụm.
 
 ## Lịch sử thiết kế trước cập nhật 27/10/2026
 

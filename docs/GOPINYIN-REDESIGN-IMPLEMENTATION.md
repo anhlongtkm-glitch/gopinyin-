@@ -2,9 +2,13 @@
 
 **Cập nhật 27/10/2026:** áp dụng yêu cầu mới trong [kế hoạch hiện hành](GOPINYIN-REDESIGN-PLAN.md). Ảnh đối chiếu cũ là lịch sử thiết kế; các màn Thanh điệu và Shadowing đã được gỡ.
 
+**Bản sửa tự đọc mẫu và Pinyin:** chuyển lựa chọn mặc định tắt từ bản cũ sang bật một lần, lưu dấu khi người dùng chủ động đổi. Câu đầu chỉ lên lịch đọc sau khi màn Nói hiện; không đọc lặp khi đóng tùy chọn, dừng khi mở micro/rời bài và có hướng dẫn bấm Nghe nếu trình duyệt chặn tự phát.
+
+Pinyin được chuẩn hóa trước khi chia âm tiết, loại bỏ dấu câu khỏi danh sách đáp án, giữ vị trí dấu thanh/âm nhẹ khi tách từ viết liền. Ánh xạ chữ Hán–âm tiết dùng chung cho Gõ/Nói, phân biệt `ér` trong 儿子/女儿 với đuôi `r` trong 玩儿/这儿; bỏ cách chia tỷ lệ hoặc lặp âm để bù. Đã đối chiếu toàn bộ 4.969 câu HSK (39.926 chữ Hán, 114 vị trí 儿 hóa) và 41.621 mục/206 chủ đề. Sửa 81 phiên âm nguồn ở 24 chủ đề cùng âm `shì` của câu HSK 1 trong ảnh; `src/data/pinyin-corrections.json` áp dụng cùng các sửa chắc chắn này cho bộ đã lưu mà không đổi ID/tiến độ. 69 mục nguồn còn thiếu âm hoặc chứa ký hiệu/Latin được hiển thị phiên âm cả cụm, không tự gán vào từng chữ.
+
 **Bản sửa AI tiếp theo:** bỏ hoàn toàn bước AI soát lại nghĩa. Sửa tình huống yêu cầu tạo thêm bắt đầu khi còn hai mục, nhưng người học đã đi hết danh sách trước khi phản hồi về: trạng thái chờ được lấy ngay trước lúc nối dữ liệu để chuyển sang câu/từ mới và mở khóa ô nhập. Nếu API lỗi khi đã học hết, màn chờ chuyển sang tạm dừng và có Thử lại. Kiểm thử `ai_append_wait.cjs` tái hiện thao tác học thực tế cho cả bộ tạm và bộ đã lưu; `ai_generation_flow.cjs` xác nhận không có lượt soát nghĩa ngay cả khi máy còn lưu lựa chọn bật cũ.
 
-Kiểm chứng bản sửa AI: 30 bộ kiểm thử đạt 390 kiểm tra trong một lượt chạy đầy đủ; kiểm thử đóng gói HTML/tài nguyên/file preview và bản build cuối đều đạt. Các kiểm thử AI dùng phản hồi giả, không tiêu thụ hạn mức Gemini thật. Kết quả tổng hợp: `.cache/learning-update-validation.json`.
+Kiểm chứng bản sửa âm thanh/Pinyin: 33 bộ kiểm thử đạt 407 kiểm tra trong một lượt chạy đầy đủ; kiểm thử đóng gói HTML/tài nguyên/file preview và bản build cuối đều đạt. Các kiểm thử dùng tài khoản, micro và phản hồi API giả, không tiêu thụ hạn mức Gemini thật. Kết quả tổng hợp: `.cache/learning-update-validation.json`; báo cáo kho Pinyin: `.cache/pinyin-corpus-validation.json`.
 
 ## Bản sửa lại theo ảnh đã duyệt
 

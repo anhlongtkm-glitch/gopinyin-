@@ -1,6 +1,7 @@
 // State and behavior owned by features/pronunciation/repository. Initialization is orchestrated by app/bootstrap.js.
 
 import { B, hanChars } from "./utils.js";
+import { alignPinyinToHanzi, isErhuaSyllable } from "../../shared/language/alignment.js";
 
 export const state = {};
 
@@ -163,25 +164,18 @@ export function initializePronunciationRepository() {
     syllables(item) {
       const b = B();
       if (!b) return [];
-      const n = hanChars(item.zh).length;
+      const chars = hanChars(item.zh);
       let marked = [];
-      try {
-        marked = b.answerWords(item).marked || [];
-      } catch (e) {
-        marked = [];
-      }
-      let map = [];
-      try {
-        map = b.hanSyllableList(item, n) || [];
-      } catch (e) {
-        map = [];
-      }
-      const out = [];
-      for (let i = 0; i < n; i++) {
-        const si = map[i];
-        out.push(si != null && marked[si] ? marked[si] : marked[i] || '');
-      }
-      return out;
+      try { marked = b.answerWords(item).marked || []; } catch {}
+      const {hanIndices} = alignPinyinToHanzi(item.zh,marked);
+      return chars.map((character,index) => {
+        const syllableIndex = hanIndices[index];
+        if (syllableIndex < 0) return '';
+        const syllable = marked[syllableIndex] || '';
+        if (character === '儿' && index > 0 && hanIndices[index-1] === syllableIndex && isErhuaSyllable(syllable)) return 'r';
+        if (chars[index+1] === '儿' && hanIndices[index+1] === syllableIndex && isErhuaSyllable(syllable)) return syllable.slice(0,-1);
+        return syllable;
+      });
     }
   };
 }

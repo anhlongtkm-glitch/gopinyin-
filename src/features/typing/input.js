@@ -27,7 +27,8 @@ import { speakTypedProgress } from "../../shared/audio/tts.js";
 
 import { state as domState } from "../../shared/dom.js";
 
-import { splitChineseByPinyin, renderChineseWords } from "../../shared/language/hanzi.js";
+import { renderChineseWords } from "../../shared/language/hanzi.js";
+import { alignPinyinToHanzi } from "../../shared/language/alignment.js";
 
 import { hasVietnameseChars, typingPlain, normalize } from "../../shared/language/normalization.js";
 
@@ -222,41 +223,14 @@ export function gradeHanzi(raw, q) {
 /* Ánh xạ mỗi CHỮ HÁN → chỉ số ÂM TIẾT tương ứng (để cập nhật từ đang gõ
    trên dòng chữ Hán). Erhua (2 chữ 1 âm tiết) thì lấy âm tiết đầu. */
 export function hanCharSyllables(q) {
-  const parts = splitChineseByPinyin(q),
-    map = [];
-  for (const p of parts) {
-    const txt = String(p.text || '');
-    const end = p.wordEnd != null ? p.wordEnd : p.wordIndex;
-    for (let i = 0; i < txt.length; i++) map.push(p.wordIndex < 0 ? -1 : Math.min(p.wordIndex + i, end));
-  }
-  return map;
+  return alignPinyinToHanzi(q.zh,answerWords(q).marked).map;
 }
-/* ★ Danh sách ÂM TIẾT theo CHỈ SỐ CHỮ HÁN (bỏ dấu câu / khoảng trắng).
-   Trước đây nhiều chỗ dùng thẳng hanCharSyllables() — mảng đánh theo VỊ TRÍ
-   TRONG CHUỖI GỐC (có dấu câu) — rồi lại lập chỉ số bằng "số chữ đã gõ"
-   (chỉ tính chữ Hán). Câu có dấu câu → sáng nhầm chữ / tô đỏ nhầm chữ. */
 
-/* ★ Danh sách ÂM TIẾT theo CHỈ SỐ CHỮ HÁN (bỏ dấu câu / khoảng trắng).
-   Trước đây nhiều chỗ dùng thẳng hanCharSyllables() — mảng đánh theo VỊ TRÍ
-   TRONG CHUỖI GỐC (có dấu câu) — rồi lại lập chỉ số bằng "số chữ đã gõ"
-   (chỉ tính chữ Hán). Câu có dấu câu → sáng nhầm chữ / tô đỏ nhầm chữ. */
 export function hanSyllableList(q, expLen) {
-  const map = hanCharSyllables(q),
-    src = String(q.zh || '');
-  let out = [];
-  for (let i = 0; i < src.length && i < map.length; i++) if (isHanChar(src[i])) out.push(map[i]);
-  if (expLen && out.length !== expLen) {
-    /* dữ liệu lạ (pinyin lệch số âm tiết) → phân bổ theo tỉ lệ để khỏi lệch */
-    const total = answerWords(q).marked.length;
-    out = Array.from({
-      length: expLen
-    }, (_, i) => Math.min(Math.max(0, Math.round(i * total / expLen)), Math.max(0, total - 1)));
-  }
-  return out;
+  const out = alignPinyinToHanzi(q.zh,answerWords(q).marked).hanIndices;
+  return expLen && out.length !== expLen ? Array(expLen).fill(-1) : out;
 }
-/* HTML đáp án — chữ gõ sai / gõ thiếu tô đỏ */
 
-/* HTML đáp án — chữ gõ sai / gõ thiếu tô đỏ */
 export function hanziDiffHtml(res) {
   return res.map(r => '<span class="' + (r.ok ? '' : 'wBad') + '">' + escapeHtml(r.exp || r.got || '?') + '</span>').join('');
 }

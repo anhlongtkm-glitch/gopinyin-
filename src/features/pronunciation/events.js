@@ -99,6 +99,7 @@ export function wire() {
     renderCard();
     renderResult();
     renderStats();
+    schedulePronunciationSample();
     toast('Đã xóa tiến độ luyện phát âm của bộ này.', 'ok');
   });
   on('pronSource', 'change', async e => {
@@ -109,8 +110,10 @@ export function wire() {
     pronunciationMicrophoneState.PronMic.release();
     pronunciationRecognitionState.PronAsr.stop();
     pronunciationSessionState.S.lastSource = v;
-    await loadSource(v);
-    syncToolbar();
+    if (await loadSource(v)) {
+      syncToolbar();
+      schedulePronunciationSample();
+    }
   });
   on('pronFilter', 'change', e => {
     cancelAssessment();
@@ -126,6 +129,7 @@ export function wire() {
     renderCard();
     renderResult();
     renderStats();
+    schedulePronunciationSample();
   });
   on('pronRate', 'change', e => {
     pronunciationSessionState.S.settings.rate = Number(e.target.value) || 1;
@@ -139,6 +143,7 @@ export function wire() {
   });
   const tgl = (id, key) => on(id, 'click', () => {
     pronunciationSessionState.S.settings[key] = !pronunciationSessionState.S.settings[key];
+    if (key === 'autoSample') pronunciationSessionState.S.settings.autoSampleExplicit = true;
     saveSettings();
     syncToolbar();
     if (key === 'showPy' || key === 'showHan' || key === 'showVi') renderCard();
@@ -152,6 +157,7 @@ export function wire() {
   tgl('pronViToggle', 'showVi');
   tgl('pronAutoSample', 'autoSample');
   tgl('pronAutoNext', 'autoNext');
+  on('pronSettings', 'close', schedulePronunciationSample);
 
   /* bấm vào chữ Hán → chi tiết */
   const hz = pronunciationUtilsState.$('pronHanzi');

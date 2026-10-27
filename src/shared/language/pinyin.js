@@ -2,8 +2,6 @@
 
 import { state as dataCatalogState } from "../../data/catalog.js";
 
-import { normalize } from "./normalization.js";
-
 export const state = {};
 
 const languagePinyinState = state;
@@ -86,31 +84,48 @@ export function sanitizeLatinInChinese(zh, py) {
 
 /* Tách 1 chuỗi pinyin viết liền (đã bỏ số thanh, đã bỏ dấu) thành các âm tiết */
 export function splitPinyinSyllables(str) {
-  const s = String(str || '').toLowerCase().replace(/[^a-zü]/g, '');
+  const s = String(str || '').normalize('NFC').toLowerCase();
   if (!s) return [];
-  const out = [];
-  let i = 0;
-  while (i < s.length) {
-    let matched = '';
-    for (let L = Math.min(6, s.length - i); L >= 1; L--) {
-      const cand = s.slice(i, i + L);
-      if (languagePinyinState.PINYIN_SYLLABLES.has(cand)) {
-        matched = cand;
-        break;
+  return pinyinTokenParts(s) || [s];
+}
+
+/* Find a complete segmentation before choosing a boundary. Greedy matching
+   consumes the g of guǎn in jiānguǎn, then invents fragments such as "uǎ n".
+   Keep original accent positions, including syllables with a neutral tone. */
+function pinyinTokenParts(token) {
+  const source = String(token || '').normalize('NFC').toLowerCase();
+  if (!source || !/^[a-züāáǎàēéěèōóǒòīíǐìūúǔùǖǘǚǜ]+$/.test(source)) return null;
+  const plain = stripToneMarks(source).plain;
+  const syllables = languagePinyinState.PINYIN_SYLLABLES;
+  if (!syllables) return null;
+  const best = new Array(source.length + 1);
+  best[source.length] = { parts: [], vowelStarts: 0 };
+  for (let start = source.length - 1; start >= 0; start--) {
+    for (let end = Math.min(source.length, start + 7); end > start; end--) {
+      if (!best[end]) continue;
+      const base = plain.slice(start, end), marked = source.slice(start, end);
+      const ordinary = syllables.has(base);
+      const erhua = base !== 'er' && base.endsWith('r') && canTakeErhua(base.slice(0, -1));
+      if (!ordinary && !erhua) continue;
+      // n/ng/m/r can be complete interjections, but cannot rescue a broken word.
+      if (!/[aeiouü]/.test(base) && (start !== 0 || end !== source.length)) continue;
+      if ((marked.match(/[āáǎàēéěèōóǒòīíǐìūúǔùǖǘǚǜ]/g) || []).length > 1) continue;
+      const next = best[end];
+      const candidate = {
+        parts: [marked, ...next.parts],
+        // Vowel-initial syllables normally have an apostrophe (hé'nán would
+        // mean something different from Hénán). Explicit apostrophes are
+        // already split before this function; allow omitted ones as fallback.
+        vowelStarts: next.vowelStarts + (start > 0 && /^[aeo]/.test(base) ? 1 : 0)
+      };
+      const current = best[start];
+      if (!current || candidate.parts.length < current.parts.length ||
+          candidate.parts.length === current.parts.length && candidate.vowelStarts < current.vowelStarts) {
+        best[start] = candidate;
       }
     }
-    if (matched) {
-      out.push(matched);
-      i += matched.length;
-    } else {
-      // không khớp âm tiết nào → gom nguyên âm+phụ âm tới nguyên âm kế tiếp
-      const m = s.slice(i).match(/^[^aeiouü]*[aeiouü]+/);
-      const take = m ? m[0] : s[i];
-      out.push(take);
-      i += take.length;
-    }
   }
-  return out;
+  return best[0]?.parts || null;
 }
 
 /* Đặt dấu thanh cho 1 âm tiết không dấu: quy tắc a > e > o > (i/u/ü cuối) */
@@ -148,7 +163,7 @@ export function applyTone(syl, t) {
      → tách "Yue"+"nan", gán thanh 4 cho âm tiết cuối → "yuè nàn"
    Xử lý erhua: "wan2r" → "wánr" (giữ 'r' dính vào âm tiết, KHÔNG tách thành "wán r") */
 export function numToneToDiacritic(token) {
-  let w = String(token || '');
+  let w = String(token || '').normalize('NFC');
   if (!w) return '';
   w = w.replace(/u:/gi, 'ü').replace(/U:/g, 'Ü');
   w = w.replace(/v/g, 'ü').replace(/V/g, 'Ü');
@@ -172,44 +187,27 @@ export function numToneToDiacritic(token) {
       /* ★ ERHUA: "wan2r" → số 2 rồi 'r'. Âm tiết 儿 hoá trong tiếng Trung
          LUÔN chứa nguyên âm (wan, yi, hui, na, dian…). Nếu buf có nguyên âm thì
          'r' thuộc về âm tiết này → nuốt vào, KHÔNG tách thành âm tiết riêng. */
-      if (w[i + 1] && /^r$/i.test(w[i + 1]) && /[aeiouü]/i.test(buf)) {
+      const previous = pinyinTokenParts(buf);
+      if (w[i + 1] && /^r$/i.test(w[i + 1]) && previous?.length && canTakeErhua(previous[previous.length - 1])) {
         buf += 'r';
         i++;
       }
       flush(Number(c));
-    } else if (/[a-züA-ZÜ]/.test(c)) {
+    } else if (/\p{Script=Latin}/u.test(c)) {
       buf += c;
     } else {
       flush(0);
     }
   }
   if (buf) flush(0);
-  /* ★ Nếu 1 mảnh chứa NHIỀU âm tiết viết liền (vd "Yuenan" với thanh ở cuối),
-     tách bằng bảng âm tiết. Thanh điệu gán cho âm tiết ĐẦU — vì khi AI viết liền
-     một từ nhiều âm tiết, số thanh đặt sau cả chuỗi thường thuộc về âm tiết đầu
-     (vd "Yuenan4" = Yuè+nán, "Beijing3" = Běi+jīng). Nếu để âm tiết cuối sẽ sai. */
+  // A tone number belongs to the syllable immediately before it. Missing
+  // numbers in a joined word do not provide enough information to infer tones.
   const expanded = [];
   for (const o of out) {
-    const plain = stripToneMarks(o.syl).plain.toLowerCase();
-    /* ★ ERHUA: âm tiết kết thúc bằng 'r' — trước 'r' có thể là nguyên âm (huir, nár)
-       hoặc 'n'/'ng' (wanr, dianr, huir). Tất cả đều là 1 âm tiết trọn vẹn,
-       KHÔNG được tách thành "wan"+"r". */
-    const isErhua = /(?:[aeiouü]|[aeiouü]n|[aeiouü]ng)r$/i.test(plain);
-    if (!isErhua && o.syl.length > 2 && /^[a-zü]+$/.test(plain)) {
-      const syls = splitPinyinSyllables(plain);
-      if (syls.length > 1 && syls.join('') === plain) {
-        syls.forEach((sy, k) => {
-          expanded.push({
-            syl: sy,
-            tone: k === 0 ? o.tone : 0
-          }); /* thanh cho âm tiết ĐẦU */
-        });
-        continue;
-      }
-    }
-    expanded.push(o);
+    const parts = pinyinTokenParts(o.syl) || [o.syl];
+    parts.forEach((syl, index) => expanded.push({ syl, tone: index === parts.length - 1 ? o.tone : 0 }));
   }
-  return expanded.map(o => applyTone(o.syl, o.tone)).join(' ');
+  return expanded.map(o => o.tone ? applyTone(stripToneMarks(o.syl).plain, o.tone) : o.syl).join(' ');
 }
 
 /* ★ Âm tiết có nhận được 'r' erhua ở cuối không? (wán→wánr, diǎn→diǎnr, huì→huìr)
@@ -220,8 +218,8 @@ export function numToneToDiacritic(token) {
    Bỏ dấu thanh rồi xét: phải kết thúc bằng NGUYÊN ÂM, hoặc 'n'/'ng' có nguyên âm
    trước. LƯU Ý: "diǎn" kết thúc bằng 'n' → nếu chỉ xét nguyên âm cuối sẽ SAI. */
 export function canTakeErhua(syl) {
-  const p = normalize(syl).replace(/[^a-zü]/g, '');
-  return /(?:[aeiouü]|[aeiouü]n|[aeiouü]ng)$/.test(p);
+  const p = stripToneMarks(String(syl || '').trim().split(/\s+/).pop()).plain.toLowerCase();
+  return p !== 'er' && /[aeiouü]/.test(p) && !!languagePinyinState.PINYIN_SYLLABLES?.has(p);
 }
 
 /* ★ Tách 1 chuỗi pinyin (KHÔNG dấu) thành các âm tiết, GIỮ ĐÚNG ERHUA.
@@ -244,14 +242,7 @@ export function canTakeErhua(syl) {
         "zhongguo"→ ["zhong","guo"]   (không phải erhua → như cũ)
    Trả về null nếu không phải pinyin (không tách được an toàn). */
 export function splitPinyinKeepingErhua(plain) {
-  const p = String(plain || '').toLowerCase();
-  if (!/^[a-zü]+$/.test(p) || p.length < 3) return null;
-  const isErhua = /(?:[aeiouü]|[aeiouü]n|[aeiouü]ng)r$/.test(p);
-  const core = isErhua ? p.slice(0, -1) : p;
-  const syls = splitPinyinSyllables(core);
-  if (!syls.length || syls.join('') !== core) return null;
-  if (isErhua) syls[syls.length - 1] += 'r';
-  return syls;
+  return pinyinTokenParts(plain);
 }
 
 /* ★ Chuẩn hoá pinyin: bỏ dấu câu, chuyển số thanh → dấu, tách âm tiết viết liền */
@@ -259,7 +250,7 @@ export function splitPinyinKeepingErhua(plain) {
 /* ★ Chuẩn hoá pinyin: bỏ dấu câu, chuyển số thanh → dấu, tách âm tiết viết liền */
 export function fixPinyin(p) {
   if (p == null) return '';
-  let s = String(p).trim();
+  let s = String(p).normalize('NFC').trim();
   if (!s) return '';
   /* 1) bỏ rào markdown / ngoặc bao quanh cả chuỗi */
   s = s.replace(/^```[a-z]*\s*/i, '').replace(/\s*```$/, '');
@@ -305,11 +296,9 @@ export function fixPinyin(p) {
     if (hasToneDiacritic) {
       /* thử tách nếu là nhiều âm tiết viết liền (zhōngguó → zhōng guó).
          ★ Giữ nguyên erhua: "diǎnr" phải ở lại 1 âm tiết (KHÔNG thành "diǎn r"). */
-      const info = stripToneMarks(bare);
-      const plainLow = info.plain.toLowerCase();
-      const syls = splitPinyinKeepingErhua(plainLow);
+      const syls = pinyinTokenParts(bare);
       if (syls && syls.length > 1) {
-        out.push(syls.map((sy, k) => applyTone(sy, info.tones[k] || 0)).join(' '));
+        out.push(syls.join(' '));
         continue;
       }
       out.push(bare);
@@ -350,11 +339,11 @@ export function fixPinyin(p) {
    để có thể tách chuỗi viết liền rồi gán lại dấu đúng vị trí.
    Ví dụ: "zhōngguó" → { plain:"zhongguo", tones:[1,2] } */
 export function stripToneMarks(str) {
-  const s = String(str || '');
+  const s = String(str || '').normalize('NFC');
   let plain = '';
   const tones = [];
   for (const ch of s) {
-    const info = languagePinyinState.TONE_MAP[ch];
+    const info = languagePinyinState.TONE_MAP[ch.toLowerCase()];
     if (info) {
       plain += info.base;
       tones.push(info.tone);

@@ -14,7 +14,7 @@ import { state as pronunciationSessionState } from "./session.js";
 
 import { state as pronunciationStorageState } from "./storage.js";
 
-import { state as pronunciationTtsState, schedulePronunciationSample } from "./tts.js";
+import { state as pronunciationTtsState } from "./tts.js";
 import { speechPreferences, sharedSpeechPreferences, setSpeechRateSelect } from '../../shared/audio/voice-policy.js';
 
 import { lsJson, lsSet, state as pronunciationUtilsState, esc, clamp } from "./utils.js";
@@ -31,13 +31,18 @@ export function loadSettings() {
     pronunciationSessionState.S.settings = Object.assign(pronunciationSessionState.S.settings, {
       rate: Number(d.rate) || 1,
       voice: d.voice || '',
-      autoSample: d.autoSample !== false,
+      // Older versions saved false as the default, even without a user choice.
+      autoSample: d.autoSampleExplicit === true ? d.autoSample !== false : true,
+      autoSampleExplicit: d.autoSampleExplicit === true,
       autoNext: !!d.autoNext,
       showPy: d.showPy !== false,
       showHan: d.showHan !== false,
       showVi: d.showVi !== false,
       filter: d.filter || 'all'
     });
+    if (d.autoSample === false && d.autoSampleExplicit !== true) {
+      lsSet(pronunciationSessionState.SETTINGS_KEY, JSON.stringify({...d,autoSample:true,autoSampleExplicit:false}));
+    }
   }
   Object.assign(pronunciationSessionState.S.settings, speechPreferences(pronunciationSessionState.S.settings));
 }
@@ -137,7 +142,6 @@ export async function loadSource(srcId, keepId) {
   renderCard();
   renderResult();
   renderStats();
-  schedulePronunciationSample();
   return true;
 }
 

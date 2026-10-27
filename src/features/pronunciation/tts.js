@@ -5,9 +5,19 @@ import { currentItem } from './lesson.js';
 import { navigationVersion } from '../../app/routes.js';
 import { studyOverlayOpen } from '../../shared/study/interactions.js';
 import { chineseVoices, chooseChineseVoice, speechPreferences, onVoicesChanged } from '../../shared/audio/voice-policy.js';
+import { toast } from '../../shared/toast.js';
 
 let utteranceVersion = 0, sampleTimer = 0, removeVoiceListener;
+let lastAutomaticSample;
 export const state = {};
+
+function sampleContext() {
+  return {item:currentItem(),items:pronunciationSessionState.S.items,index:pronunciationSessionState.S.index,navigation:navigationVersion()};
+}
+
+function sameContext(a, b) {
+  return a && b && a.item === b.item && a.items === b.items && a.index === b.index && a.navigation === b.navigation;
+}
 
 export function cancelPronunciationSample() {
   utteranceVersion++;
@@ -25,6 +35,8 @@ function sampleAllowed(automatic) {
 }
 
 export function schedulePronunciationSample() {
+  const context = sampleContext();
+  if (sameContext(lastAutomaticSample, context)) return;
   cancelPronunciationSample();
   if (!pronunciationSessionState.S.settings.autoSample) return;
   const version = utteranceVersion, item = currentItem(), navigation = navigationVersion(), items = pronunciationSessionState.S.items;
@@ -36,6 +48,10 @@ export function schedulePronunciationSample() {
 }
 
 export function initializePronunciationTts() {
+  // Navigation exposes the card only after open() and its async source load.
+  document.addEventListener('gp:view-changed', event => {
+    if (event.detail === 'pronStudy') schedulePronunciationSample();
+  });
   state.PronTts = {
     supported() { return 'speechSynthesis' in window; },
     speak(text, opts = {}) {
@@ -65,8 +81,19 @@ export function initializePronunciationTts() {
           }
         };
         utterance.onend = finish;
-        utterance.onerror = finish;
-        try { window.speechSynthesis.speak(utterance); } catch {}
+        utterance.onerror = event => {
+          if (current() && !['canceled','interrupted'].includes(event.error)) {
+            toast(event.error === 'not-allowed'
+              ? 'Trình duyệt chưa cho phép tự phát. Nhấn “Nghe” để nghe câu mẫu.'
+              : 'Chưa phát được câu mẫu. Nhấn “Nghe” để thử lại.', 'warn', 5000);
+          }
+          finish(event);
+        };
+        if (opts.automatic) lastAutomaticSample = sampleContext();
+        try {
+          if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+          window.speechSynthesis.speak(utterance);
+        } catch (error) { utterance.onerror({error:error?.name === 'NotAllowedError' ? 'not-allowed' : 'synthesis-failed'}); }
       };
       // Chrome may expose its Google voices only after the first voiceschanged.
       if (chineseVoices().length) send();

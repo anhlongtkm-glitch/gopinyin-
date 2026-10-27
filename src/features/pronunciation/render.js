@@ -93,13 +93,16 @@ export function renderCard() {
     pyLine = pronunciationUtilsState.$('pronPyLine');
   if (viLine) viLine.classList.toggle('hidden', !pronunciationSessionState.S.settings.showVi);
   if (hanLine) hanLine.classList.toggle('hidden', !pronunciationSessionState.S.settings.showHan && !pronunciationSessionState.S.settings.showPy);
-  // Pinyin appears once, immediately below its matching glyph.
-  if (pyLine) pyLine.classList.add('hidden');
+  const syllables = pronunciationRepositoryState.PronRepo.syllables(it);
+  const alignedPinyin = syllables.length > 0 && syllables.every(Boolean);
+  // Invalid source readings stay phrase-level instead of being assigned to
+  // unrelated characters. Normal content keeps one reading beneath each glyph.
+  if (pyLine) pyLine.classList.toggle('hidden', alignedPinyin || !it.py || !pronunciationSessionState.S.settings.showPy);
   const vi = pronunciationUtilsState.$('pronVi');
   if (vi) vi.textContent = it.vi || '—';
   renderHanzi();
   const py = pronunciationUtilsState.$('pronPy');
-  if (py) py.textContent = it.py || '';
+  if (py) py.textContent = alignedPinyin ? it.py || '' : 'Phiên âm theo cụm: ' + (it.py || '');
   if (pronunciationSessionState.S.phase === 'idle' && !pronunciationSessionState.S.result) setMascot('pronStudyMascot', 'reading');
   renderVisibleMascots();
   updateMicLabel();
