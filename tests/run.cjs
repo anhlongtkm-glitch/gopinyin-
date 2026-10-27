@@ -4,12 +4,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const net = require('node:net');
 const root=path.resolve(__dirname,'..');
-const suites=['database.cjs','account-sync.cjs','account-api.cjs','serverless.cjs','service-reliability.cjs','pronunciation-races.cjs','accounts.cjs','auth-navigation.cjs','improvements.cjs','navigation-races.cjs','progress-restore.cjs','data-performance.cjs','app_regress.js','study_shell.js','pronounce.js','pron_picker_d.js','verify_pron_studied.js','games_hub.js','read_on_type.js','study-shortcuts.cjs','ai_save_flow.js','ai_meaning_check.js','ai_vocab_mode.js','ui-experience.cjs'];
+const suites=['database.cjs','account-sync.cjs','account-api.cjs','serverless.cjs','service-reliability.cjs','pronunciation-races.cjs','accounts.cjs','auth-navigation.cjs','improvements.cjs','navigation-races.cjs','progress-restore.cjs','data-performance.cjs','app_regress.js','study_shell.js','pronounce.js','pron_picker_d.js','verify_pron_studied.js','games_hub.js','read_on_type.js','study-shortcuts.cjs','ai_save_flow.js','ai_generation_flow.cjs','ai_vocab_mode.js','ui-experience.cjs'];
 const output=path.join(root,'.cache/test-run');
 suites.push('journey.cjs');
 suites.push('approved-layout.cjs');
 suites.push('curriculum.cjs');
 suites.push('ai_recovery.cjs');
+suites.push('ai_append_wait.cjs');
 suites.push('audio-defaults.cjs');
 const requested=process.argv.slice(2);
 if(requested.length){if(requested.some(file=>!suites.includes(file)))throw new Error('Unknown test suite');suites.splice(0,suites.length,...requested);}

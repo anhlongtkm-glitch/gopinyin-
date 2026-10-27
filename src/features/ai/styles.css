@@ -5,8 +5,6 @@
 .aiPrompt{resize:vertical;min-height:74px}
 .aiControls{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .aiField{display:flex;flex-direction:column;align-items:flex-start;gap:8px;font-size:14px;font-weight:700;color:var(--text-2)}
-.aiCheck{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
-.aiCheck input{accent-color:var(--primary);width:15px;height:15px}
 .aiKey{max-width:340px;font-family:ui-monospace,monospace;font-size:14px}
 .aiStatus{font-size:14px;color:var(--text-2);min-height:20px;line-height:1.6}
 .aiStatus b{color:var(--primary)}
@@ -66,5 +64,5 @@
 .trModeBar[data-active="text"] .trSlotImg{display:none}
 
 
-.aiSetsHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:32px 0 16px}.aiSetsHead h3{font-size:18px;margin:0}.aiControls>.btn.primary{min-width:200px}.aiDetails{border-top:1px solid var(--line);padding-top:12px}.aiDetails .aiControls{margin-bottom:16px}.aiField .select{width:100%}.aiCheck{min-height:44px;align-items:flex-start}.aiCheck input{width:20px;height:20px;flex:none;margin-top:2px}.aiPrompt{line-height:1.7;min-height:112px}.aiKindHint{font-size:14px;line-height:1.6;color:var(--muted)}
+.aiSetsHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:32px 0 16px}.aiSetsHead h3{font-size:18px;margin:0}.aiControls>.btn.primary{min-width:200px}.aiDetails{border-top:1px solid var(--line);padding-top:12px}.aiDetails .aiControls{margin-bottom:16px}.aiField .select{width:100%}.aiPrompt{line-height:1.7;min-height:112px}.aiKindHint{font-size:14px;line-height:1.6;color:var(--muted)}
 @media(max-width:600px){.aiControls{gap:12px}.aiControls>.aiField{flex:1 1 100px}.aiControls>.btn.primary{width:100%}.aiKey{max-width:none}.libraryGrid.aiSetsGrid{grid-template-columns:minmax(0,1fr)}}

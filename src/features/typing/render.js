@@ -75,14 +75,14 @@ export function render() {
       domState.$('quizArea').classList.remove('hidden');
       domState.$('pinyinInput').value = '';
       domState.$('pinyinInput').readOnly = true;
-      domState.$('vietnamese').innerHTML = '<span style="opacity:.7">🤖 AI đang viết câu tiếp theo, chờ chút nhé…</span>';
+      domState.$('vietnamese').textContent = 'AI đang tạo thêm ' + aiCurrentUnit() + ', chờ chút nhé…';
       domState.$('chinese').textContent = '⏳';
       domState.$('feedback').className = 'feedback hidden';
       domState.$('feedback').innerHTML = '';
       setMascot('typingStudyMascot', 'thinking');
       setMascot('typingFeedbackMascot', 'face-thinking');
       renderVisibleMascots();
-      aiShowGen('<span class="aiSpinner">AI đang viết câu tiếp theo…</span> (đã có <b>' + typingSessionState.rows.length + '</b> câu)');
+      aiShowGen('<span class="aiSpinner">AI đang tạo thêm ' + aiCurrentUnit() + '…</span> (đã có <b>' + typingSessionState.rows.length + '</b> ' + aiCurrentUnit() + ')');
       return;
     }
     domState.$('quizArea').classList.add('hidden');

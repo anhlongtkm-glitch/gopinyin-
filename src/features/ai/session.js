@@ -10,7 +10,7 @@ import { state as aiClientState, aiUnitOf } from "./client.js";
 
 import { state as aiProvidersState, aiLsSet, aiKeyStore, aiKeyLoad, aiLsGet } from "./providers.js";
 
-import { aiCollect, state as aiValidationState } from "./validation.js";
+import { aiCollect } from "./validation.js";
 
 import { updateChineseHighlight } from "../typing/answers.js";
 
@@ -278,6 +278,9 @@ export async function aiMaybeFill() {
   try {
     const res = await aiCollect(s.provider, s.key, s.prompt, s.batch, s.level, s.seen, null, s.kind, active);
     if (!active()) return;
+    // The learner can finish the remaining items while this request is in flight.
+    // Capture the waiting state before appending changes the queue length.
+    const waitingAtAppend = typingSessionState.index >= typingSessionState.order.length;
     if (res.items.length) {
       aiAppendRows(res.items);
       s.empty = 0;
@@ -287,7 +290,7 @@ export async function aiMaybeFill() {
       s.error = res.error || new Error(res.stopped || 'AI chưa tạo được nội dung mới. Bấm Thử lại hoặc đổi chủ đề.');
       s.retryAt = s.error.retryAt || 0;
     }
-    if (res.items.length) aiRefreshAfterAppend(wasWaiting);
+    if (res.items.length) aiRefreshAfterAppend(waitingAtAppend);
   } catch (e) {
     if (!active()) return;
     s.stopped = true;
@@ -300,6 +303,7 @@ export async function aiMaybeFill() {
     if (!active() && aiTypingVisible(s) && !s.paused && !s.stopped && !s.pending) void aiMaybeFill();
   }
   if (!active()) return;
+  if (s.stopped && typingSessionState.index >= typingSessionState.order.length) render();
   setMascot('aiMascot', s.stopped ? 'encourage' : 'ready');
   if (s.stopped) aiShowSessionError(); else aiShowGen('');
 }
@@ -347,7 +351,6 @@ export async function aiStartStudy() {
     btn.textContent = 'Đang tạo ' + unit + '…';
   }
   setMascot('aiMascot', 'thinking', { animate: true, eventKey: 'ai-request:' + requestId });
-  aiValidationState.aiVerifyFixedCount = 0; // đếm riêng số nghĩa được soát lại trong lần này
   aiSessionState.aiSession = {
     prompt: prompt,
     level: level,
@@ -443,10 +446,6 @@ export async function aiStartStudy() {
     }
     aiAppendRows(res.items);
     session.rows = typingSessionState.rows;
-    /* ★ Nói rõ cho người dùng biết đã soát lại nghĩa (không im lặng sửa) */
-    if (aiValidationState.aiVerifyFixedCount > 0) {
-      toast('🔍 Đã soát lại và sửa ' + aiValidationState.aiVerifyFixedCount + ' nghĩa tiếng Việt chưa sát với chữ Hán.', 'warn', 6000);
-    }
     if (ds) {
       ds.rows = typingSessionState.rows;
       ds.updatedAt = Date.now();

@@ -8,7 +8,6 @@ import { aiLsSet, state as aiProvidersState, aiLsGet, aiKeyStore, aiKeyLoad } fr
 
 import { aiStartStudy } from "./session.js";
 
-import { aiVerifyEnabled, state as aiValidationState } from "./validation.js";
 
 import { state as libraryCatalogState, renderVocab, openVocabSource } from "../library/catalog.js";
 
@@ -19,7 +18,6 @@ import { state as domState } from "../../shared/dom.js";
 import { _modalClose, state as modalState } from "../../shared/modal.js";
 import { aiProxyUrl } from "../../shared/service-config.js";
 
-import { toast } from "../../shared/toast.js";
 
 export const state = {};
 
@@ -108,14 +106,6 @@ export function initializeAiController() {
   };
   if (domState.$('aiKind')) domState.$('aiKind').addEventListener('change', aiSyncKindUI);
   publishLegacy("aiSyncKindUI", aiSyncKindUI);
-  /* ★ Công tắc "Soát lại nghĩa Việt ↔ chữ Hán" — nhớ lựa chọn trên máy */
-  if (domState.$('aiVerify')) {
-    domState.$('aiVerify').checked = aiVerifyEnabled();
-    domState.$('aiVerify').addEventListener('change', e => {
-      aiLsSet(aiValidationState.AI_VERIFY_KEY, e.target.checked ? '1' : '0');
-      toast(e.target.checked ? '🔍 Sẽ soát lại nghĩa mỗi lần AI tạo nội dung.' : 'Đã tắt soát nghĩa — nội dung tạo nhanh hơn nhưng có thể lệch nghĩa.', e.target.checked ? 'ok' : 'warn', 3200);
-    });
-  }
   /* ★ Cập nhật hàng "Lấy API key" theo nhà cung cấp đang chọn:
      link + chữ trên nút + hướng dẫn + placeholder ô key đều đổi theo. */
 

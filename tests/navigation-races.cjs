@@ -37,7 +37,6 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     });
     await page.evaluate(() => { window.APP_CONFIG.AI_PROXY_URL = '/__race_ai__'; });
     await page.evaluate(() => window.showView('ai')); await page.fill('#aiPrompt', 'giao tiếp'); await page.selectOption('#aiBatch', '3');
-    await page.evaluate(() => { const checkbox = document.getElementById('aiVerify'); checkbox.checked = false; checkbox.dispatchEvent(new Event('change', { bubbles: true })); });
     await page.evaluate(() => { window.__oldAi = window.aiStartStudy(); });
     for (let i = 0; i < 100 && pending.length < 1; i++) await page.waitForTimeout(20);
     assert.equal(pending.length, 1);

@@ -38,11 +38,10 @@ const fresh = [
       if (mode === 'network') return route.abort('failed');
       return respond(route, mode === 'fresh' ? fresh : mode === 'recovered' ? recovered : initial);
     });
-    await page.evaluate(() => window.showView('ai'));
+    await page.evaluate(() => {window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
     assert(await page.locator('#aiProviderSetup').isHidden());
     assert.equal(await page.locator('#aiKey').inputValue(), '');
     await page.selectOption('#aiKind', 'word'); await page.fill('#aiPrompt', 'từ vựng đồ uống trong quán trà');
-    await page.evaluate(() => { const checkbox = document.getElementById('aiVerify'); checkbox.checked = false; checkbox.dispatchEvent(new Event('change', { bubbles: true })); });
     await page.click('#aiStartBtn'); await page.locator('#appModal.show').waitFor(); await page.click('#appModalOk');
     await page.locator('#appModalInput').waitFor({ state: 'visible' }); await page.fill('#appModalInput', 'Đồ uống AI'); await page.click('#appModalOk');
     await page.locator('#appCard').waitFor({ state: 'visible' });

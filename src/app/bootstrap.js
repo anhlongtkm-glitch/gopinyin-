@@ -14,7 +14,6 @@ import { initializeAiProviders } from "../features/ai/providers.js";
 import { initializeAiSession } from "../features/ai/session.js";
 import { initializeAiClient } from "../features/ai/client.js";
 import { initializeLanguagePinyin } from "../shared/language/pinyin.js";
-import { initializeAiValidation } from "../features/ai/validation.js";
 import { initializeStorageImportFiles } from "../shared/storage/import-files.js";
 import { initializeTypingDatasets } from "../features/typing/datasets.js";
 import { initializeTypingInput } from "../features/typing/input.js";
@@ -86,7 +85,6 @@ function initializeCore() {
   initializeAiSession();
   initializeAiClient();
   initializeLanguagePinyin();
-  initializeAiValidation();
   initializeStorageImportFiles();
   initializeTypingDatasets();
   initializeTypingInput();

@@ -55,13 +55,6 @@ body.vk-open #toastHost{bottom:calc(var(--vk-h) + 16px)}
   background:var(--primary-soft,rgba(31,200,162,.09));color:var(--text-2);
   border:1px solid rgba(31,200,162,.22)}
 .aiKindHint:empty{display:none}
-/* Công tắc "Soát lại nghĩa" trong Tuỳ chọn nâng cao */
-.aiCheck{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.55;
-  color:var(--text-2);cursor:pointer;padding:9px 12px;border-radius:10px;
-  background:var(--card-2,rgba(0,0,0,.02));border:1px solid var(--line,#e6e8ef)}
-.aiCheck input{width:16px;height:16px;margin:2px 0 0;flex:none;accent-color:var(--primary,#1fc8a2);cursor:pointer}
-.aiCheck small{color:var(--muted,#8b90a0);font-weight:600}
-.aiCheck b{color:var(--text)}
 
 /* ── Bảng xếp hạng Luyện gõ (mục riêng trên thanh bên, #rankCard) ── */
 .libRankHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}

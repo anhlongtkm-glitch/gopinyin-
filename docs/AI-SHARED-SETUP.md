@@ -2,6 +2,8 @@
 
 Người học đăng nhập, chọn câu hoặc từ vựng, nhập chủ đề và tạo bài. Website mặc định gọi `/api/ai`; API key nằm trên máy chủ, người học không phải nhập key. Bộ đã lưu giữ chủ đề, loại nội dung và số lượng để học tiếp và tự tạo thêm khi còn dưới ba mục.
 
+Nội dung được dùng ngay sau khi tạo, không có lượt gọi AI kiểm tra lại nghĩa hoặc công tắc soát nghĩa. Kiểm tra định dạng Hán/Pinyin/nghĩa và lọc trùng vẫn chạy trong trình duyệt. Nếu người học hoàn thành các mục còn lại trong lúc API đang chạy, khi đợt mới về, màn chờ tự chuyển sang mục mới và mở khóa ô nhập. API báo lỗi thì hiện trạng thái tạm dừng và nút Thử lại.
+
 ## Hosting cùng dự án
 
 1. Tạo API key cho dự án Gemini có hạn mức miễn phí trong Google AI Studio. Dùng dự án không bật thanh toán nếu yêu cầu không phát sinh phí; khả năng sử dụng và hạn mức do Google quyết định.

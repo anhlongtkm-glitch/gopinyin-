@@ -2,7 +2,9 @@
 
 **Cập nhật 27/10/2026:** áp dụng yêu cầu mới trong [kế hoạch hiện hành](GOPINYIN-REDESIGN-PLAN.md). Ảnh đối chiếu cũ là lịch sử thiết kế; các màn Thanh điệu và Shadowing đã được gỡ.
 
-Kiểm chứng trong workspace: 29 bộ kiểm thử đạt 406 kiểm tra sau lượt chạy toàn bộ và chạy lại hai bộ liên quan; kiểm thử đóng gói HTML/tài nguyên/file preview và bản build cuối đều đạt. Hai bộ chạy lại gồm fixture khôi phục tiến độ được cập nhật theo module âm thanh mới, và kiểm tra phím tắt bị timeout một lần nhưng đạt khi chạy riêng. Chưa gọi Gemini thật vì chưa có key chung, chưa triển khai production. Kết quả tổng hợp: `.cache/learning-update-validation.json`.
+**Bản sửa AI tiếp theo:** bỏ hoàn toàn bước AI soát lại nghĩa. Sửa tình huống yêu cầu tạo thêm bắt đầu khi còn hai mục, nhưng người học đã đi hết danh sách trước khi phản hồi về: trạng thái chờ được lấy ngay trước lúc nối dữ liệu để chuyển sang câu/từ mới và mở khóa ô nhập. Nếu API lỗi khi đã học hết, màn chờ chuyển sang tạm dừng và có Thử lại. Kiểm thử `ai_append_wait.cjs` tái hiện thao tác học thực tế cho cả bộ tạm và bộ đã lưu; `ai_generation_flow.cjs` xác nhận không có lượt soát nghĩa ngay cả khi máy còn lưu lựa chọn bật cũ.
+
+Kiểm chứng bản sửa AI: 30 bộ kiểm thử đạt 390 kiểm tra trong một lượt chạy đầy đủ; kiểm thử đóng gói HTML/tài nguyên/file preview và bản build cuối đều đạt. Các kiểm thử AI dùng phản hồi giả, không tiêu thụ hạn mức Gemini thật. Kết quả tổng hợp: `.cache/learning-update-validation.json`.
 
 ## Bản sửa lại theo ảnh đã duyệt
 

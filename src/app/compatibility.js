@@ -15,7 +15,7 @@ import { state as aiProvidersState, geminiUrl, aiLsGet, aiLsSet, aiKeyStore, aiK
 import { state as aiSessionState, aiSetStatus, aiShowGen, aiAppendRows, aiSavedSet, aiCurrentKind, aiCurrentUnit, aiFillMissingVi, aiRefreshAfterAppend, aiMaybeFill, aiStartStudy, aiEndSession, aiSessionLive } from "../features/ai/session.js";
 import { state as aiClientState, aiKindMeta, aiUnitOf, buildAiPrompt, callAi, callAiProxy, callOpenRouter } from "../features/ai/client.js";
 import { state as languagePinyinState, sanitizeLatinInChinese, splitPinyinSyllables, applyTone, numToneToDiacritic, canTakeErhua, splitPinyinKeepingErhua, fixPinyin, stripToneMarks } from "../shared/language/pinyin.js";
-import { aiRowVi, aiHanCount, aiSyllableCount, aiItemOk, state as aiValidationState, aiVerifyEnabled, aiZhKey, buildVerifyPrompt, parseVerifyResult, aiVerifyMeanings, parseAiSentences, aiCollect } from "../features/ai/validation.js";
+import { aiRowVi, aiHanCount, aiSyllableCount, aiItemOk, parseAiSentences, aiCollect } from "../features/ai/validation.js";
 import { loadProgress, resetSessionRuntime, save, exportProgress, importProgress } from "../features/typing/progress.js";
 import { state as storageImportFilesState, loadXLSX, ensureXLSX, splitWv } from "../shared/storage/import-files.js";
 import { openDataset, fillAppSource } from "../features/typing/datasets.js";
@@ -196,13 +196,6 @@ export function exposeCoreGlobals(){
  window["aiHanCount"] = aiHanCount;
  window["aiSyllableCount"] = aiSyllableCount;
  window["aiItemOk"] = aiItemOk;
- Object.defineProperty(window,"AI_VERIFY_KEY",{configurable:true,get:()=>aiValidationState.AI_VERIFY_KEY,set:value=>{aiValidationState.AI_VERIFY_KEY=value;}});
- Object.defineProperty(window,"aiVerifyFixedCount",{configurable:true,get:()=>aiValidationState.aiVerifyFixedCount,set:value=>{aiValidationState.aiVerifyFixedCount=value;}});
- window["aiVerifyEnabled"] = aiVerifyEnabled;
- window["aiZhKey"] = aiZhKey;
- window["buildVerifyPrompt"] = buildVerifyPrompt;
- window["parseVerifyResult"] = parseVerifyResult;
- window["aiVerifyMeanings"] = aiVerifyMeanings;
  window["parseAiSentences"] = parseAiSentences;
  window["aiCollect"] = aiCollect;
  window["loadProgress"] = loadProgress;

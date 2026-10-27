@@ -53,7 +53,7 @@ const WORDS = [
 
   // Stub AI: ghi lại prompt nhận được + trả về danh sách từ
   await page.evaluate((words) => {
-    window.__gpAiProxy = '/__ai_stub__';
+    window.APP_CONFIG.AI_PROXY_URL = '/__ai_stub__';
     window.__aiPrompts = [];
     const rf = window.fetch.bind(window);
     window.fetch = (url, opt) => {

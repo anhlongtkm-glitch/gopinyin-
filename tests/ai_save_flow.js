@@ -59,7 +59,7 @@ const FAKE = [
 
   // ── Giả lập AI: chặn fetch tới proxy, trả JSON câu mẫu ──
   await page.evaluate((fake) => {
-    window.__gpAiProxy = '/__ai_stub__';
+    window.APP_CONFIG.AI_PROXY_URL = '/__ai_stub__';
     window.__aiCalls = 0;
     const realFetch = window.fetch.bind(window);
     window.fetch = (url, opt) => {
