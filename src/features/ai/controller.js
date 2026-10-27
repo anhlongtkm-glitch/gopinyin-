@@ -36,6 +36,8 @@ export function aiSyncKindUI() {
   if (lab) lab.textContent = ui.q;
   if (sub) sub.textContent = ui.sub;
   if (ta) ta.placeholder = ui.ph;
+  const button = domState.$('aiStartBtn');
+  if (button && !button.disabled) button.textContent = kind === 'word' ? 'Tạo từ vựng và học' : kind === 'both' ? 'Tạo bài và học' : 'Tạo câu và học';
   if (hint) {
     hint.innerHTML = ui.hint;
     hint.style.display = ui.hint ? '' : 'none';
@@ -66,6 +68,12 @@ export function aiProviderRefresh() {
   if (h) h.innerHTML = cfg.keyHint;
   if (k) k.placeholder = cfg.ph;
   const proxy = !!aiProxyUrl();
+  const setup = domState.$('aiProviderSetup');
+  if (setup) setup.hidden = proxy;
+  if (sel) {
+    sel.disabled = proxy;
+    if (proxy) sel.value = aiProvidersState.AI_DEFAULT_PROVIDER;
+  }
   if (k) { k.disabled = proxy; if (proxy) k.value = ''; }
   if (a) a.hidden = proxy;
   if (h && proxy) h.textContent = 'Dịch vụ AI đã sẵn sàng. Bạn không cần nhập API key cá nhân.';

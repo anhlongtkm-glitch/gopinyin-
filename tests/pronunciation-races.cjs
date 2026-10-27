@@ -10,6 +10,7 @@ const path = require('node:path');
     './lesson.js': 'export const currentItem=()=>{const s=globalThis.pronRace.S;return s.items[s.order[s.index]];};export const nextItem=()=>{};',
     '../../app/routes.js': 'export const navigationVersion=()=>globalThis.pronRace.navigation;',
     './settings.js': 'export const sourceVersion=()=>globalThis.pronRace.source;',
+    './tts.js': 'export const cancelPronunciationSample=()=>{};',
     './meter.js': 'export const drawMeter=()=>{};',
     './microphone.js': 'export const state={PronMic:{release(){},cancelPending(){},stopMeter(){},stopRecorder(){}}};',
     './recognition.js': 'export const state={PronAsr:{stop(){},wait:()=>globalThis.pronRace.wait}};',

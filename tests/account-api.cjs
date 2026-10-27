@@ -17,7 +17,9 @@ const {startSupabaseFixture}=require('./helpers/supabase-fixture.cjs');
     }
     const headers={Authorization:'Bearer '+signup.access_token};
     assert.equal((await fetch(url+'/api/ai',{method:'POST',headers,body:'{}'})).status,400);
-    assert.equal((await fetch(url+'/api/ai',{method:'POST',headers,body:JSON.stringify({provider:'gemini',prompt:'Bài học'})})).status,500);
+    const missingAi = await fetch(url+'/api/ai',{method:'POST',headers,body:JSON.stringify({provider:'gemini',prompt:'Bài học'})});
+    assert.equal(missingAi.status,503);
+    assert.equal((await missingAi.json()).code,'ai_not_configured');
     assert.equal((await fetch(url+'/api/pron',{method:'POST',headers,body:'{}'})).status,501);
     fixture.tokens.delete(signup.access_token);
     assert.equal((await fetch(url+'/api/pron',{method:'POST',headers,body:'{}'})).status,401);

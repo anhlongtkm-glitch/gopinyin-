@@ -52,9 +52,10 @@ function clearRuntime() {
   stopActivities();
   document.querySelectorAll('#aiKey,#aiPrompt,#currentPassword,#newPassword').forEach(input => input.value = '');
   typingState.activeDataset = null; typingState.rows = []; typingState.order = []; typingState.wrongIds = new Set();
+  typingState.speechRate = 1; typingState.selectedVoiceName = '';
   typingState.reviewById = {};
   historyState.typingHistory = [];
-  if (pronState.S) { pronState.S.items = []; pronState.S.progress = null; pronState.S.result = null; pronState.S.record = null; pronState.S.lastSource = ''; pronState.S.source = 'current'; pronState.S.settings = {rate:1,voice:'',autoSample:false,autoNext:false,showPy:true,showHan:true,showVi:true,filter:'all'}; }
+  if (pronState.S) { pronState.S.items = []; pronState.S.progress = null; pronState.S.result = null; pronState.S.record = null; pronState.S.lastSource = ''; pronState.S.source = 'current'; pronState.S.settings = {rate:1,voice:'',autoSample:true,autoNext:false,showPy:true,showHan:true,showVi:true,filter:'all'}; }
   if (gameState.state) { gameState.state.suspended = false; gameState.state.running = false; gameState.state.score = 0; gameState.state.pool = []; }
   loadWeakSpeed(); refreshDash(); renderVocab();
   document.querySelectorAll('#aiSetsList,#pronLibHsk,#rankPodium,#rankBody').forEach(e => e.replaceChildren());

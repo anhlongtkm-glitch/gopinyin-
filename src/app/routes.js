@@ -18,10 +18,3 @@ export function writeRoute(view, dataset = '', replace = false, review = '', mod
   if (location.hash === hash) return;
   history[replace ? 'replaceState' : 'pushState'](null, '', location.pathname + location.search + hash);
 }
-
-export function writeVideoRoute(id,replace=false){
- if(location.hash&&!location.hash.startsWith('#/'))return;
- const hash='#/shadowVideo?'+new URLSearchParams({video:id});
- if(location.hash===hash)return;
- history[replace?'replaceState':'pushState'](null,'',location.pathname+location.search+hash);
-}

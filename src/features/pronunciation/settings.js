@@ -14,7 +14,8 @@ import { state as pronunciationSessionState } from "./session.js";
 
 import { state as pronunciationStorageState } from "./storage.js";
 
-import { state as pronunciationTtsState } from "./tts.js";
+import { state as pronunciationTtsState, schedulePronunciationSample } from "./tts.js";
+import { speechPreferences, sharedSpeechPreferences, setSpeechRateSelect } from '../../shared/audio/voice-policy.js';
 
 import { lsJson, lsSet, state as pronunciationUtilsState, esc, clamp } from "./utils.js";
 
@@ -30,7 +31,7 @@ export function loadSettings() {
     pronunciationSessionState.S.settings = Object.assign(pronunciationSessionState.S.settings, {
       rate: Number(d.rate) || 1,
       voice: d.voice || '',
-      autoSample: !!d.autoSample,
+      autoSample: d.autoSample !== false,
       autoNext: !!d.autoNext,
       showPy: d.showPy !== false,
       showHan: d.showHan !== false,
@@ -38,18 +39,20 @@ export function loadSettings() {
       filter: d.filter || 'all'
     });
   }
+  Object.assign(pronunciationSessionState.S.settings, speechPreferences(pronunciationSessionState.S.settings));
 }
 
 export function saveSettings() {
-  lsSet(pronunciationSessionState.SETTINGS_KEY, JSON.stringify(pronunciationSessionState.S.settings));
+  lsSet(pronunciationSessionState.SETTINGS_KEY, JSON.stringify({...pronunciationSessionState.S.settings, sharedAudio:sharedSpeechPreferences()}));
 }
 
 export function syncToolbar() {
+  Object.assign(pronunciationSessionState.S.settings, speechPreferences(pronunciationSessionState.S.settings));
   const set = (id, v) => {
     const el = pronunciationUtilsState.$(id);
     if (el) el.value = v;
   };
-  set('pronRate', String(pronunciationSessionState.S.settings.rate));
+  setSpeechRateSelect(pronunciationUtilsState.$('pronRate'), pronunciationSessionState.S.settings.rate);
   set('pronFilter', pronunciationSessionState.S.settings.filter);
   const tgl = (id, on) => {
     const b = pronunciationUtilsState.$(id);
@@ -68,7 +71,8 @@ export function fillVoices() {
   const sel = pronunciationUtilsState.$('pronVoice');
   if (!sel) return;
   const list = pronunciationTtsState.PronTts.voices();
-  const cur = pronunciationSessionState.S.settings.voice;
+  const cur = speechPreferences(pronunciationSessionState.S.settings).voice;
+  pronunciationSessionState.S.settings.voice = cur;
   /* Rút gọn nhãn: tên giọng của Windows/Edge rất dài
      ("Microsoft Xiaoxiao Online (Natural) - Chinese (Mainland)") → trên
      điện thoại sẽ đẩy thanh công cụ rộng quá khung. */
@@ -76,12 +80,12 @@ export function fillVoices() {
     const n = String(v.name || '').replace(/^Microsoft\s+/i, '').replace(/\s*-\s*Chinese.*$/i, '');
     return (n.length > 26 ? n.slice(0, 24) + '…' : n) + ' · ' + (v.lang || '');
   };
-  sel.innerHTML = '<option value="">Giọng tự động</option>' + list.map(v => '<option value="' + esc(v.name) + '">' + esc(label(v)) + '</option>').join('');
-  sel.value = list.some(v => v.name === cur) ? cur : '';
+  const unavailable = cur && !['__male__','__female__'].includes(cur) && !list.some(v => v.name === cur);
+  sel.innerHTML = '<option value="">Tự động · ưu tiên Google tiếng Trung</option><option value="__male__">Giọng nam</option><option value="__female__">Giọng nữ</option>' + (unavailable ? '<option value="' + esc(cur) + '">' + esc(cur) + ' (chưa khả dụng)</option>' : '') + list.map(v => '<option value="' + esc(v.name) + '">' + esc(label(v)) + '</option>').join('');
+  sel.value = cur;
   if (!list.length) {
-    sel.innerHTML = '<option value="">Giọng tự động</option>';
     sel.title = 'Trình duyệt chưa có giọng đọc tiếng Trung nào — hãy cài thêm gói giọng tiếng Trung.';
-  }
+  } else sel.title = 'Ưu tiên giọng Google tiếng Trung khi trình duyệt có sẵn; có thể chọn giọng khác.';
 }
 
 export async function fillSources() {
@@ -133,25 +137,7 @@ export async function loadSource(srcId, keepId) {
   renderCard();
   renderResult();
   renderStats();
-  /* ★ D.2: mới vào một chủ đề (keepId rỗng = vào mới, không phải khôi phục
-     giữa chừng) → tự đọc to câu tiếng Trung ĐẦU TIÊN ĐÚNG 1 LẦN, không phụ
-     thuộc nút "Tự nghe mẫu". Khôi phục giữa chừng (keepId) giữ nguyên behaviour
-     cũ: chỉ đọc nếu người dùng bật "Tự nghe mẫu". */
-  if (!keepId) {
-    setTimeout(() => {
-      const it = currentItem();
-      if (request === sourceRequest && navigation === navigationVersion() && !pronunciationUtilsState.$('pronCard').classList.contains('hidden') && it && it.zh) pronunciationTtsState.PronTts.speak(it.zh, {
-        rate: pronunciationSessionState.S.settings.rate
-      });
-    }, 340);
-  } else if (pronunciationSessionState.S.settings.autoSample) {
-    setTimeout(() => {
-      const it = currentItem();
-      if (request === sourceRequest && navigation === navigationVersion() && !pronunciationUtilsState.$('pronCard').classList.contains('hidden') && it && it.zh) pronunciationTtsState.PronTts.speak(it.zh, {
-        rate: pronunciationSessionState.S.settings.rate
-      });
-    }, 300);
-  }
+  schedulePronunciationSample();
   return true;
 }
 

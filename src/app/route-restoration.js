@@ -1,4 +1,3 @@
-import { openShadowVideo } from '../features/shadowing/controller.js';
 import { readRoute, writeRoute, markNavigation, navigationVersion } from './routes.js';
 import { showView } from './navigation.js';
 import { openDataset } from '../features/typing/datasets.js';
@@ -10,8 +9,9 @@ export function initializeRouteRestoration() {
     const route = readRoute();
     if (!route) { if (!location.hash) await showView('dash', { route: false }); return; }
     const navigation = markNavigation();
-    if (route.view === 'shadowVideo') {
-      await openShadowVideo(route.video,{route:false,navigation});
+    if (['tones','shadow','shadowVideo','shadowText'].includes(route.view)) {
+      await showView('readings', {route:false,navigation});
+      if (navigation === navigationVersion()) writeRoute('readings', '', true);
     } else if (route.view === 'study' && route.dataset) {
       const opened = await openDataset(route.dataset, { route: false, review: route.review, navigation, practiceMode:route.mode });
       if (opened === false && navigation === navigationVersion()) {

@@ -41,7 +41,7 @@ export function initializeTypingSession() {
   typingSessionState.composing = false;
   typingSessionState.awaitingEnter = false;
   typingSessionState.autoSound = true;
-  typingSessionState.speechRate = 0.8;
+  typingSessionState.speechRate = 1;
   typingSessionState.selectedVoiceName = '';
   typingSessionState.showVietnamese = true;
   typingSessionState.showHanzi = true;

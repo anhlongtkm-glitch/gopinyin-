@@ -13,7 +13,7 @@ let level = 1, resumeRequest = 0, initialized = false;
 const groupCache = /* @__PURE__ */ new Map();
 const libraryVisible = () => !$("libraryCard").classList.contains("hidden");
 function groups() {
-  const source = level === 1 ? readings : catalog.HSK_DATA["hsk" + level];
+  const source = catalog.HSK_DATA["hsk" + level];
   const cached = groupCache.get(level);
   if (cached?.source === source) return cached.groups;
   const result = buildGroups();
@@ -25,7 +25,6 @@ function visibleGroups() {
   return groups().filter((g) => (g.title + " " + g.topic).toLocaleLowerCase("vi").includes(query));
 }
 function buildGroups() {
-  if (level === 1) return readings.map((r) => ({ level, id: "hsk1-topic:" + r.id, title: r.title, topic: r.topic, rows: r.lines.map(([zh, py, vi], id) => ({ id, zh, py, vi })) }));
   const rows = (catalog.HSK_DATA["hsk" + level] || []).filter((r) => r && r[0] && r[2]);
   const size = Math.ceil(rows.length / 6);
   return Array.from({ length: 6 }, (_, i) => ({ level, id: `hsk${level}-part:${i + 1}`, title: `Chặng ${String(i + 1).padStart(2, "0")}`, topic: `Câu ${i * size + 1}–${Math.min(rows.length, (i + 1) * size)}`, rows: rows.slice(i * size, (i + 1) * size).map(([zh, py, vi], id) => ({ id, zh, py, vi })) })).filter((g) => g.rows.length);
@@ -36,8 +35,8 @@ function renderGroups() {
   $("practiceGroups").hidden = !active;
   $("hskLevelPicker").hidden = !active;
   if (!active) return;
-  $("practiceGroupsTitle").textContent = `HSK ${level} · ${level === 1 ? "Các nhóm chủ đề" : "Các chặng luyện tập"}`;
-  $("practiceGroupsCaption").textContent = level === 1 ? "Bộ HSK 1 do GoPinyin biên soạn" : "Chia chặng từ bộ câu HSK hiện có";
+  $("practiceGroupsTitle").textContent = `HSK ${level} · Các chặng luyện tập`;
+  $("practiceGroupsCaption").textContent = `Đủ ${groups().reduce((sum, group) => sum + group.rows.length, 0)} câu · Chia chặng từ bộ câu HSK hiện có`;
   $("practiceGroupList").innerHTML = visibleGroups().map((g, i) => {
     const completed = Math.min(g.rows.length, Number(loadProgress("practice:" + g.id)?.mainIndex) || 0);
     return `<button type="button" class="practiceGroupCard" data-practice-group="${i}"><span class="groupIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h7a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4zm10 3a3 3 0 0 1 3-3h4v15h-3a4 4 0 0 0-4 2"/></svg></span><span class="featureEyebrow">HSK ${level} · ${safe(g.topic)}</span><b>${safe(g.title)}</b><span>${completed} / ${g.rows.length} câu · Gõ / Nói</span><progress max="${g.rows.length}" value="${completed}" aria-label="Tiến độ Gõ"></progress><small>Bắt đầu luyện <span aria-hidden="true">→</span></small></button>`;
@@ -80,7 +79,7 @@ function initializePracticeCatalog() {
   const root = $("libraryCard");
   document.addEventListener("gp:practice-reading", (e) => {
     const r = readings.find((x) => x.id === e.detail);
-    if (r) void openGroup({ level: 1, id: "hsk1-topic:" + r.id, title: r.title, rows: r.lines.map(([zh, py, vi], id) => ({ id, zh, py, vi })) }, { forceTyping: true });
+    if (r) void openGroup({ level: r.level, id: `reading:hsk${r.level}:${r.id}:v${r.revision}`, title: r.title, rows: r.lines.map(([zh, py, vi], id) => ({ id, zh, py, vi })) }, { forceTyping: true });
   });
   $("hskLevelPicker").innerHTML = Array.from({ length: 9 }, (_, i) => `<button type="button" data-hsk-level="${i + 1}" aria-pressed="${i === 0}">HSK ${i + 1}</button>`).join("");
   document.addEventListener("click", (e) => {

@@ -236,14 +236,14 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
   let out = [],
     tries = 0,
     emptyTries = 0,
-    failTries = 0,
+    failure = null,
     stopped = '',
     skipped = 0;
   while (active() && out.length < target && tries < maxTries) {
     tries++;
     if (onProgress) onProgress(out.length, target, tries);
     try {
-      const text = await callAi(provider, key, buildAiPrompt(userText, CHUNK, level, [...seen], kind));
+      const text = await callAi(provider, key, buildAiPrompt(userText, Math.min(CHUNK, target - out.length), level, [...seen], kind));
       if (!active()) break;
       const parsed = parseAiSentences(text);
       const got = parsed.filter(x => !seen.has(x.zh));
@@ -256,30 +256,31 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
         }
       } else {
         emptyTries = 0;
-        got.forEach(x => seen.add(x.zh));
-        out = out.concat(got);
+        const accepted = got.slice(0, target - out.length);
+        accepted.forEach(x => seen.add(x.zh));
+        out = out.concat(accepted);
       }
     } catch (e) {
       if (!active()) break;
-      failTries++;
-      if (!out.length && failTries >= 3) throw e; // lỗi liên tục mà chưa lấy được gì → báo lỗi
-      if (failTries >= 5) {
-        stopped = 'máy chủ AI lỗi liên tục';
-        break;
-      }
-      await new Promise(r => setTimeout(r, 900)); // nghỉ chút rồi thử lại
+      // A failed request must not spend more free quota in an automatic retry loop.
+      if (!out.length) throw e;
+      failure = e;
+      stopped = e.message;
+      break;
     }
   }
   if (out.length > target) out = out.slice(0, target); // giữ đúng số câu đã chọn
   /* ★ SOÁT LẠI NGHĨA VIỆT ↔ CHỮ HÁN trước khi đưa vào bài học.
      Không có bước này thì nghĩa sai vẫn lọt (vd 批量 → "số lượng lớn").
      Lỗi mạng / AI không trả lời → giữ nguyên bản, KHÔNG chặn việc học. */
-  if (active() && out.length && aiVerifyEnabled()) {
+  if (active() && out.length && !failure && aiVerifyEnabled()) {
     try {
       aiSetStatus('🔍 Đang soát lại nghĩa tiếng Việt cho khớp với chữ Hán…');
       out = await aiVerifyMeanings(out, provider, key, active);
       if (active()) aiSetStatus('');
     } catch (e) {
+      // Verification is optional, but quota exhaustion still pauses generation.
+      if ([429, 402].includes(e.status)) { failure = e; stopped = e.message; }
       /* bỏ qua: thà học với nghĩa gốc còn hơn không có gì để học */try {
         if (active()) aiSetStatus('');
       } catch (_) {}
@@ -287,6 +288,7 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
   }
   return {
     items: out,
+    error: failure,
     stopped: stopped,
     tries: tries,
     skipped: skipped

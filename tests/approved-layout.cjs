@@ -21,7 +21,7 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  await view('practice');assert.equal(await page.locator('.practiceGroupCard').count(),6);await page.click('[data-hsk-level="2"]');assert.equal(await page.locator('.practiceGroupCard').count(),6);
  const total=await page.locator('.practiceGroupCard>span:not(.featureEyebrow):not(.groupIcon)').allTextContents();assert.equal(total.reduce((sum,text)=>sum+Number(text.match(/\/\s*(\d+)/)?.[1]||0),0),558,'Six HSK 2 stages must cover every existing sentence');
  await page.click('[data-hsk-level="1"]');await shot('practice-light-1440');
- await page.click('[data-practice-group="0"]');await page.locator('#appCard').waitFor({state:'visible'});assert.equal(await page.evaluate(()=>window.activeDataset.id),'practice:hsk1-topic:hello');
+ await page.click('[data-practice-group="0"]');await page.locator('#appCard').waitFor({state:'visible'});assert.equal(await page.evaluate(()=>window.activeDataset.id),'practice:hsk1-part:1');
  const preservedGroup=await page.locator('[data-practice-group="0"]').elementHandle();
  const main=await rect('#appCard .studyMainPanel'),aside=await rect('#appCard .studyContext');assert(aside.x>=main.x+main.width+18&&main.width>900,'Typing must use a wide learning card and a distinct right-hand context column');
  await page.click('#hintBtn');await page.locator('#appCard').scrollIntoViewIfNeeded();await page.evaluate(()=>scrollTo(0,0));await shot('typing-light-1440');
@@ -29,13 +29,12 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  assert(await preservedGroup.evaluate(node=>node.isConnected),'Switching study mode must not rebuild the hidden HSK catalog');
  console.log('  PASS HSK topic/stage cards load real content and both study modes use the approved two-column shell');
  await view('readings');await page.click('[data-reading="family"]');await page.evaluate(()=>scrollTo(0,0));await shot('reading-light-1440');
- await page.click('[data-reading-shadow="family"]');await page.locator('#shadowTextCard').waitFor({state:'visible'});assert.equal(await page.inputValue('#shadowSource'),'1');await shot('shadow-light-1440');
- await view('tones');await page.click('#toneStart');assert(await page.locator('#toneExamples').isHidden());await shot('tones-light-1440');
- await view('games');await shot('games-light-1440');await view('bear');assert.equal(await page.locator('#bearBadges .bearBadge').count(),6);assert.equal(await page.locator('.bearMilestone').count(),4);await shot('bear-light-1440');
- console.log('  PASS reading-to-shadowing keeps the selected lesson; feature pages and badge/milestone panels have distinct approved structures');
+ await page.click('[data-reading-practice="family"]');await page.locator('#appCard').waitFor({state:'visible'});assert.equal(await page.evaluate(()=>window.activeDataset.id),'practice:reading:hsk1:family:v2');
+ await view('games');await shot('games-light-1440');await view('bear');assert.equal(await page.locator('#bearBadges .bearBadge').count(),4);assert.equal(await page.locator('.bearMilestone').count(),4);await shot('bear-light-1440');
+ console.log('  PASS reading-to-practice keeps the selected lesson; feature pages and badge/milestone panels have distinct approved structures');
  for(const theme of ['light','dark'])for(const width of [360,390,768,1024,1440]){
   await page.setViewportSize({width,height:width<500?844:1000});await page.evaluate(theme=>window.applyTheme(theme),theme);
-  for(const name of ['dash','practice','tones','shadow','games','bear']){
+  for(const name of ['dash','practice','readings','ai','games','bear']){
    await view(name);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${name}/${theme}/${width} overflows`);
    if([390,1440].includes(width))await shot(`${name}-${theme}-${width}`);
   }

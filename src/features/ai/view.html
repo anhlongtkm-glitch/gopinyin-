@@ -2,8 +2,8 @@
     <div class="aiViewHead featureIntro">
       <div>
         <span class="featureEyebrow">Bài học theo ý bạn</span>
-        <h2>Cùng gấu tạo câu mới</h2>
-        <div class="small">Viết chủ đề bạn muốn học → AI tạo câu mới kèm pinyin &amp; nghĩa tiếng Việt.</div>
+        <h2>Học bằng AI theo chủ đề của bạn</h2>
+        <div class="small">Chọn học câu hoặc từ vựng, viết yêu cầu rồi học ngay với chữ Hán, pinyin và nghĩa tiếng Việt.</div>
       </div>
       <div id="aiMascot" data-mascot="ready" data-mascot-size="card" aria-hidden="true"></div>
     </div>
@@ -50,7 +50,7 @@
         </div>
         <details class="aiDetails">
           <summary>Tuỳ chọn nâng cao</summary>
-          <div class="aiControls">
+          <div id="aiProviderSetup" class="aiControls" hidden>
             <label class="aiField">Nhà cung cấp AI
               <select id="aiProvider" class="select">
                 <option value="gemini">Google Gemini — API key miễn phí (khuyên dùng)</option>
@@ -69,7 +69,7 @@
             <input type="checkbox" id="aiVerify" checked />
             <span>🔍 <b>Soát lại nghĩa Việt ↔ chữ Hán</b> sau khi tạo <small>(khuyên bật — tốn thêm 1 lượt gọi AI)</small></span>
           </label>
-          <div class="aiHint"><b>Cách dùng:</b> chọn <b>“Học gì”</b> (Câu hoàn chỉnh / Từ vựng / Cả hai) → viết chủ đề → bấm “học ngay”. AI viết đợt đầu, rồi <b>hỏi bạn có lưu lại không</b>:<br />• <b>💾 Lưu lại</b> → đặt tên → bộ nằm trong <b>“Bộ AI đã lưu”</b> ngay bên dưới; lần sau bấm <b>“Học tiếp”</b> là vào <b>đúng chỗ bạn đang học dở</b>.<br />• <b>Không lưu</b> → chỉ học tạm lần này, thoát ra là hết, không ghi gì vào máy.<br />Khi đang học, <b>sắp hết là AI tự viết tiếp</b> — nội dung mới được cộng dồn vào bộ đã lưu. Nội dung AI tạo ra <b>không bao giờ lặp lại</b> nhau trong cùng chủ đề.<br /><br /><b>Gemini (khuyên dùng):</b> ổn định, chất lượng cao — bấm <b>“🔑 Lấy API key Gemini (miễn phí)”</b> để mở trang lấy key, dán key vào ô <b>API key</b> là dùng được. Key <b>miễn phí</b>, chỉ lưu trên máy bạn.<br /><b>OpenRouter:</b> dự phòng khi Gemini hết hạn mức — bấm <b>“🔑 Lấy API key OpenRouter”</b>, tạo key miễn phí rồi dán vào ô API key.</div>
+          <div class="aiHint">Chọn <b>Câu hoàn chỉnh / Từ vựng / Cả hai</b>, viết chủ đề và bấm tạo. Bạn có thể lưu bộ để học tiếp đúng chỗ đang dở hoặc học tạm. Khi gần hết nội dung, AI tự viết tiếp theo cùng yêu cầu và tránh lặp lại các mục đã có. Dịch vụ dùng hạn mức API miễn phí của website; khi hết lượt, bạn vẫn học được nội dung đã tạo và có thể thử lại sau.</div>
         </details>
         <div id="aiStatus" class="aiStatus" role="status" aria-live="polite"></div>
       </div>

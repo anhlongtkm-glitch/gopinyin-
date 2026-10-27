@@ -66,7 +66,7 @@ export function initializePronunciationSession() {
     settings: {
       rate: 1,
       voice: '',
-      autoSample: false,
+      autoSample: true,
       autoNext: false,
       showPy: true,
       showHan: true,

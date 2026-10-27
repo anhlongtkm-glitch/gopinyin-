@@ -68,7 +68,6 @@ import { initializeStudySettings } from "../shared/study/settings.js";
 import { initializePracticeBridge } from "../features/practice/bridge.js";
 import { initializeStudyPresentation } from "../shared/study/presentation.js";
 import { initializePracticeCatalog } from "../features/practice/catalog-controller.js";
-import { initializeShadowing } from "../features/shadowing/controller.js";
 import { initializeJourney } from "../features/journey/controller.js";
 import { initializeCelebrations } from "../shared/celebrations.js";
 function initializeCore() {
@@ -161,7 +160,6 @@ function initializeApplication() {
   initializePracticeCatalog();
   initializeCelebrations();
   initializeJourney();
-  initializeShadowing();
   initializeRouteRestoration();
 }
 export {

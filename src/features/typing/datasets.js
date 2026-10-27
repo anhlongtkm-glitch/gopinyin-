@@ -20,6 +20,7 @@ import { render } from "./render.js";
 import { state as typingSessionState } from "./session.js";
 
 import { populateVoiceSelect } from "../../shared/audio/tts.js";
+import { speechPreferences, setSpeechRateSelect } from '../../shared/audio/voice-policy.js';
 
 import { state as domState } from "../../shared/dom.js";
 
@@ -59,7 +60,7 @@ export async function openDataset(id, options = {}) {
   if (restored.mainOrder !== null) {
     typingSessionState.wrongIds = new Set(Array.isArray(saved.wrongIds) ? saved.wrongIds : []);
     typingSessionState.autoSound = saved.autoSound !== false;
-    typingSessionState.speechRate = Number(saved.speechRate) || 0.8;
+    typingSessionState.speechRate = Number(saved.speechRate) || 1;
     typingSessionState.selectedVoiceName = String(saved.selectedVoiceName || '');
     typingSessionState.showVietnamese = saved.showVietnamese !== false;
     typingSessionState.showHanzi = saved.showHanzi !== false;
@@ -67,12 +68,15 @@ export async function openDataset(id, options = {}) {
   } else {
     typingSessionState.wrongIds = new Set();
     typingSessionState.autoSound = true;
-    typingSessionState.speechRate = .8;
+    typingSessionState.speechRate = 1;
     typingSessionState.selectedVoiceName = '';
     typingSessionState.showVietnamese = true;
     typingSessionState.showHanzi = true;
     typingSessionState.readOnType = true;
   }
+  const audio = speechPreferences({rate:typingSessionState.speechRate,voice:typingSessionState.selectedVoiceName});
+  typingSessionState.speechRate = audio.rate;
+  typingSessionState.selectedVoiceName = audio.voice;
   typingSessionState.mode = 'all';
   typingSessionState.order = [...typingSessionState.mainOrder];
   typingSessionState.index = typingSessionState.mainIndex;
@@ -81,7 +85,7 @@ export async function openDataset(id, options = {}) {
     typingSessionState.order = selectReviewRows(typingSessionState.rows, typingSessionState.reviewById, [...typingSessionState.wrongIds], options.review);
     typingSessionState.index = 0;
   }
-  domState.$('rateSelect').value = String(typingSessionState.speechRate);
+  setSpeechRateSelect(domState.$('rateSelect'), typingSessionState.speechRate);
   populateVoiceSelect();
   updateSoundUI();
   updateReadTypeUI();

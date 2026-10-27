@@ -32,6 +32,7 @@ function cors(res) {
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.setHeader('Access-Control-Expose-Headers', 'Retry-After');
 }
 function json(res, code, data, withCors) {
   if (withCors) cors(res);
@@ -45,13 +46,23 @@ function readBody(req) {
 }
 
 /* ── AI PROXY: app gửi prompt, server giữ key (AI_KEY_*) → client không lưu plaintext ── */
-async function serverCallAi(provider,key,prompt,image){
+function aiUpstreamError(response, provider) {
+  const limited = response.status === 429 || response.status === 402;
+  const retryAfter = response.headers.get('Retry-After');
+  return Object.assign(new Error(limited
+    ? 'Đã hết lượt AI miễn phí hoặc dịch vụ đang bận. Đợi rồi bấm Thử lại; nội dung đã tạo vẫn học được.'
+    : provider + ' chưa trả được bài học (HTTP ' + response.status + '). Chủ website cần kiểm tra model và cấu hình dịch vụ.'), {
+    status: limited ? 429 : 502,
+    retryAfter: limited ? retryAfter || '60' : null
+  });
+}
+async function serverCallAi(provider,key,prompt,image,temperature=.9){
   if(provider==='openrouter'){
     const content=(image&&image.data)
       ? [{type:'text',text:prompt},{type:'image_url',image_url:{url:'data:'+image.mime+';base64,'+image.data}}]
       : prompt;
-    const resp=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',signal:AbortSignal.timeout(UPSTREAM_TIMEOUT),headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:OPENROUTER_MODEL,messages:[{role:'user',content:content}],temperature:.9})});
-    if(!resp.ok)throw new Error('OpenRouter lỗi '+resp.status);
+    const resp=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',signal:AbortSignal.timeout(UPSTREAM_TIMEOUT),headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:OPENROUTER_MODEL,messages:[{role:'user',content:content}],temperature})});
+    if(!resp.ok)throw aiUpstreamError(resp, 'OpenRouter');
     const d=await resp.json();
     const t=d&&d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
     if(!t)throw new Error('OpenRouter không trả nội dung.');
@@ -59,8 +70,8 @@ async function serverCallAi(provider,key,prompt,image){
   }
   const reqParts=[{text:prompt}];
   if(image&&image.data)reqParts.push({inline_data:{mime_type:image.mime,data:image.data}});
-  const resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(GEMINI_MODEL)+':generateContent',{method:'POST',signal:AbortSignal.timeout(UPSTREAM_TIMEOUT),headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{parts:reqParts}],generationConfig:{temperature:.9}})});
-  if(!resp.ok)throw new Error('Gemini lỗi '+resp.status);
+  const resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(GEMINI_MODEL)+':generateContent',{method:'POST',signal:AbortSignal.timeout(UPSTREAM_TIMEOUT),headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({contents:[{parts:reqParts}],generationConfig:{temperature}})});
+  if(!resp.ok)throw aiUpstreamError(resp, 'Gemini');
   const d=await resp.json();
   const parts=d&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts;
   const t=parts?parts.map(p=>p.text||'').join(''):'';
@@ -148,17 +159,21 @@ async function handleRequest(req, res) {
   if (url.pathname === '/api/ai' && req.method === 'POST') {
     const parsed = await readBody(req);
     if (parsed === null) return json(res, 413, { ok: false, error: 'body too large' }, true);
-    const { provider, prompt, image } = parsed.data || {};
+    const { provider = 'gemini', prompt, image, temperature = .9 } = parsed.data || {};
     if (!['gemini','openrouter'].includes(provider) || typeof prompt !== 'string' || !prompt.trim() || prompt.length > 50000 ||
+      typeof temperature !== 'number' || !Number.isFinite(temperature) || temperature < 0 || temperature > 2 ||
       (image != null && (!['image/png','image/jpeg','image/webp'].includes(image.mime) || typeof image.data !== 'string'))) {
       return json(res, 400, { ok: false, error: 'Nội dung hoặc nhà cung cấp AI không hợp lệ.' }, true);
     }
     const key = provider === 'openrouter' ? AI_KEY_OPENROUTER : AI_KEY_GEMINI;
-    if (!key) return json(res, 500, { ok: false, error: 'server chưa cấu hình key cho ' + provider }, true);
+    if (!key) return json(res, 503, { ok: false, code: 'ai_not_configured', error: 'Dịch vụ AI của website chưa được cấu hình. Chủ website cần đặt ' + (provider === 'gemini' ? 'AI_KEY_GEMINI' : 'AI_KEY_OPENROUTER') + ' trên máy chủ rồi triển khai lại. Bạn không cần nhập API key cá nhân.' }, true);
     try {
-      const text = await serverCallAi(provider, key, prompt, image);
+      const text = await serverCallAi(provider, key, prompt, image, temperature);
       return json(res, 200, { ok: true, text }, true);
-    } catch (e) { return json(res, 502, { ok: false, error: (e && e.message) || String(e) }, true); }
+    } catch (e) {
+      if (e.retryAfter) res.setHeader('Retry-After', e.retryAfter);
+      return json(res, e.status || 502, { ok: false, error: e.status ? e.message : 'Không kết nối được dịch vụ AI. Kiểm tra mạng rồi bấm Thử lại.' }, true);
+    }
   }
 
   /* ── 2d. PRONUNCIATION ASSESSMENT: chấm phát âm thật, key GIỮ Ở SERVER ★ ──

@@ -27,21 +27,17 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  await page.evaluate(()=>window.showView('readings'));
  assert.equal(await page.locator('[data-reading]').count(),6);
  await page.click('[data-reading="hello"]');
- await page.check('[name=q0][value="0"]');await page.check('[name=q1][value="1"]');await page.check('[name=q2][value="0"]');
+ const {readings}=await import('data:text/javascript;base64,'+Buffer.from(fs.readFileSync(path.join(__dirname,'../src/features/journey/content.js'),'utf8')).toString('base64'));
+ const answers=readings.find(r=>r.id==='hello').questions.map(q=>q[2]);
+ for(let i=0;i<3;i++)await page.check(`[name=q${i}][value="${i===2?(answers[i]+1)%3:answers[i]}"]`);
  await page.click('#readingQuiz button[type=submit]');assert.match(await page.textContent('#readingResult'),/2\/3/);
  await page.click('#readingQuiz button[type=submit]');
  await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/25 XP/);
  console.log('  PASS original reading grades comprehension and grants completion plus quest XP once');
- await page.evaluate(()=>window.showView('tones'));await page.click('#toneStart');
- const hanToTone={'妈':0,'麻':1,'马':2,'骂':3,'吗':4};
- for(let i=0;i<5;i++){const han=(await page.locator('#toneQuiz [lang]').textContent()).trim();await page.click(`[data-tone-answer="${hanToTone[han]}"]`);}
- await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/35 XP/);
- console.log('  PASS tone round accepts five correct answers and stores the earned XP');
- await page.evaluate(()=>window.showView('shadowText'));await page.click('#shadowRecord');await page.waitForFunction(()=>document.getElementById('shadowStatus').textContent.includes('Đang ghi âm'));
- await page.waitForTimeout(2200);await page.click('#shadowRecord');await page.locator('#shadowPlayback').waitFor({state:'visible'});
- assert.match(await page.textContent('#shadowStatus'),/chưa phải kết quả chấm/);
- await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/40 XP/);assert.equal(await page.locator('#shadowPlayback').getAttribute('src'),null);
- console.log('  PASS shadowing records a real local blob, awards one valid clip and clears it on navigation');
+ assert.equal(await page.locator('#tonesCard,#shadowCard,#shadowTextCard,#shadowVideoCard').count(),0);
+ for(const retired of ['tones','shadow','shadowVideo','shadowText']){await page.evaluate(view=>window.showView(view),retired);assert(await page.locator('#readingsCard').isVisible());}
+ await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/25 XP/);
+ console.log('  PASS retired features redirect safely and do not change earned XP');
  await page.click('.bearPreferences summary');await page.selectOption('#journeyEffects','off');assert.equal(await page.evaluate(()=>document.documentElement.dataset.effects),'off');
  await page.evaluate(async()=>{await window.dbPut({id:'journey-draft',name:'Nháp Gõ / Nói',rows:[{id:0,zh:'你好。',py:'nǐ hǎo',vi:'Xin chào.'}],createdAt:Date.now(),updatedAt:Date.now()});await window.openDataset('journey-draft');window.autoSound=false;window.readOnType=false;});
  await page.fill('#pinyinInput','你');await page.evaluate(()=>{const el=document.getElementById('pinyinInput');el.setSelectionRange(0,1);});
@@ -56,7 +52,7 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  console.log('  PASS legacy pronunciation sources also switch into the matching typing dataset and sentence');
  for(const theme of ['light','dark'])for(const [width,height]of [[360,740],[390,844],[768,1024],[1024,768],[1440,1000],[844,390]]){
   await page.setViewportSize({width,height});await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;},theme);
-  for(const view of ['dash','practice','readings','tones','shadow','bear']){
+  for(const view of ['dash','practice','readings','ai','bear']){
    await page.evaluate(view=>window.showView(view),view);await page.waitForTimeout(100);
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);assert.equal(overflow,false,`${view} ${theme} ${width} overflows`);
   }

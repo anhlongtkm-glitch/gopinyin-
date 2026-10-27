@@ -50,14 +50,14 @@ function openMore() {
 }
 
 export function syncMobileNavigation() {
-  let view = isVisible('appCard') || isVisible('libraryCard') || isVisible('pronCard') || isVisible('pronLibCard') ? 'practice' : isVisible('bearCard') ? 'bear' : isVisible('readingsCard') ? 'readings' : isVisible('tonesCard') ? 'tones' : (isVisible('shadowCard') || isVisible('shadowVideoCard') || isVisible('shadowTextCard')) ? 'shadow' : isVisible('aiCard') ? 'ai' : isVisible('gameCard') || isVisible('gamesCard') ? 'games' : isVisible('rankCard') ? 'rank' : 'dash';
+  let view = isVisible('appCard') || isVisible('libraryCard') || isVisible('pronCard') || isVisible('pronLibCard') ? 'practice' : isVisible('bearCard') ? 'bear' : isVisible('readingsCard') ? 'readings' : isVisible('aiCard') ? 'ai' : isVisible('gameCard') || isVisible('gamesCard') ? 'games' : isVisible('rankCard') ? 'rank' : 'dash';
   document.querySelectorAll('[data-mobile-view]').forEach(button => {
     if (button.dataset.mobileView === view) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
   });
   const more = document.getElementById('mobileMoreBtn');
   if (more) {
-    if (['ai', 'rank','readings','tones','shadow'].includes(view)) more.setAttribute('aria-current', 'page');
+    if (['ai', 'rank','readings'].includes(view)) more.setAttribute('aria-current', 'page');
     else more.removeAttribute('aria-current');
   }
 }

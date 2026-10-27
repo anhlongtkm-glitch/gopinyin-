@@ -42,7 +42,6 @@ async function routeScenario(options = {}) {
   });
   const routeImport = JSON.stringify(path.resolve('src/app/routes.js'));
   const api = await bundleActual(`export * from ${JSON.stringify(path.resolve('src/app/route-restoration.js'))}; export * as routes from ${routeImport};`, {
-    [path.resolve('src/features/shadowing/controller.js')]: 'export async function openShadowVideo(id,options){globalThis.routeRestoreFixture.calls.push({view:"shadowVideo",id,options});}',
     [path.resolve('src/features/auth/client.js')]: 'export const getAccountClient=()=>globalThis.routeRestoreFixture.client;',
     [path.resolve('src/features/auth/service.js')]: 'export const state=globalThis.routeRestoreFixture.authState;',
     [path.resolve('src/app/navigation.js')]: `import {markNavigation,navigationVersion} from ${routeImport}; export async function showView(view,options={}){const nav=options.navigation??markNavigation();if(nav!==navigationVersion())return false;globalThis.routeRestoreFixture.calls.push({view,options});return true;}`,
@@ -182,11 +181,14 @@ const drain = () => new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(scenario.fixture.writes, [{ method: 'replaceState', url: '/#/library' }]);
     console.log('  PASS missing lessons redirect current routes while stale failures cannot replace newer navigation');
 
-    scenario = await routeScenario({ hash: '#/shadowVideo?video=4xuzuLAAzt8' });
-    await drain();
-    assert.deepEqual(scenario.fixture.calls.map(call => [call.view, call.id]), [['shadowVideo','4xuzuLAAzt8']]);
-    assert.equal(scenario.fixture.calls[0].options.route, false);
-    console.log('  PASS video deep links restore the exact selection without pushing duplicate history');
+    for (const retired of ['tones','shadow','shadowVideo','shadowText']) {
+      scenario = await routeScenario({ hash: '#/' + retired + '?video=old-selection' });
+      await drain();
+      assert.deepEqual(scenario.fixture.calls.map(call => call.view), ['readings']);
+      assert.equal(scenario.fixture.calls[0].options.route, false);
+      assert.deepEqual(scenario.fixture.writes, [{method:'replaceState',url:'/#/readings'}]);
+    }
+    console.log('  PASS retired learning routes redirect to readings without duplicate history');
   } finally {
     for (const [key, descriptor] of originalGlobals) {
       if (descriptor) Object.defineProperty(globalThis, key, descriptor);

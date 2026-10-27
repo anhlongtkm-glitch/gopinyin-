@@ -51,6 +51,7 @@ export function renderUserChip() {
 }
 
 export async function showView(v, options = {}) {
+  if (['tones','shadow','shadowVideo','shadowText'].includes(v)) v = 'readings';
   const practice = v === 'practice';
   if (practice) v = 'library';
   const navigation = options.navigation ?? markNavigation();
@@ -94,7 +95,7 @@ export async function showView(v, options = {}) {
   // Otherwise a quick shortcut can be overwritten by the late loadSettings().
   accountStorageState.$('pronCard')?.classList.add('hidden');
   accountStorageState.$('appCard').classList.toggle('hidden', true);
-  for (const key of ['readings','tones','shadow','shadowVideo','shadowText','bear']) accountStorageState.$(key+'Card')?.classList.toggle('hidden',v!==key);
+  for (const key of ['readings','bear']) accountStorageState.$(key+'Card')?.classList.toggle('hidden',v!==key);
   accountStorageState.$('gamesCard')?.classList.toggle('hidden', v !== 'games');
   accountStorageState.$('gameCard').classList.toggle('hidden', v !== 'game');
   if (v === 'library') {
@@ -144,7 +145,7 @@ export async function showView(v, options = {}) {
   accountStorageState.$('wsViewSub').textContent = meta[1];
   /* "pronStudy" là màn con của mục "pron"; "game" là màn con của mục "games"
      → vẫn tô sáng đúng mục cha trên thanh bên khi đang ở màn con. */
-  const navKey = ['pronStudy','pron','library'].includes(v) ? 'practice' : v === 'game' ? 'games' : ['shadowVideo','shadowText'].includes(v) ? 'shadow' : v;
+  const navKey = ['pronStudy','pron','library'].includes(v) ? 'practice' : v === 'game' ? 'games' : v;
   accountStorageState.$$('.ws-navItem').forEach(b => b.classList.toggle('active', b.dataset.view === navKey));
   if (v === 'game' && legacy.__game && legacy.__game.openGame) legacy.__game.openGame();
   if (v === 'dash') refreshDash();
@@ -160,7 +161,7 @@ export async function showView(v, options = {}) {
 /* ★ expose cho app-core gọi (vd nút Quay lại trong appCard khi đang học bộ câu cá nhân) */
 
 export function viewEl(v) {
-  if (['readings','tones','shadow','shadowVideo','shadowText','bear'].includes(v)) return accountStorageState.$(v+'Card');
+  if (['readings','bear'].includes(v)) return accountStorageState.$(v+'Card');
   if (v === 'pronStudy') return accountStorageState.$('pronCard');
   if (v === 'pron') return accountStorageState.$('pronLibCard');
   return v === 'dash' ? accountStorageState.$('dashView') : v === 'ai' ? accountStorageState.$('aiCard') : v === 'rank' ? accountStorageState.$('rankCard') : v === 'games' ? accountStorageState.$('gamesCard') : accountStorageState.$('libraryCard');
@@ -179,18 +180,14 @@ export function replayFx(el) {
 export function initializeAppNavigation() {
   /* ═══════════════ ĐIỀU HƯỚNG LANDING ↔ WORKSPACE ═══════════════ */
   appNavigationState.VIEW_META = {
-    readings: ['Bài khóa','Đọc, nghe và hiểu những đoạn hội thoại HSK 1'],
-    tones: ['Thanh điệu','Nghe và nhận biết 5 thanh cơ bản'],
-    shadow: ['Shadowing','Chọn video YouTube theo HSK 1–4 và chủ đề giao tiếp'],
-    shadowVideo: ['Shadowing Video','Nghe, nói theo và viết chính tả với video YouTube'],
-    shadowText: ['Shadowing Bài khóa','Nghe mẫu, nói theo và tự đối chiếu bản ghi'],
+    readings: ['Bài khóa','Đọc, nghe và hiểu những đoạn hội thoại HSK 1–3'],
     bear: ['Gấu của bạn','Nhiệm vụ, thử thách và hành trình lên cấp'],
     dash: ['Tổng quan', 'Một bài học nhỏ, một bước tiến mỗi ngày'],
     library: ['Luyện tập', 'Chọn HSK hoặc chủ đề, luyện Gõ / Nói trong cùng một bộ'],
     pron: ['Luyện phát âm', 'Chọn bộ câu theo cấp HSK — nói bằng micro, chấm điểm từng chữ'],
     pronStudy: ['Luyện phát âm', 'Nói tiếng Trung bằng micro — chấm điểm từng chữ, nghe lại và sửa ngay'],
     rank: ['Bảng xếp hạng', 'Bảng xếp hạng luyện gõ theo ngày / tuần — tính theo số câu luyện được'],
-    ai: ['AI sinh câu', 'Viết prompt, AI tạo câu mới kèm pinyin + nghĩa'],
+    ai: ['Học bằng AI', 'Viết chủ đề, chọn câu hoặc từ vựng và học cùng AI'],
     games: ['Game từ vựng', 'Chọn một trò chơi từ vựng để vừa chơi vừa nhớ chữ Hán'],
     game: ['Game bắn chữ', 'Gõ pinyin để bắn nổ chữ — nhấn Enter để xem/ẩn gợi ý pinyin']
   };

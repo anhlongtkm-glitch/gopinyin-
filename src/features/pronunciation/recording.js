@@ -1,6 +1,7 @@
 import { requireAccount, isStudyAllowed, currentUser } from "../auth/service.js";
 import { setMascot } from "../../shared/mascot.js";
 import { studyOverlayOpen } from "../../shared/study/interactions.js";
+import { cancelPronunciationSample } from './tts.js';
 // State and behavior owned by features/pronunciation/recording. Initialization is orchestrated by app/bootstrap.js.
 
 import { state as pronunciationAssessmentState } from "./assessment.js";
@@ -26,6 +27,7 @@ import { state as pronunciationStorageState } from "./storage.js";
 import { state as pronunciationUtilsState, esc, toast } from "./utils.js";
 let assessmentVersion = 0;
 export function cancelAssessment() {
+  cancelPronunciationSample();
   assessmentVersion++;
   pronunciationSessionState.S.busy = false;
   pronunciationMicrophoneState.PronMic?.cancelPending();
@@ -85,6 +87,7 @@ export async function beginRecording() {
     setPhase('error', '⚠️ Trình duyệt này không hỗ trợ nhận dạng giọng nói (Web Speech API). Hãy dùng <b>Chrome</b> hoặc <b>Edge</b> trên máy tính để luyện phát âm.');
     return;
   }
+  cancelPronunciationSample();
   setPhase('requesting', '🎙 Đang xin quyền micro…');
   let stream;
   try {

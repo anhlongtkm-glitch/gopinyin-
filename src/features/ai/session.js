@@ -8,7 +8,7 @@ import { legacy } from "../../app/compatibility.js";
 
 import { state as aiClientState, aiUnitOf } from "./client.js";
 
-import { state as aiProvidersState, aiLsSet, aiKeyStore } from "./providers.js";
+import { state as aiProvidersState, aiLsSet, aiKeyStore, aiKeyLoad, aiLsGet } from "./providers.js";
 
 import { aiCollect, state as aiValidationState } from "./validation.js";
 
@@ -42,6 +42,10 @@ export const state = {};
 
 const aiSessionState = state;
 let aiRequestId = 0;
+function aiStartLabel() {
+  const kind = domState.$('aiKind')?.value;
+  return kind === 'word' ? 'Tạo từ vựng và học' : kind === 'both' ? 'Tạo bài và học' : 'Tạo câu và học';
+}
 async function ownedDialog(session, promise) {
   const resolve = modalState._modalResolve;
   session.dialog = resolve;
@@ -73,12 +77,65 @@ export function aiShowGen(msg, cls, retry) {
   el.className = 'aiGenBar' + (cls ? ' ' + cls : '');
   el.innerHTML = msg + (retry ? '<button type="button" class="btn secondary aiRetryBtn" id="aiRetryBtn">Thử lại</button>' : '');
   if (retry && domState.$('aiRetryBtn')) domState.$('aiRetryBtn').onclick = () => {
-    if (!aiSessionState.aiSession) return;
-    aiSessionState.aiSession.stopped = false;
-    aiSessionState.aiSession.empty = 0;
+    const session = aiSessionState.aiSession;
+    if (!session) return;
+    if (session.retryAt > Date.now()) {
+      toast('Đợi thêm ' + Math.ceil((session.retryAt - Date.now()) / 1000) + ' giây rồi thử lại.', 'warn');
+      return;
+    }
+    session.stopped = false;
+    session.error = null;
+    session.empty = 0;
     aiShowGen('');
     aiMaybeFill();
   };
+}
+
+export function aiShowSessionError() {
+  const session = aiSessionState.aiSession;
+  if (session?.stopped) aiShowGen(escapeHtml(session.error?.message || 'AI chưa tạo được nội dung mới theo yêu cầu. Bấm Thử lại hoặc đổi chủ đề.'), 'err', true);
+}
+
+function aiConnection(provider) {
+  const shared = !!aiProxyUrl();
+  const selected = provider || aiLsGet(aiProvidersState.AI_PROV_KEY, aiProvidersState.AI_DEFAULT_PROVIDER);
+  const use = !shared && aiProvidersState.AI_PROVIDERS[selected] ? selected : aiProvidersState.AI_DEFAULT_PROVIDER;
+  return { provider: use, key: shared ? '' : aiKeyLoad(use) };
+}
+
+export function aiResumeSavedSet() {
+  const dataset = aiSavedSet();
+  if (aiSessionLive() || !dataset?.prompt || typingSessionState.mode !== 'all' || !currentUser()) return;
+  const connection = aiConnection(dataset.provider);
+  aiSessionState.aiSession = {
+    ...connection, prompt: dataset.prompt, level: dataset.level || '',
+    batch: Math.max(1, Math.min(20, Number(dataset.batch) || 5)), kind: aiCurrentKind(),
+    seen: new Set(typingSessionState.rows.map(row => row.zh)), pending: 0, stopped: false, empty: 0,
+    generated: typingSessionState.rows.length, live: true, rows: typingSessionState.rows,
+    navigation: navigationVersion(), accountId: currentUser().id
+  };
+  // Keep the initial sample audio and input; only an exhausted set needs waiting UI.
+  if (typingSessionState.index >= typingSessionState.order.length) render();
+  else aiMaybeFill();
+}
+
+function aiTypingVisible(session) {
+  return session === aiSessionState.aiSession && session.live && !document.hidden &&
+    !domState.$('appCard')?.classList.contains('hidden') && session.rows === typingSessionState.rows &&
+    session.accountId === currentUser()?.id;
+}
+
+function pauseAiGeneration() {
+  const session = aiSessionState.aiSession;
+  if (session) { session.paused = true; session.epoch = (session.epoch || 0) + 1; }
+}
+
+function resumeAiGeneration() {
+  const session = aiSessionState.aiSession;
+  if (!session || !aiTypingVisible(session)) return;
+  session.paused = false;
+  session.navigation = navigationVersion();
+  aiMaybeFill();
 }
 /* ★ Thêm câu AI vào hàng chờ học.
    Bộ ĐÃ LƯU (kind==='ai') → ghi luôn vào database để lần sau học tiếp vẫn đủ câu.
@@ -198,54 +255,53 @@ export function aiRefreshAfterAppend(wasWaiting) {
      những gì người dùng đang gõ. */
   if (typingSessionState.composing) return;
   // Đang làm dở 1 câu → TUYỆT ĐỐI không render lại câu, giữ nguyên nội dung đã gõ.
-  const inp = domState.$('pinyinInput');
-  if (inp && !typingSessionState.awaitingEnter) {
-    // giữ đúng nội dung người dùng đang gõ (chỉ chạm vào ô khi thật sự lệch)
-    if (inp.value !== typingSessionState.lastValidInput) {
-      inp.value = typingSessionState.lastValidInput;
-      try {
-        inp.setSelectionRange(typingSessionState.lastValidInput.length, typingSessionState.lastValidInput.length);
-      } catch (e) {}
-    }
-    updateChineseHighlight();
-  }
+  if (!typingSessionState.awaitingEnter) updateChineseHighlight();
 }
 /* ★ AI tự viết thêm khi sắp hết — không giới hạn số lượng */
 
 /* ★ AI tự viết thêm khi sắp hết — không giới hạn số lượng */
 export async function aiMaybeFill() {
   const s = aiSessionState.aiSession;
-  if (!s || !s.live || s.stopped || s.pending) return;
+  if (!s || !aiTypingVisible(s) || s.paused || s.stopped || s.pending) return;
   if (typingSessionState.order.length - typingSessionState.index >= 3) return; // còn đủ mục chưa cần gọi AI
   s.pending++;
   setMascot('aiMascot', 'thinking');
   const unit = aiUnitOf(s.kind);
   // ★ Ghi nhớ TRƯỚC khi thêm: người dùng có đang ở màn chờ mục mới không?
   const wasWaiting = typingSessionState.index >= typingSessionState.order.length;
-  const uid = currentUser()?.id;
-  const active = () => s === aiSessionState.aiSession && s.live && uid === currentUser()?.id;
+  const navigation = navigationVersion(), epoch = s.epoch || 0;
+  const active = () => aiTypingVisible(s) && !s.paused && epoch === (s.epoch || 0) && navigation === navigationVersion();
   // ★ Không hiện thanh "AI đang viết..." đè lên khi người dùng đang gõ dở,
   //   chỉ hiện khi đang thực sự chờ mục mới.
   if (wasWaiting) aiShowGen('<span class="aiSpinner">AI đang viết ' + unit + ' tiếp theo…</span> (đã có <b>' + typingSessionState.rows.length + '</b> ' + unit + ')');
+  if (wasWaiting && !domState.$('completeArea')?.classList.contains('hidden')) render();
   try {
     const res = await aiCollect(s.provider, s.key, s.prompt, s.batch, s.level, s.seen, null, s.kind, active);
     if (!active()) return;
     if (res.items.length) {
       aiAppendRows(res.items);
       s.empty = 0;
-    } else {
-      s.empty++;
-      if (s.empty >= 2) s.stopped = true;
     }
+    if (res.error || !res.items.length) {
+      s.stopped = true;
+      s.error = res.error || new Error(res.stopped || 'AI chưa tạo được nội dung mới. Bấm Thử lại hoặc đổi chủ đề.');
+      s.retryAt = s.error.retryAt || 0;
+    }
+    if (res.items.length) aiRefreshAfterAppend(wasWaiting);
   } catch (e) {
     if (!active()) return;
-    s.empty++;
-    if (s.empty >= 2) s.stopped = true;
+    s.stopped = true;
+    s.error = e;
+    s.retryAt = e.retryAt || 0;
+  } finally {
+    s.pending--;
+    // A mode switch can finish before its old request. Start the new epoch only
+    // once that request has released its pending slot.
+    if (!active() && aiTypingVisible(s) && !s.paused && !s.stopped && !s.pending) void aiMaybeFill();
   }
-  s.pending--;
+  if (!active()) return;
   setMascot('aiMascot', s.stopped ? 'encourage' : 'ready');
-  if (s.stopped) aiShowGen('🤖 AI tạm hết ' + unit + ' mới cho chủ đề này — bạn đã học <b>' + typingSessionState.rows.length + '</b> ' + unit + '. Đổi chủ đề khác hoặc bấm thử lại.', 'err', true);else aiShowGen(''); // xoá thanh khi đã xong/đang gõ dở
-  aiRefreshAfterAppend(wasWaiting); // ★ không phá nội dung đang gõ
+  if (s.stopped) aiShowSessionError(); else aiShowGen('');
 }
 /* ★ Bắt đầu học: viết prompt → AI viết đợt đầu → học ngay */
 
@@ -256,8 +312,9 @@ export async function aiStartStudy() {
   if (!await requireAccount(() => aiStartStudy())) return;
   if (navigation !== navigationVersion()) return;
   const accountId = currentUser().id;
-  const provider = domState.$('aiProvider').value;
-  const key = domState.$('aiKey').value.trim();
+  const shared = !!aiProxyUrl();
+  const provider = shared ? aiProvidersState.AI_DEFAULT_PROVIDER : domState.$('aiProvider').value;
+  const key = shared ? '' : domState.$('aiKey').value.trim();
   const prompt = domState.$('aiPrompt').value.trim();
   if (!prompt) {
     toast('Hãy viết chủ đề bạn muốn học.', 'warn');
@@ -282,6 +339,7 @@ export async function aiStartStudy() {
     return;
   }
   aiLsSet(aiProvidersState.AI_PROV_KEY, provider);
+  aiSetStatus('');
   if (!aiProxyUrl()) aiKeyStore(provider, key);
   if (btn) {
     btn.disabled = true;
@@ -302,6 +360,8 @@ export async function aiStartStudy() {
     stopped: false,
     empty: 0,
     generated: 0,
+    navigation,
+    accountId,
     live: true
   };
   const session = aiSessionState.aiSession;
@@ -312,6 +372,7 @@ export async function aiStartStudy() {
     const res = await aiCollect(provider, key, prompt, batch, level, session.seen, null, kind, active);
     if (!active()) return;
     if (!res.items.length) throw new Error(res.stopped || 'AI chưa trả về ' + unit + ' nào cho chủ đề này.');
+    if (res.error) { session.stopped = true; session.error = res.error; session.retryAt = res.error.retryAt || 0; }
     setMascot('aiMascot', 'ready');
 
     /* ★ HỎI LƯU NGAY SAU KHI TẠO — trước khi vào học.
@@ -338,11 +399,13 @@ export async function aiStartStudy() {
         ds = {
           id: 'ai:' + Date.now(),
           name: name.slice(0, 80),
-          sourceName: 'AI sinh câu',
+          sourceName: 'Học bằng AI',
           kind: 'ai',
           contentType: kind,
           prompt: String(prompt),
           level: level,
+          provider,
+          batch,
           rows: [],
           createdAt: Date.now(),
           updatedAt: Date.now()
@@ -379,6 +442,7 @@ export async function aiStartStudy() {
       typingSessionState.index = 0;
     }
     aiAppendRows(res.items);
+    session.rows = typingSessionState.rows;
     /* ★ Nói rõ cho người dùng biết đã soát lại nghĩa (không im lặng sửa) */
     if (aiValidationState.aiVerifyFixedCount > 0) {
       toast('🔍 Đã soát lại và sửa ' + aiValidationState.aiVerifyFixedCount + ' nghĩa tiếng Việt chưa sát với chữ Hán.', 'warn', 6000);
@@ -412,6 +476,7 @@ export async function aiStartStudy() {
     aiShowGen('');
     // Mục lỗi định dạng đã được lọc IM LẶNG (aiItemOk) — không báo cho người dùng
     render();
+    if (session.stopped) aiShowSessionError();
     loadHistory();
     renderAppHistory();
     if (ds) writeRoute('study', ds.id);
@@ -420,12 +485,20 @@ export async function aiStartStudy() {
     aiSessionState.aiSession = null;
     aiShowGen('⚠️ ' + escapeHtml(e.message) + ' — sửa lại rồi bấm “học ngay” lần nữa.', 'err');
     aiSetStatus('⚠️ ' + escapeHtml(e.message), 'err');
+    const status = domState.$('aiStatus');
+    const retry = document.createElement('button');
+    retry.type = 'button'; retry.className = 'miniBtn'; retry.textContent = 'Thử lại';
+    retry.onclick = () => {
+      if (e.retryAt > Date.now()) { toast('Đợi thêm ' + Math.ceil((e.retryAt - Date.now()) / 1000) + ' giây rồi thử lại.', 'warn'); return; }
+      aiStartStudy();
+    };
+    status?.append(' ', retry);
     toast('Không tạo được ' + unit + ': ' + e.message, 'bad', 6500);
   } finally {
     if (btn && requestId === aiRequestId) {
       btn.disabled = false;
       btn.removeAttribute('aria-busy');
-      btn.textContent = 'Tạo câu và học';
+      btn.textContent = aiStartLabel();
     }
   }
 }
@@ -443,7 +516,7 @@ export function aiEndSession() {
   aiShowGen('');
   setMascot('aiMascot', 'ready');
   const button = domState.$('aiStartBtn');
-  if (button) { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = 'Tạo câu và học'; }
+  if (button) { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = aiStartLabel(); }
 }
 
 export function aiSessionLive() {
@@ -456,6 +529,10 @@ export function aiSessionLive() {
    unit dùng cho mọi nhãn đếm ("5 câu" / "5 từ" / "5 mục"). */
 
 export function initializeAiSession() {
+  document.addEventListener('gp:typing-opened', aiResumeSavedSet);
+  document.addEventListener('gp:view-leaving', pauseAiGeneration);
+  document.addEventListener('gp:view-changed', event => { if (event.detail === 'study') resumeAiGeneration(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pauseAiGeneration(); else resumeAiGeneration(); });
   /* ═══════════════════════════════════════════════════════════
      ★ AI SINH CÂU — VIẾT PROMPT → HỌC NGAY
      • AI viết đợt câu đầu, bạn học luôn.

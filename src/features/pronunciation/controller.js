@@ -17,6 +17,7 @@ import { drawMeter } from "./meter.js";
 import { state as pronunciationMicrophoneState } from "./microphone.js";
 
 import { state as pronunciationRecognitionState } from "./recognition.js";
+import { schedulePronunciationSample } from './tts.js';
 
 import { setPhase } from "./recording.js";
 
@@ -77,6 +78,7 @@ export function initializePronunciationController() {
       syncToolbar();
       drawMeter(0);
       renderStats();
+      schedulePronunciationSample();
       // Source loading can render the question before this view becomes visible.
       const source = pronunciationSessionState.S.source, activeBefore = document.activeElement;
       const scrollBefore = window.scrollY;

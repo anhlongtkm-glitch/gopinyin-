@@ -23,7 +23,8 @@ import { loadSource, syncToolbar, saveSettings, fillVoices } from "./settings.js
 
 import { state as pronunciationStorageState } from "./storage.js";
 
-import { state as pronunciationTtsState } from "./tts.js";
+import { state as pronunciationTtsState, cancelPronunciationSample, schedulePronunciationSample } from "./tts.js";
+import { onVoicesChanged, saveSpeechPreference } from '../../shared/audio/voice-policy.js';
 
 import { state as pronunciationUtilsState, toast, hanChars } from "./utils.js";
 
@@ -128,10 +129,12 @@ export function wire() {
   });
   on('pronRate', 'change', e => {
     pronunciationSessionState.S.settings.rate = Number(e.target.value) || 1;
+    saveSpeechPreference({rate:pronunciationSessionState.S.settings.rate});
     saveSettings();
   });
   on('pronVoice', 'change', e => {
     pronunciationSessionState.S.settings.voice = e.target.value;
+    saveSpeechPreference({voice:pronunciationSessionState.S.settings.voice});
     saveSettings();
   });
   const tgl = (id, key) => on(id, 'click', () => {
@@ -139,11 +142,9 @@ export function wire() {
     saveSettings();
     syncToolbar();
     if (key === 'showPy' || key === 'showHan' || key === 'showVi') renderCard();
-    if (key === 'autoSample' && pronunciationSessionState.S.settings.autoSample) {
-      const it = currentItem();
-      if (it) pronunciationTtsState.PronTts.speak(it.zh, {
-        rate: pronunciationSessionState.S.settings.rate
-      });
+    if (key === 'autoSample') {
+      if (pronunciationSessionState.S.settings.autoSample) schedulePronunciationSample();
+      else cancelPronunciationSample();
     }
   });
   tgl('pronPyToggle', 'showPy');
@@ -213,17 +214,19 @@ export function wire() {
   /* giọng đọc có thể nạp sau khi trang xong */
   if (pronunciationTtsState.PronTts.supported()) {
     try {
-      window.speechSynthesis.onvoiceschanged = () => fillVoices();
+      onVoicesChanged(fillVoices);
     } catch (e) {}
   }
 
   /* Đóng micro khi rời trang / ẩn tab (không giữ đèn đỏ micro ngoài ý muốn) */
   window.addEventListener('pagehide', () => {
+    cancelPronunciationSample();
     try {
       pronunciationMicrophoneState.PronMic.hardRelease();
     } catch (e) {}
   });
   document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') cancelPronunciationSample();
     if (document.visibilityState === 'hidden' && pronunciationSessionState.S.phase === 'recording') stopRecording('manual');
   });
 

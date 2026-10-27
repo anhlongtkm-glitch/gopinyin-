@@ -13,7 +13,7 @@ import { state as pronunciationSessionState } from "./session.js";
 
 import { state as pronunciationStorageState } from "./storage.js";
 
-import { state as pronunciationTtsState } from "./tts.js";
+import { schedulePronunciationSample } from "./tts.js";
 
 import { clamp, toast } from "./utils.js";
 
@@ -60,12 +60,7 @@ export function gotoItem(pos) {
   renderResult();
   renderStats();
   saveIndex();
-  if (pronunciationSessionState.S.settings.autoSample) {
-    const item = currentItem(), navigation = navigationVersion();
-    setTimeout(() => {
-      if (navigation === navigationVersion() && item === currentItem() && !document.getElementById('pronCard')?.classList.contains('hidden') && !document.querySelector('.modal:not([hidden]),.appModal.show')) pronunciationTtsState.PronTts.speak(item?.zh);
-    }, 220);
-  }
+  schedulePronunciationSample();
 }
 
 export function nextItem() {

@@ -59,6 +59,7 @@ const esbuild = require('esbuild');
     './render.js': 'export const render=()=>{};',
     './session.js': 'export const state=globalThis.__progressRestoreTest.state;',
     '../../shared/audio/tts.js': 'export const populateVoiceSelect=()=>{};',
+    '../../shared/audio/voice-policy.js': 'export const speechPreferences=fallback=>fallback,setSpeechRateSelect=(select,rate)=>{select.value=String(rate);};',
     '../../shared/dom.js': 'export const state={$:()=>globalThis.__progressRestoreTest.element};',
     '../../shared/storage/lesson-repository.js': 'export const dbList=async()=>[],dbGet=async id=>globalThis.__progressRestoreTest.datasets.get(id),progressKey=id=>"cts:progress:"+id;',
     '../../shared/utils.js': 'export const shuffle=order=>order.reverse(),escapeHtml=String;'

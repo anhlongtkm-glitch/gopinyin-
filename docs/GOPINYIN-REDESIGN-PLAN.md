@@ -1,5 +1,21 @@
 # GoPinyin — kế hoạch tổng thể: Luyện tập chung, ngọc bích, be sáng và tối sâu
 
+## Cập nhật yêu cầu ngày 27/10/2026 — ưu tiên áp dụng
+
+Các quyết định dưới đây thay thế những mô tả cũ về HSK 1, AI, Thanh điệu và Shadowing trong phần lịch sử phía sau:
+
+- **Học bằng AI** có trên menu chính desktop, mục Thêm trên mobile và Tổng quan. Chọn câu, từ vựng hoặc cả hai theo prompt; tiếp tục tự sinh khi còn dưới ba mục, có lưu/học tiếp và nút thử lại khi gặp lỗi.
+- AI dùng Gemini qua `/api/ai` với key chung giữ trên server. Cần đặt `AI_KEY_GEMINI`; người học không phải lấy key. Miễn phí theo hạn mức provider; không tự chuyển sang model trả phí. Chi tiết vận hành xem [AI-SHARED-SETUP.md](AI-SHARED-SETUP.md).
+- Bỏ toàn bộ màn Thanh điệu và Shadowing, gồm video, thu âm riêng, lối vào, nhiệm vụ và huy hiệu tương ứng. Link cũ về Bài khóa; XP lịch sử được giữ.
+- Bài khóa có **18 hội thoại**: sáu bài HSK 1 viết lại, mỗi bài 12 lượt lời; sáu bài HSK 2, mỗi bài 14 lượt; sáu bài HSK 3, mỗi bài 16 lượt. Đủ người nói, Hán, Pinyin, dịch Việt, từ cần nhớ và ba câu hiểu bài.
+- Danh mục luyện tập HSK 1 dùng đủ **301 câu gốc**, chia **Chặng 01–06** giống các cấp khác. Tổng số câu của sáu chặng phải bằng bộ HSK 1; không lấy sáu bài khóa để thay bộ câu gốc.
+- Bài khóa có dataset luyện tập riêng theo cấp và phiên bản. Tiến độ câu cũ không được gán sang hội thoại đã viết lại; các bộ đã lưu vẫn học tiếp được.
+- Chữ và placeholder trong ô nhập luyện gõ căn giữa, chừa khoảng trống hai bên bằng nhau để nút bàn phím không làm lệch tâm.
+- Luyện nói tự đọc mẫu một lần khi vào câu mới. Mặc định tốc độ **1.0**, ưu tiên giọng **Google Mandarin**; khi thiết bị không có giọng Google, dùng giọng nữ tiếng Trung khả dụng. Lựa chọn rõ ràng của người dùng được ghi nhớ cho các chế độ học.
+- Không đọc mẫu trễ sang câu khác, sau khi rời màn hoặc trong lúc thu âm. Không đọc lại chỉ vì mở thiết lập hoặc cập nhật giao diện.
+
+## Lịch sử thiết kế trước cập nhật 27/10/2026
+
 **Trạng thái:** đã được người dùng duyệt và bắt đầu triển khai vào ứng dụng. Chi tiết phạm vi đã làm và phần cần nghiệm thu trước phát hành xem [GOPINYIN-REDESIGN-IMPLEMENTATION.md](GOPINYIN-REDESIGN-IMPLEMENTATION.md). Tài liệu này giữ vai trò quy chuẩn mục tiêu.
 
 ## Chuẩn bố cục bắt buộc sau phản hồi của người dùng

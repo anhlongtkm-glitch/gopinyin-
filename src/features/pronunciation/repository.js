@@ -24,9 +24,11 @@ export function initializePronunciationRepository() {
       try {
         sets = await (b.dbList ? b.dbList() : b.dbGetAll());
       } catch (e) {}
+      const activeDataset = b.activeDataset?.();
       for (const s of sets) {
         if (!s || !(s.rowCount || s.rows?.length)) continue;
-        if (s.kind === 'ai' || String(s.id || '').startsWith('ai:')) continue;
+        // A Gõ/Nói switch must keep the selected AI set and its cursor.
+        if ((s.kind === 'ai' || String(s.id || '').startsWith('ai:')) && s.id !== activeDataset?.id) continue;
         out.push({
           id: 'ds:' + s.id,
           label: '💾 ' + (s.name || 'Bộ đã lưu') + ' (' + (s.rowCount || s.rows?.length) + ')'

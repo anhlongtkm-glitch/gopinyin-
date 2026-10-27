@@ -10,6 +10,24 @@ export const state = {};
 
 const aiClientState = state;
 
+export function aiServiceError(status, retryAfter, detail = '') {
+  const delay = retryAfter || ([429, 402].includes(status) ? '60' : '');
+  const seconds = Number(delay);
+  const retryAt = delay ? (Number.isFinite(seconds) ? Date.now() + Math.max(0, seconds) * 1000 : Date.parse(delay)) : 0;
+  const wait = retryAt > Date.now() ? Math.ceil((retryAt - Date.now()) / 1000) : 60;
+  const message = status === 429 || status === 402
+    ? 'Đã hết lượt AI miễn phí hoặc đang gọi quá nhanh. Đợi ' + wait + ' giây rồi bấm Thử lại; nếu vẫn hết lượt, hãy thử lại sau khi hạn mức được làm mới.'
+    : status === 404
+      ? 'Dịch vụ AI chưa khả dụng. Chủ website cần kiểm tra endpoint /api/ai và model Gemini.'
+      : detail || 'Không kết nối được dịch vụ AI. Kiểm tra mạng rồi bấm Thử lại.';
+  return Object.assign(new Error(message), { status, retryAt: Number.isFinite(retryAt) ? retryAt : 0 });
+}
+
+async function aiFetch(url, options) {
+  try { return await fetchWithTimeout(url, options); }
+  catch { throw aiServiceError(0); }
+}
+
 export function aiKindMeta(kind) {
   return aiClientState.AI_KINDS[kind] || aiClientState.AI_KINDS.sentence;
 }
@@ -74,7 +92,7 @@ async function callAiUnchecked(provider, key, prompt, opt) {
           data: img.data
         }
       });
-      const resp = await fetchWithTimeout(geminiUrl(mdl), {
+      const resp = await aiFetch(geminiUrl(mdl), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,6 +108,7 @@ async function callAiUnchecked(provider, key, prompt, opt) {
         })
       });
       if (!resp.ok) {
+        if ([429, 401, 402, 403].includes(resp.status)) throw aiServiceError(resp.status, resp.headers.get('Retry-After'), 'Không xác thực được kết nối Gemini. Kiểm tra cấu hình API key.');
         lastErr = 'Gemini lỗi ' + resp.status + (resp.status === 429 ? ' (hết hạn mức — đợi 1 phút rồi thử lại, hoặc chuyển sang OpenRouter)' : resp.status === 404 ? ' (model không còn tồn tại)' : resp.status === 403 ? ' (không có quyền dùng model này — model này cần tài khoản đã bật thanh toán, hoặc API key không hợp lệ)' : resp.status === 400 ? ' (API key không hợp lệ)' : '');
         continue;
       }
@@ -99,6 +118,7 @@ async function callAiUnchecked(provider, key, prompt, opt) {
       if (txt) return txt;
       lastErr = 'Gemini không trả nội dung.';
     } catch (e) {
+      if (typeof e.status === 'number') throw e;
       lastErr = e && e.message || String(e);
     }
   }
@@ -112,7 +132,7 @@ async function callAiUnchecked(provider, key, prompt, opt) {
 export async function callAiProxy(provider, prompt, opt) {
   if (!await requireAccount()) throw new Error('Cần đăng nhập.');
   const img = opt && opt.image && opt.image.data ? opt.image : null;
-  const resp = await fetchWithTimeout(aiProxyUrl(), {
+  const resp = await aiFetch(aiProxyUrl(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -121,6 +141,7 @@ export async function callAiProxy(provider, prompt, opt) {
     body: JSON.stringify({
       provider,
       prompt,
+      temperature: typeof opt?.temperature === 'number' ? opt.temperature : .9,
       image: img ? {
         mime: img.mime,
         data: img.data
@@ -132,7 +153,7 @@ export async function callAiProxy(provider, prompt, opt) {
     try {
       m = (await resp.json()).error || '';
     } catch (e) {}
-    throw new Error('Lỗi máy chủ AI proxy: ' + resp.status + (m ? ' — ' + m : ''));
+    throw aiServiceError(resp.status, resp.headers.get('Retry-After'), m);
   }
   const d = await resp.json();
   if (d && d.text) return d.text;
@@ -156,7 +177,7 @@ export async function callOpenRouter(key, prompt, temp, img) {
   }] : prompt;
   for (const mdl of aiClientState.OPENROUTER_MODELS) {
     try {
-      const resp = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
+      const resp = await aiFetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,6 +193,7 @@ export async function callOpenRouter(key, prompt, temp, img) {
         })
       });
       if (!resp.ok) {
+        if ([429, 401, 402, 403].includes(resp.status)) throw aiServiceError(resp.status, resp.headers.get('Retry-After'), 'Không xác thực được kết nối OpenRouter. Kiểm tra cấu hình API key.');
         lastErr = 'OpenRouter lỗi ' + resp.status + (resp.status === 401 ? ' (API key không hợp lệ)' : resp.status === 402 ? ' (hết hạn mức miễn phí)' : resp.status === 429 ? ' (gọi quá nhanh — đợi 1 phút)' : '');
         if (resp.status === 401) break; /* key sai → đổi model cũng vô ích */
         continue;
@@ -181,6 +203,7 @@ export async function callOpenRouter(key, prompt, temp, img) {
       if (txt && txt.trim()) return txt;
       lastErr = 'OpenRouter không trả nội dung.';
     } catch (e) {
+      if (typeof e.status === 'number') throw e;
       lastErr = e && e.message || String(e);
     }
   }

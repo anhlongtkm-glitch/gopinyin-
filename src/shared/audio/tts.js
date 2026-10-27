@@ -15,19 +15,14 @@ import { toast } from "../toast.js";
 import { escapeHtml } from "../utils.js";
 import { setMascot } from "../mascot.js";
 import { navigationVersion } from "../../app/routes.js";
+import { chineseVoices, chooseChineseVoice, voiceGender, speechPreferences } from './voice-policy.js';
+export { voiceGender } from './voice-policy.js';
 
 let sampleVersion = 0;
 
 /* ── Speech Synthesis ── */
 export function getChineseVoices() {
-  return window.speechSynthesis.getVoices().filter(v => /^zh/i.test(v.lang) || /Chinese|Mandarin|Xiaoxiao|Xiaoyi|Xiaomo|Xiaoxuan|Xiaohan|Yaoyao|Huihui|Yunxi|Yunjian|Yunyang|Yunhao|Yunze|Yunfeng|Kangkang/i.test(v.name));
-}
-
-export function voiceGender(v) {
-  const n = v.name.toLowerCase();
-  if (/yunxi|yunjian|yunyang|yunhao|yunze|yunfeng|kangkang|danny|male/.test(n)) return 'male';
-  if (/xiaoxiao|xiaoyi|xiaomo|xiaoxuan|xiaohan|yaoyao|huihui|female/.test(n)) return 'female';
-  return 'unknown';
+  return chineseVoices();
 }
 
 export function voiceLabel(v) {
@@ -48,19 +43,15 @@ export function populateVoiceSelect() {
     };
     return rank[ga] - rank[gb] || a.name.localeCompare(b.name);
   });
-  const current = typingSessionState.selectedVoiceName;
-  select.innerHTML = '<option value="">Tự động chọn</option><option value="__male__">👨 Giọng nam</option><option value="__female__">👩 Giọng nữ</option>' + voices.map(v => `<option value="${escapeHtml(v.name)}">${escapeHtml(voiceLabel(v))}</option>`).join('');
-  if (current && (current === '__male__' || current === '__female__' || voices.some(v => v.name === current))) select.value = current;else {
-    select.value = '';
-    if (current) typingSessionState.selectedVoiceName = '';
-  }
+  const current = speechPreferences({voice:typingSessionState.selectedVoiceName}).voice;
+  typingSessionState.selectedVoiceName = current;
+  const unavailable = current && !['__male__','__female__'].includes(current) && !voices.some(v => v.name === current);
+  select.innerHTML = '<option value="">Tự động · ưu tiên Google tiếng Trung</option><option value="__male__">👨 Giọng nam</option><option value="__female__">👩 Giọng nữ</option>' + (unavailable ? `<option value="${escapeHtml(current)}">${escapeHtml(current)} (chưa khả dụng)</option>` : '') + voices.map(v => `<option value="${escapeHtml(v.name)}">${escapeHtml(voiceLabel(v))}</option>`).join('');
+  select.value = current;
 }
 
 export function getChineseVoice() {
-  const voices = getChineseVoices();
-  if (typingSessionState.selectedVoiceName === '__male__') return voices.find(v => voiceGender(v) === 'male') || voices.find(v => /^zh(-|_)?CN/i.test(v.lang)) || voices[0];
-  if (typingSessionState.selectedVoiceName === '__female__') return voices.find(v => voiceGender(v) === 'female') || voices.find(v => /^zh(-|_)?CN/i.test(v.lang)) || voices[0];
-  return voices.find(v => v.name === typingSessionState.selectedVoiceName) || voices.find(v => /^zh(-|_)?CN/i.test(v.lang)) || voices[0];
+  return chooseChineseVoice(getChineseVoices(), speechPreferences({voice:typingSessionState.selectedVoiceName}).voice);
 }
 /* ★ Đọc NHIỀU đoạn nối tiếp nhau (không cắt nhau như speakText).
    Dùng khi cần "đọc chữ cuối rồi đọc lại cả câu": cancel() 1 lần rồi
@@ -78,7 +69,7 @@ export function speakQueue(texts) {
   for (const text of list) {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'zh-CN';
-    utter.rate = typingSessionState.speechRate;
+    utter.rate = speechPreferences({rate:typingSessionState.speechRate}).rate;
     if (voice) utter.voice = voice;
     if (typingSessionState.selectedVoiceName === '__male__' && voiceGender(voice || {}) !== 'male') utter.pitch = 0.78;
     window.speechSynthesis.speak(utter);
@@ -105,7 +96,7 @@ export function speakText(text, showButtonState = false) {
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'zh-CN';
-  utter.rate = typingSessionState.speechRate;
+  utter.rate = speechPreferences({rate:typingSessionState.speechRate}).rate;
   const voice = getChineseVoice();
   if (voice) utter.voice = voice;
   if (typingSessionState.selectedVoiceName === '__male__' && voiceGender(voice || {}) !== 'male') utter.pitch = 0.78;

@@ -16,6 +16,7 @@ import { markSentenceWrong } from "./scoring.js";
 import { state as typingSessionState, currentRow } from "./session.js";
 
 import { resetTypedSpeech, populateVoiceSelect, speakText } from "../../shared/audio/tts.js";
+import { onVoicesChanged, saveSpeechPreference, speechPreferences, setSpeechRateSelect } from '../../shared/audio/voice-policy.js';
 
 import { state as domState } from "../../shared/dom.js";
 
@@ -123,14 +124,15 @@ export async function resetProgress() {
     attempts: 0
   };
   typingSessionState.autoSound = true;
-  typingSessionState.speechRate = .8;
-  typingSessionState.selectedVoiceName = '';
+  const audio = speechPreferences();
+  typingSessionState.speechRate = audio.rate;
+  typingSessionState.selectedVoiceName = audio.voice;
   typingSessionState.showVietnamese = true;
   typingSessionState.showHanzi = true;
   typingSessionState.pinyinHint = false;
   typingSessionState.readOnType = true;
   resetSessionRuntime();
-  domState.$('rateSelect').value = '.8';
+  setSpeechRateSelect(domState.$('rateSelect'), typingSessionState.speechRate);
   populateVoiceSelect();
   updateSoundUI();
   updateReadTypeUI();
@@ -311,17 +313,19 @@ export function initializeTypingControlEvents() {
     gtReset();
   });
   domState.$('rateSelect').onchange = e => {
-    typingSessionState.speechRate = Number(e.target.value) || .8;
+    typingSessionState.speechRate = Number(e.target.value) || 1;
+    saveSpeechPreference({rate:typingSessionState.speechRate});
     save();
   };
   domState.$('voiceSelect').onchange = e => {
     typingSessionState.selectedVoiceName = e.target.value;
+    saveSpeechPreference({voice:typingSessionState.selectedVoiceName});
     save();
     const q = typingSessionState.index < typingSessionState.order.length ? typingSessionState.rows[typingSessionState.order[typingSessionState.index]] : null;
     if (q && q.zh && q.zh !== '—') speakText(q.zh, false);
   };
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = populateVoiceSelect;
+    onVoicesChanged(populateVoiceSelect);
     setTimeout(populateVoiceSelect, 100);
   }
 

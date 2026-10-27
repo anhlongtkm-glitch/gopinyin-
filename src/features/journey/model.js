@@ -22,12 +22,12 @@ export function weeklyProgress(days, now = new Date()) {
 export const quests = [
   {id:'typing', title:'Khởi động đôi tay', text:'Gõ đúng 5 câu khác nhau', target:5, view:'practice'},
   {id:'voice', title:'Cất tiếng tự tin', text:'Luyện nói 3 câu khác nhau', target:3, view:'practice'},
-  {id:'explore', title:'Khám phá điều mới', text:'Hoàn thành Bài khóa, Thanh điệu hoặc Shadowing', target:1, view:'readings'}
+  {id:'explore', title:'Khám phá điều mới', text:'Hoàn thành một bài khóa HSK', target:1, view:'readings'}
 ];
 export function emptyDay() { return {xp:0, events:{}, counts:{typing:0,voice:0,explore:0}, claimed:[], gameXp:0}; }
 export function applyActivity(day, kind, id) {
-  const rewards = {typing:3,voice:0,tone:10,shadow:5,reading:20,game:10};
-  if (!(kind in rewards) || !id || id.length > 800) return {day, added:0, quests:[]};
+  const rewards = {typing:3,voice:0,reading:20,game:10};
+  if (!Object.hasOwn(rewards,kind) || !id || id.length > 800) return {day, added:0, quests:[]};
   const key = JSON.stringify([kind,id]);
   if (day.events[key] || Object.keys(day.events).length >= 1500) return {day, added:0, quests:[]};
   const next = structuredClone(day);
@@ -36,7 +36,7 @@ export function applyActivity(day, kind, id) {
   if (kind === 'game') { added = Math.min(added, Math.max(0,20-next.gameXp)); next.gameXp += added; }
   if (kind === 'typing') next.counts.typing++;
   if (kind === 'voice') next.counts.voice++;
-  if (['tone','shadow','reading'].includes(kind)) next.counts.explore++;
+  if (kind === 'reading') next.counts.explore++;
   const completed = quests.filter(q => next.counts[q.id] >= q.target && !next.claimed.includes(q.id));
   for (const q of completed) { next.claimed.push(q.id); added += 5; }
   next.xp += added;
