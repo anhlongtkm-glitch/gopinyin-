@@ -14,6 +14,7 @@ suites.push('ai_append_wait.cjs');
 suites.push('audio-defaults.cjs');
 suites.push('pron-auto.cjs');
 suites.push('pronunciation-mobile.cjs');
+suites.push('pronunciation-native-mobile.cjs');
 suites.push('study-mobile-next.cjs');
 suites.push('pinyin-tokenizer.cjs');
 suites.push('pinyin-alignment.cjs');

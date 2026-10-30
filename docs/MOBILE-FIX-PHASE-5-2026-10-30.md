@@ -2,6 +2,8 @@
 
 **Phần local/tự động: ĐẠT. Phần điện thoại thật: CHƯA CHẠY. Chưa đủ điều kiện đóng nghiệm thu toàn bộ MOB-01 đến MOB-07.**
 
+> Sau mốc nghiệm thu này, người dùng báo Android Chrome vẫn không nhận được chữ. Xem [bản vá và việc mở lại xác minh giọng nói](MOBILE-SPEECH-HOTFIX-2026-10-30.md). Bằng chứng 481 checks bên dưới là mốc trước bản vá đó.
+
 Đợt 5 là bước kiểm thử tích hợp và đối chiếu bằng chứng sau các đợt sửa, theo [kế hoạch](MOBILE-FIX-PLAN-2026-10-30.md). Không phát hiện lỗi mới trong phạm vi đã chạy; không có thay đổi mã ứng dụng trong đợt này. Có thêm script audit và hồ sơ nghiệm thu để chạy lại.
 
 ## Kết quả cuối trên local

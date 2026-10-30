@@ -70,6 +70,17 @@ export function cancelAssessment() {
    ═══════════════════════════════════════════════════════════ */
 export function setPhase(p, msg) {
   pronunciationSessionState.S.phase = p;
+  let captureNote = pronunciationUtilsState.$('pronCaptureNote');
+  if (!captureNote && pronunciationSessionState.S.nativeCapture) {
+    const stage = document.querySelector('#pronCard .pronStage');
+    if (stage) {
+      captureNote = document.createElement('small');
+      captureNote.id = 'pronCaptureNote'; captureNote.className = 'small';
+      captureNote.textContent = 'Chế độ điện thoại không lưu bản ghi nghe lại.';
+      stage.after(captureNote);
+    }
+  }
+  if (captureNote) captureNote.hidden = !pronunciationSessionState.S.nativeCapture;
   const btn = pronunciationUtilsState.$('pronMicBtn');
   const st = pronunciationUtilsState.$('pronStatus');
   if (btn) {
@@ -103,7 +114,9 @@ export function fmtSec(ms) {
 
 export async function beginRecording() {
   const navigation = navigationVersion(), source = sourceVersion(), attempt = assessmentVersion;
-  if (!await requireAccount(() => beginRecording())) return;
+  // A verified, ready session can start device capture inside the tap gesture.
+  // Authentication is still required; backend writes retain their own checks.
+  if (!isStudyAllowed() && !await requireAccount(() => beginRecording())) return;
   if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) return;
   if (pronunciationSessionState.S.busy || ['requesting', 'starting', 'analyzing'].includes(pronunciationSessionState.S.phase)) return;
   if (pronunciationSessionState.S.phase === 'recording') {
@@ -115,7 +128,8 @@ export async function beginRecording() {
     setPhase('error', '🔒 Nhận dạng giọng nói cần kết nối an toàn. Hãy mở trang qua HTTPS (hoặc localhost trên thiết bị này).');
     return;
   }
-  if (!pronunciationMicrophoneState.PronMic.supported()) {
+  const nativeCapture = pronunciationRecognitionState.PronAsr.nativeCapture?.() || false;
+  if (!nativeCapture && !pronunciationMicrophoneState.PronMic.supported()) {
     setPhase('error', '⚠️ Trình duyệt không cho truy cập micro trên trang này. Hãy mở bằng <b>Chrome</b> hoặc <b>Edge</b> qua <b>https</b> (hoặc localhost).');
     return;
   }
@@ -124,30 +138,46 @@ export async function beginRecording() {
     return;
   }
   cancelPronunciationSample();
-  setPhase('requesting', '🎙 Đang xin quyền micro…');
+  pronunciationSessionState.S.nativeCapture = nativeCapture;
   let stream;
-  try {
-    stream = await pronunciationMicrophoneState.PronMic.acquire();
-  } catch (e) {
-    if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) return;
-    const name = e && e.name || '';
-    if (name === 'NotAllowedError' || name === 'SecurityError') {
-      setPhase('error', '🚫 Micro chưa được cấp quyền. Bấm vào biểu tượng <b>🔒</b> cạnh thanh địa chỉ → cho phép <b>Micro</b>, rồi thử lại.');
-    } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
-      setPhase('error', '🎧 Không tìm thấy micro nào trên máy. Hãy cắm tai nghe có micro hoặc kiểm tra thiết bị âm thanh.');
-    } else {
-      setPhase('error', '⚠️ Không mở được micro (' + esc(name || 'lỗi không rõ') + '). Kiểm tra lại thiết bị rồi thử lại.');
+  if (nativeCapture) {
+    // SpeechRecognition owns the microphone on phones. A parallel getUserMedia
+    // stream/recorder/meter can interrupt its capture or stop it before final text.
+    pronunciationMicrophoneState.PronMic.hardRelease();
+    pronunciationSessionState.S.chunks = [];
+    pronunciationSessionState.S.recDone = null;
+    pronunciationSessionState.S.hasSpeech = false;
+    if (pronunciationSessionState.S.blobUrl) URL.revokeObjectURL(pronunciationSessionState.S.blobUrl);
+    pronunciationSessionState.S.blobUrl = '';
+    const playback = pronunciationUtilsState.$('pronPlayMineBtn');
+    if (playback) { playback.disabled = true; playback.title = 'Bản ghi nghe lại không có trong chế độ nhận dạng tương thích điện thoại.'; }
+  } else {
+    setPhase('requesting', '🎙 Đang xin quyền micro…');
+    try {
+      stream = await pronunciationMicrophoneState.PronMic.acquire();
+    } catch (e) {
+      if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) return;
+      const name = e && e.name || '';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        setPhase('error', '🚫 Micro chưa được cấp quyền. Bấm vào biểu tượng <b>🔒</b> cạnh thanh địa chỉ → cho phép <b>Micro</b>, rồi thử lại.');
+      } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        setPhase('error', '🎧 Không tìm thấy micro nào trên máy. Hãy cắm tai nghe có micro hoặc kiểm tra thiết bị âm thanh.');
+      } else {
+        setPhase('error', '⚠️ Không mở được micro (' + esc(name || 'lỗi không rõ') + '). Kiểm tra lại thiết bị rồi thử lại.');
+      }
+      return;
     }
-    return;
+    if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) { pronunciationMicrophoneState.PronMic.hardRelease(); return; }
+    const playback = pronunciationUtilsState.$('pronPlayMineBtn');
+    if (playback) playback.title = 'Nghe lại bản ghi vừa nói';
   }
-  if (navigation !== navigationVersion() || source !== sourceVersion() || attempt !== assessmentVersion) { pronunciationMicrophoneState.PronMic.hardRelease(); return; }
 
   /* lượt mới — không dùng lại âm thanh / kết quả của lượt trước */
   pronunciationSessionState.S.record = null;
   pronunciationSessionState.S.busy = false;
   /* Nhắc 1 lần: nếu quyền chỉ được cấp "lần này" thì lần sau mở trang vẫn
      phải cấp lại — hướng dẫn chọn "Cho phép mỗi khi truy cập trang web". */
-  if (!pronunciationSessionState.S.permHintShown) {
+  if (!nativeCapture && !pronunciationSessionState.S.permHintShown) {
     pronunciationSessionState.S.permHintShown = true;
     if (!pronunciationFileTransferState.isFileProto()) {
       pronunciationMicrophoneState.PronMic.permission().then(p => {
@@ -160,8 +190,10 @@ export async function beginRecording() {
   pronunciationRecognitionState.PronAsr.start({
     onStart() {
       if (!current() || pronunciationSessionState.S.phase !== 'starting') return;
-      pronunciationMicrophoneState.PronMic.startRecorder(stream);
-      pronunciationMicrophoneState.PronMic.startMeter(stream);
+      if (!nativeCapture) {
+        pronunciationMicrophoneState.PronMic.startRecorder(stream);
+        pronunciationMicrophoneState.PronMic.startMeter(stream);
+      }
       pronunciationSessionState.S.startedAt = Date.now();
       setPhase('recording', '<span class="pronDot"></span>Đang nghe… hãy nói câu ở trên.');
       clearRecordingTimers();
@@ -222,7 +254,7 @@ export async function stopRecording(reason) {
      âm thanh. Người nói từ ngắn rất nhanh (0.3–0.4 giây) hoặc micro thu nhỏ
      vẫn phải được chấm bình thường — trước đây kiểm tra thời lượng trước nên
      các lượt này bị từ chối oan. */
-  if (!transcript && dur < 450 && !spoke) {
+  if (!pronunciationSessionState.S.nativeCapture && !transcript && dur < 450 && !spoke) {
     pronunciationMicrophoneState.PronMic.release();
     pronunciationSessionState.S.busy = false;
     setPhase('error', '⏱ Âm thanh quá ngắn. Hãy bấm micro rồi nói cả câu ngay, đừng chờ.');
@@ -230,7 +262,7 @@ export async function stopRecording(reason) {
   }
   if (!transcript) {
     pronunciationMicrophoneState.PronMic.release();
-    setPhase('error', spoke ? '🔇 Chưa nghe rõ giọng nói của bạn. Hãy kiểm tra micro và thử nói lại trong môi trường yên tĩnh hơn.' : '🔇 Không phát hiện giọng nói. Hãy bấm micro rồi nói to, rõ hơn.');
+    setPhase('error', '⚠️ Trình duyệt không trả về chữ nhận dạng cho lượt nói này. Bấm micro để thử lại; kiểm tra quyền micro của Chrome và kết nối mạng.');
     return;
   }
   await finishAssessment(transcript, pronunciationSessionState.S.asrConf);

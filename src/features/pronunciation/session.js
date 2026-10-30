@@ -99,6 +99,7 @@ export function initializePronunciationSession() {
     asrText: '',
     asrInterim: '',
     asrDiagnostics: null,
+    nativeCapture: false,
     asrConf: null,
     asrErr: '',
     asrDone: null,

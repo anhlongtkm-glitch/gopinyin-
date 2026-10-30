@@ -4,6 +4,8 @@ Nguồn: [báo cáo kiểm thử mobile](MOBILE-TEST-REPORT-2026-10-30.md). **Đ
 
 **Đợt 5:** đã chạy lại 481 checks/40 suite, kiểm thử build và 32 trạng thái audit mobile; phần local đạt. Chưa nghiệm thu điện thoại thật và chưa đóng toàn bộ MOB-01 đến MOB-07. Xem [hồ sơ đợt 5 và checklist thiết bị](MOBILE-FIX-PHASE-5-2026-10-30.md).
 
+**Báo lại sau phát hành:** người dùng Android Chrome vẫn không nhận được chữ. Đã mở lại xác minh MOB-01/MOB-02 và bổ sung [bản vá thu tiếng trực tiếp trên điện thoại](MOBILE-SPEECH-HOTFIX-2026-10-30.md); vẫn cần người dùng kiểm tra sau khi phát hành.
+
 ## Thứ tự thực hiện
 
 | Đợt | Lỗi | Kết quả cần đạt |

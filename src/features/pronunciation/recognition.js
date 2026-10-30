@@ -16,6 +16,11 @@ export function initializePronunciationRecognition() {
   state.PronAsr = {
     Ctor() { return window.SpeechRecognition || window.webkitSpeechRecognition || null; },
     supported() { return !!this.Ctor(); },
+    nativeCapture() {
+      const ua = navigator.userAgent || '';
+      return navigator.userAgentData?.mobile === true || /Android|iPhone|iPad|iPod/i.test(ua)
+        || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+    },
     start({ onStart = () => {}, onEnd = () => {} } = {}) {
       this.cancelPending();
       const request = recognitionRequest;
@@ -24,7 +29,9 @@ export function initializePronunciationRecognition() {
       // Diagnostic metadata only: never audio, transcript, or account identifiers.
       const diagnostics = s.asrDiagnostics = {
         secureContext: window.isSecureContext === true, supported: this.supported(),
-        requestedAt: Date.now(), startedAt: null, errorAt: null, endedAt: null, error: ''
+        captureMode: s.nativeCapture ? 'browser-microphone' : 'recording-and-recognition',
+        requestedAt: Date.now(), startedAt: null, errorAt: null, endedAt: null, error: '',
+        audioStartedAt: null, speechStartedAt: null, resultEvents: 0, finalResults: 0
       };
       let resolveDone;
       s.asrDone = new Promise(resolve => { resolveDone = resolve; });
@@ -49,17 +56,23 @@ export function initializePronunciationRecognition() {
       catch (error) { finish(exceptionCode(error)); return false; }
       active.recognizer = r;
       s.asr = r;
-      r.lang = 'zh-CN'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
+      r.lang = 'zh-CN'; r.continuous = !s.nativeCapture; r.interimResults = true; r.maxAlternatives = 1;
+      r.onaudiostart = () => { if (current() && !ended) diagnostics.audioStartedAt = Date.now(); };
+      r.onspeechstart = () => {
+        if (current() && !ended) { diagnostics.speechStartedAt = Date.now(); s.hasSpeech = true; }
+      };
       r.onstart = () => {
         if (!current() || ended || stopping || started) return;
         started = true; clearTimeout(timer); diagnostics.startedAt = Date.now(); onStart();
       };
       r.onresult = e => {
         if (!current() || ended) return;
+        diagnostics.resultEvents++;
         let interim = '';
         for (let i = e.resultIndex; i < e.results.length; i++) {
           const result = e.results[i], alt = result[0] || {};
           if (result.isFinal) {
+            diagnostics.finalResults++;
             s.asrText += alt.transcript || '';
             if (typeof alt.confidence === 'number' && alt.confidence > 0) {
               s.asrConf = s.asrConf == null ? alt.confidence : Math.min(s.asrConf, alt.confidence);

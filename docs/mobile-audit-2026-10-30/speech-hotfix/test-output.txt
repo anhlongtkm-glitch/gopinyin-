@@ -1,0 +1,8 @@
+  PASS android-chrome receives three Chinese finals without parallel getUserMedia, recording or premature meter stop
+  PASS android-chrome manual stop accepts the delayed final and saves exactly once
+  PASS android-chrome distinguishes an empty browser recognition response from unclear user speech
+  PASS android-chrome handles native permission denial and releases the recognition session on navigation
+  PASS iphone-safari-profile receives three Chinese finals without parallel getUserMedia, recording or premature meter stop
+  PASS iphone-safari-profile manual stop accepts the delayed final and saves exactly once
+  PASS iphone-safari-profile distinguishes an empty browser recognition response from unclear user speech
+  PASS iphone-safari-profile handles native permission denial and releases the recognition session on navigation

@@ -1,0 +1,44 @@
+[
+  {
+    "profile": "android-chrome",
+    "gum": 0,
+    "recorder": 0,
+    "unique": 3,
+    "stream": null,
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "captureMode": "browser-microphone",
+      "requestedAt": 1793364047644,
+      "startedAt": 1793364047644,
+      "errorAt": null,
+      "endedAt": 1793364047664,
+      "error": "",
+      "audioStartedAt": 1793364047646,
+      "speechStartedAt": 1793364047646,
+      "resultEvents": 1,
+      "finalResults": 1
+    }
+  },
+  {
+    "profile": "iphone-safari-profile",
+    "gum": 0,
+    "recorder": 0,
+    "unique": 3,
+    "stream": null,
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "captureMode": "browser-microphone",
+      "requestedAt": 1793364052955,
+      "startedAt": 1793364052955,
+      "errorAt": null,
+      "endedAt": 1793364052972,
+      "error": "",
+      "audioStartedAt": 1793364052956,
+      "speechStartedAt": 1793364052956,
+      "resultEvents": 1,
+      "finalResults": 1
+    }
+  }
+]
