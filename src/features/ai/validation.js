@@ -104,14 +104,11 @@ export function parseAiSentences(text) {
   return out;
 }
 
-// ★ Gọi AI theo từng đợt nhỏ rồi lặp lại cho tới khi đủ số câu mong muốn
-//   (API AI miễn phí thường trả thiếu câu → tự gọi lại, đồng thời tránh trùng lặp)
-
-// ★ Gọi AI theo từng đợt nhỏ rồi lặp lại cho tới khi đủ số câu mong muốn
-//   (API AI miễn phí thường trả thiếu câu → tự gọi lại, đồng thời tránh trùng lặp)
+// Return the first usable batch so the learner can start without a fill-up
+// request. Only an entirely unusable response gets one more attempt.
 export async function aiCollect(provider, key, userText, target, level, seen, onProgress, kind, active = () => true) {
   const CHUNK = 10;
-  const maxTries = Math.min(10, Math.ceil(target / CHUNK) + 6);
+  const maxTries = 2;
   let out = [],
     tries = 0,
     emptyTries = 0,
@@ -122,7 +119,9 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
     tries++;
     if (onProgress) onProgress(out.length, target, tries);
     try {
-      const text = await callAi(provider, key, buildAiPrompt(userText, Math.min(CHUNK, target - out.length), level, [...seen], kind));
+      // Keep prompts bounded in long lessons; deduplicate against the full set
+      // locally, including repeated items inside a single response.
+      const text = await callAi(provider, key, buildAiPrompt(userText, Math.min(CHUNK, target - out.length), level, [...seen].slice(-80), kind));
       if (!active()) break;
       const parsed = parseAiSentences(text);
       const got = parsed.filter(x => !seen.has(x.zh));
@@ -135,9 +134,15 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
         }
       } else {
         emptyTries = 0;
-        const accepted = got.slice(0, target - out.length);
-        accepted.forEach(x => seen.add(x.zh));
+        const accepted = [];
+        for (const item of got) {
+          if (seen.has(item.zh)) continue;
+          seen.add(item.zh);
+          accepted.push(item);
+          if (accepted.length >= target - out.length) break;
+        }
         out = out.concat(accepted);
+        break;
       }
     } catch (e) {
       if (!active()) break;

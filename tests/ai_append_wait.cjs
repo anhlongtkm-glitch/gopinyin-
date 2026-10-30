@@ -47,17 +47,18 @@ async function assertResumed(page,total,first) {
       await page.locator('#appCard').waitFor({state:'visible'});
       await page.evaluate(()=>{window.autoSound=false;window.readOnType=false;});
       assert.equal(requests,1);
-      for(let i=0;i<3;i++)await advance(page);
+      for(let i=0;i<2;i++)await advance(page);
       await page.waitForFunction(()=>window.aiSession.pending===1);
       for(let i=0;i<100&&!held;i++)await page.waitForTimeout(10);
       assert(held);assert.equal(requests,2);
-      for(let i=0;i<2;i++)await advance(page);
+      assert.equal(await page.evaluate(()=>window.index),2,'Prefetch must start with three items remaining');
+      for(let i=0;i<3;i++)await advance(page);
       assert.equal(await page.evaluate(()=>window.index),5);
       assert.equal(await page.locator('#chinese').textContent(),'⏳');
       assert.equal(await page.locator('#pinyinInput').evaluate(input=>input.readOnly),true);
       const delayed=held;held=null;await respond(delayed,batches[1]);
       await assertResumed(page,10,batches[1][0]);
-      assert.equal(requests,2,'Finishing the last two items must reuse the pending request');
+      assert.equal(requests,2,'Finishing the last three items must reuse the pending request');
       console.log('  PASS '+(saved?'saved':'temporary')+' AI resumes immediately when a prefetched batch arrives after the last answer');
 
       for(let i=0;i<3;i++)await advance(page);

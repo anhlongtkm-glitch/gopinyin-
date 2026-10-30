@@ -263,7 +263,10 @@ export function aiRefreshAfterAppend(wasWaiting) {
 export async function aiMaybeFill() {
   const s = aiSessionState.aiSession;
   if (!s || !aiTypingVisible(s) || s.paused || s.stopped || s.pending) return;
-  if (typingSessionState.order.length - typingSessionState.index >= 3) return; // còn đủ mục chưa cần gọi AI
+  // Start one item earlier for the default batch, while bounding the reserve
+  // for larger saved batches. pending still permits only one request at a time.
+  const reserve = Math.max(3, Math.min(6, Math.ceil(s.batch / 2)));
+  if (typingSessionState.order.length - typingSessionState.index > reserve) return;
   s.pending++;
   setMascot('aiMascot', 'thinking');
   const unit = aiUnitOf(s.kind);
