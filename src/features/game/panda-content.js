@@ -1,0 +1,193 @@
+// Keep word IDs stable across content updates and separate versioned challenge records.
+import { EXTRA_WORDS, NEW_TOPICS } from './panda-vocabulary.js';
+export const CONTENT_VERSION = 'panda-topics-v2';
+
+export function plainPinyin(value) {
+  return String(value || '').toLowerCase().normalize('NFD')
+    .replace(/u\u0308/g, 'v').replace(/u:/g, 'v')
+    .replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+}
+
+function topic(id, label, subtitle, color, mission, rows) {
+  const allRows = [...rows, ...(EXTRA_WORDS[id] || [])];
+  const words = allRows.map(([word, py, vi]) => Object.freeze({
+    id: id + ':' + word, word, py, vi, pyPlain: plainPinyin(py)
+  }));
+  return Object.freeze({ id, label, subtitle, color, mission, words: Object.freeze(words) });
+}
+
+export const TOPICS = Object.freeze([
+  topic('family', 'Gia đình', 'Những người thân và mái nhà của bạn', '#F4C96B', 'Hoàn thiện ảnh gia đình', [
+    ['爸爸', 'bà ba', 'Bố'],
+    ['妈妈', 'mā ma', 'Mẹ'],
+    ['哥哥', 'gē ge', 'Anh trai'],
+    ['姐姐', 'jiě jie', 'Chị gái'],
+    ['弟弟', 'dì di', 'Em trai'],
+    ['妹妹', 'mèi mei', 'Em gái'],
+    ['爷爷', 'yé ye', 'Ông nội'],
+    ['奶奶', 'nǎi nai', 'Bà nội'],
+    ['外公', 'wài gōng', 'Ông ngoại'],
+    ['外婆', 'wài pó', 'Bà ngoại'],
+    ['儿子', 'ér zi', 'Con trai'],
+    ['女儿', 'nǚ ér', 'Con gái'],
+    ['丈夫', 'zhàng fu', 'Chồng'],
+    ['妻子', 'qī zi', 'Vợ'],
+    ['先生', 'xiān sheng', 'Ông; chồng'],
+    ['太太', 'tài tai', 'Bà; vợ'],
+    ['家人', 'jiā rén', 'Người nhà'],
+    ['父母', 'fù mǔ', 'Bố mẹ'],
+    ['孩子', 'hái zi', 'Đứa trẻ'],
+    ['生日', 'shēng rì', 'Sinh nhật'],
+    ['家庭', 'jiā tíng', 'Gia đình'],
+    ['房间', 'fáng jiān', 'Căn phòng'],
+    ['客厅', 'kè tīng', 'Phòng khách'],
+    ['厨房', 'chú fáng', 'Nhà bếp'],
+    ['卧室', 'wò shì', 'Phòng ngủ'],
+    ['回家', 'huí jiā', 'Về nhà']
+  ]),
+  topic('food', 'Ăn uống', 'Món quen, nguyên liệu và bữa ăn', '#F5AF82', 'Hoàn thành đơn gọi món', [
+    ['米饭', 'mǐ fàn', 'Cơm'],
+    ['面条', 'miàn tiáo', 'Mì sợi'],
+    ['鸡蛋', 'jī dàn', 'Trứng gà'],
+    ['面包', 'miàn bāo', 'Bánh mì'],
+    ['饺子', 'jiǎo zi', 'Sủi cảo'],
+    ['包子', 'bāo zi', 'Bánh bao'],
+    ['牛肉', 'niú ròu', 'Thịt bò'],
+    ['猪肉', 'zhū ròu', 'Thịt lợn'],
+    ['鸡肉', 'jī ròu', 'Thịt gà'],
+    ['鱼', 'yú', 'Cá'],
+    ['蔬菜', 'shū cài', 'Rau'],
+    ['水果', 'shuǐ guǒ', 'Trái cây'],
+    ['苹果', 'píng guǒ', 'Táo'],
+    ['香蕉', 'xiāng jiāo', 'Chuối'],
+    ['西瓜', 'xī guā', 'Dưa hấu'],
+    ['豆腐', 'dòu fu', 'Đậu phụ'],
+    ['土豆', 'tǔ dòu', 'Khoai tây'],
+    ['白菜', 'bái cài', 'Cải thảo'],
+    ['汤', 'tāng', 'Canh'],
+    ['早餐', 'zǎo cān', 'Bữa sáng'],
+    ['午餐', 'wǔ cān', 'Bữa trưa'],
+    ['晚餐', 'wǎn cān', 'Bữa tối'],
+    ['餐厅', 'cān tīng', 'Nhà hàng'],
+    ['菜单', 'cài dān', 'Thực đơn'],
+    ['筷子', 'kuài zi', 'Đũa'],
+    ['勺子', 'sháo zi', 'Thìa']
+  ]),
+  topic('drinks', 'Đồ uống', 'Ghé trạm trà và gọi món yêu thích', '#6CD7BE', 'Pha đủ đơn đồ uống', [
+    ['水', 'shuǐ', 'Nước'],
+    ['茶', 'chá', 'Trà'],
+    ['咖啡', 'kā fēi', 'Cà phê'],
+    ['牛奶', 'niú nǎi', 'Sữa bò'],
+    ['果汁', 'guǒ zhī', 'Nước ép'],
+    ['橙汁', 'chéng zhī', 'Nước cam'],
+    ['豆浆', 'dòu jiāng', 'Sữa đậu nành'],
+    ['奶茶', 'nǎi chá', 'Trà sữa'],
+    ['绿茶', 'lǜ chá', 'Trà xanh'],
+    ['红茶', 'hóng chá', 'Hồng trà'],
+    ['热水', 'rè shuǐ', 'Nước nóng'],
+    ['冰水', 'bīng shuǐ', 'Nước đá'],
+    ['汽水', 'qì shuǐ', 'Nước ngọt có ga'],
+    ['可乐', 'kě lè', 'Nước cola'],
+    ['酸奶', 'suān nǎi', 'Sữa chua'],
+    ['柠檬', 'níng méng', 'Chanh vàng'],
+    ['蜂蜜', 'fēng mì', 'Mật ong'],
+    ['糖', 'táng', 'Đường'],
+    ['冰块', 'bīng kuài', 'Đá viên'],
+    ['杯子', 'bēi zi', 'Cốc'],
+    ['吸管', 'xī guǎn', 'Ống hút'],
+    ['少冰', 'shǎo bīng', 'Ít đá'],
+    ['少糖', 'shǎo táng', 'Ít đường'],
+    ['无糖', 'wú táng', 'Không đường'],
+    ['打包', 'dǎ bāo', 'Gói mang đi'],
+    ['饮料', 'yǐn liào', 'Đồ uống']
+  ]),
+  topic('school', 'Trường học', 'Cùng chuẩn bị cho một ngày đến lớp', '#8BBDF2', 'Chuẩn bị đủ cặp sách', [
+    ['学校', 'xué xiào', 'Trường học'],
+    ['老师', 'lǎo shī', 'Giáo viên'],
+    ['学生', 'xué sheng', 'Học sinh'],
+    ['同学', 'tóng xué', 'Bạn học'],
+    ['教室', 'jiào shì', 'Phòng học'],
+    ['书', 'shū', 'Sách'],
+    ['书包', 'shū bāo', 'Cặp sách'],
+    ['本子', 'běn zi', 'Quyển vở'],
+    ['铅笔', 'qiān bǐ', 'Bút chì'],
+    ['钢笔', 'gāng bǐ', 'Bút máy'],
+    ['橡皮', 'xiàng pí', 'Cục tẩy'],
+    ['尺子', 'chǐ zi', 'Thước kẻ'],
+    ['桌子', 'zhuō zi', 'Bàn'],
+    ['椅子', 'yǐ zi', 'Ghế'],
+    ['黑板', 'hēi bǎn', 'Bảng đen'],
+    ['作业', 'zuò yè', 'Bài tập'],
+    ['考试', 'kǎo shì', 'Kỳ thi'],
+    ['上课', 'shàng kè', 'Vào học'],
+    ['下课', 'xià kè', 'Tan tiết học'],
+    ['学习', 'xué xí', 'Học tập'],
+    ['阅读', 'yuè dú', 'Đọc hiểu'],
+    ['写字', 'xiě zì', 'Viết chữ'],
+    ['数学', 'shù xué', 'Môn toán'],
+    ['中文', 'zhōng wén', 'Tiếng Trung'],
+    ['英语', 'yīng yǔ', 'Tiếng Anh'],
+    ['图书馆', 'tú shū guǎn', 'Thư viện']
+  ]),
+  topic('travel', 'Du lịch', 'Khám phá những điểm đến mới', '#BCA9EB', 'Hoàn tất hành trình', [
+    ['旅行', 'lǚ xíng', 'Du lịch'],
+    ['旅游', 'lǚ yóu', 'Đi du lịch'],
+    ['机场', 'jī chǎng', 'Sân bay'],
+    ['飞机', 'fēi jī', 'Máy bay'],
+    ['火车', 'huǒ chē', 'Tàu hỏa'],
+    ['车站', 'chē zhàn', 'Nhà ga'],
+    ['地铁', 'dì tiě', 'Tàu điện ngầm'],
+    ['汽车', 'qì chē', 'Ô tô'],
+    ['车票', 'chē piào', 'Vé xe; vé tàu'],
+    ['护照', 'hù zhào', 'Hộ chiếu'],
+    ['签证', 'qiān zhèng', 'Thị thực'],
+    ['行李', 'xíng li', 'Hành lý'],
+    ['酒店', 'jiǔ diàn', 'Khách sạn'],
+    ['房间', 'fáng jiān', 'Phòng'],
+    ['地图', 'dì tú', 'Bản đồ'],
+    ['地址', 'dì zhǐ', 'Địa chỉ'],
+    ['景点', 'jǐng diǎn', 'Điểm tham quan'],
+    ['海边', 'hǎi biān', 'Bờ biển'],
+    ['公园', 'gōng yuán', 'Công viên'],
+    ['山', 'shān', 'Núi'],
+    ['拍照', 'pāi zhào', 'Chụp ảnh'],
+    ['出发', 'chū fā', 'Xuất phát'],
+    ['到达', 'dào dá', 'Đến nơi'],
+    ['入口', 'rù kǒu', 'Lối vào'],
+    ['出口', 'chū kǒu', 'Lối ra'],
+    ['导游', 'dǎo yóu', 'Hướng dẫn viên']
+  ]),
+  topic('shopping', 'Mua sắm', 'Ghé trạm giao dịch và chọn món cần mua', '#EFA5B5', 'Hoàn thiện giỏ hàng', [
+    ['商店', 'shāng diàn', 'Cửa hàng'],
+    ['超市', 'chāo shì', 'Siêu thị'],
+    ['商场', 'shāng chǎng', 'Trung tâm mua sắm'],
+    ['市场', 'shì chǎng', 'Chợ'],
+    ['买', 'mǎi', 'Mua'],
+    ['卖', 'mài', 'Bán'],
+    ['价格', 'jià gé', 'Giá cả'],
+    ['便宜', 'pián yi', 'Rẻ'],
+    ['贵', 'guì', 'Đắt'],
+    ['打折', 'dǎ zhé', 'Giảm giá'],
+    ['现金', 'xiàn jīn', 'Tiền mặt'],
+    ['付款', 'fù kuǎn', 'Thanh toán'],
+    ['零钱', 'líng qián', 'Tiền lẻ'],
+    ['收据', 'shōu jù', 'Biên lai'],
+    ['袋子', 'dài zi', 'Túi'],
+    ['衣服', 'yī fu', 'Quần áo'],
+    ['裤子', 'kù zi', 'Quần'],
+    ['鞋子', 'xié zi', 'Giày'],
+    ['帽子', 'mào zi', 'Mũ'],
+    ['颜色', 'yán sè', 'Màu sắc'],
+    ['尺码', 'chǐ mǎ', 'Kích cỡ'],
+    ['试穿', 'shì chuān', 'Mặc thử'],
+    ['退货', 'tuì huò', 'Trả hàng'],
+    ['换货', 'huàn huò', 'Đổi hàng'],
+    ['购物', 'gòu wù', 'Mua sắm'],
+    ['礼物', 'lǐ wù', 'Quà tặng']
+  ]),
+  ...NEW_TOPICS.map(args => topic(...args))
+]);
+
+export function getTopic(id) {
+  return TOPICS.find(item => item.id === id) || TOPICS[0];
+}

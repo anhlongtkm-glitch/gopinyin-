@@ -1,0 +1,10 @@
+  PASS touch devices automatically show a working keyboard when the countdown finishes
+  PASS touch Hide and keyboard toggle close and reopen without a double toggle
+  PASS keyboard remains visible and accepts touch input inside and after real fullscreen
+  PASS shorter mobile layout avoids overlap; leaving game hides keyboard without forgetting its preference
+  PASS 320, 360, 390 and 412px mobile layouts keep the stage and flight controls above the keyboard with real hit targets
+  PASS insufficient landscape space pauses time and lives, preserves input and exposes an unobscured exit
+  PASS returning to portrait requires explicit resume and small-screen keyboard toggles remain tappable
+  PASS visual viewport resize and scroll update both card and keyboard while the layout viewport stays unchanged
+  PASS fullscreen landscape notice remains interactive and exit closes fullscreen, notice and keyboard
+  PASS short-screen pause, settings, results, topic selection and countdown retain reachable actions

@@ -22,6 +22,7 @@ const mascotPoses = [
   'face-encourage', 'face-excited'
 ];
 publicAssets.push(...mascotPoses.flatMap(pose => ['mascot/' + pose + '.webp', 'mascot/' + pose + '-small.webp']));
+publicAssets.push(...['panda-ship.webp', 'panda-ship-small.webp'].map(file => 'game/panda-du-hanh/' + file));
 
 export async function renderHtml(file = 'index.html', ancestors = []) {
   const absolute = path.resolve(sourceRoot, file);

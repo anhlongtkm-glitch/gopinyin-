@@ -94,7 +94,7 @@ export function initializePronunciationController() {
     leave() {
       cancelSourceLoad();
       pronunciationMicrophoneState.PronMic.hardRelease();
-      pronunciationRecognitionState.PronAsr.stop();
+      pronunciationRecognitionState.PronAsr.cancelPending();
       if (pronunciationSessionState.S.timer) {
         clearInterval(pronunciationSessionState.S.timer);
         pronunciationSessionState.S.timer = 0;
@@ -107,7 +107,7 @@ export function initializePronunciationController() {
         clearTimeout(pronunciationSessionState.S.silenceTimer);
         pronunciationSessionState.S.silenceTimer = 0;
       }
-      if (['recording', 'requesting', 'analyzing'].includes(pronunciationSessionState.S.phase)) setPhase('idle', '');
+      if (['recording', 'requesting', 'starting', 'analyzing'].includes(pronunciationSessionState.S.phase)) setPhase('idle', '');
       hideDetail();
       document.body.classList.remove('studyFit');
       try {

@@ -12,6 +12,8 @@ import { state as pronunciationUtilsState, toast } from "./utils.js";
 export const state = {};
 
 const pronunciationMicrophoneState = state;
+let recorderRequest = 0;
+let settleRecorder = () => {};
 
 export function initializePronunciationMicrophone() {
   /* ═══════════════════════════════════════════════════════════
@@ -19,7 +21,12 @@ export function initializePronunciationMicrophone() {
      ═══════════════════════════════════════════════════════════ */
   pronunciationMicrophoneState.PronMic = {
     requestVersion: 0,
-    cancelPending() { this.requestVersion++; },
+    cancelPending() {
+      this.requestVersion++;
+      recorderRequest++;
+      settleRecorder();
+      this.release();
+    },
     supported() {
       return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     },
@@ -135,9 +142,14 @@ export function initializePronunciationMicrophone() {
       drawMeter(0);
     },
     startRecorder(stream) {
-      if (!window.MediaRecorder) return;
+      settleRecorder();
+      const request = ++recorderRequest;
+      const chunks = pronunciationSessionState.S.chunks = [];
+      let complete;
+      pronunciationSessionState.S.recDone = new Promise(resolve => { complete = resolve; });
+      settleRecorder = complete;
+      if (!window.MediaRecorder) { complete(); return; }
       try {
-        pronunciationSessionState.S.chunks = [];
         const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].find(m => {
           try {
             return window.MediaRecorder.isTypeSupported(m);
@@ -149,13 +161,14 @@ export function initializePronunciationMicrophone() {
           mimeType: mime
         } : undefined);
         pronunciationSessionState.S.rec.ondataavailable = e => {
-          if (e.data && e.data.size) pronunciationSessionState.S.chunks.push(e.data);
+          if (request === recorderRequest && e.data && e.data.size) chunks.push(e.data);
         };
         pronunciationSessionState.S.rec.onstop = () => {
-          if (!pronunciationSessionState.S.chunks.length) return;
+          complete();
+          if (request !== recorderRequest || !chunks.length) return;
           try {
-            const blob = new Blob(pronunciationSessionState.S.chunks, {
-              type: pronunciationSessionState.S.chunks[0].type || 'audio/webm'
+            const blob = new Blob(chunks, {
+              type: chunks[0].type || 'audio/webm'
             });
             if (pronunciationSessionState.S.blobUrl) {
               try {
@@ -167,10 +180,20 @@ export function initializePronunciationMicrophone() {
             if (pb) pb.disabled = false;
           } catch (e) {}
         };
+        pronunciationSessionState.S.rec.onerror = () => complete();
         pronunciationSessionState.S.rec.start();
       } catch (e) {
         pronunciationSessionState.S.rec = null;
+        complete();
       }
+    },
+    waitRecorder(ms = 1000) {
+      const done = pronunciationSessionState.S.recDone;
+      if (!done) return Promise.resolve();
+      return new Promise(resolve => {
+        const timer = setTimeout(resolve, ms);
+        done.then(() => { clearTimeout(timer); resolve(); });
+      });
     },
     stopRecorder() {
       try {
@@ -187,6 +210,8 @@ export function initializePronunciationMicrophone() {
     /* Đóng micro thật — chỉ gọi khi rời màn luyện phát âm / rời trang */
     hardRelease() {
       this.requestVersion++;
+      recorderRequest++;
+      settleRecorder();
       this.stopMeter();
       this.stopRecorder();
       if (pronunciationSessionState.S.stream) {

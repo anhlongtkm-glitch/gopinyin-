@@ -189,7 +189,7 @@ export function initializeAppNavigation() {
     rank: ['Bảng xếp hạng', 'Bảng xếp hạng luyện gõ theo ngày / tuần — tính theo số câu luyện được'],
     ai: ['Học bằng AI', 'Viết chủ đề, chọn câu hoặc từ vựng và học cùng AI'],
     games: ['Game từ vựng', 'Chọn một trò chơi từ vựng để vừa chơi vừa nhớ chữ Hán'],
-    game: ['Game bắn chữ', 'Gõ pinyin để bắn nổ chữ — nhấn Enter để xem/ẩn gợi ý pinyin']
+    game: ['Panda Du Hành', 'Gõ chữ, chinh phục thiên hà — khám phá từ vựng theo chủ đề']
   };
   appNavigationState.currentView = 'dash';
   publishLegacy("enterWorkspace", enterWorkspace);

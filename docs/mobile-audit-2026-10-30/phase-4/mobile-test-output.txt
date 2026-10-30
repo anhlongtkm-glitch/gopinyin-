@@ -1,0 +1,8 @@
+  PASS correct answers at 390 and 360px reveal a tappable Next above navigation without stealing input focus
+  PASS IME composition does not grade or move the page until committed Chinese input is complete
+  PASS Next accounts for the app keyboard and navigation using the most restrictive edge
+  PASS a shrinking visual viewport reserves enough scroll space and removes the extra inset after keyboard close
+  PASS multiline sentences and changing long meanings leave the completed action reachable
+  PASS deliberate scrolling and an open dialog cancel pending reveals and preserve dialog focus
+  PASS navigating away cancels a completed question reveal before it can scroll the next screen
+  PASS a completed speech result reveals Next without the older result-scroll competing with it

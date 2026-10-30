@@ -1,0 +1,242 @@
+[
+  {
+    "file": "account-sync.cjs",
+    "code": 0,
+    "passed": 9,
+    "failed": 0
+  },
+  {
+    "file": "account-api.cjs",
+    "code": 0,
+    "passed": 1,
+    "failed": 0
+  },
+  {
+    "file": "serverless.cjs",
+    "code": 0,
+    "passed": 3,
+    "failed": 0
+  },
+  {
+    "file": "pronunciation-races.cjs",
+    "code": 0,
+    "passed": 3,
+    "failed": 0
+  },
+  {
+    "file": "service-reliability.cjs",
+    "code": 0,
+    "passed": 4,
+    "failed": 0
+  },
+  {
+    "file": "auth-navigation.cjs",
+    "code": 0,
+    "passed": 10,
+    "failed": 0
+  },
+  {
+    "file": "database.cjs",
+    "code": 0,
+    "passed": 1,
+    "failed": 0
+  },
+  {
+    "file": "navigation-races.cjs",
+    "code": 0,
+    "passed": 9,
+    "failed": 0
+  },
+  {
+    "file": "progress-restore.cjs",
+    "code": 0,
+    "passed": 8,
+    "failed": 0
+  },
+  {
+    "file": "improvements.cjs",
+    "code": 0,
+    "passed": 9,
+    "failed": 0
+  },
+  {
+    "file": "data-performance.cjs",
+    "code": 0,
+    "passed": 2,
+    "failed": 0
+  },
+  {
+    "file": "app_regress.js",
+    "code": 0,
+    "passed": 27,
+    "failed": 0
+  },
+  {
+    "file": "accounts.cjs",
+    "code": 0,
+    "passed": 7,
+    "failed": 0
+  },
+  {
+    "file": "study_shell.js",
+    "code": 0,
+    "passed": 16,
+    "failed": 0
+  },
+  {
+    "file": "pron_picker_d.js",
+    "code": 0,
+    "passed": 15,
+    "failed": 0
+  },
+  {
+    "file": "verify_pron_studied.js",
+    "code": 0,
+    "passed": 21,
+    "failed": 0
+  },
+  {
+    "file": "games_hub.js",
+    "code": 0,
+    "passed": 45,
+    "failed": 0
+  },
+  {
+    "file": "pronounce.js",
+    "code": 0,
+    "passed": 64,
+    "failed": 0
+  },
+  {
+    "file": "read_on_type.js",
+    "code": 0,
+    "passed": 11,
+    "failed": 0
+  },
+  {
+    "file": "study-shortcuts.cjs",
+    "code": 0,
+    "passed": 10,
+    "failed": 0
+  },
+  {
+    "file": "ai_generation_flow.cjs",
+    "code": 0,
+    "passed": 9,
+    "failed": 0
+  },
+  {
+    "file": "ai_vocab_mode.js",
+    "code": 0,
+    "passed": 32,
+    "failed": 0
+  },
+  {
+    "file": "ui-experience.cjs",
+    "code": 0,
+    "passed": 15,
+    "failed": 0
+  },
+  {
+    "file": "ai_save_flow.js",
+    "code": 0,
+    "passed": 33,
+    "failed": 0
+  },
+  {
+    "file": "journey.cjs",
+    "code": 0,
+    "passed": 6,
+    "failed": 0
+  },
+  {
+    "file": "ai_recovery.cjs",
+    "code": 0,
+    "passed": 6,
+    "failed": 0
+  },
+  {
+    "file": "curriculum.cjs",
+    "code": 0,
+    "passed": 4,
+    "failed": 0
+  },
+  {
+    "file": "audio-defaults.cjs",
+    "code": 0,
+    "passed": 11,
+    "failed": 0
+  },
+  {
+    "file": "approved-layout.cjs",
+    "code": 0,
+    "passed": 4,
+    "failed": 0
+  },
+  {
+    "file": "ai_append_wait.cjs",
+    "code": 0,
+    "passed": 4,
+    "failed": 0
+  },
+  {
+    "file": "pron-auto.cjs",
+    "code": 0,
+    "passed": 3,
+    "failed": 0
+  },
+  {
+    "file": "pinyin-tokenizer.cjs",
+    "code": 0,
+    "passed": 6,
+    "failed": 0
+  },
+  {
+    "file": "pronunciation-mobile.cjs",
+    "code": 0,
+    "passed": 16,
+    "failed": 0
+  },
+  {
+    "file": "panda-model.cjs",
+    "code": 0,
+    "passed": 13,
+    "failed": 0
+  },
+  {
+    "file": "pinyin-alignment.cjs",
+    "code": 0,
+    "passed": 5,
+    "failed": 0
+  },
+  {
+    "file": "panda-renderer.cjs",
+    "code": 0,
+    "passed": 4,
+    "failed": 0
+  },
+  {
+    "file": "study-mobile-next.cjs",
+    "code": 0,
+    "passed": 8,
+    "failed": 0
+  },
+  {
+    "file": "panda-game.cjs",
+    "code": 0,
+    "passed": 10,
+    "failed": 0
+  },
+  {
+    "file": "panda-mobile-controls.cjs",
+    "code": 0,
+    "passed": 7,
+    "failed": 0
+  },
+  {
+    "file": "panda-mobile-keyboard.cjs",
+    "code": 0,
+    "passed": 10,
+    "failed": 0
+  }
+]

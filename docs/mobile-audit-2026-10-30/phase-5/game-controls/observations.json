@@ -1,0 +1,198 @@
+[
+  {
+    "width": 320,
+    "height": 568,
+    "stage": 143,
+    "keyboardTop": 305,
+    "controls": [
+      {
+        "id": "gaFocusBtn",
+        "width": 98,
+        "height": 44,
+        "top": 238.5,
+        "bottom": 282.5,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "width": 98,
+        "height": 44,
+        "top": 238.5,
+        "bottom": 282.5,
+        "hit": true
+      },
+      {
+        "id": "gaKbdBtn",
+        "width": 44,
+        "height": 44,
+        "top": 238.5,
+        "bottom": 282.5,
+        "hit": true
+      },
+      {
+        "id": "gaOptionsBtn",
+        "width": 44,
+        "height": 44,
+        "top": 238.5,
+        "bottom": 282.5,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "width": 44,
+        "height": 44,
+        "top": 8,
+        "bottom": 52,
+        "hit": true
+      }
+    ],
+    "scrollWidth": 320
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "stage": 215,
+    "keyboardTop": 377,
+    "controls": [
+      {
+        "id": "gaFocusBtn",
+        "width": 118,
+        "height": 44,
+        "top": 310.5,
+        "bottom": 354.5,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "width": 118,
+        "height": 44,
+        "top": 310.5,
+        "bottom": 354.5,
+        "hit": true
+      },
+      {
+        "id": "gaKbdBtn",
+        "width": 44,
+        "height": 44,
+        "top": 310.5,
+        "bottom": 354.5,
+        "hit": true
+      },
+      {
+        "id": "gaOptionsBtn",
+        "width": 44,
+        "height": 44,
+        "top": 310.5,
+        "bottom": 354.5,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "width": 44,
+        "height": 44,
+        "top": 8,
+        "bottom": 52,
+        "hit": true
+      }
+    ],
+    "scrollWidth": 360
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "stage": 374,
+    "keyboardTop": 581,
+    "controls": [
+      {
+        "id": "gaFocusBtn",
+        "width": 133,
+        "height": 44,
+        "top": 514.5,
+        "bottom": 558.5,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "width": 133,
+        "height": 44,
+        "top": 514.5,
+        "bottom": 558.5,
+        "hit": true
+      },
+      {
+        "id": "gaKbdBtn",
+        "width": 44,
+        "height": 44,
+        "top": 514.5,
+        "bottom": 558.5,
+        "hit": true
+      },
+      {
+        "id": "gaOptionsBtn",
+        "width": 44,
+        "height": 44,
+        "top": 514.5,
+        "bottom": 558.5,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "width": 44,
+        "height": 44,
+        "top": 54,
+        "bottom": 98,
+        "hit": true
+      }
+    ],
+    "scrollWidth": 390
+  },
+  {
+    "width": 412,
+    "height": 915,
+    "stage": 445,
+    "keyboardTop": 652,
+    "controls": [
+      {
+        "id": "gaFocusBtn",
+        "width": 144,
+        "height": 44,
+        "top": 585.5,
+        "bottom": 629.5,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "width": 144,
+        "height": 44,
+        "top": 585.5,
+        "bottom": 629.5,
+        "hit": true
+      },
+      {
+        "id": "gaKbdBtn",
+        "width": 44,
+        "height": 44,
+        "top": 585.5,
+        "bottom": 629.5,
+        "hit": true
+      },
+      {
+        "id": "gaOptionsBtn",
+        "width": 44,
+        "height": 44,
+        "top": 585.5,
+        "bottom": 629.5,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "width": 44,
+        "height": 44,
+        "top": 54,
+        "bottom": 98,
+        "hit": true
+      }
+    ],
+    "scrollWidth": 412
+  }
+]

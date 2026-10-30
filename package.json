@@ -9,6 +9,7 @@
     "start": "node scripts/dev.mjs",
     "serve": "node server/serve.js --no-open",
     "test": "node tests/run.cjs",
+    "test:game": "node tests/run.cjs panda-model.cjs panda-renderer.cjs panda-mobile-keyboard.cjs panda-mobile-controls.cjs panda-game.cjs games_hub.js ui-experience.cjs",
     "test:parity": "node tests/refactor-parity.cjs",
     "test:build": "node tests/build.cjs",
     "test:tooling": "node tests/tooling.cjs",

@@ -1,0 +1,16 @@
+  PASS constructor failure is reported without recording or false listening
+  PASS start failure releases attempt resources and permits retry
+  PASS missing onstart times out instead of pretending to listen
+  PASS network stops listening immediately and does not save a result
+  PASS not-allowed stops listening immediately and does not save a result
+  PASS service-not-allowed stops listening immediately and does not save a result
+  PASS audio-capture stops listening immediately and does not save a result
+  PASS no-speech stops listening immediately and does not save a result
+  PASS aborted stops listening immediately and does not save a result
+  PASS interim-only end asks for another attempt without awarding progress
+  PASS opening settings cancels startup and ignores every callback from the cancelled recognizer
+  PASS three consecutive Chinese final results each finish and save exactly once
+  PASS manual stop accepts a delayed final result without double assessment
+  PASS changing question rejects stale recognition and recorder data from the previous attempt
+  PASS leaving closes microphone tracks; denied permission and missing API have distinct messages
+  PASS navigating away during microphone acquisition closes late tracks without reopening the study

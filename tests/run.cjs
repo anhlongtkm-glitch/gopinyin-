@@ -13,8 +13,15 @@ suites.push('ai_recovery.cjs');
 suites.push('ai_append_wait.cjs');
 suites.push('audio-defaults.cjs');
 suites.push('pron-auto.cjs');
+suites.push('pronunciation-mobile.cjs');
+suites.push('study-mobile-next.cjs');
 suites.push('pinyin-tokenizer.cjs');
 suites.push('pinyin-alignment.cjs');
+suites.push('panda-model.cjs');
+suites.push('panda-game.cjs');
+suites.push('panda-renderer.cjs');
+suites.push('panda-mobile-keyboard.cjs');
+suites.push('panda-mobile-controls.cjs');
 const requested=process.argv.slice(2);
 if(requested.length){if(requested.some(file=>!suites.includes(file)))throw new Error('Unknown test suite');suites.splice(0,suites.length,...requested);}
 async function freePort(){const probe=net.createServer();await new Promise(r=>probe.listen(0,'127.0.0.1',r));const port=probe.address().port;await new Promise(r=>probe.close(r));return port;}

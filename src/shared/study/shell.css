@@ -1,5 +1,6 @@
 /* Shared study frame: same reading order, type sizes and actions in both modes. */
 body.studyFit{overflow:auto}
+body.studyFit .ws-main::after{content:'';display:block;flex:none;height:var(--study-bottom-inset,0px)}
 body.studyFit .ws-main{height:auto;min-height:0;overflow:visible}
 #appCard.studyShell,#pronCard.studyShell{width:calc(100% - 80px);max-width:1360px;margin:24px auto 40px;padding:0;display:flex;flex-direction:column;gap:24px;overflow:visible;background:none;border:0;box-shadow:none;border-radius:0}
 .studyShell .studyHead{display:flex;align-items:center;gap:12px;min-height:24px;padding:0 2px}

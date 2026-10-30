@@ -1,0 +1,29 @@
+{
+  "width": 1347,
+  "height": 1168,
+  "alphaBounds": {
+    "minX": 87,
+    "minY": 140,
+    "maxX": 1260,
+    "maxY": 994
+  },
+  "transparentRatio": 0.6901898943364758,
+  "visibleRatio": 0.30822044929879694,
+  "versions": [
+    {
+      "name": "panda-ship.webp",
+      "width": 512,
+      "height": 444,
+      "bytes": 35670,
+      "cornerAlpha": 0
+    },
+    {
+      "name": "panda-ship-small.webp",
+      "width": 256,
+      "height": 222,
+      "bytes": 13060,
+      "cornerAlpha": 0
+    }
+  ],
+  "sourceBytes": 1002553
+}

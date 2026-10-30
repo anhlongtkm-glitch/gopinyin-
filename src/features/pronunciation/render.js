@@ -3,7 +3,7 @@
 import { currentItem } from "./lesson.js";
 import { navigationVersion } from "../../app/routes.js";
 import { setMascot, renderVisibleMascots } from "../../shared/mascot.js";
-import { studyOverlayOpen, ensureStudyControlVisible } from "../../shared/study/interactions.js";
+import { studyOverlayOpen, ensureStudyControlVisible, scheduleStudyControlReveal } from "../../shared/study/interactions.js";
 
 import { state as pronunciationRepositoryState } from "./repository.js";
 
@@ -166,7 +166,7 @@ export function renderHanzi() {
 export function updateMicLabel() {
   const btn = pronunciationUtilsState.$('pronMicBtn');
   if (!btn) return;
-  if (pronunciationSessionState.S.phase === 'recording' || pronunciationSessionState.S.phase === 'analyzing' || pronunciationSessionState.S.phase === 'requesting') return;
+  if (['recording', 'analyzing', 'requesting', 'starting'].includes(pronunciationSessionState.S.phase)) return;
   const txt = btn.querySelector('.pronMicTxt');
   const sub = btn.querySelector('.pronMicSub');
   if (txt) txt.textContent = pronunciationSessionState.S.result ? 'Nhấn để nói lại' : 'Nhấn để bắt đầu nói';
@@ -241,6 +241,12 @@ export function renderResult() {
   /* Kết quả nằm dưới thẻ câu → cuộn tới để người dùng THẤY ngay,
      không phải tự mò xuống (chỉ cuộn khi chưa hiện đủ trong màn hình). */
   const navigation = navigationVersion(), item = currentItem();
+  if (window.matchMedia('(max-width:860px)').matches) {
+    scheduleStudyControlReveal('pronNextBtn', () => navigation === navigationVersion()
+      && item === currentItem() && r === pronunciationSessionState.S.result
+      && pronunciationSessionState.S.phase === 'result');
+    return;
+  }
   const activeBefore = document.activeElement, scrollBefore = window.scrollY;
   setTimeout(() => {
     if (navigation !== navigationVersion() || item !== currentItem() || r !== pronunciationSessionState.S.result || studyOverlayOpen()) return;

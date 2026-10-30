@@ -1,0 +1,7 @@
+  PASS all five touch controls remain visible and unobscured at 320, 360, 390 and 412px widths
+  PASS five clean words typed through touch earn one Focus charge and a single tap activates it once
+  PASS options pauses the flight and hides the keyboard without changing its preference, then restores input and play
+  PASS options preserves an existing pause, sound setting and an explicitly hidden keyboard; Escape works from an input
+  PASS real fullscreen is reachable through options and restores a working keyboard inside and after fullscreen
+  PASS closing options after rotation respects the viewport pause; leaving from options dismisses keyboard and flight
+  PASS opening options during a challenge follows the existing pause rule and resumes as practice

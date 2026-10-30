@@ -1,0 +1,4 @@
+  PASS muzzle and target edge align with left/right headings across desktop and mobile sizes
+  PASS real renderer launches from the rotated sprite nose, stops at card edge and uses canonical Pinyin
+  PASS completed cards dissolve at 250ms; resize and reduced motion retain accurate aiming
+  PASS Focus rendering survives a temporarily zero-sized stage during viewport or fullscreen transitions

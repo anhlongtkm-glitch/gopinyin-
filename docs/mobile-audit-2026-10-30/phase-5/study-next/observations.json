@@ -1,0 +1,102 @@
+[
+  {
+    "label": "390-correct-next",
+    "top": 708.265625,
+    "bottom": 756.265625,
+    "scroll": 82,
+    "focus": "pinyinInput",
+    "width": 390,
+    "height": 844,
+    "inset": "0px"
+  },
+  {
+    "label": "360-correct-next",
+    "top": 504.265625,
+    "bottom": 552.265625,
+    "scroll": 286,
+    "focus": "pinyinInput",
+    "width": 360,
+    "height": 640,
+    "inset": "0px"
+  },
+  {
+    "label": "ime-committed-next",
+    "top": 504.265625,
+    "bottom": 552.265625,
+    "scroll": 286,
+    "focus": "pinyinInput",
+    "width": 360,
+    "height": 640,
+    "inset": "0px"
+  },
+  {
+    "label": "virtual-keyboard-next",
+    "top": 483.265625,
+    "bottom": 531.265625,
+    "scroll": 307,
+    "focus": "pinyinInput",
+    "width": 360,
+    "height": 640,
+    "inset": "0px"
+  },
+  {
+    "label": "virtual-keyboard-closed",
+    "top": 483.265625,
+    "bottom": 531.265625,
+    "scroll": 307,
+    "focus": "pinyinInput",
+    "width": 360,
+    "height": 640,
+    "inset": "0px"
+  },
+  {
+    "label": "native-viewport-shrunk",
+    "top": 440.265625,
+    "bottom": 488.265625,
+    "scroll": 350,
+    "focus": "pinyinInput",
+    "width": 390,
+    "height": 844,
+    "inset": "328px"
+  },
+  {
+    "label": "native-viewport-restored",
+    "top": 440.265625,
+    "bottom": 488.265625,
+    "scroll": 350,
+    "focus": "pinyinInput",
+    "width": 390,
+    "height": 844,
+    "inset": "0px"
+  },
+  {
+    "label": "long-sentence-next",
+    "top": 708.421875,
+    "bottom": 756.421875,
+    "scroll": 416,
+    "focus": "pinyinInput",
+    "width": 390,
+    "height": 844,
+    "inset": "0px"
+  },
+  {
+    "label": "long-sentence-layout",
+    "top": 708.671875,
+    "bottom": 756.671875,
+    "scroll": 172,
+    "focus": "typingQuickViToggle",
+    "width": 390,
+    "height": 844,
+    "inset": "0px"
+  },
+  {
+    "label": "speaking-result-next",
+    "top": 647.515625,
+    "bottom": 695.515625,
+    "scroll": 603,
+    "focus": "top",
+    "width": 390,
+    "height": 844,
+    "inset": "0px"
+  }
+]

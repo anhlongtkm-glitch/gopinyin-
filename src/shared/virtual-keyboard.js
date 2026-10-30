@@ -136,6 +136,7 @@ export function deleteChar(inp) {
 
 /* ── xử lý phím ── */
 export function press(k, btn) {
+  if (btn?.disabled) return;
   flash(btn);
   if (k === 'hide') {
     hide();
@@ -215,6 +216,16 @@ export function syncHint() {
   if (tip) {
     tip.textContent = mode === 'game' ? next ? 'Phím cần gõ tiếp theo: ' + next.toUpperCase() : 'Gõ chữ cái đầu của thẻ để khoá mục tiêu' : 'Gõ chữ Hán bằng bàn phím tiếng Trung của máy · 2 Pinyin · 5 câu tiếp khi đúng';
   }
+  const game = mode === 'game' ? legacy.__game?._state : null;
+  const hintButton = virtualKeyboardState.root.querySelector('[data-vk="hint"]');
+  if (hintButton) {
+    hintButton.disabled = !!game && game.mode === 'challenge';
+    hintButton.setAttribute('aria-pressed', String(!!game?.showPinyin));
+    hintButton.textContent = game ? game.mode === 'challenge' ? 'Pinyin khóa' : game.showPinyin ? 'Ẩn Pinyin' : 'Hiện Pinyin' : 'Pinyin';
+  }
+  virtualKeyboardState.root.querySelectorAll('[data-vk="back"]').forEach(button => {
+    button.setAttribute('aria-label', game ? 'Đổi mục tiêu' : 'Xóa lùi');
+  });
   if (next === virtualKeyboardState.hint) return;
   virtualKeyboardState.hint = next;
   var keys = virtualKeyboardState.root.querySelectorAll('.vkKey[data-vk]');
@@ -244,14 +255,47 @@ export function fitGameCard() {
   var card = $('gameCard');
   if (!card) return;
   if (virtualKeyboardState.open && activeMode() === 'game') {
-    var top = Math.max(0, card.getBoundingClientRect().top);
-    var avail = window.innerHeight - (virtualKeyboardState.root ? virtualKeyboardState.root.offsetHeight : 0) - top - 14;
+    const viewport = window.visualViewport;
+    const top = viewport?.offsetTop || 0, left = viewport?.offsetLeft || 0;
+    const height = viewport?.height || window.innerHeight;
+    const width = viewport?.width || document.documentElement.clientWidth;
+    card.classList.add('pd-keyboard-fit');
+    const keyboardHeight = virtualKeyboardState.root?.offsetHeight || 0;
+    document.body.style.setProperty('--vk-h', keyboardHeight + 'px');
+    const available = Math.max(0, Math.floor(height - keyboardHeight - 12));
+    // Reserve the visual viewport for play instead of placing it below the app header.
+    card.style.position = 'fixed'; card.style.top = top + 'px'; card.style.left = left + 'px';
+    card.style.width = width + 'px'; card.style.zIndex = '110';
     card.style.minHeight = '0';
-    card.style.height = Math.max(320, Math.round(avail)) + 'px';
+    card.style.height = available + 'px';
+    ['padding-top','padding-bottom','padding-left','padding-right'].forEach(property => card.style.removeProperty(property));
+    if (document.fullscreenElement === card) {
+      // The fullscreen root is forced to viewport size by the browser. Reserve
+      // keyboard space inside it instead of relying on shrinking that root.
+      card.style.paddingTop = top + 'px';
+      card.style.paddingBottom = (Math.max(0, window.innerHeight - top - height) + keyboardHeight + 12) + 'px';
+      card.style.paddingLeft = left + 'px';
+      card.style.paddingRight = Math.max(0, window.innerWidth - left - width) + 'px';
+    }
+    const chrome = ['.pdHud', '.pdSubHud', '.pdFlightBar'].reduce((sum, selector) => sum + (card.querySelector(selector)?.getBoundingClientRect().height || 0), 2);
+    document.dispatchEvent(new CustomEvent('gp:game-viewport', {detail:{
+      blocked:available - chrome < 112,
+      top, left, width, height
+    }}));
   } else {
-    card.style.minHeight = '';
-    card.style.height = '';
+    card.classList.remove('pd-keyboard-fit');
+    ['position','top','left','width','z-index','min-height','height','padding-top','padding-bottom','padding-left','padding-right'].forEach(property => card.style.removeProperty(property));
+    document.dispatchEvent(new CustomEvent('gp:game-viewport', {detail:{blocked:false}}));
   }
+}
+
+let fitFrame = 0;
+function scheduleFit() {
+  if (fitFrame) return;
+  fitFrame = requestAnimationFrame(() => {
+    fitFrame = 0;
+    if (virtualKeyboardState.open) { fitWidth(); fitGameCard(); }
+  });
 }
 
 /* ── bám đúng bề rộng NHÌN THẤY (trang có thể bị đẩy rộng hơn do phần tử khác) ── */
@@ -260,15 +304,20 @@ export function fitGameCard() {
 export function fitWidth() {
   if (!virtualKeyboardState.root) return;
   var vv = window.visualViewport;
-  var w = vv && vv.width ? vv.width : document.documentElement.clientWidth;
-  var left = vv && vv.offsetLeft ? vv.offsetLeft : 0;
+  var viewportWidth = vv && vv.width ? vv.width : document.documentElement.clientWidth;
+  var w = Math.min(760, viewportWidth);
+  var left = (vv && vv.offsetLeft ? vv.offsetLeft : 0) + (viewportWidth - w) / 2;
   virtualKeyboardState.root.style.width = Math.round(w) + 'px';
   virtualKeyboardState.root.style.left = Math.round(left) + 'px';
   virtualKeyboardState.root.style.right = 'auto';
+  const bottom = vv ? Math.max(0, window.innerHeight - vv.offsetTop - vv.height) : 0;
+  virtualKeyboardState.root.style.bottom = bottom + 'px';
 }
 
 export function show() {
   build();
+  // Fullscreen's top layer hides siblings of the fullscreen element.
+  (document.fullscreenElement || document.body).appendChild(virtualKeyboardState.root);
   fitWidth();
   virtualKeyboardState.root.hidden = false;
   virtualKeyboardState.open = true;
@@ -277,6 +326,8 @@ export function show() {
   syncButtons();
   syncInputMode();
   syncHint();
+  fitGameCard();
+  scheduleFit();
   clearInterval(virtualKeyboardState.hintTimer);
   virtualKeyboardState.hintTimer = setInterval(syncHint, 160);
   /* game: canvas co lại để tàu không bị bàn phím che */
@@ -305,7 +356,7 @@ export function show() {
   } catch (e) {}
 }
 
-export function hide() {
+export function hide({ remember = true } = {}) {
   if (!virtualKeyboardState.root) return;
   virtualKeyboardState.root.hidden = true;
   virtualKeyboardState.open = false;
@@ -316,7 +367,7 @@ export function hide() {
   syncInputMode();
   window.dispatchEvent(new Event('resize'));
   try {
-    localStorage.setItem(virtualKeyboardState.LS_KEY, '0');
+    if (remember) localStorage.setItem(virtualKeyboardState.LS_KEY, '0');
   } catch (e) {}
 }
 
@@ -361,6 +412,25 @@ export function init() {
     if (activeMode()) show();
   }
 
+  document.addEventListener('gp:game-started', function () {
+    if (!isTouch() || activeMode() !== 'game') return;
+    var pref = null;
+    try { pref = localStorage.getItem(virtualKeyboardState.LS_KEY); } catch (e) {}
+    if (pref !== '0') show();
+    else if (virtualKeyboardState.open) fitGameCard();
+  });
+  document.addEventListener('gp:view-changed', function () {
+    if (virtualKeyboardState.open && !activeMode()) hide({ remember:false });
+    else if (virtualKeyboardState.open) scheduleFit();
+  });
+  document.addEventListener('fullscreenchange', function () {
+    (document.fullscreenElement || document.body).appendChild(virtualKeyboardState.root);
+    scheduleFit();
+  });
+  document.addEventListener('gp:game-layout', scheduleFit);
+  const layoutObserver = new ResizeObserver(scheduleFit);
+  [virtualKeyboardState.root, ...document.querySelectorAll('#gameCard .pdHud, #gameCard .pdSubHud, #gameCard .pdFlightBar')].forEach(element => layoutObserver.observe(element));
+
   /* thiết bị cảm ứng: tự bật khi vào màn hình có chỗ gõ (nếu người dùng chưa tắt) */
   document.addEventListener('click', function (e) {
     if (virtualKeyboardState.open || !isTouch()) return;
@@ -390,24 +460,17 @@ export function init() {
       }, 280);
     }
   });
-  window.addEventListener('resize', function () {
-    if (virtualKeyboardState.open) {
-      fitWidth();
-      fitGameCard();
-    }
-  });
+  window.addEventListener('resize', scheduleFit);
   window.addEventListener('orientationchange', function () {
     setTimeout(function () {
       if (virtualKeyboardState.open) {
-        fitWidth();
-        fitGameCard();
+        scheduleFit();
       }
     }, 260);
   });
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', function () {
-      if (virtualKeyboardState.open) fitWidth();
-    });
+    window.visualViewport.addEventListener('resize', scheduleFit);
+    window.visualViewport.addEventListener('scroll', scheduleFit);
   }
 }
 

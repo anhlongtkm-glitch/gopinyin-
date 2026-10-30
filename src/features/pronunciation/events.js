@@ -103,6 +103,7 @@ export function wire() {
     toast('Đã xóa tiến độ luyện phát âm của bộ này.', 'ok');
   });
   on('pronSource', 'change', async e => {
+    cancelAssessment();
     const v = e.target.value;
     if (v && v.startsWith('hsk:')) {
       const lvl = Number(v.slice(4).replace(/[^0-9]/g, '')) || 0;
@@ -226,7 +227,7 @@ export function wire() {
 
   /* Đóng micro khi rời trang / ẩn tab (không giữ đèn đỏ micro ngoài ý muốn) */
   window.addEventListener('pagehide', () => {
-    cancelPronunciationSample();
+    cancelAssessment();
     try {
       pronunciationMicrophoneState.PronMic.hardRelease();
     } catch (e) {}
@@ -234,6 +235,11 @@ export function wire() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') cancelPronunciationSample();
     if (document.visibilityState === 'hidden' && pronunciationSessionState.S.phase === 'recording') stopRecording('manual');
+    if (document.visibilityState === 'hidden' && ['requesting', 'starting'].includes(pronunciationSessionState.S.phase)) {
+      cancelAssessment();
+      pronunciationMicrophoneState.PronMic.hardRelease();
+      setPhase('idle', '');
+    }
   });
 
   // Lesson shortcuts are shared with typing; Escape only dismisses this popover.

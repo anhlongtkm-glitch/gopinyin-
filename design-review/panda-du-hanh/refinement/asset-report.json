@@ -1,0 +1,50 @@
+[
+  {
+    "file": "word-frame.webp",
+    "width": 768,
+    "height": 272,
+    "bytes": 45432,
+    "sourceBounds": {
+      "x": 103,
+      "y": 166,
+      "w": 1528,
+      "h": 541
+    }
+  },
+  {
+    "file": "word-frame-small.webp",
+    "width": 384,
+    "height": 136,
+    "bytes": 18188,
+    "sourceBounds": {
+      "x": 103,
+      "y": 166,
+      "w": 1528,
+      "h": 541
+    }
+  },
+  {
+    "file": "space-approved.webp",
+    "width": 1672,
+    "height": 941,
+    "bytes": 193650,
+    "sourceBounds": {
+      "x": 0,
+      "y": 0,
+      "w": 1672,
+      "h": 941
+    }
+  },
+  {
+    "file": "space-approved-small.webp",
+    "width": 1024,
+    "height": 576,
+    "bytes": 82066,
+    "sourceBounds": {
+      "x": 0,
+      "y": 0,
+      "w": 1672,
+      "h": 941
+    }
+  }
+]

@@ -3,7 +3,7 @@ import { navigationVersion } from './routes.js';
 import { openModal, closeModal } from '../shared/dialogs.js';
 import { currentUser } from '../features/auth/service.js';
 import { state as gameSession } from '../features/game/session.js';
-import { togglePause } from '../features/game/controller.js';
+import { togglePause } from '../features/game/panda-runtime.js';
 import { state as pronSession } from '../features/pronunciation/session.js';
 import { stopRecording, cancelAssessment, setPhase } from '../features/pronunciation/recording.js';
 import { renderVisibleMascots } from '../shared/mascot.js';
@@ -38,7 +38,7 @@ function openMore() {
   }
   if (isVisible('pronCard')) {
     if (pronSession.S?.phase === 'recording') stopRecording('manual');
-    else if (pronSession.S?.phase === 'requesting') { cancelAssessment(); setPhase('idle'); }
+    else if (['requesting', 'starting'].includes(pronSession.S?.phase)) { cancelAssessment(); setPhase('idle'); }
   }
   const user = currentUser();
   document.getElementById('mobileAccountLabel').textContent = user ? 'Tài khoản của bạn' : 'Đăng nhập';
@@ -92,7 +92,10 @@ export function initializeMobileNavigation() {
     const viewport = window.visualViewport;
     const keyboardOpen = media.matches && focused && viewport && innerHeight - viewport.height > 120;
     document.body.classList.toggle('keyboard-open', !!keyboardOpen);
-    if (focused) requestAnimationFrame(() => ensureStudyControlVisible(document.activeElement));
+    const input = document.activeElement;
+    if (focused && !input.readOnly) requestAnimationFrame(() => {
+      if (document.activeElement === input && !input.readOnly) ensureStudyControlVisible(input);
+    });
   };
   window.visualViewport?.addEventListener('resize', syncKeyboard);
   document.addEventListener('focusin', syncKeyboard);

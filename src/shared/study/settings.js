@@ -11,7 +11,7 @@ export function openStudySettings(mode = 'typing') {
   if (!dialog || !dialog.closest('.studyShell')?.getClientRects().length) return false;
   if (mode === 'pron') {
     if (pronSession.S.phase === 'recording') stopRecording('manual');
-    else if (pronSession.S.phase === 'requesting') { cancelAssessment(); setPhase('idle', ''); }
+    else if (['requesting', 'starting'].includes(pronSession.S.phase)) { cancelAssessment(); setPhase('idle', ''); }
   }
   if (!dialog.open) dialog.showModal();
   dialog.querySelector('[role="tab"][aria-selected="true"]')?.focus({ preventScroll: true });

@@ -1,6 +1,7 @@
 import { isStudyAllowed } from "../auth/service.js";
 import { setMascot } from "../../shared/mascot.js";
-import { studyOverlayOpen } from "../../shared/study/interactions.js";
+import { studyOverlayOpen, scheduleStudyControlReveal } from "../../shared/study/interactions.js";
+import { navigationVersion } from '../../app/routes.js';
 import { nextReview } from "./review.js";
 // State and behavior owned by features/typing/scoring. Initialization is orchestrated by app/bootstrap.js.
 
@@ -65,6 +66,10 @@ export function markSentenceCorrect() {
   updateChineseHighlight();
   recordHistory(q, 'ok'); // ★ ghi câu vừa gõ đúng vào lịch sử bên phải
   document.dispatchEvent(new CustomEvent('gp:activity',{detail:{kind:'typing',id:JSON.stringify([q.zh,q.py])}}));
+  const navigation = navigationVersion();
+  scheduleStudyControlReveal('typingNextBtn', () => navigation === navigationVersion()
+    && typingSessionState.rows === completedRows && currentRow() === q
+    && typingSessionState.awaitingEnter && !typingSessionState.composing);
   setTimeout(() => {
     if (skipSpeech || studyOverlayOpen()) return;
     if (!domState.$('appCard').classList.contains('hidden') && typingSessionState.rows === completedRows && typingSessionState.awaitingEnter && typingSessionState.index < typingSessionState.order.length && typingSessionState.order[typingSessionState.index] === completedRowIndex && q.zh && q.zh !== '—') speakText(q.zh, false);

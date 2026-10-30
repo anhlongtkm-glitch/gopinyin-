@@ -30,7 +30,7 @@ export function cancelPronunciationSample() {
 
 function sampleAllowed(automatic) {
   if (document.visibilityState === 'hidden' || !document.getElementById('pronCard')?.getClientRects().length) return false;
-  if (['requesting','recording','analyzing'].includes(pronunciationSessionState.S.phase)) return false;
+  if (['requesting','starting','recording','analyzing'].includes(pronunciationSessionState.S.phase)) return false;
   return !automatic || (pronunciationSessionState.S.settings.autoSample && !studyOverlayOpen() && !document.getElementById('pronSettings')?.open);
 }
 

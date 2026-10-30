@@ -1,0 +1,299 @@
+/* Panda Du Hành: its cockpit is always dark, independent of the app theme. */
+#gameCard.pdGame{
+  --pd-space:#071525;--pd-surface:#102739;--pd-surface-raised:#173448;
+  --pd-text:#effbf8;--pd-muted:#b2cbd3;--pd-subtle:#87a9b9;
+  --pd-energy:#68e3c1;--pd-gold:#f5d481;--pd-line:rgba(132,202,216,.23);
+  --pd-danger:#ff9bab;--pd-primary:#087866;
+  position:relative;display:flex;flex-direction:column;gap:0;
+  isolation:isolate;width:100%;max-width:1600px;height:clamp(580px,calc(100dvh - 154px),860px);
+  min-height:580px;margin:0 auto;padding:0;overflow:hidden;
+  border:1px solid rgba(119,197,210,.28);border-radius:24px;
+  background:var(--pd-space);color:var(--pd-text);color-scheme:dark;
+  box-shadow:0 18px 48px rgba(3,17,27,.16);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+#gameCard.pdGame.hidden{display:none}
+.pdGame button,.pdGame input,.pdGame select{font:inherit}
+.pdGame button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pdGame button:disabled{cursor:default}
+.pdGame button:focus-visible,.pdGame input:focus-visible,.pdGame select:focus-visible,.pdStage:focus-visible{outline:3px solid var(--pd-gold);outline-offset:4px}
+.pdGame button svg{width:21px;height:21px;flex:none;pointer-events:none}
+.pdGame kbd{display:inline-flex;align-items:center;justify-content:center;min-height:23px;padding:1px 5px;border:1px solid rgba(163,210,222,.32);border-bottom-width:2px;border-radius:5px;color:#c5e0e6;background:#0b2032;font-family:inherit;font-size:10px;line-height:1.4;font-weight:600}
+.pdHud{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:24px;flex:none;min-height:78px;padding:12px 22px;background:linear-gradient(110deg,#102b3a,#0b1c30 72%);border-bottom:1px solid var(--pd-line)}
+.pdBrandGroup{display:flex;align-items:center;gap:13px;min-width:0}
+.pdBrand{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pdBrand>span{font-family:"Baloo 2",Inter,sans-serif;font-size:25px;font-weight:800;line-height:1.05;white-space:nowrap;letter-spacing:-.4px;color:#f2ead6}
+.pdBrand>span b{color:var(--pd-energy);font-weight:800}
+.pdBrand>small{font-size:11px;font-weight:600;color:var(--pd-muted);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:250px}
+.pdHudNumbers{display:flex;align-items:center;gap:0;min-width:0}
+.pdHudCell{display:flex;align-items:center;gap:11px;padding:0 24px;border-left:1px solid rgba(118,187,207,.22);min-width:116px}
+.pdHudCell:first-child{border-left:0}
+.pdHudCell>svg{width:27px;height:27px;flex:none;color:#d6e9ee}
+.pdHudCell>span{display:flex;flex-direction:column;gap:1px}
+.pdHudCell small{font-size:9px;line-height:1.5;font-weight:700;letter-spacing:.1em;color:var(--pd-subtle)}
+.pdHudCell b{font-size:25px;font-weight:750;line-height:1.2;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--pd-text)}
+.pdHudCell--score>svg,.pdHudCell--score b{color:var(--pd-gold)}
+.pdHudCell--shield>svg{color:var(--pd-energy)}
+.pdSubHud{position:relative;z-index:2;display:flex;align-items:center;flex-wrap:wrap;gap:8px 15px;min-height:38px;padding:7px 24px;background:#0a1b2c;border-bottom:1px solid rgba(103,170,191,.13);font-size:11px;font-weight:600;color:var(--pd-muted);line-height:1.4}
+.pdRunKind{color:#c7dce3;font-size:10px;letter-spacing:.03em}
+.pdRunKind::after{content:"";display:inline-block;width:3px;height:3px;margin-left:15px;border-radius:50%;vertical-align:middle;background:#567786}
+.pdCombo{color:var(--pd-energy);font-size:12px;font-weight:750}
+.pdComboHint{color:var(--pd-subtle)}
+.pdMission{margin-left:auto;color:var(--pd-gold);font-weight:650}
+.pdMission:empty{display:none}
+#gameCard .pdStage{position:relative;flex:1 1 auto;min-height:280px;overflow:hidden;outline-offset:-4px;background:radial-gradient(ellipse at 4% 30%,rgba(21,110,124,.21),transparent 45%),radial-gradient(ellipse at 95% 75%,rgba(33,56,128,.27),transparent 45%),#071323;contain:layout paint}
+.pdStage>.gaCanvas{position:absolute;inset:0;display:block;width:100%;height:100%;z-index:1}
+.pdPlayer{position:absolute;left:50%;bottom:5.5%;z-index:3;width:var(--pd-ship-size,90px);height:auto;aspect-ratio:512/444;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 5px 8px rgba(1,11,23,.6))}
+.pdPlayer img{display:block;width:100%;height:100%;object-fit:contain;transform:rotate(var(--pd-ship-angle,0deg));transform-origin:50% 52%;user-select:none}
+.pdPlayer::after{content:"";position:absolute;left:34%;right:34%;bottom:4%;height:12%;z-index:-1;background:#52f0ce;filter:blur(12px);opacity:.2;border-radius:50%}
+.pdFeedback{position:absolute;left:50%;bottom:23%;z-index:5;transform:translateX(-50%);max-width:min(440px,90%);padding:0;border:0;color:#dcf8ef;font-size:12px;font-weight:600;line-height:1.55;text-align:center;pointer-events:none;text-wrap:pretty}
+.pdFeedback:not(:empty){padding:7px 13px;border:1px solid rgba(107,213,190,.28);border-radius:12px;background:rgba(5,26,36,.92);box-shadow:0 3px 16px rgba(0,0,0,.18)}
+.pdFeedback.is-error{color:#ffd1d9;border-color:rgba(255,155,171,.4)}
+.pdFlightBar{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;min-height:76px;padding:12px 18px;background:linear-gradient(180deg,#0b1b2b,#0d2533);border-top:1px solid rgba(111,192,209,.29)}
+.pdFlightButton,.pdIconButton{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;flex:none;border:1px solid rgba(113,185,208,.34);border-radius:12px;color:#d5e9ee;background:linear-gradient(180deg,#15364a,#0c2537);transition:background .16s,border-color .16s,box-shadow .16s;color-scheme:dark}
+.pdFlightButton{padding:8px 13px;font-size:12px;font-weight:650;white-space:nowrap}
+.pdFlightButton>span:not(.pdPinyinSymbol){display:flex;flex-direction:column;align-items:flex-start;gap:2px;line-height:1.2}
+.pdFlightButton small{color:var(--pd-subtle);font-size:9px;font-weight:550;line-height:1.3}
+.pdIconButton{width:44px;height:44px;padding:10px}
+.pdFlightButton:not(:disabled):hover,.pdIconButton:not(:disabled):hover{border-color:var(--pd-energy);background:#194255;color:#f3fffb}
+.pdFlightButton:not(:disabled):active,.pdIconButton:not(:disabled):active{background:#205166;box-shadow:inset 0 2px 5px rgba(0,0,0,.22)}
+.pdFlightButton.on,.pdFlightButton[aria-pressed=true],.pdIconButton.on,.pdIconButton[aria-pressed=true]{border-color:rgba(105,231,195,.7);background:#0c463f;color:#a1f4d5}
+.pdFlightButton:disabled,.pdIconButton:disabled{opacity:.48}
+.pdFocusButton{border-color:rgba(108,219,204,.45);color:#a6f1dd}
+.pdFocusButton:not(:disabled){box-shadow:inset 0 0 0 1px rgba(105,231,195,.1),0 0 15px rgba(50,182,163,.08)}
+.pdPinyinSymbol{color:var(--pd-energy);font-size:20px;font-family:"Noto Sans SC",sans-serif;font-weight:700;line-height:1}
+.pdFlightTools{display:flex;align-items:center;gap:8px;flex:none}
+.pdFlightHelp{margin:0;text-align:center;font-size:11px;font-weight:600;line-height:1.5;color:#a3c4d2}
+.pdFlightHelp small{display:block;font-size:9px;font-weight:500;color:#789cab}
+.pdOverlay{position:absolute;inset:0;z-index:8;display:flex;align-items:flex-start;justify-content:center;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#346274 transparent;padding:24px;background:rgba(4,15,28,.58);backdrop-filter:blur(9px)}
+#gaOverlay.hidden{display:none!important}
+.pdPanel{flex:none;width:min(900px,100%);margin:auto;padding:26px 30px;border:1px solid rgba(128,202,207,.3);border-radius:24px;background:linear-gradient(145deg,rgba(18,47,61,.98),rgba(9,27,43,.99));box-shadow:0 24px 70px rgba(0,6,16,.4);color:var(--pd-text)}
+.pdPanel--compact{width:min(460px,100%);padding:32px;text-align:center}
+.pdPanel--result{width:min(620px,100%);text-align:center}
+.pdPanelHeading{margin:0 0 8px;font-size:clamp(24px,2.3vw,34px);font-weight:750;letter-spacing:-.7px;line-height:1.15;text-wrap:balance;color:#effbf8}
+.pdEyebrow{margin:0 0 8px;color:var(--pd-energy);font-size:10px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;line-height:1.5}
+.pdLead{max-width:64ch;margin:0 0 22px;color:var(--pd-muted);font-size:13px;font-weight:450;line-height:1.7;text-wrap:pretty}
+.pdPanel--compact .pdLead,.pdPanel--result .pdLead{margin-right:auto;margin-left:auto}
+.pdTopicGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 22px}
+.pdTopicCard{position:relative;display:grid;grid-template-columns:46px minmax(0,1fr);align-items:center;column-gap:10px;row-gap:3px;width:100%;min-height:87px;padding:12px;text-align:left;overflow:hidden;border:1px solid rgba(116,170,191,.25);border-radius:15px;background:linear-gradient(140deg,#183345,#10283b);color:#e3f4f1;transition:border-color .16s,background .16s,box-shadow .16s}
+.pdTopicCard:hover{border-color:rgba(130,214,205,.7);background:#1b3e4c}
+.pdTopicCard.is-active,.pdTopicCard[aria-pressed=true]{border-color:#69daba;background:linear-gradient(140deg,#1d4c4b,#123f43);box-shadow:inset 0 0 0 1px rgba(117,240,201,.12)}
+.pdTopicCard.is-active::after,.pdTopicCard[aria-pressed=true]::after{content:"";position:absolute;right:10px;top:10px;width:6px;height:6px;border-radius:50%;background:#89ebc9;box-shadow:0 0 0 3px rgba(119,235,201,.11)}
+.pdTopicName{display:block;min-width:0;font-size:13px;font-weight:700;line-height:1.5;color:var(--pd-text)}
+.pdTopicMeta{display:block;margin-top:2px;color:#a9c6cf;font-size:10px;line-height:1.6;font-weight:450}
+.pdTopicArt{position:relative;display:block;grid-row:span 2;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 31% 24%,#bde7ba 0%,#67bba0 28%,#287b77 63%,#143e52 100%);box-shadow:inset -5px -6px 9px rgba(1,15,34,.4),0 2px 13px rgba(6,16,34,.3);isolation:isolate}
+.pdTopicArt::before{content:"";position:absolute;left:9%;right:10%;top:43%;height:20%;border-radius:50%;background:rgba(224,255,231,.23);transform:rotate(-24deg)}
+.pdTopicArt::after{content:"";position:absolute;left:-5px;right:-5px;top:47%;height:10px;border:2px solid rgba(130,212,210,.45);border-radius:50%;transform:rotate(-24deg);z-index:-1}
+.pdPlanet--family{background:radial-gradient(circle at 30% 22%,#ffe2ab,#d4ae69 32%,#548979 67%,#244454)}
+.pdPlanet--food{background:radial-gradient(circle at 29% 23%,#ffddbd,#e8a07d 32%,#aa6474 67%,#47365e)}
+.pdPlanet--drinks{background:radial-gradient(circle at 29% 23%,#cbf5dd,#6bc8b5 33%,#2e8f9c 68%,#214564)}
+.pdPlanet--school{background:radial-gradient(circle at 29% 23%,#c4e9ff,#73b0e0 33%,#4e73ae 68%,#253f67)}
+.pdPlanet--travel{background:radial-gradient(circle at 29% 23%,#e0d4ff,#a799df 33%,#6d69b0 68%,#343966)}
+.pdPlanet--shopping{background:radial-gradient(circle at 29% 23%,#ffdbc9,#e29ba7 33%,#ae6a92 68%,#5d4067)}
+.pdModeSwitch{display:inline-flex;align-items:stretch;gap:4px;max-width:100%;padding:4px;border:1px solid var(--pd-line);border-radius:12px;background:#091d2f}
+.pdModeSwitch button{min-height:44px;padding:9px 17px;border:1px solid transparent;border-radius:8px;background:transparent;color:#a5c4d1;font-size:12px;font-weight:650;line-height:1.3}
+.pdModeSwitch button.is-active,.pdModeSwitch button[aria-pressed=true]{background:#1b4a4b;border-color:rgba(108,208,181,.4);color:#bff9e6;box-shadow:0 2px 6px rgba(0,0,0,.13)}
+.pdModeSwitch button:not(.is-active):hover{background:#183549;color:#f0fbf8}
+.pdPanelActions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px;margin-top:22px}
+.pdPanel--compact .pdPanelActions,.pdPanel--result .pdPanelActions{justify-content:center}
+.pdButton{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border:1px solid rgba(141,200,211,.33);border-radius:12px;background:#173a4a;color:#d3eeea;font-size:13px;font-weight:650;line-height:1.4;text-align:center;transition:background .16s,border-color .16s}
+.pdButton:hover{background:#214b5b;border-color:#7ccdc1}
+.pdButton--primary{min-height:48px;min-width:150px;padding:12px 24px;background:linear-gradient(180deg,#118c75,#087462);border-color:#61cbb0;border-bottom:3px solid #045446;color:#fff;box-shadow:inset 0 1px 0 rgba(198,255,230,.14),0 4px 12px rgba(0,12,18,.16)}
+.pdButton--primary:hover{background:#15947c;border-color:#8ae3c5}
+.pdButton--quiet{background:transparent;border-color:transparent;color:#acc9d4}
+.pdButton--quiet:hover{background:#173748;border-color:var(--pd-line)}
+.pdButton:disabled{opacity:.5}
+.pdRules{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin:15px 0;color:#afc9d1;font-size:11px;line-height:1.7}
+.pdRules p{margin:0}
+.pdRules strong,.pdRules b{color:#d7f2e9;font-weight:650}
+.pdRules>span+span::before{content:"·";margin-right:14px;color:#688e9b}
+.pdHintLabel{display:block;margin:10px 0 0;color:#8faeba;font-size:10px;font-weight:450;line-height:1.7}
+.pdSettings{display:grid;gap:0;margin:15px 0;border:1px solid var(--pd-line);border-radius:14px;overflow:hidden;text-align:left}
+.pdSettingRow{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:58px;padding:12px 16px;border-bottom:1px solid rgba(128,202,207,.13);color:#d2e9e9;font-size:13px;line-height:1.5}
+.pdSettingRow:last-child{border-bottom:0}
+.pdSettingRow small{display:block;margin-top:3px;color:var(--pd-subtle);font-size:10px;line-height:1.5}
+.pdSettingRow input[type=checkbox],.pdInlineToggle input{accent-color:#20b28b;width:19px;height:19px;flex:none;cursor:pointer}
+.pdSettingRow input[type=range]{max-width:130px;accent-color:#63dab5}
+.pdSettingRow select{max-width:150px;min-height:44px;padding:7px 11px;border:1px solid var(--pd-line);border-radius:9px;background:#0b2334;color:#e5f5ef;font-size:12px}
+.pdInlineToggle{display:inline-flex;align-items:center;gap:9px;margin:10px 0;color:#b8d7d9;font-size:12px;line-height:1.5}
+.pdStatGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:23px 0}
+.pdStat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:83px;padding:13px 8px;border:1px solid rgba(126,191,199,.21);border-radius:13px;background:rgba(21,60,72,.65)}
+.pdStatValue{font-size:23px;font-weight:750;line-height:1.2;color:var(--pd-gold);font-variant-numeric:tabular-nums}
+.pdStatLabel{color:#adcbd3;font-size:10px;font-weight:550;line-height:1.5}
+.pdReviewList{display:grid;gap:6px;margin:14px 0;padding:0;list-style:none;text-align:left}
+.pdReviewList li,.pdReviewList>div{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(123,180,194,.17);border-radius:10px;background:rgba(6,24,38,.45);color:#bddee0;font-size:12px;line-height:1.5}
+.pdReviewList strong{color:#f0faf5;font-family:"Noto Sans SC",Inter,sans-serif;font-size:18px}
+.pdReviewList small{color:#93b4c1;font-size:10px}
+.pdProgress{height:5px;overflow:hidden;border-radius:8px;background:#284652}
+.pdProgress>span,.pdProgress>i{display:block;height:100%;border-radius:inherit;background:#6bd8b6}
+.pdCountdown{display:grid;place-items:center;min-height:200px;padding:20px;font-size:clamp(72px,12vw,130px);font-weight:800;line-height:1;color:#9df3d3;text-shadow:0 0 50px rgba(64,223,175,.2)}
+.pdResultHero{display:block;width:90px;height:90px;margin:0 auto 14px;object-fit:contain}
+.pdPanel a{color:#9aead4;text-underline-offset:3px}
+#gameCard.pdGame:fullscreen,#gameCard.pdGame:-webkit-full-screen{height:100dvh;max-width:none;min-height:0;margin:0;padding:0;border:0;border-radius:0;gap:0;background:var(--pd-space)}
+body.vk-open #gameCard.pdGame{min-height:0;padding-bottom:0}
+body.vk-open #gameCard .pdStage{min-height:160px}
+@media(min-width:1700px){#gameCard.pdGame{max-width:1640px}}
+@media(max-width:1024px){
+  .pdHud{padding:12px 16px;gap:16px}.pdHudCell{min-width:101px;padding:0 17px}.pdHudCell b{font-size:23px}.pdBrand>span{font-size:23px}
+  .pdFlightBar{gap:10px;padding:12px 14px}.pdFlightHelp{display:none}.pdFlightTools{margin-left:auto}
+}
+@media(max-width:860px){
+  #gameCard.pdGame{height:calc(100dvh - 167px);min-height:560px;border-radius:18px}
+  .pdHud{gap:10px;min-height:68px;padding:10px 13px}.pdBrandGroup{gap:8px}.pdBrand>span{font-size:21px}.pdBrand>small{font-size:10px;max-width:150px}
+  .pdHudCell{min-width:80px;padding:0 11px;gap:7px}.pdHudCell>svg{width:21px;height:21px}.pdHudCell b{font-size:21px}.pdHudCell small{font-size:8px}
+  .pdSubHud{padding:6px 16px;gap:7px 11px;font-size:10px;min-height:34px}.pdCombo{font-size:11px}
+  .pdOverlay{padding:18px}.pdPanel{padding:22px}.pdPanelHeading{font-size:28px}.pdTopicGrid{margin:15px 0 18px}
+  .pdTopicCard{padding:10px;grid-template-columns:40px minmax(0,1fr);gap:7px}.pdTopicArt{width:36px;height:36px}.pdTopicName{font-size:12px}.pdTopicMeta{font-size:9px}
+}
+@media(max-width:600px){
+  #gameCard.pdGame{border-radius:16px;height:calc(100dvh - 166px);min-height:560px}
+  .pdHud{flex-wrap:wrap;gap:11px;min-height:108px;padding:11px 13px 9px}.pdBrandGroup{width:100%}.pdBrand{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;flex:1}.pdBrand>span{font-size:22px}.pdBrand>small{max-width:135px;text-align:right;white-space:normal;font-size:9px}
+  .pdBrandGroup>.pdIconButton{width:34px;height:34px;min-height:34px;padding:6px;background:transparent;border-color:transparent}.pdBrandGroup>.pdIconButton::before{content:"";position:absolute;width:44px;height:44px}
+  .pdHudNumbers{width:100%;justify-content:space-between;padding-left:0}.pdHudCell{flex:1;min-width:0;gap:8px;padding:0 11px;justify-content:center}.pdHudCell:first-child{padding-left:0;justify-content:flex-start}.pdHudCell:last-child{padding-right:0;justify-content:flex-end}.pdHudCell>svg{width:22px;height:22px}.pdHudCell>span{flex-direction:row;align-items:baseline;gap:6px}.pdHudCell small{display:none}.pdHudCell b{font-size:21px}
+  .pdSubHud{min-height:32px;padding:6px 13px;column-gap:11px;row-gap:5px}.pdRunKind{font-size:9px}.pdRunKind::after{margin-left:10px}.pdComboHint{font-size:9px}.pdMission{width:100%;margin-left:0}
+  #gameCard .pdStage{min-height:280px}.pdFeedback{bottom:24%;font-size:10px}
+  .pdFlightBar{flex-wrap:wrap;min-height:110px;gap:7px;padding:9px 11px;justify-content:space-between}.pdFocusButton{min-width:128px;justify-content:flex-start}.pdFlightButton{padding:7px 10px;font-size:11px;gap:7px;min-height:44px}.pdFlightButton small{font-size:8px}.pdFlightButton kbd{display:none}.pdFlightTools{display:contents}.pdFlightTools>.pdIconButton{width:44px;min-height:44px;border-radius:11px}.pdFlightTools #gaPyBtn{margin-left:auto;min-width:142px;justify-content:center}.pdFlightTools #gaKbdBtn{margin-left:auto}.pdFlightBar .pdFocusButton{order:0}.pdFlightTools #gaPyBtn{order:1}.pdFlightTools #gaKbdBtn{order:3}.pdFlightTools #gaPauseBtn{order:4}.pdFlightTools #gaOptionsBtn{order:5}.pdFlightHelp{display:block;order:2;margin-right:auto;font-size:9px;text-align:left;max-width:170px}.pdFlightHelp small{font-size:8px}
+  .pdOverlay{padding:12px;backdrop-filter:blur(6px)}.pdPanel{padding:21px 17px;border-radius:18px}.pdPanelHeading{font-size:25px;letter-spacing:-.5px}.pdEyebrow{font-size:9px;margin-bottom:7px}.pdLead{font-size:12px;line-height:1.65;margin-bottom:15px}
+  .pdTopicGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:15px 0 17px}.pdTopicCard{min-height:78px;padding:9px;column-gap:8px;grid-template-columns:33px minmax(0,1fr);border-radius:12px}.pdTopicArt{width:30px;height:30px}.pdTopicArt::after{left:-3px;right:-3px;height:8px;top:44%;border-width:1px}.pdTopicName{font-size:12px}.pdTopicMeta{font-size:9px;line-height:1.4}.pdTopicCard.is-active::after,.pdTopicCard[aria-pressed=true]::after{right:7px;top:7px;width:4px;height:4px}
+  .pdModeSwitch{display:flex;width:100%;padding:3px;gap:3px}.pdModeSwitch button{flex:1;padding:9px;font-size:11px}
+  .pdRules{font-size:10px;gap:4px 9px;margin:12px 0}.pdRules>span+span::before{margin-right:8px}.pdHintLabel{font-size:9px}
+  .pdPanelActions{margin-top:18px;gap:8px}.pdPanelActions .pdButton--primary{flex:1;min-width:0}.pdButton{font-size:12px;padding:10px 13px}.pdButton--primary{min-height:48px;padding:12px 16px}
+  .pdPanel--compact{padding:25px 20px}.pdStatGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:18px 0}.pdStat{min-height:73px;padding:11px 8px}.pdStatValue{font-size:22px}.pdStatLabel{font-size:10px}.pdResultHero{width:74px;height:74px}
+  .pdSettingRow{padding:11px 12px;font-size:12px;gap:12px}.pdSettingRow small{font-size:9px}.pdSettingRow select{max-width:125px}.pdReviewList li,.pdReviewList>div{padding:9px 10px;font-size:11px}
+  body.vk-open #gameCard .pdHud{min-height:68px;gap:7px;padding:7px 11px}.vk-open .pdBrand>span{font-size:19px}.vk-open .pdBrand>small{font-size:8px}.vk-open .pdHudCell b{font-size:18px}.vk-open .pdSubHud{min-height:28px;padding:5px 11px}.vk-open .pdFlightBar{min-height:62px;gap:6px;padding:7px 9px}.vk-open .pdFlightHelp{display:none}.vk-open .pdFocusButton{min-width:100px}.vk-open .pdFocusButton>svg{display:none}.vk-open .pdFlightTools #gaPyBtn{min-width:0;margin-left:0;flex:1}.vk-open .pdFlightTools #gaKbdBtn{margin-left:0}.vk-open .pdFlightTools #gaPauseBtn{display:none}.vk-open .pdFlightButton{font-size:10px;padding:7px 8px}.vk-open .pdFlightButton small{font-size:8px}.vk-open .pdFlightTools>.pdIconButton{width:40px;min-width:40px;padding:8px}
+}
+@media(max-width:374px){.pdBrand>span{font-size:20px}.pdBrand>small{max-width:116px}.pdComboHint{display:none}.pdTopicCard{grid-template-columns:29px minmax(0,1fr);gap:6px;padding:8px}.pdTopicArt{width:27px;height:27px}.pdTopicName{font-size:11px}.pdTopicMeta{font-size:8px}.pdOverlay{padding:9px}.pdPanel{padding:18px 13px}.pdFlightTools #gaPyBtn{min-width:134px}.pdFocusButton{min-width:122px}}
+@media(max-height:650px) and (min-width:601px){#gameCard.pdGame{height:calc(100dvh - 118px);min-height:400px}.pdHud{min-height:62px;padding:8px 15px}.pdSubHud{min-height:30px;padding:5px 18px}.pdFlightBar{min-height:62px;padding:8px 15px}#gameCard .pdStage{min-height:220px}.pdOverlay{padding:14px}.pdPanel{padding:20px 23px}.pdPanelHeading{font-size:25px}.pdLead{margin-bottom:12px}.pdTopicCard{min-height:72px}.pdTopicGrid{margin:12px 0;gap:8px}}
+@media(prefers-reduced-motion:reduce){.pdGame *, .pdGame *::before,.pdGame *::after{animation:none!important;transition:none!important}.pdPlayer::after{opacity:.12}}
+
+/* The entry card shares the production art, without loading a concept poster. */
+.gameTile[data-view="game"] .gameTileArt{position:relative;overflow:hidden;background:#071426;background-image:var(--pd-hub-background,none);background-position:center;background-size:cover}
+.gameTile[data-view="game"] .pdHubShip{position:absolute;width:110px;height:auto;left:50%;bottom:2%;transform:translateX(-50%);pointer-events:none}
+.pdModeSwitch button small{display:block;margin-top:4px;font-size:11px;font-weight:450;line-height:1.5}
+.pdReviewList span small{display:block}
+.pdReviewList span b{font-family:'Noto Sans SC',sans-serif;font-size:21px}
+.pdUrgent{color:var(--pd-danger)!important}
+@media(min-width:601px){.pdLead{font-size:14px}.pdTopicName{font-size:14px}.pdTopicMeta{font-size:12px}.pdHintLabel{font-size:12px}.pdRules{font-size:12px}.pdFlightHelp{font-size:12px}.pdFlightHelp small{font-size:11px}}
+@media(max-width:600px){.pdTopicName{font-size:13px}.pdTopicMeta{font-size:11px}.pdHintLabel{font-size:11px}.pdLead{font-size:13px}.pdModeSwitch button small{font-size:10px}}
+
+/* Preparation gives its space to choosing a topic, without inactive flight tools. */
+#gameCard.pdGame.is-preparing .pdFlightBar,#gameCard.pdGame.is-preparing .pdSubHud{display:none}
+@media(max-width:860px){body.panda-active .topActions #backLibrary{display:none}body.panda-active .topActions{margin-left:auto}}
+body.panda-active .vkbd{--card:#102739;--bg:#081727;--card-2:#163747;--text:#effaf6;--text-2:#c2dde1;--muted:#9abcc6;--line-2:rgba(130,201,211,.28);--primary:#69d9ba;color:#effaf6}
+body.panda-active.vk-open .mobile-nav{visibility:hidden;pointer-events:none}
+body.panda-active .vkbd .vkHanziOnly{display:none}
+body.panda-active .vkbd .vkKey:disabled{opacity:.5;cursor:default}
+.pdPreflightPinyin{display:flex;max-width:max-content;margin:14px 0 0;min-height:44px;font-size:13px;cursor:pointer}.pdPreflightPinyin:has(input:disabled){opacity:.65;cursor:default}.pdPreflightPinyin input{width:20px;height:20px}
+
+/* Minimal cockpit: quiet surfaces, precise typography, energy reserved for play. */
+#gameCard.pdGame{--pd-space:#080F1B;--pd-surface:#111C2A;--pd-surface-raised:#162334;--pd-text:#F0FBF5;--pd-muted:#BECBD9;--pd-subtle:#9CB0C6;--pd-energy:#69E5C2;--pd-line:#2C3B4D;border-color:#29384B;box-shadow:0 16px 40px #0002;border-radius:20px}
+.pdHud{background:var(--pd-space);border:0;min-height:78px;padding:16px 22px;gap:18px}
+.pdBrand>span,.pdBrand>span b{font-family:Inter,system-ui,sans-serif;font-size:23px;font-weight:650;letter-spacing:-.6px;color:var(--pd-text);text-shadow:none}
+.pdBrand>small{font-size:12px;font-weight:450;color:var(--pd-subtle)}
+.pdHudNumbers{padding:0;border:0;border-radius:0;background:none;box-shadow:none;gap:8px}
+.pdHudCell{min-width:98px;padding:0 18px;gap:9px;border-color:var(--pd-line)}
+.pdHudCell>svg{width:21px;height:21px;color:var(--pd-subtle)}
+.pdHudCell small{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.pdHudCell b{font-size:25px;font-weight:550;color:var(--pd-text)}
+.pdHudCell--shield>svg{color:var(--pd-energy)}
+.pdTimeTrack{position:absolute;bottom:0;left:22px;right:22px;height:2px;background:#1D2B3D;overflow:hidden;border-radius:2px}
+#pdTimeFill{display:block;width:100%;height:100%;background:var(--pd-energy);transform-origin:left}
+.pdSubHud{background:var(--pd-space);border:0;min-height:34px;padding:8px 24px;font-size:12px;gap:8px 16px}
+.pdCombo{font-size:12px;padding:0 0 0 10px;border:0;border-left:2px solid var(--pd-energy);border-radius:0;background:none}
+.pdRunKind{font-size:11px}.pdComboHint{font-size:11px}.pdMission{color:var(--pd-subtle)}
+#gameCard .pdStage{background:var(--pd-space)}
+.pdPlayer{animation:none}
+.pdPlayer img{transform-origin:50% 50%}
+.pdPlayer::after{display:none}
+.pdFeedback{bottom:2%;font-size:12px;color:var(--pd-muted)}
+.pdFeedback:not(:empty){padding:5px 10px;background:#111C2A;border-color:var(--pd-line);box-shadow:none}
+.pdFlightBar{background:var(--pd-space);border-top:1px solid #1D2B3D;min-height:78px;padding:14px 20px;gap:14px}
+.pdFlightButton,.pdIconButton{border:1px solid var(--pd-line);border-radius:12px;background:var(--pd-surface);box-shadow:none;color:var(--pd-muted)}
+.pdIconButton{min-width:44px;min-height:44px}
+.pdFlightButton{font-size:12px;font-weight:550;min-height:44px;border-width:1px;border-radius:12px}
+.pdFlightButton small{font-size:11px}.pdFocusButton:not(:disabled){box-shadow:none;color:var(--pd-energy)}
+.pdFlightButton:not(:disabled):hover,.pdIconButton:not(:disabled):hover{background:#182B3C;border-color:#69E5C288}
+.pdFlightHelp{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:46px;flex:1;max-width:430px;padding:8px 16px;border:1px solid #34465A;border-radius:14px;text-align:left;color:var(--pd-subtle);font-size:12px}
+.pdFlightHelp>span:last-child{white-space:nowrap}.pdFlightHelp small{font-size:10px;color:var(--pd-subtle)}
+#pdTyped{min-width:35px;max-width:160px;overflow:hidden;text-overflow:ellipsis;font-size:20px;font-weight:500;color:var(--pd-text);font-variant-ligatures:none}
+#pdTyped::after{content:'';display:inline-block;vertical-align:-2px;width:1px;height:20px;margin-left:3px;background:var(--pd-energy)}
+#pdInputDock.is-error{border-color:var(--pd-danger);animation:pdInputError .35s ease-out}
+@keyframes pdInputError{0%,100%{transform:translateX(0)}30%{transform:translateX(-3px)}65%{transform:translateX(3px)}}
+.pdOverlay{background:#080F1Bcc;backdrop-filter:blur(4px);scrollbar-color:#34465A transparent}
+.pdPanel{background:var(--pd-surface);border:1px solid var(--pd-line);box-shadow:0 20px 60px #0003;border-radius:20px}
+.pdEyebrow{font-size:11px;letter-spacing:.08em}.pdLead{font-size:14px}
+.pdPanelHeading{font-weight:600}.pdTopicCard{background:#0D1725;border-color:var(--pd-line);border-radius:12px;box-shadow:none}
+.pdTopicCard:hover{background:#182637}.pdTopicCard.is-active,.pdTopicCard[aria-pressed=true]{background:#132D2D;border-color:#69E5C299;box-shadow:none}
+.pdTopicName{font-size:14px;font-weight:600}.pdTopicMeta{font-size:12px;color:var(--pd-subtle)}
+.pdTopicArt{background:color-mix(in srgb,var(--pd-planet-color,#69E5C2) 18%,#111C2A);border:1px solid color-mix(in srgb,var(--pd-planet-color,#69E5C2) 55%,#111C2A);box-shadow:none}
+.pdTopicArt::before{left:28%;right:28%;top:28%;height:44%;border:1px solid var(--pd-planet-color,#69E5C2);background:transparent;border-radius:50%;transform:none}.pdTopicArt::after{display:none}
+.pdTopicSearch{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px}.pdTopicSearch label{font-size:12px;color:var(--pd-muted)}
+.pdTopicSearch input{width:240px;max-width:55%;min-height:44px;border:1px solid #34465A;border-radius:10px;background:#0D1725;color:var(--pd-text);padding:10px 13px;font-size:14px}.pdTopicSearch input::placeholder{color:var(--pd-subtle)}
+.pdTopicGrid{position:relative;max-height:260px;overflow:auto;overscroll-behavior:contain;padding:3px;scroll-padding:6px;scrollbar-width:thin;scrollbar-color:#34465A transparent}
+.pdModeSwitch{background:#0D1725}.pdModeSwitch button.is-active,.pdModeSwitch button[aria-pressed=true]{background:#183435;border-color:#69E5C255;box-shadow:none}
+.pdButton{background:#192B3C;border-color:var(--pd-line)}.pdButton--primary{background:#087866;border:1px solid #459B89;box-shadow:none}.pdButton--primary:hover{background:#096E5E}
+.pdButton--quiet{background:transparent;border-color:transparent}
+.pdStat{background:#0D1725;border-color:var(--pd-line)}.pdStatValue{color:var(--pd-text)}
+.pdSettingRow select,.pdReviewList li,.pdReviewList>div{background:#0D1725;border-color:var(--pd-line)}
+.pdCountdown{font-weight:550;text-shadow:none}.pdPreflightPinyin{max-width:100%}
+.gameTile[data-view="game"] .gameTileArt{background:#080F1B;background-image:radial-gradient(circle at 23% 25%,#8599AB 0 1px,transparent 2px),radial-gradient(circle at 76% 38%,#8599AB 0 1px,transparent 2px)}
+body.panda-active .vkbd{--card:#111C2A;--bg:#080F1B;--card-2:#172537;--text:#F0FBF5;--text-2:#BECBD9;--muted:#9CB0C6;--line-2:#34465A;--primary:#69E5C2;--gold:#69E5C2;--gold-grad:#234D44;background:#111C2A;box-shadow:0 -10px 30px #0003}
+body.panda-active .vkKey{background:#172537;box-shadow:none;min-height:44px}
+body.panda-active .vkKey.isNext{background:#234D44;color:#F0FBF5;border:1px solid #69E5C2;box-shadow:none;animation:none}
+body.panda-active .vkbdHide{width:44px;height:44px}
+@media(max-width:1024px){.pdHudCell{min-width:82px;padding-inline:12px}.pdBrand>span,.pdBrand>span b{font-size:21px}.pdFlightHelp{gap:8px;font-size:11px}.pdFlightHelp small{display:none}.pdFlightButton kbd{display:none}}
+@media(max-width:760px){.pdFlightHelp>span:last-child{display:none}.pdFlightHelp{max-width:160px}.pdHudCell{padding-inline:8px}}
+@media(max-width:600px){
+ .pdHud{min-height:112px;padding:10px 13px;gap:8px}.pdBrandGroup{width:100%;gap:8px}.pdBrandGroup>.pdIconButton{width:44px;height:44px;min-height:44px;padding:10px}.pdBrand>span,.pdBrand>span b{font-size:20px}.pdBrand>small{font-size:11px;max-width:120px}.pdHudNumbers{width:100%;padding:0;gap:5px;justify-content:space-between}.pdHudCell{padding-inline:8px;min-width:0}.pdHudCell b{font-size:20px}.pdHudCell>svg{width:18px;height:18px}.pdHudNumbers>.pdIconButton{width:44px;height:44px;padding:11px}.pdTimeTrack{left:14px;right:14px}
+ .pdSubHud{min-height:30px;padding:7px 13px;gap:7px 10px}.pdComboHint{display:none}.pdRunKind,.pdMission{font-size:10px}.pdMission{width:auto;margin-left:auto}.pdCombo{font-size:11px}
+ .pdFlightBar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px 44px;gap:8px;min-height:108px;padding:10px}.pdFlightTools{display:contents}.pdFlightHelp{display:flex;grid-column:1/-1;grid-row:1;max-width:none;min-height:44px;padding:6px 12px}.pdFlightHelp>span:last-child{display:block;font-size:11px}.pdFlightHelp small{display:none}
+ .pdFlightBar .pdFocusButton{grid-column:1;grid-row:2;min-width:0;justify-content:center}.pdFocusButton>svg,.pdFocusButton small{display:none}.pdFlightTools #gaPyBtn{grid-column:2;grid-row:2;min-width:0;margin:0;padding:8px 5px;gap:5px;justify-content:center}.pdPinyinSymbol{font-size:17px}.pdFlightTools #gaKbdBtn{grid-column:3;grid-row:2;margin:0}.pdFlightTools #gaOptionsBtn{grid-column:4;grid-row:2}.pdFlightTools>.pdIconButton{width:44px;min-width:44px;min-height:44px}
+ .pdFlightButton{font-size:11px;min-height:44px}.pdTopicSearch{gap:8px;flex-wrap:wrap}.pdTopicSearch input{width:100%;max-width:none}.pdTopicGrid{max-height:255px}.pdTopicCard{min-height:82px}.pdTopicName{font-size:13px}.pdTopicMeta{font-size:11px}.pdLead{font-size:13px}.pdPreflightPinyin{font-size:12px}
+ body.vk-open #gameCard .pdHud{min-height:96px;padding:6px 10px;gap:3px}.vk-open .pdBrand>small{font-size:10px}.vk-open .pdSubHud{min-height:26px;padding:4px 10px}.vk-open .pdFlightBar{min-height:64px;display:flex;gap:7px;padding:8px}.vk-open .pdFlightHelp{display:flex;min-width:40px;flex:1;padding:6px 8px}.vk-open .pdFlightHelp>span:last-child{display:none}.vk-open .pdFlightButton{min-height:44px}.vk-open .pdFocusButton{display:none}.vk-open .pdFlightTools #gaPyBtn{flex:none;min-width:90px}.vk-open .pdFlightTools>.pdIconButton{width:44px;min-width:44px}.vk-open #gaOptionsBtn{display:none}
+}
+@media(prefers-reduced-motion:reduce){#pdInputDock.is-error{animation:none}.pdPlayer img{transition:none}}
+.pdHudCell--shield>svg{display:none}
+#gaHearts{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.pdShieldMarks{display:flex!important;flex-direction:row!important;gap:6px!important;align-items:center}
+.pdShieldMark{width:19px;height:22px;color:var(--pd-energy)}.pdShieldMark.is-lost{color:#344356}
+@media(max-width:600px){.pdHudCell--shield{justify-content:center!important}.pdShieldMarks{gap:4px!important}.pdShieldMark{width:16px;height:20px}}
+@media(max-height:740px) and (max-width:600px){body.vk-open #gameCard .pdBrandGroup{display:none}body.vk-open #gameCard .pdHud{min-height:58px}body.vk-open #gameCard .pdStage{min-height:112px}}
+
+/* Fit every child inside the measured visual viewport budget, including fullscreen. */
+body.panda-active.vk-open .workspaceHeader{visibility:hidden;pointer-events:none}
+body.vk-open #gameCard.pd-keyboard-fit{margin:0;max-width:none;padding:0;box-sizing:border-box}
+body.vk-open #gameCard.pd-keyboard-fit .pdStage{min-height:0;flex:1 1 0}
+body.vk-open #gameCard.pd-keyboard-fit .pdHud,
+body.vk-open #gameCard.pd-keyboard-fit .pdSubHud,
+body.vk-open #gameCard.pd-keyboard-fit .pdFlightBar{flex-shrink:0}
+body.vk-open #gameCard.pd-keyboard-fit .pdFlightBar{min-height:64px}
+body.vk-open #gameCard.pd-keyboard-fit .pdHud{padding-top:max(6px,env(safe-area-inset-top));padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
+.pdViewportNotice{position:fixed;box-sizing:border-box;max-width:none;max-height:none;margin:0;border:0;border-radius:0;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));background:#080F1B;color:#F0FBF5;overflow:auto;color-scheme:dark}
+.pdViewportNotice[open]{display:flex;align-items:center;justify-content:center}
+.pdViewportNotice>div{max-width:500px;margin:auto;text-align:center}
+.pdViewportNotice h2{font-size:24px;line-height:1.3;margin:0 0 12px}
+.pdViewportNotice p{font-size:15px;line-height:1.6;color:#BECBD9;margin:0}
+.pdViewportNotice .pdPanelActions{justify-content:center}
+.pdViewportNotice button{min-height:48px}
+.pdViewportNotice::backdrop{background:#080F1B}
+@media(max-height:740px){body.vk-open #gameCard.pd-keyboard-fit .pdBrandGroup{display:none}body.vk-open #gameCard.pd-keyboard-fit .pdHud{min-height:58px;padding:max(6px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left));gap:3px}body.vk-open #gameCard.pd-keyboard-fit .pdHudNumbers{width:100%;justify-content:space-between}}
+
+/* Keep every touch action in one row; the input buffer shares the sub-HUD. */
+@media(max-width:600px){
+ body.vk-open #gameCard .pdFlightBar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px 44px;gap:6px;padding:8px;min-height:64px}
+ body.vk-open #gameCard .pdFlightBar .pdFocusButton{display:flex;grid-column:1;grid-row:1;min-width:0;padding:5px;justify-content:center}
+ body.vk-open #gameCard .pdFocusButton{font-size:11px}
+ body.vk-open #gameCard .pdFocusButton small{display:block;font-size:9px;line-height:1.3}
+ body.vk-open #gameCard .pdFlightTools #gaPyBtn{grid-column:2;grid-row:1;min-width:0;padding:5px;font-size:11px}
+ body.vk-open #gameCard .pdFlightTools #gaKbdBtn{grid-column:3;grid-row:1}
+ body.vk-open #gameCard .pdFlightTools #gaOptionsBtn{display:flex;grid-column:4;grid-row:1;align-items:center;justify-content:center}
+ body.vk-open #gameCard .pdPinyinSymbol{display:none}
+ body.vk-open #gameCard .pdFlightBar .pdFlightHelp{display:none}
+ body.vk-open #gameCard .pdRunKind{display:none}
+ body.vk-open #gameCard .pdSubHud .pdFlightHelp{display:flex;flex:1;min-width:0;min-height:0;max-width:100px;margin:0;padding:0;border:0;border-radius:0;background:none}
+ body.vk-open #gameCard .pdSubHud .pdFlightHelp>span:last-child{display:none}
+ body.vk-open #gameCard .pdSubHud #pdTyped{min-width:0;font-size:13px;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body.vk-open #gameCard .pdSubHud #pdTyped::after{height:12px}
+ .pdPanel--options .pdPanelActions .pdButton{flex:1 1 100px;min-width:0}
+ .pdPanel--options .pdPanelActions [data-pd="close-options"]{flex-basis:100%;min-height:48px}
+}

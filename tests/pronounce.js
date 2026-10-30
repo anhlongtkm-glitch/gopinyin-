@@ -53,6 +53,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
     }
     FakeSR.prototype.start = function () {
       const self = this;
+      self.onstart?.();
       setTimeout(function () {
         if (window.__fakeError) {
           if (self.onerror) self.onerror({ error: window.__fakeError });
@@ -64,11 +65,10 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
           const arr = [alt]; arr.isFinal = true;
           self.onresult({ resultIndex: 0, results: [arr] });
         }
-        setTimeout(function () { if (self.onend) self.onend(); }, 40);
       }, 120);
     };
     FakeSR.prototype.stop = function () { const s = this; setTimeout(function () { if (s.onend) s.onend(); }, 30); };
-    FakeSR.prototype.abort = function () { };
+    FakeSR.prototype.abort = function () { this.onresult = null; this.onend = null; };
     window.SpeechRecognition = FakeSR;
     window.webkitSpeechRecognition = FakeSR;
   });
@@ -246,6 +246,8 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   await page.click('#pronRetryBtn');
   await page.waitForTimeout(400);
   await page.click('#pronMicBtn');
+  await page.waitForTimeout(700);
+  await page.click('#pronMicBtn');
   await page.waitForTimeout(3200);
   const after = await page.evaluate(() => ({
     prog: (document.querySelector('#pronProg') || {}).textContent,
@@ -378,7 +380,13 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
     return r.top >= 0 && r.bottom <= window.innerHeight;
   });
   check('Nút "Câu tiếp" dễ đọc, đủ lớn và cuộn tới được', nextVisible && fit.nextHeight >= 44 && fit.nextFont >= 14, { cao:fit.nextHeight, chu:fit.nextFont, nhinThay:nextVisible });
-  check('Bảng kết quả nằm trong khung hình (không phải cuộn)', fit.resBottom !== null && fit.resBottom <= fit.vh, { bang: fit.resBottom, cao: fit.vh });
+  // The approved study shell allows long content to scroll; measure after revealing the result.
+  await page.locator('#pronResult').scrollIntoViewIfNeeded();
+  const resultVisible = await page.locator('#pronResult').evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    return rect.top >= 0 && rect.bottom <= innerHeight;
+  });
+  check('Bảng kết quả cuộn vào vùng nhìn thấy đầy đủ', resultVisible, resultVisible);
 
   /* (4) Kết quả là CỘT PHẢI (desktop), không đẩy nội dung xuống dưới */
   const cols = await page.evaluate(() => {

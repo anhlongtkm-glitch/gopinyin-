@@ -37,13 +37,7 @@ import { initializeAppNavigationEvents } from "./navigation-events.js";
 import { initializeDashboardController } from "../features/dashboard/controller.js";
 import { initializeRankingController } from "../features/ranking/controller.js";
 import { initializeAppShellStartup } from "./shell-startup.js";
-import { initializeGameSession } from "../features/game/session.js";
-import { initializeGameWords } from "../features/game/words.js";
-import { initializeGameEngine } from "../features/game/engine.js";
-import { initializeGameInput } from "../features/game/input.js";
-import { initializeGameShip } from "../features/game/ship.js";
-import { initializeGameController } from "../features/game/controller.js";
-import { initializeGameEvents } from "../features/game/events.js";
+import { initializePandaGame } from "../features/game/panda-runtime.js";
 import { initializePronunciationSession } from "../features/pronunciation/session.js";
 import { initializePronunciationUtils } from "../features/pronunciation/utils.js";
 import { initializePronunciationRepository } from "../features/pronunciation/repository.js";
@@ -116,13 +110,7 @@ function initializeShell() {
 }
 function initializeGame() {
   if (!document.getElementById("gameCard") || !document.getElementById("gaCanvas")) return;
-  initializeGameSession();
-  initializeGameWords();
-  initializeGameEngine();
-  initializeGameInput();
-  initializeGameShip();
-  initializeGameController();
-  initializeGameEvents();
+  initializePandaGame();
 }
 function initializePron() {
   initializePronunciationSession();

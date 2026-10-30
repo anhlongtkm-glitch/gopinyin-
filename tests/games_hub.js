@@ -102,7 +102,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   check('Sảnh game ẩn lại', inGame.hubHidden === true, inGame.hubHidden);
   check('Có canvas + màn overlay sẵn sàng', inGame.canvas && inGame.overlay, inGame);
   check('Vẫn tô sáng mục cha "games"', inGame.navActive === 'games', inGame.navActive);
-  check('Tiêu đề màn = "Game bắn chữ"', /Game bắn chữ/.test(inGame.title), inGame.title);
+  check('Tiêu đề màn = "Panda Du Hành"', /Panda Du Hành/.test(inGame.title), inGame.title);
   check('Nút quay lại ghi "← Game từ vựng"', /Game từ vựng/.test(inGame.backTxt), inGame.backTxt);
 
   section('4 — Bấm ✕ trong game → quay về sảnh game');
@@ -138,7 +138,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   await page.evaluate(() => document.querySelector('.gameTile[data-view="game"]').click());
   await page.waitForTimeout(1200);
   await page.evaluate(() => { const b = document.querySelector('#gaStartBtn'); if (b) b.click(); });
-  await page.waitForTimeout(900);
+  await page.waitForFunction(() => window.__game._state.running);
   const playing = await page.evaluate(() => {
     const st = window.__game._state;
     return { running: !!st.running, stage: st.stage };

@@ -1,0 +1,249 @@
+[
+  {
+    "name": "constructor failure is reported without recording or false listening",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "⚠️ Không khởi động được nhận dạng giọng nói. Bấm micro để thử lại hoặc kiểm tra quyền của trình duyệt.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345056572,
+      "startedAt": null,
+      "errorAt": 1793345056572,
+      "endedAt": 1793345056572,
+      "error": "start-failed"
+    }
+  },
+  {
+    "name": "start failure releases attempt resources and permits retry",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "⚠️ Không khởi động được nhận dạng giọng nói. Bấm micro để thử lại hoặc kiểm tra quyền của trình duyệt.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345056671,
+      "startedAt": null,
+      "errorAt": 1793345056671,
+      "endedAt": 1793345056671,
+      "error": "start-failed"
+    }
+  },
+  {
+    "name": "missing onstart times out instead of pretending to listen",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "⚠️ Dịch vụ nhận dạng không phản hồi khi khởi động. Kiểm tra mạng và bấm micro để thử lại.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345056754,
+      "startedAt": null,
+      "errorAt": 1793345061760,
+      "endedAt": 1793345061760,
+      "error": "start-timeout"
+    }
+  },
+  {
+    "name": "network stops listening immediately and does not save a result",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "📡 Không kết nối được dịch vụ nhận dạng giọng nói. Kiểm tra mạng rồi thử lại.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345061856,
+      "startedAt": 1793345061888,
+      "errorAt": 1793345061922,
+      "endedAt": 1793345061922,
+      "error": "network"
+    }
+  },
+  {
+    "name": "not-allowed stops listening immediately and does not save a result",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "🚫 Trình duyệt chặn nhận dạng giọng nói. Hãy cấp quyền micro trong cài đặt trang web rồi thử lại.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345062074,
+      "startedAt": 1793345062105,
+      "errorAt": 1793345062125,
+      "endedAt": 1793345062125,
+      "error": "not-allowed"
+    }
+  },
+  {
+    "name": "service-not-allowed stops listening immediately and does not save a result",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "🚫 Trình duyệt chặn nhận dạng giọng nói. Hãy cấp quyền micro trong cài đặt trang web rồi thử lại.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345062239,
+      "startedAt": 1793345062270,
+      "errorAt": 1793345062288,
+      "endedAt": 1793345062288,
+      "error": "service-not-allowed"
+    }
+  },
+  {
+    "name": "audio-capture stops listening immediately and does not save a result",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "🎧 Không thu được âm thanh từ micro. Kiểm tra thiết bị và quyền micro rồi thử lại.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345062389,
+      "startedAt": 1793345062419,
+      "errorAt": 1793345062430,
+      "endedAt": 1793345062430,
+      "error": "audio-capture"
+    }
+  },
+  {
+    "name": "no-speech stops listening immediately and does not save a result",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "🔇 Dịch vụ chưa nhận được giọng nói. Bấm micro để nói lại.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345062505,
+      "startedAt": 1793345062536,
+      "errorAt": 1793345062547,
+      "endedAt": 1793345062547,
+      "error": "no-speech"
+    }
+  },
+  {
+    "name": "aborted stops listening immediately and does not save a result",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "⚠️ Nhận dạng giọng nói đã bị gián đoạn. Bấm micro để nói lại.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345062621,
+      "startedAt": 1793345062651,
+      "errorAt": 1793345062662,
+      "endedAt": 1793345062662,
+      "error": "aborted"
+    }
+  },
+  {
+    "name": "interim-only end asks for another attempt without awarding progress",
+    "phase": "error",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 0,
+    "status": "🔇 Dịch vụ đã dừng trước khi xác nhận kết quả cuối. Bấm micro để nói lại; phần chữ tạm thời chưa được dùng để chấm.",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345062740,
+      "startedAt": 1793345062771,
+      "errorAt": null,
+      "endedAt": 1793345062784,
+      "error": ""
+    }
+  },
+  {
+    "name": "natural-final-1",
+    "phase": "result",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 1,
+    "status": "",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345063104,
+      "startedAt": 1793345063134,
+      "errorAt": null,
+      "endedAt": 1793345063146,
+      "error": ""
+    }
+  },
+  {
+    "name": "natural-final-2",
+    "phase": "result",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 2,
+    "status": "",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345063263,
+      "startedAt": 1793345063293,
+      "errorAt": null,
+      "endedAt": 1793345063313,
+      "error": ""
+    }
+  },
+  {
+    "name": "natural-final-3",
+    "phase": "result",
+    "timer": 0,
+    "maxTimer": 0,
+    "recorder": false,
+    "meter": false,
+    "tries": 3,
+    "status": "",
+    "diagnostics": {
+      "secureContext": true,
+      "supported": true,
+      "requestedAt": 1793345063422,
+      "startedAt": 1793345063452,
+      "errorAt": null,
+      "endedAt": 1793345063490,
+      "error": ""
+    }
+  }
+]

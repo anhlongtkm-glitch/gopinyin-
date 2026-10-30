@@ -74,7 +74,7 @@ export function initializePronunciationSession() {
       filter: 'all'
     },
     phase: 'idle',
-    // idle|requesting|recording|analyzing|result|error
+    // idle|requesting|starting|recording|analyzing|result|error
     result: null,
     detailIdx: -1,
     sessionTries: 0,
@@ -82,6 +82,7 @@ export function initializePronunciationSession() {
     /* runtime */
     stream: null,
     rec: null,
+    recDone: null,
     chunks: [],
     blobUrl: '',
     actx: null,
@@ -96,6 +97,8 @@ export function initializePronunciationSession() {
     silenceTimer: 0,
     asr: null,
     asrText: '',
+    asrInterim: '',
+    asrDiagnostics: null,
     asrConf: null,
     asrErr: '',
     asrDone: null,

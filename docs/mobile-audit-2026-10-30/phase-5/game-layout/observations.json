@@ -1,0 +1,320 @@
+[
+  {
+    "label": "320x568-playing",
+    "width": 320,
+    "height": 568,
+    "scrollWidth": 320,
+    "stage": {
+      "top": 85,
+      "bottom": 228,
+      "height": 143,
+      "left": 1,
+      "right": 319
+    },
+    "keyboard": {
+      "top": 305.0001220703125,
+      "bottom": 568.0001220703125,
+      "height": 263,
+      "left": 0,
+      "right": 320
+    },
+    "card": {
+      "top": 0,
+      "bottom": 293,
+      "height": 293,
+      "left": 0,
+      "right": 320
+    },
+    "controls": [
+      {
+        "id": "gaKbdBtn",
+        "top": 238.5,
+        "bottom": 282.5,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "top": 238.5,
+        "bottom": 282.5,
+        "width": 98,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "top": 8,
+        "bottom": 52,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "label": "360x640-playing",
+    "width": 360,
+    "height": 640,
+    "scrollWidth": 360,
+    "stage": {
+      "top": 85,
+      "bottom": 300,
+      "height": 215,
+      "left": 1,
+      "right": 359
+    },
+    "keyboard": {
+      "top": 377,
+      "bottom": 640,
+      "height": 263,
+      "left": 0,
+      "right": 360
+    },
+    "card": {
+      "top": 0,
+      "bottom": 365,
+      "height": 365,
+      "left": 0,
+      "right": 360
+    },
+    "controls": [
+      {
+        "id": "gaKbdBtn",
+        "top": 310.5,
+        "bottom": 354.5,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "top": 310.5,
+        "bottom": 354.5,
+        "width": 118,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "top": 8,
+        "bottom": 52,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "label": "390x844-playing",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "stage": {
+      "top": 130,
+      "bottom": 504,
+      "height": 374,
+      "left": 1,
+      "right": 389
+    },
+    "keyboard": {
+      "top": 581,
+      "bottom": 844,
+      "height": 263,
+      "left": 0,
+      "right": 390
+    },
+    "card": {
+      "top": 0,
+      "bottom": 569,
+      "height": 569,
+      "left": 0,
+      "right": 390
+    },
+    "controls": [
+      {
+        "id": "gaKbdBtn",
+        "top": 514.5,
+        "bottom": 558.5,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "top": 514.5,
+        "bottom": 558.5,
+        "width": 133,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "top": 54,
+        "bottom": 98,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "label": "412x915-playing",
+    "width": 412,
+    "height": 915,
+    "scrollWidth": 412,
+    "stage": {
+      "top": 130,
+      "bottom": 575,
+      "height": 445,
+      "left": 1,
+      "right": 411
+    },
+    "keyboard": {
+      "top": 652,
+      "bottom": 915,
+      "height": 263,
+      "left": 0,
+      "right": 412
+    },
+    "card": {
+      "top": 0,
+      "bottom": 640,
+      "height": 640,
+      "left": 0,
+      "right": 412
+    },
+    "controls": [
+      {
+        "id": "gaKbdBtn",
+        "top": 585.5,
+        "bottom": 629.5,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "top": 585.5,
+        "bottom": 629.5,
+        "width": 144,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "top": 54,
+        "bottom": 98,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "label": "320x568-reopened",
+    "width": 320,
+    "height": 568,
+    "scrollWidth": 320,
+    "stage": {
+      "top": 85,
+      "bottom": 228,
+      "height": 143,
+      "left": 1,
+      "right": 319
+    },
+    "keyboard": {
+      "top": 305.2121276855469,
+      "bottom": 568.212158203125,
+      "height": 263.0000305175781,
+      "left": 0,
+      "right": 320
+    },
+    "card": {
+      "top": 0,
+      "bottom": 293,
+      "height": 293,
+      "left": 0,
+      "right": 320
+    },
+    "controls": [
+      {
+        "id": "gaKbdBtn",
+        "top": 238.5,
+        "bottom": 282.5,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "top": 238.5,
+        "bottom": 282.5,
+        "width": 98,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "top": 8,
+        "bottom": 52,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      }
+    ]
+  },
+  {
+    "label": "390-visual-viewport-shrunk",
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "stage": {
+      "top": 142,
+      "bottom": 272,
+      "height": 130,
+      "left": 1,
+      "right": 389
+    },
+    "keyboard": {
+      "top": 349,
+      "bottom": 612,
+      "height": 263,
+      "left": 0,
+      "right": 390
+    },
+    "card": {
+      "top": 12,
+      "bottom": 337,
+      "height": 325,
+      "left": 0,
+      "right": 390
+    },
+    "controls": [
+      {
+        "id": "gaKbdBtn",
+        "top": 282.5,
+        "bottom": 326.5,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPyBtn",
+        "top": 282.5,
+        "bottom": 326.5,
+        "width": 133,
+        "height": 44,
+        "hit": true
+      },
+      {
+        "id": "gaPauseBtn",
+        "top": 66,
+        "bottom": 110,
+        "width": 44,
+        "height": 44,
+        "hit": true
+      }
+    ]
+  }
+]
