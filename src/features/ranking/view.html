@@ -1,14 +1,21 @@
 <section id="rankCard" class="card hidden rankView">
-        <div class="libRankHead featureIntro">
-          <div class="featureIntroText"><span class="featureEyebrow">Mỗi câu là một bước tiến</span>
-          <h2>Nhìn lại nỗ lực của bạn</h2>
-          <span class="small">Theo dõi số câu đã luyện hôm nay và tuần này.</span></div>
+        <div class="rankHero">
+          <div class="rankHeroCopy">
+            <span class="rankHeroEyebrow"><span class="rankLiveDot" aria-hidden="true"></span>Bảng xếp hạng cộng đồng</span>
+            <h2>Học đều đặn. Vươn lên từng ngày.</h2>
+            <p>Mỗi câu gõ đúng đưa bạn tiến gần hơn tới vị trí tiếp theo. Chọn ngày hoặc tuần để theo dõi thành tích.</p>
+            <div class="rankHeroBadges"><span>Chỉ tính câu đúng</span><span>Cập nhật trực tuyến</span></div>
+          </div>
           <div data-mascot="trophy" data-mascot-size="card" aria-hidden="true"></div>
         </div>
-        <div class="rankTabs" role="tablist" aria-label="Khoảng thời gian xếp hạng luyện gõ">
-          <button class="rankTab studyRankTab active" type="button" role="tab" data-rank="day" aria-selected="true">Hôm nay</button>
-          <button class="rankTab studyRankTab" type="button" role="tab" data-rank="week" aria-selected="false">Tuần này</button>
+        <div class="rankToolbar">
+          <div><h3>Thành tích luyện gõ</h3><p>Thi đua lành mạnh, cùng nhau tiến bộ.</p></div>
+          <div class="rankTabs" role="tablist" aria-label="Khoảng thời gian xếp hạng luyện gõ">
+            <button class="rankTab studyRankTab active" type="button" role="tab" data-rank="day" aria-selected="true">Hôm nay</button>
+            <button class="rankTab studyRankTab" type="button" role="tab" data-rank="week" aria-selected="false">Tuần này</button>
+          </div>
         </div>
+        <div id="studyRankStatus" class="rankStatus" role="status" aria-live="polite" hidden></div>
         <div class="gaLbScroll">
           <div class="rankPodium" id="studyRankPodium"></div>
           <div class="rankTable" id="studyRankTable">
@@ -22,5 +29,6 @@
             <span class="rankFootDot" aria-hidden="true"></span>
             <span id="studyRankScopeNote"></span>
           </div>
+          <p class="rankPrivacyNote">Tên hiển thị và ảnh đại diện của bạn sẽ được công khai trên bảng xếp hạng.</p>
         </div>
       </section>

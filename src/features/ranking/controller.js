@@ -95,6 +95,7 @@ export function lbBump(board, patch) {
 /* ★ expose cho app-core (panel BXH) gọi khi mở / có điểm mới */
 
 let publicEntries = {};
+let rankRequest = 0;
 export function rankEntries(board, scope) {
   return (publicEntries[board + ':' + scope] || []).map(e => ({ ...e, me: e.id === currentUser()?.id }));
 }
@@ -112,11 +113,51 @@ export function rankRowFor(board, e, place, extra) {
 }
 
 export async function renderRank(board) {
+  const requestId = ++rankRequest;
   const connection = getAccountClient();
   const requestedScope = (board === 'study' ? rankingControllerState.studyRankScope : rankingControllerState.rankScope) || 'day';
+  const entryKey = board + ':' + requestedScope;
+  const status = board === 'study' ? accountStorageState.$('studyRankStatus') : null;
+  const rankCard = accountStorageState.$('rankCard');
+  let loadError = false;
+  if (rankCard) rankCard.setAttribute('aria-busy', 'true');
+  if (status) {
+    status.hidden = false;
+    status.className = 'rankStatus isLoading';
+    status.textContent = 'Đang cập nhật bảng xếp hạng…';
+  }
   if (connection && navigator.onLine) {
-    const { data, error } = await connection.rpc('public_rankings', { p_board: board, p_scope: requestedScope, p_period: requestedScope === 'week' ? weekStamp() : dayStamp() });
-    if (!error) publicEntries[board + ':' + requestedScope] = data || [];
+    try {
+      const { data, error } = await connection.rpc('public_rankings', { p_board: board, p_scope: requestedScope, p_period: requestedScope === 'week' ? weekStamp() : dayStamp() });
+      if (error) {
+        console.error('Không thể tải bảng xếp hạng:', error);
+        loadError = true;
+      } else {
+        publicEntries[entryKey] = data || [];
+      }
+    } catch (error) {
+      console.error('Không thể tải bảng xếp hạng:', error);
+      loadError = true;
+    }
+  } else {
+    loadError = true;
+  }
+  if (requestId !== rankRequest) return;
+  if (rankCard) rankCard.setAttribute('aria-busy', 'false');
+  if (status) {
+    if (loadError) {
+      status.hidden = false;
+      status.className = 'rankStatus isUnavailable';
+      const hasCachedEntries = Object.prototype.hasOwnProperty.call(publicEntries, entryKey);
+      status.textContent = hasCachedEntries
+        ? 'Không thể cập nhật bảng xếp hạng lúc này. Đang hiển thị dữ liệu đã tải trước đó.'
+        : navigator.onLine
+          ? 'Không thể tải bảng xếp hạng lúc này. Vui lòng thử lại sau.'
+          : 'Bạn đang ngoại tuyến. Hãy kết nối Internet để xem bảng xếp hạng trực tuyến.';
+    } else {
+      status.hidden = true;
+      status.textContent = '';
+    }
   }
 
   const isStudy = board === 'study';
@@ -127,7 +168,6 @@ export async function renderRank(board) {
     table = accountStorageState.$(prefix + 'Table');
   if (!podium || !host) return;
   const scope = isStudy ? rankingControllerState.studyRankScope : rankingControllerState.rankScope;
-  /* tabs: chỉ còn BXH luyện gỗ (#rankCard); game tab đã gỡ */
   const tabSel = isStudy ? '#rankCard .rankTab' : '#rankCard .rankTab';
   accountStorageState.$$(tabSel).forEach(t => {
     const on = t.dataset.rank === scope;
@@ -142,7 +182,7 @@ export async function renderRank(board) {
   const list = rankEntries(board, scope);
   if (!list.length) {
     podium.className = 'rankPodium isEmpty';
-    podium.innerHTML = '<div class="rankEmpty"><div class="rankEmptyIcon">🌱</div>' + '<div><b>Chưa có ai trên bảng</b><span>' + (isStudy ? 'Luyện gõ đúng một câu là bạn xuất hiện ngay ở đây.' : 'Học đúng một câu (hoặc bắn trúng một chữ trong game) là bạn xuất hiện ngay.') + '</span></div></div>';
+    podium.innerHTML = '<div class="rankEmpty"><div class="rankEmptyIcon">' + (loadError ? '📡' : '🌱') + '</div>' + '<div><b>' + (loadError ? 'Chưa thể tải bảng xếp hạng' : 'Chưa có thành tích trong khoảng thời gian này') + '</b><span>' + (loadError ? 'Vui lòng thử lại khi kết nối ổn định.' : 'Hãy hoàn thành một câu luyện gõ đúng để ghi tên mình lên bảng.') + '</span></div></div>';
     host.innerHTML = '';
     if (table) table.classList.add('hidden');
     if (meBox) {

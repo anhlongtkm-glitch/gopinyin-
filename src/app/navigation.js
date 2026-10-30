@@ -186,7 +186,7 @@ export function initializeAppNavigation() {
     library: ['Luyện tập', 'Chọn HSK hoặc chủ đề, luyện Gõ / Nói trong cùng một bộ'],
     pron: ['Luyện phát âm', 'Chọn bộ câu theo cấp HSK — nói bằng micro, chấm điểm từng chữ'],
     pronStudy: ['Luyện phát âm', 'Nói tiếng Trung bằng micro — chấm điểm từng chữ, nghe lại và sửa ngay'],
-    rank: ['Bảng xếp hạng', 'Bảng xếp hạng luyện gõ theo ngày / tuần — tính theo số câu luyện được'],
+    rank: ['Bảng xếp hạng', 'Theo dõi thành tích luyện tập và thi đua cùng cộng đồng'],
     ai: ['Học bằng AI', 'Viết chủ đề, chọn câu hoặc từ vựng và học cùng AI'],
     games: ['Game từ vựng', 'Chọn một trò chơi từ vựng để vừa chơi vừa nhớ chữ Hán'],
     game: ['Panda Du Hành', 'Gõ chữ, chinh phục thiên hà — khám phá từ vựng theo chủ đề']

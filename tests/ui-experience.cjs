@@ -97,6 +97,11 @@ async function captureStudy(page, screen) {
     // The fixture registration helper uses the desktop account control.
     await page.setViewportSize({ width: 1440, height: 900 });
     await register(page, 'Mascot experience learner');
+    await page.click('#topBar [data-view="rank"]');
+    await page.locator('#rankCard').waitFor({ state: 'visible' });
+    assert(await page.locator('#topBar [data-view="rank"]').evaluate(element => element.classList.contains('active')));
+    assert.equal(await page.locator('#rankCard h2').textContent(), 'Học đều đặn. Vươn lên từng ngày.');
+    await page.evaluate(() => window.showView('dash'));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.click('.mobile-nav [data-mobile-view="practice"]');
     await page.locator('#libraryCard').waitFor({ state: 'visible' });
@@ -217,13 +222,14 @@ async function captureStudy(page, screen) {
     await page.click('#mobileMoreModal [data-more-view="ai"]');
     await page.locator('#aiCard').waitFor({ state: 'visible' });
     assert(await page.locator('#mobileMoreModal').isHidden());
-    await page.click('#mobileMoreBtn');
-    await page.click('#mobileMoreModal [data-more-view="rank"]');
+    await page.click('.mobile-nav [data-mobile-view="rank"]');
     await page.locator('#rankCard').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('.mobile-nav [data-mobile-view="rank"]').getAttribute('aria-current'), 'page');
+    assert.equal(await page.locator('#rankCard h2').textContent(), 'Học đều đặn. Vươn lên từng ngày.');
     await page.click('#mobileMoreBtn');
     await page.click('#mobileMoreModal [data-more-view="games"]');
     await page.locator('#gamesCard').waitFor({ state: 'visible' });
-    console.log('  PASS AI, rankings and games each take two mobile actions and close More on selection');
+    console.log('  PASS rankings open directly from mobile navigation while secondary destinations remain in More');
 
     await page.evaluate(() => window.showView('game'));
     await page.locator('#gameCard').waitFor({ state: 'visible' });

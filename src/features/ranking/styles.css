@@ -2,6 +2,24 @@
    BẢNG XẾP HẠNG — số câu đúng + điểm game (ngày / tuần)
    ═══════════════════════════════════════════════════════════════ */
 .rankView{display:flex;flex-direction:column;gap:20px}
+.rankHero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:210px;padding:32px 38px;overflow:hidden;border:1px solid var(--line);border-radius:28px;background:radial-gradient(ellipse at 86% 12%,rgba(31,200,162,.17),transparent 42%),linear-gradient(125deg,var(--card),var(--card-2));box-shadow:0 16px 42px rgba(11,60,48,.07)}
+.rankHero::before{position:absolute;inset:auto 0 0;height:4px;background:linear-gradient(90deg,var(--primary),#f6c453 72%,transparent);content:""}
+.rankHeroCopy{position:relative;z-index:1;max-width:760px}
+.rankHeroEyebrow{display:flex;align-items:center;gap:9px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+.rankLiveDot{width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
+.rankHero h2{margin:14px 0 9px;font-family:var(--font-display);font-size:clamp(28px,4vw,42px);line-height:1.12;letter-spacing:-.04em}
+.rankHero p{max-width:62ch;margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+.rankHero [data-mascot]{flex:none;width:132px;height:132px}
+.rankHeroBadges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.rankHeroBadges span{padding:7px 11px;border:1px solid var(--line);border-radius:var(--r-pill);background:var(--card);color:var(--text-2);font-size:11px;font-weight:750}
+.rankToolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.rankToolbar h3{margin:0;font-size:19px;font-weight:850;letter-spacing:-.02em}
+.rankToolbar p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.rankStatus{padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card-2);color:var(--text-2);font-size:13px;line-height:1.5}
+.rankStatus[hidden]{display:none}
+.rankStatus.isLoading{border-color:rgba(31,200,162,.28);background:var(--primary-soft)}
+.rankStatus.isUnavailable,.rankStatus.isError{border-color:rgba(235,166,64,.38);background:rgba(235,166,64,.09)}
+.rankPrivacyNote{margin:0;color:var(--faint);font-size:11px;line-height:1.5}
 
 /* ★ Panel BXH bên trong Game: trượt từ phải, không che toàn bộ sân chơi */
 .gaLbPanel{
@@ -45,6 +63,14 @@
 .gaLbPanel .rankCorrect b,.gaLbPanel .rankScore b{font-size:12.5px}
 .gaLbPanel .rankFoot{font-size:10.5px}
 @media (max-width:760px){
+  .rankHero{min-height:0;padding:24px 20px;border-radius:22px}
+  .rankHero [data-mascot]{width:76px;height:76px;align-self:flex-start}
+  .rankHero h2{font-size:28px}
+  .rankHero p{font-size:13px}
+  .rankHeroBadges{margin-top:14px}
+  .rankToolbar{align-items:flex-start}
+  .rankToolbar .rankTabs{width:100%}
+  .rankToolbar .rankTab{flex:1}
   .gaLbPanel{width:100%;border-left:0}
 }
 .gaIconBtn.on{background:linear-gradient(135deg,rgba(31,200,162,.22),rgba(31,200,162,.14));color:#fff;border-color:rgba(31,200,162,.55)}

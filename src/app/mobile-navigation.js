@@ -57,7 +57,7 @@ export function syncMobileNavigation() {
   });
   const more = document.getElementById('mobileMoreBtn');
   if (more) {
-    if (['ai', 'rank','readings'].includes(view)) more.setAttribute('aria-current', 'page');
+    if (['ai', 'readings'].includes(view)) more.setAttribute('aria-current', 'page');
     else more.removeAttribute('aria-current');
   }
 }
