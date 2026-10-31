@@ -20,7 +20,7 @@ import { fillAppSource } from "../typing/datasets.js";
 
 import { loadHistory, renderAppHistory } from "../typing/history.js";
 
-import { save } from "../typing/progress.js";
+import { save, loadProgress } from "../typing/progress.js";
 
 import { renderStatsOnly, render } from "../typing/render.js";
 
@@ -28,9 +28,9 @@ import { state as typingSessionState } from "../typing/session.js";
 
 import { state as domState } from "../../shared/dom.js";
 
-import { appConfirm, appPrompt, _modalClose, state as modalState } from "../../shared/modal.js";
+import { _modalClose, state as modalState } from "../../shared/modal.js";
 
-import { dbPut, progressKey } from "../../shared/storage/lesson-repository.js";
+import { dbGet, progressKey } from "../../shared/storage/lesson-repository.js";
 
 import { toast } from "../../shared/toast.js";
 
@@ -38,20 +38,21 @@ import { fetchViTranslation } from "../../shared/translation.js";
 
 import { escapeHtml } from "../../shared/utils.js";
 
+import { dataOwner, writeRecords } from '../../shared/storage/account-data.js';
+import { reviseAiLesson } from './revision.js';
 export const state = {};
 
 const aiSessionState = state;
 let aiRequestId = 0;
+function newAiId() {
+  if (globalThis.crypto.randomUUID) return globalThis.crypto.randomUUID();
+  // LAN development over HTTP also supports getRandomValues.
+  return Array.from(globalThis.crypto.getRandomValues(new Uint32Array(4)), value => value.toString(16).padStart(8, '0')).join('');
+}
 function aiStartLabel() {
   const kind = domState.$('aiKind')?.value;
   return kind === 'word' ? 'Tạo từ vựng và học' : kind === 'both' ? 'Tạo bài và học' : 'Tạo câu và học';
 }
-async function ownedDialog(session, promise) {
-  const resolve = modalState._modalResolve;
-  session.dialog = resolve;
-  try { return await promise; } finally { if (session.dialog === resolve) session.dialog = null; }
-}
-
 // {prompt,level,provider,key,batch,seen,pending,stopped,empty,live}
 export function aiSetStatus(msg, cls) {
   const el = domState.$('aiStatus');
@@ -146,26 +147,45 @@ function resumeAiGeneration() {
    Bộ học tạm (chưa lưu) → chỉ nằm trong bộ nhớ, rời đi là hết. */
 export function aiAppendRows(items) {
   const start = typingSessionState.rows.length;
-  items.forEach((it, i) => {
-    typingSessionState.rows.push({
-      id: 'ai-' + (start + i),
-      vi: it.vi,
-      py: it.py,
-      zh: it.zh,
-      wv: []
-    });
+  const idPrefix = 'ai-' + newAiId() + '-';
+  const additions = items.map((it, i) => ({
+    id: idPrefix + i,
+    vi: it.vi,
+    py: it.py,
+    zh: it.zh,
+    wv: []
+  }));
+  const saved = aiSavedSet();
+  const updatedAt = Date.now();
+  if (saved) {
+    const progress = aiProgressSnapshot(saved.id);
+    progress.mainOrder = [...progress.mainOrder, ...additions.map((_, i) => start + i)];
+    writeRecords([
+      { kind: 'dataset', id: saved.id, payload: { ...saved, rows: [...typingSessionState.rows, ...additions], rowCount: start + additions.length, updatedAt } },
+      { kind: 'kv', id: progressKey(saved.id), payload: JSON.stringify(progress) }
+    ]);
+  }
+  additions.forEach((row, i) => {
+    typingSessionState.rows.push(row);
     typingSessionState.order.push(start + i);
     typingSessionState.mainOrder.push(start + i);
   });
   if (aiSessionState.aiSession) aiSessionState.aiSession.generated = typingSessionState.rows.length;
   aiFillMissingVi(); // ★ AI hay bỏ trống nghĩa TV → tự dịch nền cho đủ
-  const saved = aiSavedSet();
   if (saved) {
     saved.rows = typingSessionState.rows;
-    saved.updatedAt = Date.now();
-    dbPut(saved).catch(() => {});
-    save(); // tiến độ + mainOrder mới (câu nối vào cuối)
+    saved.updatedAt = updatedAt;
+    saved.rowCount = typingSessionState.rows.length;
   }
+}
+
+function aiProgressSnapshot(id) {
+  const t = typingSessionState;
+  return { ...(loadProgress(id) || {}),
+    mainOrder: [...(t.mode === 'all' ? t.order : t.mainOrder)],
+    mainIndex: t.mode === 'all' && !t.linkedPractice ? Math.min(t.index + (t.awaitingEnter ? 1 : 0), t.order.length) : t.mainIndex,
+    stats: { ...t.stats }, wrongIds: [...t.wrongIds], reviewById: { ...t.reviewById }
+  };
 }
 /* Bộ AI đã lưu đang học (khác với phiên AI học tạm) */
 
@@ -185,6 +205,61 @@ export function aiCurrentKind() {
 
 export function aiCurrentUnit() {
   return aiUnitOf(aiCurrentKind());
+}
+
+export function aiEditPause(paused) {
+  const session = aiSessionState.aiSession;
+  if (!session) return;
+  if (paused) pauseAiGeneration();
+  else resumeAiGeneration();
+}
+
+export async function aiUpdateSavedRequest(id, prompt, level) {
+  const accountId = currentUser()?.id;
+  if (!accountId || dataOwner() !== accountId) throw new Error('Cần đăng nhập để sửa bài.');
+  prompt = prompt.trim();
+  if (!prompt) throw new Error('Hãy nhập yêu cầu AI.');
+  const navigation = navigationVersion();
+  const ds = await dbGet(id);
+  if (currentUser()?.id !== accountId || navigation !== navigationVersion()) throw new Error('Bài học đã thay đổi. Vui lòng mở lại.');
+  if (!ds || ds.kind !== 'ai') throw new Error('Không tìm thấy bài AI.');
+  const active = aiSavedSet()?.id === id && !domState.$('appCard').classList.contains('hidden');
+  const t = typingSessionState;
+  let progress = loadProgress(id) || {};
+  if (active) progress = aiProgressSnapshot(id);
+  const result = reviseAiLesson(ds, progress, {
+    prompt, level, currentRowIndex: active && t.mode === 'all' ? t.order[t.index] : undefined,
+    reviewOrder: active && t.mode !== 'all' ? t.order : []
+  });
+  writeRecords([
+    { kind: 'dataset', id, payload: structuredClone(result.dataset) },
+    { kind: 'kv', id: progressKey(id), payload: JSON.stringify(result.progress) }
+  ]);
+  if (active) {
+    const oldSession = aiSessionState.aiSession;
+    if (oldSession) { oldSession.epoch = (oldSession.epoch || 0) + 1; oldSession.paused = true; }
+    const order = t.order.map(index => result.remap.get(index)).filter(index => index !== undefined);
+    t.activeDataset = result.dataset;
+    t.rows = result.dataset.rows;
+    t.mainOrder = result.progress.mainOrder;
+    t.mainIndex = result.progress.mainIndex;
+    t.order = t.mode === 'all' ? [...t.mainOrder] : order;
+    t.wrongIds = new Set(result.progress.wrongIds);
+    t.reviewById = result.progress.reviewById;
+    // Reuse the pending slot: the previous request must release it before the new one starts.
+    const connection = aiConnection(ds.provider);
+    const session = oldSession || { ...connection, pending: 0, epoch: 0 };
+    Object.assign(session, {
+      prompt, level, kind: ds.contentType || 'sentence', batch: ds.batch || 5,
+      seen: new Set(result.dataset.rows.map(row => row.zh)), rows: t.rows,
+      stopped: false, error: null, retryAt: 0, empty: 0, live: true,
+      generated: t.rows.length, accountId, navigation, paused: true
+    });
+    aiSessionState.aiSession = session;
+    aiShowGen('');
+    renderStatsOnly();
+  }
+  return { review: active && t.mode !== 'all' };
 }
 /* ★ AI đôi khi không trả nghĩa tiếng Việt (hoặc đặt sai tên trường) → tự dịch nền
    bằng MyMemory (có cache localStorage), cập nhật YÊN LẶNG — không đụng
@@ -262,7 +337,7 @@ export function aiRefreshAfterAppend(wasWaiting) {
 /* ★ AI tự viết thêm khi sắp hết — không giới hạn số lượng */
 export async function aiMaybeFill() {
   const s = aiSessionState.aiSession;
-  if (!s || !aiTypingVisible(s) || s.paused || s.stopped || s.pending) return;
+  if (!s || !aiTypingVisible(s) || s.paused || s.stopped || s.pending || typingSessionState.mode !== 'all') return;
   // Start one item earlier for the default batch, while bounding the reserve
   // for larger saved batches. pending still permits only one request at a time.
   const reserve = Math.max(3, Math.min(6, Math.ceil(s.batch / 2)));
@@ -273,7 +348,7 @@ export async function aiMaybeFill() {
   // ★ Ghi nhớ TRƯỚC khi thêm: người dùng có đang ở màn chờ mục mới không?
   const wasWaiting = typingSessionState.index >= typingSessionState.order.length;
   const navigation = navigationVersion(), epoch = s.epoch || 0;
-  const active = () => aiTypingVisible(s) && !s.paused && epoch === (s.epoch || 0) && navigation === navigationVersion();
+  const active = () => aiTypingVisible(s) && typingSessionState.mode === 'all' && !s.paused && epoch === (s.epoch || 0) && navigation === navigationVersion();
   // ★ Không hiện thanh "AI đang viết..." đè lên khi người dùng đang gõ dở,
   //   chỉ hiện khi đang thực sự chờ mục mới.
   if (wasWaiting) aiShowGen('<span class="aiSpinner">AI đang viết ' + unit + ' tiếp theo…</span> (đã có <b>' + typingSessionState.rows.length + '</b> ' + unit + ')');
@@ -314,6 +389,7 @@ export async function aiMaybeFill() {
 
 /* ★ Bắt đầu học: viết prompt → AI viết đợt đầu → học ngay */
 export async function aiStartStudy() {
+  if (domState.$('aiStartBtn')?.disabled) return;
   aiEndSession();
   const navigation = markNavigation(), requestId = ++aiRequestId;
   if (!await requireAccount(() => aiStartStudy())) return;
@@ -331,6 +407,8 @@ export async function aiStartStudy() {
   const level = domState.$('aiLevel').value;
   const batch = Math.max(1, Math.min(20, Number(domState.$('aiBatch').value) || 5));
   const kind = aiClientState.AI_KINDS[domState.$('aiKind') && domState.$('aiKind').value] ? domState.$('aiKind').value : 'sentence';
+  const wantSave = domState.$('aiSaveLesson').checked;
+  const lessonName = (domState.$('aiLessonName').value.trim() || prompt.replace(/\s+/g, ' ')).slice(0, 80);
   const unit = aiUnitOf(kind);
   const btn = domState.$('aiStartBtn');
   /* ★ CHƯA có API key → mở sẵn "Tuỳ chọn nâng cao", focus ô key, chỉ đúng nút lấy key
@@ -372,8 +450,6 @@ export async function aiStartStudy() {
   };
   const session = aiSessionState.aiSession;
   const active = () => session === aiSessionState.aiSession && session.live && navigation === navigationVersion() && currentUser()?.id === accountId;
-  const ownConfirm = (...args) => ownedDialog(session, appConfirm(...args));
-  const ownPrompt = (...args) => ownedDialog(session, appPrompt(...args));
   try {
     const res = await aiCollect(provider, key, prompt, batch, level, session.seen, null, kind, active);
     if (!active()) return;
@@ -381,42 +457,21 @@ export async function aiStartStudy() {
     if (res.error) { session.stopped = true; session.error = res.error; session.retryAt = res.error.retryAt || 0; }
     setMascot('aiMascot', 'ready');
 
-    /* ★ HỎI LƯU NGAY SAU KHI TẠO — trước khi vào học.
-       · "Lưu lại"     → đặt tên → ghi vào thư viện → học tiếp lần sau đúng câu đang dở.
-       · "Không lưu"   → học tạm như cũ, KHÔNG ghi gì; thoát ra là mất. */
-    const wantSave = await ownConfirm('AI đã tạo ' + res.items.length + ' ' + unit + ' cho chủ đề “' + String(prompt).slice(0, 70) + '”.\n\n' + 'Lưu lại để lần sau vào học tiếp đúng chỗ bạn đang dở?\n' + 'Nếu chọn “Không lưu”, bộ này chỉ dùng tạm lần này — thoát ra là hết.', {
-      title: '💾 Lưu bộ này?',
-      okText: '💾 Lưu lại',
-      cancelText: 'Không lưu'
-    });
-    if (!active()) return;
-    let ds = null;
-    if (wantSave) {
-      const defName = String(prompt).replace(/\s+/g, ' ').trim().slice(0, 48) || 'Bộ ' + unit + ' AI';
-      const name = await ownPrompt('Đặt tên cho bộ ' + unit + ' để dễ tìm lại trong “Bộ AI đã lưu”:', defName, {
-        title: 'Đặt tên bộ ' + unit,
-        okText: 'Lưu bộ ' + unit
-      });
+    let ds = wantSave ? {
+      id: 'ai:' + newAiId(), name: lessonName,
+      sourceName: 'Học bằng AI', kind: 'ai', contentType: kind,
+      prompt, level, provider, batch, rows: [],
+      createdAt: Date.now(), updatedAt: Date.now()
+    } : null;
+    if (ds) {
+      ds.rows = res.items.map(item => ({ ...item, id: 'ai-' + newAiId(), wv: [] }));
+      aiSetStatus('Đang lưu bài…');
+      writeRecords([
+        { kind: 'dataset', id: ds.id, payload: { ...ds, rowCount: ds.rows.length } },
+        { kind: 'kv', id: progressKey(ds.id), payload: JSON.stringify({ mainOrder: ds.rows.map((_, i) => i), mainIndex: 0,
+          stats: { correct: 0, wrong: 0, combo: 0, bestCombo: 0, attempts: 0 }, wrongIds: [], reviewById: {}, lastStudiedAt: Date.now() }) }
+      ]);
       if (!active()) return;
-      if (!name) {
-        /* Huỷ ở bước đặt tên → coi như KHÔNG lưu (không tạo rác trong thư viện) */
-        toast('Chưa đặt tên nên bộ ' + unit + ' này chỉ học tạm lần này.', 'warn', 4200);
-      } else {
-        ds = {
-          id: 'ai:' + Date.now(),
-          name: name.slice(0, 80),
-          sourceName: 'Học bằng AI',
-          kind: 'ai',
-          contentType: kind,
-          prompt: String(prompt),
-          level: level,
-          provider,
-          batch,
-          rows: [],
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        };
-      }
     }
 
     if (!active()) return;
@@ -447,15 +502,17 @@ export async function aiStartStudy() {
       typingSessionState.mainIndex = 0;
       typingSessionState.index = 0;
     }
-    aiAppendRows(res.items);
+    if (ds) {
+      typingSessionState.order = ds.rows.map((_, i) => i);
+      typingSessionState.mainOrder = [...typingSessionState.order];
+      save();
+    } else aiAppendRows(res.items);
     session.rows = typingSessionState.rows;
+    session.generated = typingSessionState.rows.length;
     if (ds) {
       ds.rows = typingSessionState.rows;
-      ds.updatedAt = Date.now();
       if (!active()) return;
-      await dbPut(ds);
-      if (!active()) return;
-      toast('💾 Đã lưu “' + ds.name + '” (' + typingSessionState.rows.length + ' ' + unit + ') — lần sau vào là học tiếp đúng chỗ đang dở.', 'ok', 5200);
+      toast('Đã lưu “' + ds.name + '” trên máy; đang chờ đồng bộ.', 'ok', 5200);
       try {
         if (typeof legacy.renderAiSets === 'function') legacy.renderAiSets();
       } catch (e) {}
@@ -475,9 +532,11 @@ export async function aiStartStudy() {
     updateViUI();
     updateHanUI();
     updateModeUI();
+    aiSetStatus('');
     aiShowGen('');
     // Mục lỗi định dạng đã được lọc IM LẶNG (aiItemOk) — không báo cho người dùng
     render();
+    document.dispatchEvent(new CustomEvent('gp:ai-study-started'));
     if (session.stopped) aiShowSessionError();
     loadHistory();
     renderAppHistory();

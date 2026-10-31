@@ -38,11 +38,11 @@ const generated=[
     await page.selectOption('#aiKind','word');
     await page.fill('#aiPrompt','từ vựng ngành bao bì');
     accountRequests.length=0;
+    await page.uncheck('#aiSaveLesson');
     await page.click('#aiStartBtn');
-    await page.locator('#appModal.show').waitFor();
-    assert.equal(requests.length,1,'A complete batch must go straight to the save prompt after one generation request');
+    await page.locator('#appCard').waitFor({state:'visible'});
+    assert.equal(requests.length,1,'A complete batch must open study directly after one generation request');
     assert.equal(accountRequests.filter(url=>url.includes('/auth/v1/user')).length,1,'Only the initial study gate should revalidate the account');
-    await page.click('#appModalCancel');
     await page.locator('#appCard').waitFor({state:'visible'});
     assert.deepEqual(await page.evaluate(()=>window.rows.map(({zh,py,vi})=>({zh,py,vi}))),generated);
     assert.equal(await page.locator('#vietnamese').textContent(),generated[0].vi);

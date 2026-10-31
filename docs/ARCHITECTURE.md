@@ -59,7 +59,7 @@ Luồng chọn bài/chuyển màn dùng ticket điều hướng từ `markNaviga
 ### Những chức năng lớn
 
 - **Typing:** `session` giữ phiên, `datasets` mở bộ câu, `input` xử lý chữ Hán/IME, `scoring` chấm câu, `render` hiển thị, `progress` lưu/khôi phục, `history` lịch sử, `controls/events` gắn thao tác.
-- **AI:** `providers` cấu hình nhà cung cấp, `client` gửi yêu cầu/prompt, `validation` chuẩn hóa và soát nghĩa, `session` học tạm/tạo thêm, `saved-sets` quản lý bộ đã lưu, `controller` gắn giao diện.
+- **AI:** `providers` cấu hình nhà cung cấp, `client` gửi yêu cầu/prompt, `validation` kiểm tra định dạng và Pinyin, `session` tạo bài/học liên tục, `saved-sets` tìm bài và học tiếp, `editor` sửa prompt/trình độ, `revision` bảo toàn mục đã học và ánh xạ hàng chờ; `controller` gắn giao diện. Luồng và kiểm thử: [AI-LEARNING-UX.md](AI-LEARNING-UX.md).
 - **Pronunciation:** `session`, `repository`, `storage`, `tts`, `microphone`, `recognition`, `wav`, `assessment`, `recording`, `lesson`, `render`, `settings`, `library`, `events`, `controller`. Các lớp Repo/Store/Mic/Assess giữ hành vi cũ, được import qua state của module sở hữu.
 - **Game:** `session`, `words`, `scenery`, `entities`, `engine`, `render`, `loop`, `input`, `ship`, `controller`, `events`.
 

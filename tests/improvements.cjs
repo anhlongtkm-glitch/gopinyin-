@@ -43,7 +43,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
     assert.equal(await page.evaluate(() => window.index), 3);
     console.log('  PASS study deep link restores lesson and session after reload');
 
-    await page.click('.ws-navItem[data-view="practice"]'); await page.click('.workspaceTools summary');await page.click('.ws-navItem[data-view="ai"]');
+    await page.click('.ws-navItem[data-view="practice"]'); await page.click('.ws-navItem[data-view="ai"]');
     await page.goBack(); await page.locator('#libraryCard').waitFor({ state: 'visible' });
     await page.goForward(); await page.locator('#aiCard').waitFor({ state: 'visible' });
     await page.focus('#aiStartBtn');

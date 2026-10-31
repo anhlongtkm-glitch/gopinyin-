@@ -7,6 +7,7 @@ import { aiUnitOf } from "./client.js";
 import { aiLsSet, state as aiProvidersState, aiLsGet, aiKeyStore, aiKeyLoad } from "./providers.js";
 
 import { aiStartStudy } from "./session.js";
+import { initializeAiEditor } from './editor.js';
 
 
 import { state as libraryCatalogState, renderVocab, openVocabSource } from "../library/catalog.js";
@@ -78,6 +79,11 @@ export function aiProviderRefresh() {
 }
 
 export function initializeAiController() {
+  initializeAiEditor();
+  domState.$('aiSaveLesson').onchange = event => {
+    domState.$('aiNameField').hidden = !event.target.checked;
+    domState.$('aiTemporaryHint').hidden = event.target.checked;
+  };
   // ★ Kho từ vựng: chuyển tab nguồn (Kho câu giao tiếp / Bộ câu của tôi)
   // ★ Mở bộ câu: bấm nút "Học tiếp" trong Thư viện / Bộ câu của bạn
   // ★ AI sinh câu: viết prompt → học ngay / đổi nhà cung cấp / lưu key

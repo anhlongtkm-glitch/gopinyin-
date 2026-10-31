@@ -29,11 +29,24 @@ export function listRecordEntries(kind) {
   return Object.values(records).filter(r => r.kind === kind && !r.deleted).map(r => ({ record_id: r.record_id, payload: structuredClone(r.payload) }));
 }
 export function writeRecord(kind, id, payload, deleted = false) {
+  return writeRecords([{ kind, id, payload, deleted }]);
+}
+// Commit related local changes together, so a quota error cannot leave half an edit.
+export function writeRecords(updates) {
   if (!owner) return;
-  const key = keyOf(kind, id), old = records[key];
-  if (old && old.deleted === deleted && (old.payload === payload || (typeof payload === 'object' && JSON.stringify(old.payload) === JSON.stringify(payload)))) return;
-  records[key] = { kind, record_id: id, payload, deleted, version: old?.version || 0, dirty: true, edit: (old?.edit || 0) + 1 };
-  persist(); report(navigator.onLine ? 'pending' : 'offline'); clearTimeout(timer);
+  const previous = records;
+  const next = { ...records };
+  let changed = false;
+  for (const { kind, id, payload, deleted = false } of updates) {
+    const key = keyOf(kind, id), old = next[key];
+    if (old && old.deleted === deleted && (old.payload === payload || (typeof payload === 'object' && JSON.stringify(old.payload) === JSON.stringify(payload)))) continue;
+    next[key] = { kind, record_id: id, payload: typeof payload === 'object' ? structuredClone(payload) : payload, deleted, version: old?.version || 0, dirty: true, edit: (old?.edit || 0) + 1 };
+    changed = true;
+  }
+  if (!changed) return;
+  records = next;
+  try { persist(); } catch (error) { records = previous; throw error; }
+  report(navigator.onLine ? 'pending' : 'offline'); clearTimeout(timer);
   timer = setTimeout(() => flushAccountData().catch(() => {}), 200);
 }
 export const learningStorage = {

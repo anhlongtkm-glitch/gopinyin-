@@ -70,7 +70,7 @@ export function render() {
   }
   if (typingSessionState.index >= total) {
     // ★ Phiên AI: chưa có đủ câu AI đang viết → giữ màn hình chờ, không báo "hoàn thành"
-    if (aiSessionLive() && !aiSessionState.aiSession.stopped) {
+    if (aiSessionLive() && typingSessionState.mode === 'all' && !aiSessionState.aiSession.stopped) {
       domState.$('completeArea').classList.add('hidden');
       domState.$('quizArea').classList.remove('hidden');
       domState.$('pinyinInput').value = '';
@@ -87,7 +87,7 @@ export function render() {
     }
     domState.$('quizArea').classList.add('hidden');
     domState.$('completeArea').classList.remove('hidden');
-    const aiPaused = aiSessionLive() && aiSessionState.aiSession.stopped;
+    const aiPaused = aiSessionLive() && typingSessionState.mode === 'all' && aiSessionState.aiSession.stopped;
     domState.$('completeArea').querySelector('h2').textContent = aiPaused ? 'Tạm dừng tạo bài' : 'Hoàn thành!';
     const doneMsg = aiPaused ? 'Bạn đã học hết nội dung hiện có. AI đang tạm dừng tạo thêm; bấm Thử lại để tiếp tục theo cùng chủ đề.' : aiSavedSet() ? 'Bạn đã học hết ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' của bộ “' + aiSavedSet().name + '”. Vào lại màn Học bằng AI để tạo thêm bộ mới nhé.' : aiSessionLive() ? 'Bạn đã học ' + typingSessionState.rows.length + ' ' + aiCurrentUnit() + ' do AI tạo cho chủ đề “' + String(aiSessionState.aiSession.prompt).slice(0, 60) + '”.' : typingSessionState.mode === 'wrong' ? 'Bạn đã hoàn thành lượt luyện các câu sai.' : 'Bạn đã hoàn thành lượt học này. Các câu sẽ không lặp lại cho đến khi bạn bấm Xóa tiến độ.';
     domState.$('completeArea').querySelector('p').textContent = doneMsg;

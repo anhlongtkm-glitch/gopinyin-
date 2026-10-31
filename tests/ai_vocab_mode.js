@@ -138,14 +138,8 @@ const WORDS = [
 
   /* ═══ D. Học bộ từ vựng: gõ được từ ngắn ═══ */
   section('D. Học từ vựng ngắn');
-  const saveModal = await page.evaluate(() => document.querySelector('#appModal').classList.contains('show'));
-  check('Vẫn hỏi lưu như thường', saveModal, saveModal);
-  const modalTxt = await page.evaluate(() => (document.querySelector('#appModalMsg') || {}).textContent || '');
-  check('Popup dùng đơn vị "từ"', /từ/.test(modalTxt), modalTxt.slice(0, 80));
-
-  await page.click('#appModalOk'); await page.waitForTimeout(500);
-  await page.fill('#appModalInput', 'Từ vựng bao bì');
-  await page.click('#appModalOk'); await page.waitForTimeout(1500);
+  await page.locator('#appCard').waitFor({state:'visible'});
+  check('No blocking save dialog', !(await page.locator('#appModal.show').count()));
 
   const inStudy = await page.evaluate(() => ({
     ok: !document.querySelector('#appCard').classList.contains('hidden'),

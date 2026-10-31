@@ -42,8 +42,8 @@ const fresh = [
     assert(await page.locator('#aiProviderSetup').isHidden());
     assert.equal(await page.locator('#aiKey').inputValue(), '');
     await page.selectOption('#aiKind', 'word'); await page.fill('#aiPrompt', 'từ vựng đồ uống trong quán trà');
-    await page.click('#aiStartBtn'); await page.locator('#appModal.show').waitFor(); await page.click('#appModalOk');
-    await page.locator('#appModalInput').waitFor({ state: 'visible' }); await page.fill('#appModalInput', 'Đồ uống AI'); await page.click('#appModalOk');
+    await page.fill('#aiLessonName', 'Đồ uống AI');
+    await page.click('#aiStartBtn');
     await page.locator('#appCard').waitFor({ state: 'visible' });
     assert.equal(requests.length, 1); assert.equal(requests[0].provider, 'gemini');
     assert.match(requests[0].prompt, /TỪ hoặc CỤM TỪ/); assert(!('key' in requests[0]));

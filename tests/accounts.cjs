@@ -29,7 +29,7 @@ async function login(page,email,password='password123') {
     assert(await page.locator('#dashView').isVisible());
     assert.equal(await page.locator('#authGoogleBtn,#authGuestBtn,#landing,#proModal').count(),0);
     for(const [view,selector] of [['practice','#libraryCard'],['readings','#readingsCard'],['games','#gamesCard'],['rank','#rankCard']]) {
-      if(view==='rank')await page.click('.workspaceTools summary');await page.click(`.ws-navItem[data-view="${view}"]`);assert(await page.locator(selector).isVisible());
+      await page.click(`.ws-navItem[data-view="${view}"]`);assert(await page.locator(selector).isVisible());
     }
     await page.evaluate(()=>window.showView('game'));
     assert(await page.locator('#authModal').isVisible());

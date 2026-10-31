@@ -11,6 +11,7 @@ suites.push('approved-layout.cjs');
 suites.push('curriculum.cjs');
 suites.push('ai_recovery.cjs');
 suites.push('ai_append_wait.cjs');
+suites.push('ai_edit_flow.cjs');
 suites.push('audio-defaults.cjs');
 suites.push('pron-auto.cjs');
 suites.push('pronunciation-mobile.cjs');
