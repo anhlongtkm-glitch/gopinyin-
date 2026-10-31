@@ -688,7 +688,7 @@ export function initializeTypingInput() {
      · Có chữ sai / thiếu / thừa → báo đỏ ngay, KHÔNG cho sang câu —
        phải sửa đúng tại chỗ (hoặc bấm "Bỏ qua").
      · Dấu câu và khoảng trắng không bắt buộc — bỏ qua khi so khớp.
-     · ENTER = ẩn/hiện gợi ý PINYIN phía trên dòng chữ Hán.
+     · F1 = ẩn/hiện gợi ý PINYIN phía trên dòng chữ Hán.
      ═══════════════════════════════════════════════════════════ */
   /* ★ Chữ Hán = CHỮ HÁN THẬT (CJK ideograph) — khoảng trắng, dấu câu Trung,
      chữ Latin/số đều KHÔNG phải chữ Hán cần gõ.

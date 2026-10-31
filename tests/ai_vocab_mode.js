@@ -163,7 +163,7 @@ const WORDS = [
   }));
   check('Gõ đúng từ ngắn → báo Chính xác', /Chính xác/.test(afterType.fb) && /ok/.test(afterType.cls), afterType.fb);
   check('Lời nhắc dùng "từ tiếp theo" (không phải câu)', /từ tiếp theo/.test(afterType.fb), afterType.fb);
-  await page.keyboard.press('Enter');
+  await page.keyboard.press('Space');
   await page.waitForTimeout(700);
   check('Sang từ tiếp theo', await page.evaluate(() =>
     ((document.querySelector('#progressText') || {}).textContent || '') === '1/5'));

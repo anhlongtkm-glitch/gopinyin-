@@ -286,7 +286,7 @@ export function toggleHanziLine() {
 
 export function initializeTypingControls() {
   /* ── Hint / Skip / Reset ── */
-  // Explicit Pinyin action shared with the virtual keyboard and the number shortcut.
+  // Explicit Pinyin action shared with the virtual keyboard and F1.
   publishLegacy("__gpToggleHint", function () {
     hint();
   });

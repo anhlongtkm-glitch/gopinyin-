@@ -53,7 +53,7 @@ export function renderStatsOnly() {
   const foot = domState.$('appCard')?.querySelector('.studyFoot');
   if (foot) foot.hidden = typingSessionState.index >= total;
   const nextHint = domState.$('typingNextHint');
-  if (nextHint) nextHint.textContent = typingSessionState.awaitingEnter ? 'Đúng rồi! Bấm Câu tiếp hoặc nhấn Enter.' : 'Gõ đúng cả câu để tiếp tục.';
+  if (nextHint) nextHint.textContent = typingSessionState.awaitingEnter ? 'Đúng rồi! Bấm Câu tiếp hoặc nhấn phím cách.' : 'Gõ đúng cả câu để tiếp tục.';
 }
 
 export function render() {

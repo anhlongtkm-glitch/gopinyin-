@@ -56,7 +56,7 @@ export function markSentenceCorrect() {
   inp.classList.add('ok');
   inp.readOnly = true;
   domState.$('feedback').className = 'feedback ok';
-  domState.$('feedback').textContent = 'Chính xác! Bấm Câu tiếp hoặc nhấn Enter để sang ' + aiCurrentUnit() + ' tiếp theo.';
+  domState.$('feedback').textContent = 'Chính xác! Bấm Câu tiếp hoặc nhấn phím cách để sang ' + aiCurrentUnit() + ' tiếp theo.';
   if (domState.$('typingFeedbackRow')) domState.$('typingFeedbackRow').hidden = false;
   const eventKey = 'correct:' + typingSessionState.sentStartTs + ':' + completedRowIndex + ':' + typingSessionState.stats.attempts;
   setMascot('typingStudyMascot', 'approve', {animate:true, eventKey});

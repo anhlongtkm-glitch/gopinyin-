@@ -1,4 +1,5 @@
 import { state as typing } from '../../features/typing/session.js';
+import { STUDY_SHORTCUTS } from './shortcuts.js';
 
 // Owns layout only. Existing controls, IDs, handlers, inputs and graders stay intact.
 export function initializeStudyPresentation() {
@@ -14,7 +15,7 @@ export function initializeStudyPresentation() {
     const body=root.querySelector('.studyBody'),foot=root.querySelector('.studyFoot');
     body.before(layout);main.append(body,foot);layout.append(main);
     const aside=document.createElement('aside');aside.className='studyContext';
-    aside.innerHTML='<section class="studyContextCard"><div data-mascot="reading" data-mascot-size="hero" aria-hidden="true"></div><span class="featureEyebrow">BẠN ĐANG LUYỆN</span><h3 data-context-title></h3><p>Luyện từng câu nhỏ. Học chắc hơn mỗi ngày, theo nhịp riêng của bạn.</p><div class="contextProgress"><i></i></div><div class="contextStats"><span><b data-context-count>0 / 0</b> câu đã học</span><span><b data-context-accuracy>—</b> '+(mode==='typing'?'chính xác':'điểm trung bình')+'</span></div></section><div class="studyKeyGuide"><span><kbd>1–3</kbd> Ẩn / hiện câu</span><span><kbd>4</kbd> Nghe mẫu</span><span><kbd>5</kbd> Câu tiếp</span><span><kbd>0</kbd> Đổi Gõ / Nói</span></div>';
+    aside.innerHTML='<section class="studyContextCard"><div data-mascot="reading" data-mascot-size="hero" aria-hidden="true"></div><span class="featureEyebrow">BẠN ĐANG LUYỆN</span><h3 data-context-title></h3><p>Luyện từng câu nhỏ. Học chắc hơn mỗi ngày, theo nhịp riêng của bạn.</p><div class="contextProgress"><i></i></div><div class="contextStats"><span><b data-context-count>0 / 0</b> câu đã học</span><span><b data-context-accuracy>—</b> '+(mode==='typing'?'chính xác':'điểm trung bình')+'</span></div></section><div class="studyKeyGuide">'+STUDY_SHORTCUTS.filter(item=>item.id!=='help'&&(mode==='speaking'||item.id!=='microphone')).map(item=>'<span><kbd>'+(item.display||item.key)+'</kbd> '+item.label+'</span>').join('')+'</div>';
     const guide=root.querySelector('.kbdHint');if(guide){const details=document.createElement('details');details.className='studyMoreKeys';details.innerHTML='<summary>Toàn bộ phím tắt</summary>';details.append(guide);aside.append(details);}layout.append(aside);
     if(mode==='speaking'){
       const result=document.getElementById('pronResult');aside.prepend(result);
