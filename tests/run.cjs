@@ -20,6 +20,7 @@ suites.push('study-mobile-next.cjs');
 suites.push('pinyin-tokenizer.cjs');
 suites.push('pinyin-alignment.cjs');
 suites.push('panda-model.cjs');
+suites.push('panda-campaign.cjs');
 suites.push('panda-game.cjs');
 suites.push('panda-renderer.cjs');
 suites.push('panda-mobile-keyboard.cjs');

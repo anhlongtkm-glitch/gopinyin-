@@ -1,14 +1,15 @@
 // Pure, deterministic rules for Panda Du Hành. No DOM, audio, storage or network.
 import { CONTENT_VERSION, getTopic } from './panda-content.js';
+import { lessonFor, getCampaignTopic, LEVELS } from './panda-campaign.js';
 
-export const RULES_VERSION = 'panda-90s-v2-calm';
+export const RULES_VERSION = 'panda-levels-v4-single-pass';
 export const GAME_DURATION = 90;
 const TICK_RATE = 60;
 const TICK = 1 / TICK_RATE;
 const LANES = [0.25, 0.75];
 export const PACING = Object.freeze({
-  practice: Object.freeze({ intervals:[8, 7.5, 7], lifetimes:[30, 28, 26], minSpawnGap:5, maxActive:2 }),
-  challenge: Object.freeze({ intervals:[7.5, 7, 6.5], lifetimes:[26, 24, 22], minSpawnGap:4.5, maxActive:2 })
+  practice: Object.freeze({ intervals:[4.5, 4, 3.5], lifetimes:[25, 23, 21], minSpawnGap:3, maxActive:2 }),
+  challenge: Object.freeze({ intervals:[4.5, 4, 3.5], lifetimes:[22, 20, 18], minSpawnGap:3, maxActive:2 })
 });
 const SPECIALS = [
   { at: 20, kind: 'gold' }, { at: 45, kind: 'gold' },
@@ -38,7 +39,7 @@ export function comboMultiplier(combo) {
   return combo >= 15 ? 3 : combo >= 10 ? 2 : combo >= 5 ? 1.5 : 1;
 }
 
-function buildSchedule(topic, seed, mode) {
+function buildSchedule(topic, seed, mode, campaign = false) {
   const random = randomGenerator(seed);
   const pace = PACING[mode];
   const timings = [];
@@ -47,6 +48,7 @@ function buildSchedule(topic, seed, mode) {
   }
   timings.push({ at:4, kind:'normal' });
   timings.push(...SPECIALS);
+  if (campaign) timings.push({ at:28, kind:'phrase' }, { at:62, kind:'phrase' });
   timings.sort((a, b) => a.at - b.at || (a.kind === 'normal' ? 1 : -1));
   let bag = [], lastWord = '';
   return timings.map((entry, index) => {
@@ -54,8 +56,12 @@ function buildSchedule(topic, seed, mode) {
     if (!bag.length) {
       // The early wave favors short common entries while keeping the complete topic available later.
       bag = [...topic.words].sort((a, b) => a.pyPlain.length - b.pyPlain.length);
-      if (stage === 1) bag = bag.slice(0, Math.max(10, Math.ceil(bag.length * 0.65)));
-      for (let i = bag.length - 1; i > 0; i--) {
+      if (stage === 1 && !campaign) bag = bag.slice(0, Math.max(10, Math.ceil(bag.length * 0.65)));
+      if (campaign) {
+        // The runtime places unlearned words first; complete the full bag before repeating.
+        bag = [...topic.words];
+      }
+      for (let i = campaign ? 0 : bag.length - 1; i > 0; i--) {
         const j = Math.floor(random() * (i + 1));
         [bag[i], bag[j]] = [bag[j], bag[i]];
       }
@@ -70,28 +76,52 @@ function buildSchedule(topic, seed, mode) {
   });
 }
 
-export function createGame({ topicId = 'family', mode = 'practice', seed = 'panda-default', showPinyin = false, reviewWordIds = [] } = {}) {
-  const topic = getTopic(topicId);
+function learningSchedule(words, timeScale) {
+  const schedule = [];
+  let at = 0, id = 0;
+  words.forEach((src, index) => {
+    const stage = Math.min(2, Math.floor(index / Math.max(1, words.length) * 3));
+    schedule.push({ at, src, id:++id, lane:index % 2, kind:'normal', lifeSeconds:PACING.practice.lifetimes[stage] * timeScale + Math.min(14, src.pyPlain.length) * .35 });
+    at += PACING.practice.intervals[stage];
+    if ((index + 1) % 10 === 0 && index < words.length - 1) {
+      schedule.push({ at, src, id:++id, lane:(index + 1) % 2, kind:'phrase', lifeSeconds:30 });
+      at += 3;
+    }
+  });
+  return schedule;
+}
+
+export function createGame({ topicId = 'family', mode = 'practice', seed = 'panda-default', showPinyin = false, reviewWordIds = [], campaign = false, knownWordIds = [], processedWordIds = [] } = {}) {
+  const topic = campaign ? getCampaignTopic(topicId) : getTopic(topicId);
+  const lesson = lessonFor(topic.id);
+  const available = topic.words;
   const requestedReview = new Set(Array.isArray(reviewWordIds) ? reviewWordIds : []);
-  const reviewPool = topic.words.filter(word => requestedReview.has(word.id));
+  const reviewPool = available.filter(word => requestedReview.has(word.id));
   const isReview = reviewPool.length > 0;
-  const pool = isReview ? reviewPool : topic.words;
+  const known = new Set(knownWordIds);
+  const valid = new Set(available.map(word => word.id));
+  const processed = new Set([...processedWordIds, ...knownWordIds].filter(id => valid.has(id)));
+  const pool = isReview ? reviewPool : campaign ? available.filter(word => !processed.has(word.id)) : [...available];
+  const bonusSentences = campaign ? LEVELS.filter(level => level.id <= lesson.level.id).flatMap(level => level.topics.map(id => lessonFor(id).boss)) : [];
+  if (campaign) mode = 'practice';
   if (isReview) mode = 'practice';
   const normalizedSeed = seedNumber(`${topic.id}:${seed}`);
+  const schedule = campaign ? learningSchedule(pool, lesson.level.timeScale) : buildSchedule({ ...topic, words:pool }, normalizedSeed, mode === 'challenge' ? 'challenge' : 'practice');
   return {
-    topicId: topic.id, topic, mode: mode === 'challenge' ? 'challenge' : 'practice',
+    topicId: topic.id, topic, campaign, levelId:campaign ? lesson.level.id : null, mode: mode === 'challenge' ? 'challenge' : 'practice',
     isReview, reviewWordIds: isReview ? reviewPool.map(word => word.id) : [], completedWordIds: [],
     seed: String(seed), rulesVersion: RULES_VERSION, contentVersion: CONTENT_VERSION,
     running: false, paused: false, suspended: false, resumeReady: false, over: false,
-    elapsed: 0, duration: GAME_DURATION, stage: 1, stageWords: 0, tick: 0, timeCarry: 0,
-    score: 0, wordScore: 0, goldScore: 0, missionScore: 0,
+    elapsed: 0, duration:campaign ? (schedule.at(-1)?.at || 0) + 60 : GAME_DURATION, stage: 1, stageWords: 0, tick: 0, timeCarry: 0,
+    score: 0, wordScore: 0, goldScore: 0, missionScore: 0, phraseScore:0, phrasesDone:0,
+    knownWordIds:[...known], settledWordIds:[...processed], spawnedWordIds:[], usedSentenceKeys:[], bonusSentences, totalWords:available.length,
     lives: 3, maxLives: 3, combo: 0, bestCombo: 0, wordsDone: 0,
     showPinyin: mode !== 'challenge' && !!showPinyin, usedHints: false, hintsUsed: 0,
     correctKeys: 0, wrongKeys: 0, missed: 0, cleanWords: 0, accuracy: null,
     missionDone: 0, missionTotal: 3, missionComplete: false, goldDone: 0,
     focusCharges: 0, focusLeft: 0, focusProgress: 0,
     pool: [...pool], poolIdx: 0, items: [], locked: null, buffer: '', skipped: new Set(),
-    schedule: buildSchedule({ ...topic, words:pool }, normalizedSeed, mode === 'challenge' ? 'challenge' : 'practice'), scheduleCursor: 0, pending: [], lastSpawnAt:-Infinity,
+    schedule, scheduleCursor: 0, scheduleOffset:0, refillAt:null, pending: [], lastSpawnAt:-Infinity,
     events: [], review: [], finishReason: '', lastT: 0, rafId: 0,
     // Retained only for callers that inspect the public game state.
     particles: [], bullets: [], floats: [], flashRed: 0, shipAngle: 0
@@ -105,6 +135,7 @@ function event(game, type, item, extra = {}) {
 }
 
 function reviewWord(game, item, reason) {
+  if (item.kind === 'phrase') return;
   let row = game.review.find(word => word.id === item.src.id);
   if (!row) {
     row = { ...item.src, reasons: [], errors: 0, missed: 0, usedHint: false };
@@ -117,6 +148,7 @@ function reviewWord(game, item, reason) {
 }
 
 function markHint(game, item) {
+  if (game.campaign) return;
   if (item.usedHint || !active(item)) return;
   item.usedHint = true;
   game.usedHints = true;
@@ -144,19 +176,35 @@ function finish(game, reason) {
 }
 
 function spawnDue(game) {
-  while (game.scheduleCursor < game.schedule.length && game.schedule[game.scheduleCursor].at <= game.elapsed + 1e-8) {
+  const liveCount = game.items.filter(active).length;
+  const refill = game.campaign && liveCount === 0 && game.refillAt !== null;
+  if (refill) {
+    if (game.elapsed + 1e-8 < game.refillAt) return;
+    const next = game.schedule[game.scheduleCursor];
+    if (!game.pending.length && next) game.scheduleOffset = Math.max(game.scheduleOffset, next.at - game.elapsed);
+  }
+  const scheduleTime = game.elapsed + game.scheduleOffset;
+  while (game.scheduleCursor < game.schedule.length && game.schedule[game.scheduleCursor].at <= scheduleTime + 1e-8) {
     game.pending.push(game.schedule[game.scheduleCursor++]);
   }
   const pace = PACING[game.mode];
-  game.pending = game.pending.filter(entry => entry.kind !== 'normal' || game.elapsed - entry.at <= 10);
-  if (game.items.filter(active).length >= pace.maxActive || game.elapsed - game.lastSpawnAt + 1e-8 < pace.minSpawnGap) return;
+  game.pending = game.pending.filter(entry => game.campaign ? entry.kind !== 'phrase' || scheduleTime - entry.at <= 10 : entry.kind !== 'normal' || game.elapsed - entry.at <= 10);
+  if (liveCount >= pace.maxActive || !refill && game.elapsed - game.lastSpawnAt + 1e-8 < pace.minSpawnGap) return;
   // Prefer scheduled rewards/missions; stale ordinary words must not form a burst after a miss.
   game.pending.sort((a, b) => Number(a.kind === 'normal') - Number(b.kind === 'normal') || a.at - b.at);
   for (let p = 0; p < game.pending.length;) {
     const next = game.pending[p];
+    if (next.kind === 'phrase') {
+      const known = new Set([...game.knownWordIds, ...game.completedWordIds]);
+      const eligible = game.bonusSentences.filter(boss => boss.tiles.length <= 6 && boss.tiles.every(tile => known.has(tile.id)) && !game.usedSentenceKeys.includes(boss.tiles.map(tile => tile.id).join('/')));
+      if (!eligible.length) { game.pending.splice(p, 1); continue; }
+      const boss = eligible[(next.id - 1) % eligible.length];
+      next.src = { id:'phrase:' + boss.tiles.map(tile => tile.id).join('/'), word:boss.tiles.map(tile => tile.word).join(''), py:boss.tiles.map(tile => tile.py).join(' '), pyPlain:boss.tiles.map(tile => tile.pyPlain).join(''), vi:boss.vi };
+      next.lifeSeconds = Math.max(next.lifeSeconds, 22 + next.src.pyPlain.length * .4);
+    }
     // Do not offer a word if there is no reasonable reading/typing time left.
     const needed = 4 + next.src.pyPlain.length * 0.45;
-    if (game.duration - game.elapsed < needed) {
+    if (!game.campaign && game.duration - game.elapsed < needed) {
       game.pending.splice(p, 1);
       continue;
     }
@@ -169,8 +217,11 @@ function spawnDue(game) {
       typed: '', hadError: false, usedHint: false
     };
     game.items.push(item);
+    if (item.kind === 'phrase') game.usedSentenceKeys.push(item.src.id.slice('phrase:'.length));
+    if (item.kind !== 'phrase') game.spawnedWordIds.push(item.src.id);
     game.poolIdx++;
     game.lastSpawnAt = game.elapsed;
+    game.refillAt = null;
     if (game.showPinyin) markHint(game, item);
     game.pending.splice(p, 1);
     return;
@@ -184,6 +235,7 @@ export function beginGame(game) {
   game.suspended = false;
   game.resumeReady = false;
   game.lastT = 0;
+  if (game.campaign && !game.pool.length) { finish(game, 'level'); return true; }
   spawnDue(game);
   return true;
 }
@@ -191,6 +243,22 @@ export function beginGame(game) {
 function miss(game, item) {
   if (!active(item) || game.over) return;
   item.caught = true;
+  if (item.kind === 'phrase') {
+    if (game.locked === item) { game.locked = null; game.buffer = ''; }
+    game.skipped.delete(item.id);
+    event(game, 'phrase-miss', item);
+    return;
+  }
+  if (game.campaign) {
+    game.missed++;
+    reviewWord(game, item, 'missed');
+    if (game.locked === item) { game.locked = null; game.buffer = ''; }
+    game.skipped.delete(item.id);
+    if (!game.settledWordIds.includes(item.src.id)) game.settledWordIds.push(item.src.id);
+    event(game, 'miss', item, { lives:game.lives });
+    if (game.pool.every(word => game.settledWordIds.includes(word.id))) finish(game, 'level');
+    return;
+  }
   game.lives = Math.max(0, game.lives - 1);
   game.missed++;
   game.combo = 0;
@@ -205,11 +273,11 @@ function miss(game, item) {
 function fixedUpdate(game) {
   const factor = game.focusLeft > 0 ? 0.45 : 1;
   game.tick++;
-  game.elapsed = Math.min(game.duration, game.tick / TICK_RATE);
+  game.elapsed = game.campaign ? game.tick / TICK_RATE : Math.min(game.duration, game.tick / TICK_RATE);
   game.focusLeft = Math.max(0, game.focusLeft - TICK);
   const stage = Math.min(3, Math.floor(game.elapsed / 30) + 1);
-  if (stage !== game.stage) { game.stage = stage; event(game, 'stage', null, { stage }); }
-  if (game.elapsed >= game.duration) { finish(game, 'time'); return; }
+  if (stage !== game.stage) { game.stage = stage; if (!game.campaign) event(game, 'stage', null, { stage }); }
+  if (!game.campaign && game.elapsed >= game.duration) { finish(game, 'time'); return; }
   for (const item of game.items) {
     if (item.dying) { item.dieT += TICK; continue; }
     if (!active(item)) continue;
@@ -253,6 +321,7 @@ function complete(game, item) {
   const wordPoints = Math.round(base * multiplier);
   let bonus = 0;
   game.wordScore += wordPoints;
+  if (item.kind === 'phrase') { game.phrasesDone++; game.phraseScore += 400; bonus += 400; }
   if (item.kind === 'gold' && clean) { game.goldDone++; game.goldScore += 200; bonus += 200; }
   if (item.kind === 'mission') {
     game.missionDone++;
@@ -264,7 +333,8 @@ function complete(game, item) {
   }
   game.score += wordPoints + bonus;
   game.wordsDone++;
-  if (!game.completedWordIds.includes(item.src.id)) game.completedWordIds.push(item.src.id);
+  if (item.kind !== 'phrase' && !game.completedWordIds.includes(item.src.id)) game.completedWordIds.push(item.src.id);
+  if (item.kind !== 'phrase' && !game.settledWordIds.includes(item.src.id)) game.settledWordIds.push(item.src.id);
   game.stageWords++;
   if (clean) {
     game.combo++;
@@ -281,7 +351,12 @@ function complete(game, item) {
   item.dieT = 0;
   if (game.locked === item) { game.locked = null; game.buffer = ''; }
   game.skipped.clear();
-  event(game, 'complete', item, { points: wordPoints + bonus, wordPoints, bonus, multiplier, clean, kind: item.kind });
+  event(game, 'complete', item, {
+    points: wordPoints + bonus, wordPoints, bonus, multiplier, clean, kind: item.kind,
+    vi:item.src.vi, py:item.src.py, missionIndex:item.missionIndex
+  });
+  if (game.campaign && game.pool.every(word => game.settledWordIds.includes(word.id))) finish(game, 'level');
+  else if (game.campaign && !game.items.some(active)) game.refillAt = game.elapsed + .35;
 }
 
 export function typeGameChar(game, raw) {

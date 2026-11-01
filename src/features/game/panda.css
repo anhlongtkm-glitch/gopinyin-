@@ -12,6 +12,8 @@
   box-shadow:0 18px 48px rgba(3,17,27,.16);
   font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
+
+/* A single learning flow: level, falling words and occasional application sentences. */
 #gameCard.pdGame.hidden{display:none}
 .pdGame button,.pdGame input,.pdGame select{font:inherit}
 .pdGame button{cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -230,6 +232,23 @@ body.panda-active .vkbd .vkKey:disabled{opacity:.5;cursor:default}
 .pdTopicSearch{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px}.pdTopicSearch label{font-size:12px;color:var(--pd-muted)}
 .pdTopicSearch input{width:240px;max-width:55%;min-height:44px;border:1px solid #34465A;border-radius:10px;background:#0D1725;color:var(--pd-text);padding:10px 13px;font-size:14px}.pdTopicSearch input::placeholder{color:var(--pd-subtle)}
 .pdTopicGrid{position:relative;max-height:260px;overflow:auto;overscroll-behavior:contain;padding:3px;scroll-padding:6px;scrollbar-width:thin;scrollbar-color:#34465A transparent}
+.pdTopicGrid:has(.pdLevel){grid-template-columns:minmax(0,1fr)}
+.pdLevel h3{margin:0 0 5px;font-size:16px;color:var(--pd-text)}
+.pdLevel>.pdHintLabel{margin:0 0 10px;font-size:12px}
+.pdLevelTopics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pdLevel+.pdLevel{padding-top:16px;border-top:1px solid var(--pd-line)}
+.pdTopicCard:disabled{opacity:.65;cursor:not-allowed;border-style:dashed}
+.pdTopicCard:disabled:hover{background:var(--pd-surface)}
+.pdLessonBrief{padding:14px;border:1px solid var(--pd-line);border-radius:12px;margin-bottom:16px;color:var(--pd-text);font-size:14px;line-height:1.6}
+.pdLessonBrief p{margin:4px 0 8px}.pdLessonBrief summary{cursor:pointer;min-height:44px;display:flex;align-items:center;text-decoration:underline}
+.pdLessonWords{display:grid;gap:8px}.pdLessonWords span{overflow-wrap:anywhere}
+.pdBossAnswer,.pdBossTiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0}
+.pdBossAnswer{min-height:76px;align-items:center;padding:12px;border:1px dashed var(--pd-line);border-radius:12px}
+.pdBossTile{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:64px;min-height:48px;font-size:20px}
+.pdBossTile small{font-size:13px}.pdBossSentence{font-size:clamp(22px,4vw,32px);line-height:1.7;overflow-wrap:anywhere;color:var(--pd-text)}
+.pdBossTile:disabled{opacity:.4;cursor:default}
+.pdLevelTopics .pdTopicMeta{font-size:12px}
+@media(max-width:600px){.pdLevelTopics{grid-template-columns:minmax(0,1fr);gap:8px}.pdLevelTopics .pdTopicCard{min-height:72px}.pdLessonBrief{font-size:13px}.pdBossTile{min-width:48px;font-size:18px}}
 .pdModeSwitch{background:#0D1725}.pdModeSwitch button.is-active,.pdModeSwitch button[aria-pressed=true]{background:#183435;border-color:#69E5C255;box-shadow:none}
 .pdButton{background:#192B3C;border-color:var(--pd-line)}.pdButton--primary{background:#087866;border:1px solid #459B89;box-shadow:none}.pdButton--primary:hover{background:#096E5E}
 .pdButton--quiet{background:transparent;border-color:transparent}
@@ -296,4 +315,41 @@ body.vk-open #gameCard.pd-keyboard-fit .pdHud{padding-top:max(6px,env(safe-area-
  body.vk-open #gameCard .pdSubHud #pdTyped::after{height:12px}
  .pdPanel--options .pdPanelActions .pdButton{flex:1 1 100px;min-width:0}
  .pdPanel--options .pdPanelActions [data-pd="close-options"]{flex-basis:100%;min-height:48px}
+}
+
+/* Simplified learning screen: one main action, one scroll area, no mode selector. */
+.pdPlayer img{transform:translate(var(--pd-recoil-x,0px),var(--pd-recoil-y,0px)) rotate(var(--pd-ship-angle,0deg))}
+.pdSubHud{display:none}
+.is-preparing .pdHudNumbers,.is-preparing .pdTimeTrack{display:none}
+.is-preparing .pdHud{min-height:66px}
+.pdHud{border-bottom:0}.pdTimeTrack{height:3px}.pdHudCell small{display:block;font-size:10px;letter-spacing:.04em}.pdHudCell b{font-size:22px}
+.pdPanel--ready{width:min(440px,100%);padding:36px 30px}.pdPanel--ready .pdPanelHeading{font-size:36px}.pdPanel--ready .pdLead{font-size:15px;line-height:1.8;margin:16px auto 22px}
+.pdPanel--ready .pdPanelActions{flex-direction:column;align-items:stretch;gap:8px}.pdPanel--ready .pdButton--primary{min-height:52px;font-size:17px}.pdPanel--ready .pdButton--quiet{min-height:44px}
+.pdSimpleProgress{display:grid;gap:9px;margin:0 0 26px;text-align:left;font-size:13px;color:var(--pd-muted)}
+.pdSimpleProgress progress{width:100%;height:6px;border:0;border-radius:6px;overflow:hidden;background:var(--pd-line);accent-color:var(--pd-energy)}
+.pdSimpleProgress progress::-webkit-progress-bar{background:var(--pd-line)}.pdSimpleProgress progress::-webkit-progress-value{background:var(--pd-energy)}
+.pdPanel--levels{width:min(640px,100%)}.pdLevelList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:22px 0}
+.pdLevelChoice{display:flex;align-items:center;gap:14px;min-height:76px;padding:14px;text-align:left;border:1px solid var(--pd-line);border-radius:12px;background:var(--pd-surface);color:var(--pd-text)}
+.pdLevelChoice>span:last-child{display:grid;gap:6px}.pdLevelChoice small{font-size:12px;color:var(--pd-muted)}.pdLevelNumber{font-size:20px;font-variant-numeric:tabular-nums;min-width:28px;color:var(--pd-energy)}
+.pdLevelChoice:disabled{opacity:.55}.pdLevelChoice:not(:disabled):hover{border-color:var(--pd-energy);background:var(--pd-surface-raised)}
+.pdResultScore{font-size:40px;color:var(--pd-energy);margin:18px 0}.pdResultScore small{display:block;font-size:13px;color:var(--pd-muted)}
+.pdMissedWords{text-align:left;border-top:1px solid var(--pd-line);margin-top:20px;padding-top:12px}.pdMissedWords summary{cursor:pointer;min-height:44px;font-size:14px}.pdMissedWords p{font-size:15px;line-height:1.7;margin:12px 0}.pdMissedWords p span{display:block;color:var(--pd-muted);font-size:13px}
+.pdFlightBar{justify-content:space-between;min-height:70px}.pdFlightHelp{flex:1;max-width:440px}.pdFlightHelp>span:last-child{font-size:12px}
+@media(max-width:600px){
+ .pdPanel--ready{padding:30px 22px}.pdPanel--ready .pdPanelHeading{font-size:32px}.pdPanel--ready .pdLead{font-size:14px}.pdLevelList{grid-template-columns:minmax(0,1fr)}
+ #gameCard .pdFlightBar,body.vk-open #gameCard .pdFlightBar{display:flex;align-items:center;gap:8px;min-height:62px;padding:8px 10px}
+ #gameCard .pdFlightTools{display:contents}#gameCard .pdFlightTools #gaPyBtn,body.vk-open #gameCard .pdFlightTools #gaPyBtn{flex:1;max-width:140px;min-width:80px;min-height:44px;padding:8px;font-size:12px}
+ #gameCard .pdFlightTools #gaKbdBtn,#gameCard .pdFlightTools #gaOptionsBtn{display:flex;width:44px;min-width:44px;min-height:44px}
+ #gameCard .pdFlightBar .pdFlightHelp{display:flex;flex:1;min-width:36px;min-height:44px;max-width:none;padding:6px 8px}#gameCard .pdFlightHelp>span:last-child{display:none}
+ body.vk-open #gameCard .pdFlightBar .pdFlightHelp{display:none}body.vk-open #gameCard .pdSubHud{display:flex;min-height:28px;padding:4px 12px}
+ body.vk-open #gameCard .pdSubHud .pdFlightHelp{max-width:none}body.vk-open #gameCard .pdSubHud #pdTyped{max-width:100%;font-size:16px}
+ .pdHudCell{min-width:0;padding:0 12px}.pdHudCell small{font-size:9px}.pdHudCell b{font-size:20px}.pdHudNumbers{justify-content:space-between}.pdPinyinSymbol{display:none}
+}
+@media(max-width:600px) and (max-height:700px){
+ .pdPanel--ready{padding:20px}.pdPanel--ready .pdPanelHeading{font-size:28px}.pdPanel--ready .pdLead{font-size:13px;line-height:1.6;margin:10px auto 14px}
+ .pdPanel--ready .pdSimpleProgress{gap:6px;margin-bottom:14px}.pdPanel--ready .pdPanelActions{margin-top:12px;gap:4px}.pdPanel--ready .pdButton--primary{min-height:48px}.pdPanel--ready .pdButton--quiet{min-height:44px}
+}
+@media(max-width:900px){
+ #gameCard.pdGame.is-preparing{height:calc(100dvh - 174px);min-height:0}
+ #gameCard.pdGame.is-preparing .pdStage{min-height:0}
 }

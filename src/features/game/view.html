@@ -2,17 +2,16 @@
   <header class="pdHud">
     <div class="pdBrandGroup">
       <button id="gaCloseBtn" class="pdIconButton" type="button" aria-label="Về sảnh game" title="Về sảnh game"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h12"/></svg></button>
-      <div class="pdBrand"><span>Panda <b>Du Hành</b></span><small id="pdTopicLabel">Hành tinh Gia đình</small></div>
+      <div class="pdBrand"><span>Panda <b>Du Hành</b></span><small id="pdTopicLabel">Level 1 · Gia đình</small></div>
     </div>
     <div class="pdHudNumbers">
-      <div class="pdHudCell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M9 2h6m-3 4v7l3 2"/></svg><span><small>THỜI GIAN</small><b id="pdClock">01:30</b></span></div>
+      <div class="pdHudCell"><span><small>TIẾN ĐỘ</small><b id="pdClock">0/57</b></span></div>
       <div class="pdHudCell pdHudCell--score"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.4 7 .9-5.1 5 .9 7-5.8-3.4-6.2 3.4 1.2-7L2 9.3l7-.9z"/></svg><span><small>ĐIỂM</small><b id="gaScoreNum">0</b></span></div>
-      <div class="pdHudCell pdHudCell--shield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6z"/><path d="M12 6v11"/></svg><span><small>LÁ CHẮN</small><b id="gaHearts">3/3</b></span></div>
       <button id="gaPauseBtn" class="pdIconButton" type="button" aria-label="Tạm dừng ván" title="Space: tạm dừng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button>
     </div>
     <div class="pdTimeTrack" aria-hidden="true"><span id="pdTimeFill"></span></div>
   </header>
-  <div class="pdSubHud"><span class="pdRunKind" id="pdRunKind">Luyện chủ đề</span><span class="pdCombo" id="pdCombo">Combo ×1</span><span class="pdComboHint" id="pdComboHint">5 từ sạch để lên ×1,5</span><span id="pdMission" class="pdMission"></span></div>
+  <div class="pdSubHud"></div>
   <div class="gaStage pdStage" id="gaStage" tabindex="-1" aria-label="Sân chơi Panda Du Hành">
     <canvas id="gaCanvas" class="gaCanvas" aria-label="Mục tiêu chữ Hán đang rơi"></canvas>
     <div class="gaPlayer pdPlayer" id="gaPlayer" aria-hidden="true"><img id="pdShipImage" src="assets/game/panda-du-hanh/panda-ship.webp" width="512" height="444" alt="" decoding="async" draggable="false"></div>
@@ -20,7 +19,6 @@
     <div class="gaOverlay pdOverlay" id="gaOverlay"></div>
   </div>
   <footer class="pdFlightBar">
-    <button id="gaFocusBtn" class="pdFlightButton pdFocusButton" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 1v5m0 12v5M1 12h5m12 0h5"/></svg><span>Tập trung<small id="pdFocusLabel">Cần 5 từ sạch</small></span><kbd>Shift</kbd></button>
     <div class="pdFlightHelp" id="pdInputDock"><span id="pdTyped" aria-label="Pinyin đang gõ">…</span><span>Gõ Pinyin để bắn<small>Backspace đổi mục tiêu</small></span></div>
     <div class="pdFlightTools">
       <button id="gaPyBtn" class="pdFlightButton" type="button" aria-pressed="false" title="Enter: hiện hoặc ẩn Pinyin"><span class="pdPinyinSymbol" aria-hidden="true">拼</span><span id="pdPinyinLabel">Hiện Pinyin</span><kbd>Enter</kbd></button>

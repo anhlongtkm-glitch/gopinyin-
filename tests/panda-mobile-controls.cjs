@@ -16,17 +16,13 @@ const output=path.resolve('.cache/panda-mobile-controls'),observations=[];
   const state=()=>page.evaluate(()=>{const g=window.__game._state;return {score:g.score,buffer:g.buffer,lives:g.lives,elapsed:g.elapsed};});
   await page.goto(process.env.TEST_URL||'http://localhost:8080/');await register(page,'Mobile controls');
   await page.tap('[data-mobile-view="games"]');await page.tap('[data-view="game"]');
-  await tap('[data-mode="practice"]');
-  await page.locator('#pdReadyPinyin').uncheck();
   await tap('#gaStartBtn');await page.waitForFunction(()=>window.__game._state.running);
   await page.locator('#vkbd').waitFor({state:'visible'});
-  assert(await page.locator('#gaFocusBtn').isDisabled());
-  assert.match(await page.locator('#gaFocusBtn').getAttribute('aria-label'),/Cần 5/);
   for(const size of [{width:320,height:568},{width:360,height:640},{width:390,height:844},{width:412,height:915}]){
    await page.setViewportSize(size);await page.waitForTimeout(150);
    const bounds=await page.evaluate(()=>{
     const keyboard=document.querySelector('#vkbd').getBoundingClientRect(),stage=document.querySelector('#gaStage').getBoundingClientRect();
-    const controls=['gaFocusBtn','gaPyBtn','gaKbdBtn','gaOptionsBtn','gaPauseBtn'].map(id=>{
+    const controls=['gaPyBtn','gaKbdBtn','gaOptionsBtn','gaPauseBtn'].map(id=>{
      const e=document.getElementById(id),r=e.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
      return {id,width:r.width,height:r.height,top:r.top,bottom:r.bottom,hit:hit===e||e.contains(hit)};
     });return {width:innerWidth,height:innerHeight,stage:stage.height,keyboardTop:keyboard.top,controls,scrollWidth:document.documentElement.scrollWidth};
@@ -36,7 +32,7 @@ const output=path.resolve('.cache/panda-mobile-controls'),observations=[];
    assert(bounds.controls.every(c=>c.hit&&c.width>=44&&c.height>=44&&c.top>=0&&c.bottom<=bounds.keyboardTop),JSON.stringify(bounds));
    await page.screenshot({path:path.join(output,size.width+'x'+size.height+'-controls.png'),scale:'css'});
   }
-  console.log('  PASS all five touch controls remain visible and unobscured at 320, 360, 390 and 412px widths');
+  console.log('  PASS all four simple touch controls remain visible and unobscured at 320, 360, 390 and 412px widths');
   await page.setViewportSize({width:320,height:568});
   async function target(){
    for(let tick=0;tick<5;tick++){
@@ -51,16 +47,8 @@ const output=path.resolve('.cache/panda-mobile-controls'),observations=[];
    await page.waitForFunction(n=>window.__game._state.wordsDone===n,word);
   }
   assert.equal(await page.evaluate(()=>window.__game._state.cleanWords),5);
-  assert.equal(await page.evaluate(()=>window.__game._state.focusCharges),1);
-  await page.waitForFunction(()=>!document.getElementById('gaFocusBtn').disabled);
-  await page.tap('#gaFocusBtn');
-  assert.equal(await page.evaluate(()=>window.__game._state.focusCharges),0);
-  assert(await page.evaluate(()=>window.__game._state.focusLeft>0&&window.__game._state.focusLeft<=4));
-  assert(await page.locator('#gaFocusBtn').isDisabled());
-  assert.equal(await page.locator('#gaFocusBtn').getAttribute('aria-pressed'),'true');
-  assert.match(await page.locator('#pdFeedback').innerText(),/Tập trung/);
-  await page.screenshot({path:path.join(output,'focus-active.png'),scale:'css'});
-  console.log('  PASS five clean words typed through touch earn one Focus charge and a single tap activates it once');
+  assert.equal(await page.evaluate(()=>new Set(window.__game._state.spawnedWordIds).size),await page.evaluate(()=>window.__game._state.spawnedWordIds.length));
+  console.log('  PASS touch typing completes five different words without repeating targets');
 
   const py=await target();await page.tap('#vkbd [data-vk="'+py[0]+'"]');
   const before=await state();
@@ -109,15 +97,15 @@ const output=path.resolve('.cache/panda-mobile-controls'),observations=[];
   await page.locator('#gamesCard').waitFor({state:'visible'});assert(await page.locator('#vkbd').isHidden());
   console.log('  PASS closing options after rotation respects the viewport pause; leaving from options dismisses keyboard and flight');
 
-  await page.tap('[data-view="game"]');await tap('#gaNewBtn');await tap('[data-mode="challenge"]');await tap('#gaStartBtn');
+  await page.tap('[data-view="game"]');await tap('[data-pd="resume-flight"]');
   await page.waitForFunction(()=>window.__game._state.running);
   await page.locator('#vkbd').waitFor({state:'visible'});await page.tap('#gaOptionsBtn');
   assert.equal(await page.evaluate(()=>window.__game._state.mode),'practice');
-  assert.equal(await page.evaluate(()=>window.__game._state.interruptedChallenge),true);
+  assert.equal(await page.locator('[data-mode]').count(),0);
   await tap('[data-pd="close-options"]');
   assert.equal(await page.evaluate(()=>window.__game._state.paused),false);
   assert.deepEqual(errors,[]);
-  console.log('  PASS opening options during a challenge follows the existing pause rule and resumes as practice');
+  console.log('  PASS returning to the simple learning flow preserves play without mode selection');
   await page.evaluate(()=>window.showView('games'));
  }finally{await browser.close();fs.writeFileSync(path.join(output,'observations.json'),JSON.stringify(observations,null,2));}
 })().catch(error=>{console.error(error);process.exitCode=1});

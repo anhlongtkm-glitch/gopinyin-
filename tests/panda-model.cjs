@@ -49,7 +49,7 @@ const esbuild = require('esbuild');
     assert.equal(plainPinyin('lu:4 cha2'), 'lvcha');
   });
 
-  check('calm pacing provides more reading time, caps active words at two, and never dumps a backlog', () => {
+  check('faster pacing caps active words at two and never dumps a backlog', () => {
     for (const mode of ['practice','challenge']) {
       const game = start({ mode }); game.lives = 100;
       const born = [];
@@ -60,9 +60,23 @@ const esbuild = require('esbuild');
         if (game.poolIdx !== before) born.push(game.elapsed);
       }
       for (let i = 1; i < born.length; i++) assert(born[i] - born[i - 1] >= PACING[mode].minSpawnGap - 1e-6);
-      assert(game.schedule.every(entry => entry.lifeSeconds >= (mode === 'practice' ? 26 : 22)));
-      assert(game.schedule.filter(entry => entry.kind === 'normal').length <= 15);
+      assert(game.schedule.every(entry => entry.lifeSeconds >= Math.min(...PACING[mode].lifetimes)));
+      assert.equal(game.schedule.filter(entry => entry.kind === 'normal').length, 24);
+      assert.deepEqual(PACING[mode].intervals, [4.5, 4, 3.5]);
+      assert.equal(PACING[mode].minSpawnGap, 3);
     }
+  });
+
+  check('campaign words appear faster and reward phrases leave a shorter gap', () => {
+    const game = createGame({ campaign: true });
+    const words = game.schedule.filter(entry => entry.kind === 'normal');
+    assert.equal(words[1].at - words[0].at, 4.5);
+    assert.equal(words[21].at - words[20].at, 4);
+    assert.equal(words[41].at - words[40].at, 3.5);
+    const phraseIndex = game.schedule.findIndex(entry => entry.kind === 'phrase');
+    const phrase = game.schedule[phraseIndex];
+    const nextWord = game.schedule.slice(phraseIndex + 1).find(entry => entry.kind === 'normal');
+    assert(Math.abs(nextWord.at - phrase.at - 3) < 1e-9);
   });
 
   check('the sixth clean word receives the new capped combo multiplier, not the fifth', () => {
@@ -78,6 +92,15 @@ const esbuild = require('esbuild');
     typeWord(game, word(game));
     assert.equal(game.score - before, 420);
     assert.equal(game.bestCombo, 16);
+  });
+
+  check('completion events carry all vocabulary fields for the floating card', () => {
+    const game = start(); const item = word(game, { text:'爸爸' }); item.src.py = 'bàba';
+    typeWord(game,item);
+    const completion = game.events.find(entry=>entry.type==='complete');
+    assert.equal(completion.word,'爸爸');
+    assert.equal(completion.vi,'Từ thử');
+    assert.equal(completion.py,'bàba');
   });
 
   check('wrong input preserves typed progress, removes combo and attributes the actual word to review', () => {
