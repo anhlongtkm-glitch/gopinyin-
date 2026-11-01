@@ -22,7 +22,7 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
       return respond(route,response);
     });
     await page.evaluate(()=>{window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
-    await page.selectOption('#aiKind','word'); await page.fill('#aiPrompt','Trà ban đầu');
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind','word'); if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','Trà ban đầu');
     await page.click('#aiStartBtn'); await page.locator('#appCard').waitFor({state:'visible'});
     const id=await page.evaluate(()=>window.activeDataset.id);
     await page.evaluate(()=>{window.autoSound=false;window.readOnType=false;});
@@ -186,6 +186,12 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
         await page.keyboard.press('Escape');
         await page.evaluate(()=>window.scrollTo(0,0));
         await page.screenshot({path:'.cache/test-run/ai-home-'+width+'-'+theme+'.png',fullPage:true});
+        await page.click('#aiCreateBtn');
+        assert(await page.locator('#aiSetsWrap').isHidden());
+        assert(await page.locator('#aiPrompt').isVisible());
+        assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await page.screenshot({path:'.cache/test-run/ai-create-'+width+'-'+theme+'.png',fullPage:true});
+        await page.click('#aiSavedBtn');
       }
     }
     assert.deepEqual(errors,[]);

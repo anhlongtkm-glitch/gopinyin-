@@ -36,7 +36,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
       await new Promise(resolve => { pending.push({ route, finish: async (status, text) => { await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify({ text }) }); resolve(); } }); });
     });
     await page.evaluate(() => { window.APP_CONFIG.AI_PROXY_URL = '/__race_ai__'; });
-    await page.evaluate(() => window.showView('ai')); await page.fill('#aiPrompt', 'giao tiếp'); await page.locator('.aiDetails').evaluate(el => el.open = true); await page.selectOption('#aiBatch', '3');
+    await page.evaluate(() => window.showView('ai')); if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt', 'giao tiếp'); await page.locator('.aiDetails').evaluate(el => el.open = true); await page.selectOption('#aiBatch', '3');
     await page.evaluate(() => { window.__oldAi = window.aiStartStudy(); });
     for (let i = 0; i < 100 && pending.length < 1; i++) await page.waitForTimeout(20);
     assert.equal(pending.length, 1);

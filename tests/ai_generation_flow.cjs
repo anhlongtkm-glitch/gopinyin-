@@ -29,16 +29,16 @@ const generated=[
       await route.fulfill({status:responseStatus,contentType:'application/json',body:JSON.stringify({text:JSON.stringify(responseItems),error:responseStatus===401?'expired session':undefined})});
     });
     await page.evaluate(()=>{window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
-    await page.click('.aiDetails summary');
+    await page.click('#aiCreateBtn'); await page.click('.aiDetails summary');
     assert.equal(await page.locator('#aiVerify').count(),0);
     assert(!/Soát lại nghĩa/.test(await page.locator('#aiCard').textContent()));
     assert.equal(await page.evaluate(()=>typeof window.aiVerifyMeanings),'undefined');
     console.log('  PASS meaning verification controls and API helpers are removed even with an old opt-in preference');
 
-    await page.selectOption('#aiKind','word');
-    await page.fill('#aiPrompt','từ vựng ngành bao bì');
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind','word');
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','từ vựng ngành bao bì');
     accountRequests.length=0;
-    await page.uncheck('#aiSaveLesson');
+    await page.locator('.aiDetails').evaluate(el => el.open = true); await page.uncheck('#aiSaveLesson');
     await page.click('#aiStartBtn');
     await page.locator('#appCard').waitFor({state:'visible'});
     assert.equal(requests.length,1,'A complete batch must open study directly after one generation request');

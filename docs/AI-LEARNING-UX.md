@@ -2,10 +2,12 @@
 
 ## Tạo và tìm lại bài
 
+- Trang chỉ có hai mục: **Bộ AI đã lưu** (mặc định) và **Tạo mới**; bỏ phần giới thiệu và thẻ bài gần nhất bị lặp.
+- Form tạo mới hiển thị chủ đề, loại nội dung, trình độ và nút tạo. Tuỳ chọn lưu, tên bài và số mục mỗi đợt nằm trong **Tuỳ chọn thêm**.
 - Người học tự viết chủ đề và yêu cầu trong prompt. Form cho chọn loại nội dung và HSK 1–9/Không giới hạn.
 - “Lưu bài để học tiếp” bật mặc định; tên không bắt buộc, mặc định lấy từ chủ đề, tối đa 80 ký tự. Tắt lưu là học tạm trong bộ nhớ.
 - Tạo xong vào học trực tiếp. AI tiếp tục sinh khi gần hết; số mục mỗi đợt 3/5/10 nằm trong tùy chọn nâng cao, mặc định 5.
-- Bài gần nhất sắp theo `lastStudiedAt`, dùng `createdAt` để phân định; đổi tên, sửa prompt và sinh nền không tự nâng thời điểm học. Tìm kiếm theo tên/chủ đề không ẩn lối tắt bài gần nhất.
+- Bài gần nhất sắp theo `lastStudiedAt`, dùng `createdAt` để phân định; đổi tên, sửa prompt và sinh nền không tự nâng thời điểm học. Tìm kiếm theo tên/chủ đề lọc trực tiếp danh sách.
 
 ## Sửa yêu cầu của bài đã lưu
 

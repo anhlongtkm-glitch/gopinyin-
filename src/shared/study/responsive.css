@@ -27,11 +27,6 @@ body.vk-open #toastHost{bottom:calc(var(--vk-h) + 16px)}
 .sectionTitle .muted{font-size:12px;font-weight:500;color:var(--muted,#8b90a0);min-width:0}
 
 /* ── Bộ câu AI đã lưu (ngay dưới khung "AI sinh câu") ── */
-.aiSetsWrap{margin:18px 0 4px;padding:16px 18px;background:var(--card-2,rgba(255,255,255,.55));
-  border:1px solid var(--line,#e6e8ef);border-radius:16px}
-.aiSetsHead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.aiSetsHead h3{margin:0;font-size:16px;font-weight:800}
-.aiSetsHead .small{color:var(--muted,#8b90a0);font-size:12px}
 .aiSetsGrid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
 .aiSetCard{display:flex;flex-direction:column;gap:8px}
 .aiSetCard .libraryMeta{font-size:12px;color:var(--muted,#8b90a0);line-height:1.65}

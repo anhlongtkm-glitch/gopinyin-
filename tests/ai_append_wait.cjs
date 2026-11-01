@@ -38,9 +38,9 @@ async function assertResumed(page,total,first) {
         held=route;
       });
       await page.evaluate(()=>{window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
-      await page.selectOption('#aiKind','word');
-      await page.fill('#aiPrompt','từ vựng đồ uống và hoa quả');
-      await page.locator('#aiSaveLesson').setChecked(saved);
+      if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind','word');
+      if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','từ vựng đồ uống và hoa quả');
+      await page.locator('.aiDetails').evaluate(el => el.open = true); await page.locator('#aiSaveLesson').setChecked(saved);
       await page.click('#aiStartBtn');
       await page.locator('#appCard').waitFor({state:'visible'});
       await page.evaluate(()=>{window.autoSound=false;window.readOnType=false;});

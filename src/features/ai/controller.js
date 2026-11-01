@@ -24,23 +24,27 @@ export const state = {};
 
 const aiControllerState = state;
 
+export function aiShowSection(section, focusPrompt = false) {
+  const creating = section === 'create';
+  domState.$('aiPane').hidden = !creating;
+  domState.$('aiSetsWrap').hidden = creating;
+  domState.$('aiSavedBtn').setAttribute('aria-pressed', String(!creating));
+  domState.$('aiCreateBtn').setAttribute('aria-pressed', String(creating));
+  if (creating && focusPrompt) domState.$('aiPrompt').focus();
+}
+
 export function aiSyncKindUI() {
   const kind = domState.$('aiKind') && domState.$('aiKind').value || 'sentence';
   const ui = aiControllerState.AI_KIND_UI[kind] || aiControllerState.AI_KIND_UI.sentence;
   const unit = aiUnitOf(kind);
   const lab = domState.$('aiPromptLabelText'),
     sub = domState.$('aiPromptSub'),
-    ta = domState.$('aiPrompt'),
-    hint = domState.$('aiKindHint');
+    ta = domState.$('aiPrompt');
   if (lab) lab.textContent = ui.q;
   if (sub) sub.textContent = ui.sub;
   if (ta) ta.placeholder = ui.ph;
   const button = domState.$('aiStartBtn');
   if (button && !button.disabled) button.textContent = kind === 'word' ? 'Tạo từ vựng và học' : kind === 'both' ? 'Tạo bài và học' : 'Tạo câu và học';
-  if (hint) {
-    hint.innerHTML = ui.hint;
-    hint.style.display = ui.hint ? '' : 'none';
-  }
   const batch = domState.$('aiBatch');
   if (batch) {
     /* Nhãn số lượng đổi theo đơn vị — giữ nguyên value (3/5/10) */
@@ -80,6 +84,9 @@ export function aiProviderRefresh() {
 
 export function initializeAiController() {
   initializeAiEditor();
+  domState.$('aiSavedBtn').onclick = () => aiShowSection('saved');
+  domState.$('aiCreateBtn').onclick = () => aiShowSection('create');
+  publishLegacy('aiShowSection', aiShowSection);
   domState.$('aiSaveLesson').onchange = event => {
     domState.$('aiNameField').hidden = !event.target.checked;
     domState.$('aiTemporaryHint').hidden = event.target.checked;
@@ -94,20 +101,17 @@ export function initializeAiController() {
     sentence: {
       q: 'Bạn muốn học câu tiếng Trung về chủ đề gì?',
       sub: 'AI sẽ viết câu hoàn chỉnh kèm pinyin & nghĩa tiếng Việt.',
-      ph: 'Ví dụ: hội thoại khi đi mua đồ ở chợ, nói thẳng, dùng được ngày mai',
-      hint: ''
+      ph: 'Ví dụ: hội thoại khi đi mua đồ ở chợ, nói thẳng, dùng được ngày mai'
     },
     word: {
       q: 'Bạn muốn học TỪ VỰNG tiếng Trung về chủ đề gì?',
       sub: 'AI sẽ tạo từ / cụm từ ngắn kèm pinyin & nghĩa tiếng Việt — không phải câu dài.',
-      ph: 'Ví dụ: từ vựng chuyên ngành bao bì carton, công xưởng, mỗi từ dưới 3 chữ',
-      hint: '🔤 <b>Chế độ từ vựng:</b> mỗi mục là một từ/cụm từ ngắn (thường 2–4 chữ Hán) — học nhanh, nhớ mặt chữ. Ghi rõ giới hạn trong ô chủ đề (vd “dưới 3 chữ”, “danh từ ngành in”) thì AI sẽ theo đúng.'
+      ph: 'Ví dụ: từ vựng chuyên ngành bao bì carton, công xưởng, mỗi từ dưới 3 chữ'
     },
     both: {
       q: 'Bạn muốn học CÂU và TỪ VỰNG về chủ đề gì?',
       sub: 'AI sẽ tạo một nửa là từ vựng, một nửa là câu hoàn chỉnh cùng chủ đề.',
-      ph: 'Ví dụ: đi khám bệnh — nửa là từ vựng triệu chứng, nửa là câu nói với bác sĩ',
-      hint: '📝🔤 <b>Chế độ kết hợp:</b> AI chia đều — một nửa là từ/cụm từ ngắn, một nửa là câu hoàn chỉnh, cùng một chủ đề.'
+      ph: 'Ví dụ: đi khám bệnh — nửa là từ vựng triệu chứng, nửa là câu nói với bác sĩ'
     }
   };
   if (domState.$('aiKind')) domState.$('aiKind').addEventListener('change', aiSyncKindUI);

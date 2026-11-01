@@ -102,7 +102,7 @@ const WORDS = [
   const before = await snap();
   check('Mặc định nhãn nói về "câu"', /câu/i.test(before.q) && before.batch.every(t => /câu/.test(t)), { q: before.q, batch: before.batch });
 
-  await page.selectOption('#aiKind', 'word');
+  if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind', 'word');
   await page.waitForTimeout(350);
   const wordUI = await snap();
   check('Chọn "Từ vựng" → câu hỏi đổi sang TỪ VỰNG', /từ vựng/i.test(wordUI.q), wordUI.q);
@@ -110,9 +110,9 @@ const WORDS = [
   check('Placeholder đổi sang ví dụ từ vựng', /từ vựng/i.test(wordUI.ph), wordUI.ph);
   check('Nhãn số lượng đổi thành "3 từ / 5 từ / 10 từ"',
     wordUI.batch.every(t => /từ/.test(t)), wordUI.batch);
-  check('Hiện gợi ý giải thích chế độ từ vựng', wordUI.hintShown && wordUI.hint.length > 10, wordUI.hint.slice(0, 50));
+  check('Không lặp hướng dẫn chế độ từ vựng', !wordUI.hintShown);
 
-  await page.selectOption('#aiKind', 'both');
+  if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind', 'both');
   await page.waitForTimeout(350);
   const bothUI = await snap();
   check('Chọn "Cả hai" → nhãn nói về câu + từ vựng', /câu/i.test(bothUI.q) && /từ vựng/i.test(bothUI.q), bothUI.q);
@@ -120,9 +120,9 @@ const WORDS = [
 
   /* ═══ C. Prompt gửi AI yêu cầu TỪ VỰNG ═══ */
   section('C. Prompt gửi AI yêu cầu từ vựng');
-  await page.selectOption('#aiKind', 'word');
+  if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind', 'word');
   await page.waitForTimeout(250);
-  await page.fill('#aiPrompt', 'từ vựng ngành bao bì carton, công xưởng, dưới 3 chữ');
+  if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt', 'từ vựng ngành bao bì carton, công xưởng, dưới 3 chữ');
   await page.evaluate(() => { document.querySelector('#aiKey').value = 'fake-key'; });
   await page.evaluate(() => { window.__aiPrompts = []; });
   await page.click('#aiStartBtn');
@@ -189,9 +189,9 @@ const WORDS = [
 
   /* ═══ F. Chế độ "Cả hai" → prompt chia đều ═══ */
   section('F. Chế độ "Cả câu và từ vựng"');
-  await page.selectOption('#aiKind', 'both');
+  if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind', 'both');
   await page.waitForTimeout(250);
-  await page.fill('#aiPrompt', 'đi khám bệnh');
+  if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt', 'đi khám bệnh');
   await page.evaluate(() => { window.__aiPrompts = []; });
   await page.click('#aiStartBtn');
   await page.waitForTimeout(1800);

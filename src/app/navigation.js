@@ -120,6 +120,7 @@ export async function showView(v, options = {}) {
     /* ★ Bộ câu AI đã lưu — vẽ lại mỗi lần vào để tiến độ luôn mới */
     try {
       if (typeof legacy.aiSetsWire === 'function') legacy.aiSetsWire();
+      if (typeof legacy.aiShowSection === 'function') legacy.aiShowSection('saved');
     } catch (e) {}
     try {
       if (typeof legacy.renderAiSets === 'function') legacy.renderAiSets();

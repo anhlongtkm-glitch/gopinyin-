@@ -19,10 +19,16 @@ const items = [
     const open = () => page.evaluate(() => {window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
     await open();
     assert(await page.locator('#aiSaveLesson').isChecked());
-    assert(await page.locator('#aiContinue [data-ai-create]').isVisible());
-    await page.fill('#aiPrompt','Giao tiếp đời sống hằng ngày');
-    await page.selectOption('#aiKind','word');
-    await page.uncheck('#aiSaveLesson');
+    assert(await page.locator('#aiSets [data-ai-create]').isVisible());
+    assert(await page.locator('#aiPane').isHidden());
+    assert.equal(await page.locator('#aiSavedBtn').getAttribute('aria-pressed'),'true');
+    await page.click('#aiSets [data-ai-create]');
+    assert(await page.locator('#aiSetsWrap').isHidden());
+    assert(await page.locator('#aiPrompt').evaluate(el => el === document.activeElement));
+    assert.equal(await page.locator('.aiDetails').getAttribute('open'),null);
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','Giao tiếp đời sống hằng ngày');
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind','word');
+    await page.locator('.aiDetails').evaluate(el => el.open = true); await page.uncheck('#aiSaveLesson');
     assert(await page.locator('#aiNameField').isHidden());
     assert(await page.locator('#aiTemporaryHint').isVisible());
     await page.click('#aiStartBtn');
@@ -32,8 +38,8 @@ const items = [
     assert.equal(await page.evaluate(async () => (await window.dbGetAll()).filter(ds=>ds.kind==='ai').length),0);
     console.log('  PASS temporary lessons open directly without saving or showing a modal');
 
-    await open(); await page.check('#aiSaveLesson');
-    await page.fill('#aiPrompt','Đồ uống'); await page.fill('#aiLessonName','Bài trà');
+    await open(); await page.click('#aiCreateBtn'); await page.locator('.aiDetails').evaluate(el => el.open = true); await page.check('#aiSaveLesson');
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','Đồ uống'); await page.locator('.aiDetails').evaluate(el => el.open = true); await page.fill('#aiLessonName','Bài trà');
     await page.click('#aiStartBtn'); await page.locator('#appCard').waitFor({state:'visible'});
     const id = await page.evaluate(() => window.activeDataset.id);
     assert.equal(await page.evaluate(() => window.activeDataset.name),'Bài trà');
@@ -41,20 +47,20 @@ const items = [
     assert(await page.locator('#aiStudyEdit').isVisible());
     await page.evaluate(() => {window.index=1;window.save();});
     await open();
-    assert.equal(await page.locator('#aiContinue article').getAttribute('data-aiid'),id);
+    assert.equal(await page.locator('#aiSets article:first-child').getAttribute('data-aiid'),id);
     await page.fill('#aiSetSearch','không tồn tại');
     assert.equal(await page.locator('#aiSets article').count(),0);
-    assert(await page.locator('#aiContinue article').isVisible());
+    assert(await page.locator('.aiSetsEmpty').isVisible());
     await page.fill('#aiSetSearch','Đồ uống');
     assert.equal(await page.locator('#aiSets article').count(),1);
-    await page.click('#aiContinue [data-aiact=study]');
+    await page.click('#aiSets [data-aiact=study]');
     await page.locator('#appCard').waitFor({state:'visible'});
     assert.equal(await page.evaluate(() => window.index),1);
     assert.equal(await page.evaluate(() => window.currentRow().zh),items[1].zh);
-    console.log('  PASS saved lessons retain their name, progress, recent shortcut and searchable prompt');
+    console.log('  PASS saved lessons retain their name, progress, recency order and searchable prompt');
 
     await open(); await page.fill('#aiSetSearch','');
-    await page.fill('#aiPrompt','Bài thứ hai'); await page.fill('#aiLessonName','');
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','Bài thứ hai'); await page.locator('.aiDetails').evaluate(el => el.open = true); await page.fill('#aiLessonName','');
     await page.click('#aiStartBtn'); await page.locator('#appCard').waitFor({state:'visible'});
     const second = await page.evaluate(() => window.activeDataset.id);
     assert.equal(await page.evaluate(() => window.activeDataset.name),'Bài thứ hai');
@@ -63,7 +69,7 @@ const items = [
     await card.locator('[data-aiact=rename]').click();
     await page.fill('#appModalInput','Trà đổi tên'); await page.click('#appModalOk');
     await page.waitForFunction(id => document.querySelector('#aiSets [data-aiid="'+id+'"] h3')?.textContent==='Trà đổi tên', id);
-    assert.equal(await page.locator('#aiContinue article').getAttribute('data-aiid'),second);
+    assert.equal(await page.locator('#aiSets article:first-child').getAttribute('data-aiid'),second);
     await page.waitForFunction(() => document.getElementById('accountSyncStatus').textContent==='Đã đồng bộ');
     await page.reload({waitUntil:'networkidle'}); await open();
     await page.locator('#aiSets [data-id="'+id+'"][data-aiact=study]').click();

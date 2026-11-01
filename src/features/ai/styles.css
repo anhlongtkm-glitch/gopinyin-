@@ -64,15 +64,13 @@
 .trModeBar[data-active="text"] .trSlotImg{display:none}
 
 
-.aiSetsHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:32px 0 16px}.aiSetsHead h3{font-size:18px;margin:0}.aiControls>.btn.primary{min-width:200px}.aiDetails{border-top:1px solid var(--line);padding-top:12px}.aiDetails .aiControls{margin-bottom:16px}.aiField .select{width:100%}.aiPrompt{line-height:1.7;min-height:112px}.aiKindHint{font-size:14px;line-height:1.6;color:var(--muted)}
+.aiControls>.btn.primary{min-width:200px}.aiDetails{border-top:1px solid var(--line);padding-top:8px}.aiDetails .aiControls{margin-bottom:16px}.aiField .select{width:100%}.aiPrompt{line-height:1.7;min-height:112px}
 @media(max-width:600px){.aiControls{gap:12px}.aiControls>.aiField{flex:1 1 100px}.aiControls>.btn.primary{width:100%}.aiKey{max-width:none}.libraryGrid.aiSetsGrid{grid-template-columns:minmax(0,1fr)}}
 
-.aiView .aiBox{max-width:none;padding:24px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card)}
+.aiView .aiBox{max-width:720px;gap:16px}
 .aiBox h3{margin:0;font-size:20px}
 .aiSetActs,.aiStudyTools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.aiContinue{margin:16px 0}.aiContinue .aiSetCard,.aiWelcome{padding:24px;background:var(--primary-soft);border:1px solid var(--line);border-radius:var(--r-lg)}
-.aiContinue h3{margin:8px 0}.aiWelcome p{color:var(--text-2);line-height:1.6}
-.aiSaveOptions{display:grid;gap:12px;padding:16px;background:var(--card-2);border-radius:var(--r-md)}
+.aiSaveOptions{display:grid;gap:12px;margin-bottom:16px}
 .aiSaveToggle{display:flex;align-items:center;gap:12px;font-weight:700;min-height:44px;cursor:pointer}
 .aiSaveToggle input{width:22px;height:22px;accent-color:var(--primary);flex:none}
 .aiView input:not([type=checkbox]),.aiView textarea,.aiEditDialog textarea{width:100%;min-width:0;box-sizing:border-box;padding:12px 14px;font:inherit;font-size:16px;color:var(--text);background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-md);line-height:1.6}
@@ -87,5 +85,20 @@
 .aiEditDialog p{margin:0}.aiEditDialog .aiField{align-items:stretch}.aiEditDialog textarea{resize:vertical;min-height:130px}.aiEditDialog .select{font-size:16px;min-height:44px;width:100%}
 .aiEditActions{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap}.aiEditError{color:var(--bad);line-height:1.6}
 .aiView :is(input,textarea,select,button):focus-visible,.aiEditDialog :is(input,textarea,select,button):focus-visible{outline:2px solid var(--primary);outline-offset:3px}
-@media(max-width:600px){.aiView .aiBox,.aiContinue .aiSetCard,.aiWelcome{padding:16px}.aiEditDialog{padding:16px}.aiEditActions>.btn{flex:1 1 100px}.aiView .aiControls>.aiField{flex:1 1 140px}}
+@media(max-width:600px){.aiEditDialog{padding:16px}.aiEditActions>.btn{flex:1 1 100px}.aiView .aiControls>.aiField{flex:1 1 140px}}
 @media(prefers-reduced-motion:reduce){.aiSpinner{animation:none}}
+
+/* Two simple sections, with one visible at a time. */
+.aiSections{display:flex;gap:8px;border-bottom:1px solid var(--line);margin-bottom:24px;padding-bottom:8px}
+.aiSectionBtn{min-height:44px;padding:10px 16px;border-radius:var(--r-md);background:transparent;color:var(--text-2);font:inherit;font-weight:700;cursor:pointer}
+.aiSectionBtn[aria-pressed="true"]{background:var(--primary-soft);color:var(--primary)}
+.aiSectionBtn:hover{background:var(--card-2)}
+.aiSectionBtn[aria-pressed="true"]:hover{background:var(--primary-soft)}
+.aiView [hidden]{display:none!important}
+.aiView .aiStatus:empty{display:none}
+.aiView .aiLabel small{font-weight:400}
+.aiView .aiControls>.aiField{flex:1 1 160px}
+.aiView .aiControls .select{min-height:44px;font-size:16px}
+.aiView .aiSetsEmpty{grid-column:1/-1;padding:24px 0;color:var(--text-2)}
+.aiView .aiSetsEmpty p{margin:0 0 16px}
+@media(max-width:600px){.aiSections{gap:4px;margin-bottom:16px}.aiSectionBtn{flex:1;padding:10px 8px}.aiView .aiControls>.aiField{flex:1 1 100px}}

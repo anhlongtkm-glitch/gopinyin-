@@ -20,14 +20,14 @@ import { toast } from "../../shared/toast.js";
 
 import { escapeHtml } from "../../shared/utils.js";
 import { openAiEditor, aiSyncSaveStatus } from './editor.js';
+import { aiShowSection } from './controller.js';
 
 let query = '', renderVersion = 0;
-function setCard(ds, recent = false) {
+function setCard(ds) {
   const total = ds.rowCount, p = loadProgress(ds.id);
   const done = Math.min(p?.mainIndex || 0, total), pct = total ? Math.round(done / total * 100) : 0;
   const km = aiKindMeta(ds.contentType), id = escapeHtml(ds.id);
   return '<article class="libraryItem studiedItem aiSetCard" data-aiid="' + id + '">' +
-    (recent ? '<span class="featureEyebrow">Bài học gần nhất</span>' : '') +
     '<h3>' + escapeHtml(ds.name || 'Bộ AI') + '</h3>' +
     '<div class="aiSetBadges"><span class="aiSetBadge k-' + escapeHtml(ds.contentType || 'sentence') + '">' + escapeHtml(km.label) + '</span><span class="aiSetBadge">' + escapeHtml(ds.level || 'Không giới hạn') + '</span></div>' +
     '<p class="aiSetPrompt">' + escapeHtml(ds.prompt || '') + '</p>' +
@@ -35,14 +35,10 @@ function setCard(ds, recent = false) {
     '<div class="aiSetBar" role="progressbar" aria-label="Tiến độ học" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + done + '"><i style="width:' + pct + '%"></i></div>' +
     '<div class="aiSetActs"><button type="button" class="miniBtn primary" data-aiact="study" data-id="' + id + '">' + (done ? 'Học tiếp' : 'Bắt đầu học') + '</button>' +
     '<button type="button" class="miniBtn" data-aiact="edit" data-id="' + id + '">Sửa yêu cầu AI</button>' +
-    (recent ? '' : '<button type="button" class="miniBtn" data-aiact="rename" data-id="' + id + '">Đổi tên</button><button type="button" class="miniBtn" data-aiact="del" data-id="' + id + '">Xóa</button>') + '</div></article>';
+    '<button type="button" class="miniBtn" data-aiact="rename" data-id="' + id + '">Đổi tên</button><button type="button" class="miniBtn" data-aiact="del" data-id="' + id + '">Xóa</button></div></article>';
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ★ BỘ CÂU AI ĐÃ LƯU (kind==='ai') — hiện ngay dưới khung "AI sinh câu".
-   Mỗi thẻ cho biết số câu + đã học bao nhiêu + thanh tiến độ, và nút
-   "Học tiếp" mở đúng câu đang học dở (openDataset khôi phục mainIndex).
-   ═══════════════════════════════════════════════════════════ */
+// Most recently studied sets appear first, without a duplicate shortcut card.
 export async function renderAiSets() {
   const grid = domState.$('aiSets');
   if (!grid) return;
@@ -52,15 +48,13 @@ export async function renderAiSets() {
   if (version !== renderVersion || owner !== dataOwner()) return;
   sets = sets.filter(ds => ds && ds.kind === 'ai');
   sets.sort((a, b) => (loadProgress(b.id)?.lastStudiedAt || 0) - (loadProgress(a.id)?.lastStudiedAt || 0) || (b.createdAt || 0) - (a.createdAt || 0));
-  const recent = domState.$('aiContinue');
-  recent.innerHTML = sets.length ? setCard(sets[0], true) : '<div class="aiWelcome"><h3>Bắt đầu bài học đầu tiên</h3><p>Viết chủ đề và yêu cầu bạn muốn học trong ô bên dưới.</p><button type="button" class="miniBtn primary" data-ai-create>Tạo bài mới</button></div>';
+  aiSyncSaveStatus();
   const filtered = sets.filter(ds => (ds.name + ' ' + ds.prompt).toLocaleLowerCase('vi').includes(query));
   if (!sets.length) {
-    grid.innerHTML = '<div class="aiSetsEmpty">Chưa có bộ AI nào được lưu. Bật “Lưu bài để học tiếp” khi tạo bài mới.</div>';
+    grid.innerHTML = '<div class="aiSetsEmpty"><p>Chưa có bộ AI đã lưu.</p><button type="button" class="miniBtn primary" data-ai-create>Tạo mới</button></div>';
     return;
   }
   grid.innerHTML = filtered.length ? filtered.map(ds => setCard(ds)).join('') : '<p class="aiSetsEmpty">Không tìm thấy bài phù hợp. Thử tên hoặc chủ đề khác.</p>';
-  aiSyncSaveStatus();
 }
 
 export function aiSetsWire() {
@@ -72,7 +66,7 @@ export function aiSetsWire() {
   });
   domState.$('aiCard').addEventListener('click', async e => {
     try {
-      if (e.target.closest('[data-ai-create]')) { domState.$('aiPrompt').focus(); return; }
+      if (e.target.closest('[data-ai-create]')) { aiShowSection('create', true); return; }
       const b = e.target.closest('button[data-aiact]');
       if (!b) return;
       const id = b.dataset.id,

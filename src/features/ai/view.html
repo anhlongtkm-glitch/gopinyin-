@@ -1,17 +1,15 @@
 <section id="aiCard" class="card hidden aiView">
-    <div class="aiViewHead featureIntro">
-      <div>
-        <span class="featureEyebrow">Bài học theo ý bạn</span>
-        <h2>Học bằng AI theo chủ đề của bạn</h2>
-        <div class="small">Chọn học câu hoặc từ vựng, viết yêu cầu rồi học ngay với chữ Hán, pinyin và nghĩa tiếng Việt.</div>
-      </div>
-      <div id="aiMascot" data-mascot="ready" data-mascot-size="card" aria-hidden="true"></div>
+    <div class="aiSections" role="group" aria-label="Học bằng AI">
+      <button id="aiSavedBtn" class="aiSectionBtn" type="button" aria-pressed="true" aria-controls="aiSetsWrap">Bộ AI đã lưu</button>
+      <button id="aiCreateBtn" class="aiSectionBtn" type="button" aria-pressed="false" aria-controls="aiPane">Tạo mới</button>
     </div>
-    <div id="aiContinue" class="aiContinue" aria-label="Bài học gần nhất"></div>
-    <p class="aiStatus" data-ai-save-status role="status"></p>
-<div id="aiPane">
+    <div id="aiSetsWrap" class="aiSetsWrap" aria-label="Bộ AI đã lưu">
+      <label class="aiField" for="aiSetSearch">Tìm bộ đã lưu<input id="aiSetSearch" type="search" placeholder="Tên hoặc chủ đề"></label>
+      <div id="aiSets" class="libraryGrid aiSetsGrid"></div>
+      <p class="aiStatus" data-ai-save-status role="status"></p>
+    </div>
+    <div id="aiPane" hidden aria-label="Tạo mới">
       <div class="aiBox">
-        <h3>Tạo bài mới</h3>
         <label class="aiLabel" for="aiPrompt">
           <span id="aiPromptLabelText">Bạn muốn học câu tiếng Trung về chủ đề gì?</span>
           <small id="aiPromptSub">AI sẽ viết câu hoàn chỉnh kèm pinyin &amp; nghĩa tiếng Việt.</small>
@@ -19,7 +17,7 @@
         <textarea id="aiPrompt" class="aiPrompt" rows="3" placeholder="Ví dụ: hội thoại khi đi mua đồ ở chợ, nói thẳng, dùng được ngày mai"></textarea>
         <div class="aiControls">
           <label class="aiField">Học gì
-            <select id="aiKind" class="select" aria-describedby="aiKindHint">
+            <select id="aiKind" class="select">
               <option value="sentence" selected>Câu</option>
               <option value="word">Từ vựng</option>
               <option value="both">Câu và từ</option>
@@ -40,17 +38,16 @@
             </select>
           </label>
         </div>
-        <div id="aiKindHint" class="aiKindHint"></div>
-        <div class="aiSaveOptions">
-          <label class="aiSaveToggle"><input id="aiSaveLesson" type="checkbox" checked> Lưu bài để học tiếp</label>
-          <label id="aiNameField" class="aiField" for="aiLessonName">Tên bài <span class="small">Không bắt buộc, bỏ trống để dùng tên chủ đề</span><input id="aiLessonName" maxlength="80" placeholder="Ví dụ: Tiếng Trung đi du lịch"></label>
-          <p id="aiTemporaryHint" class="small" hidden>Học tạm — rời bài sẽ mất nội dung.</p>
-        </div>
         <div class="aiControls">
           <button id="aiStartBtn" class="btn primary" type="button">Tạo câu và học</button>
         </div>
         <details class="aiDetails">
-          <summary>Tuỳ chọn nâng cao</summary>
+          <summary>Tuỳ chọn thêm</summary>
+          <div class="aiSaveOptions">
+          <label class="aiSaveToggle"><input id="aiSaveLesson" type="checkbox" checked> Lưu bài để học tiếp</label>
+          <label id="aiNameField" class="aiField" for="aiLessonName">Tên bài <span class="small">Không bắt buộc, bỏ trống để dùng tên chủ đề</span><input id="aiLessonName" maxlength="80" placeholder="Ví dụ: Tiếng Trung đi du lịch"></label>
+          <p id="aiTemporaryHint" class="small" hidden>Học tạm — rời bài sẽ mất nội dung.</p>
+        </div>
           <label class="aiField">Số mục mỗi đợt tạo
             <select id="aiBatch" class="select" aria-describedby="aiBatchHint">
               <option value="3">3 câu</option><option value="5" selected>5 câu</option><option value="10">10 câu</option>
@@ -72,22 +69,11 @@
               <span id="keyHelpHint" class="aiStatus">Bấm nút trên → đăng nhập tài khoản Google → bấm <b>“Create API key”</b> → <b>sao chép</b> key rồi dán vào ô “API key” phía trên. Key chỉ lưu trên máy bạn.</span>
             </div>
           </div>
-          <div class="aiHint">AI tạo chữ Hán, pinyin và nghĩa Việt; tự viết tiếp khi gần hết. Khi hết lượt AI, bạn vẫn học được nội dung đã có và có thể thử lại sau.</div>
         </details>
         <div id="aiStatus" class="aiStatus" role="status" aria-live="polite"></div>
       </div>
     </div>
 
-    <!-- ★ BỘ CÂU AI ĐÃ LƯU — nằm ngay dưới khung tạo prompt.
-         Bấm "Học tiếp" là vào đúng câu đang học dở của bộ đó. -->
-    <div id="aiSetsWrap" class="aiSetsWrap">
-      <div class="aiSetsHead">
-        <h3>Bộ AI đã lưu</h3>
-        <span class="small">Bấm “Học tiếp” để làm tiếp đúng chỗ bạn đang dở.</span>
-      </div>
-      <label class="aiField" for="aiSetSearch">Tìm bài đã lưu<input id="aiSetSearch" type="search" placeholder="Tìm theo tên hoặc chủ đề"></label>
-      <div id="aiSets" class="libraryGrid aiSetsGrid"></div>
-    </div>
   </section>
 <dialog id="aiEditDialog" class="aiEditDialog" aria-labelledby="aiEditTitle" aria-describedby="aiEditNotice">
   <form id="aiEditForm" novalidate>

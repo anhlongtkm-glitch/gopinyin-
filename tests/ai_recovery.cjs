@@ -41,8 +41,8 @@ const fresh = [
     await page.evaluate(() => {window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
     assert(await page.locator('#aiProviderSetup').isHidden());
     assert.equal(await page.locator('#aiKey').inputValue(), '');
-    await page.selectOption('#aiKind', 'word'); await page.fill('#aiPrompt', 'từ vựng đồ uống trong quán trà');
-    await page.fill('#aiLessonName', 'Đồ uống AI');
+    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind', 'word'); if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt', 'từ vựng đồ uống trong quán trà');
+    await page.locator('.aiDetails').evaluate(el => el.open = true); await page.fill('#aiLessonName', 'Đồ uống AI');
     await page.click('#aiStartBtn');
     await page.locator('#appCard').waitFor({ state: 'visible' });
     assert.equal(requests.length, 1); assert.equal(requests[0].provider, 'gemini');
