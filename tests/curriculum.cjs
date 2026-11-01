@@ -102,21 +102,12 @@ async function sourceModule(file) {
     spoken=await page.evaluate(() => window.__sampleSpeech);
     assert.equal(spoken[0].rate,1.25); assert.equal(spoken[0].voice,'Microsoft Yunxi Male');
     console.log('  PASS pronunciation reads each new sentence once with Google at 1.0, then honors custom audio choices');
-    for (const level of [1,2,3]) {
-      await page.evaluate(() => window.showView('readings'));
-      if (await page.locator('#readingBack').isVisible()) await page.click('#readingBack');
-      await page.click(`[data-reading-level="${level}"]`);
-      const lesson = readings.find(r => r.level === level);
-      assert.equal(await page.locator('[data-reading]').count(),6);
-      await page.click(`[data-reading="${lesson.id}"]`);
-      assert.equal(await page.locator('.readingLine').count(),lesson.lines.length);
-      await page.click(`[data-reading-practice="${lesson.id}"]`);
-      await page.locator('#appCard').waitFor({state:'visible'});
-      const actual = await page.evaluate(() => ({id:window.activeDataset.id,count:window.activeDataset.rows.length,index:window.index}));
-      assert.equal(actual.id,`practice:reading:hsk${level}:${lesson.id}:v${lesson.revision}`);
-      assert.equal(actual.count,lesson.lines.length); assert.equal(actual.index,0);
-    }
+    await page.evaluate(()=>window.showView('topics'));
+    assert((await page.locator('#vocabList [data-vsrc]').count())>100);
+    assert.equal(await page.locator('#practiceGroups').isVisible(),false);
+    await page.evaluate(()=>window.showView('hsk'));
+    assert.equal(await page.locator('.practiceGroupCard').count(),6);
     assert.deepEqual(errors,[]);
-    console.log('  PASS reading filters and versioned practice preserve the selected HSK level and content');
+    console.log('  PASS HSK stages and topic catalog remain separated after pronunciation practice');
   } finally { await browser.close(); }
 })().catch(error => {console.error(error);process.exitCode=1;});

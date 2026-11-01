@@ -26,9 +26,9 @@ async function login(page,email,password='password123') {
     const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage(),errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     await page.goto(process.env.TEST_URL,{waitUntil:'networkidle'});
-    assert(await page.locator('#dashView').isVisible());
+    assert(await page.locator('#libraryCard').isVisible());
     assert.equal(await page.locator('#authGoogleBtn,#authGuestBtn,#landing,#proModal').count(),0);
-    for(const [view,selector] of [['practice','#libraryCard'],['readings','#readingsCard'],['games','#gamesCard'],['rank','#rankCard']]) {
+    for(const [view,selector] of [['practice','#libraryCard'],['topics','#libraryCard'],['games','#gamesCard'],['rank','#rankCard']]) {
       await page.click(`.ws-navItem[data-view="${view}"]`);assert(await page.locator(selector).isVisible());
     }
     await page.evaluate(()=>window.showView('game'));
@@ -91,15 +91,20 @@ async function login(page,email,password='password123') {
     await page.fill('#currentPassword','password123');await page.click('#passwordForm button');
     await page.waitForFunction(()=>document.getElementById('currentPassword').value==='');
     await page.click('#profileModal .modalClose');await page.click('#wsLogoutBtn');
-    assert.equal(await page.locator('#wsUserName').textContent(),'Khách');assert(await page.locator('#dashView').isVisible());
+    assert.equal(await page.locator('#wsUserName').textContent(),'Khách');assert(await page.locator('#libraryCard').isVisible());
     assert.equal(await page.evaluate(()=>localStorage.getItem('gp:local-signout')),'true');
     await page.click('#wsLoginBtn');await page.click('#authForgotBtn');await page.fill('#authEmail',email);
     await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/auth/v1/recover'&&r.request().method()==='POST'),page.click('#authSubmit')]);
+    await page.getByText('Kiểm tra hộp thư của bạn',{exact:true}).waitFor();
     await page.goto(new URL('?account=recovery&code='+encodeURIComponent('fixture-recovery:'+email),process.env.TEST_URL).href,{waitUntil:'networkidle'});
     await page.waitForFunction(()=>document.getElementById('authTitle').textContent==='Đặt lại mật khẩu');
     assert(await page.locator('#authModal').isVisible());
     assert.equal(await page.evaluate(()=>localStorage.getItem('gp:local-signout')),null);
-    await page.fill('#authPass','recovered123');await page.click('#authSubmit');
+    await page.fill('#authPass','recovered123');await page.fill('#authConfirm','different123');await page.click('#authSubmit');
+    assert.match(await page.locator('#authError').textContent(),/chưa khớp/);
+    await page.fill('#authConfirm','recovered123');await page.click('#authSubmit');
+    await page.getByText('Đã đổi mật khẩu thành công',{exact:true}).waitFor();
+    await page.click('#authNoticeAction');
     await page.locator('#authModal').waitFor({state:'hidden'});await saved(page);
     await page.click('#wsLogoutBtn');
     console.log('  PASS PKCE password recovery after explicit logout restores the reset form');
@@ -113,6 +118,26 @@ async function login(page,email,password='password123') {
     assert.deepEqual(errors,[]);
     console.log('  PASS password reauthentication, account isolation and logout');
     await secondContext.close();await context.close();
+    const callbackContext=await browser.newContext(),callbackPage=await callbackContext.newPage();
+    await callbackPage.goto(process.env.TEST_URL,{waitUntil:'networkidle'});
+    await callbackPage.click('#wsLoginBtn');await callbackPage.click('[data-authtab="register"]');
+    const pendingEmail='unverified-'+Date.now()+'@example.test';
+    await callbackPage.fill('#authName','Email learner');await callbackPage.fill('#authEmail',pendingEmail);await callbackPage.fill('#authPass','password123');
+    await callbackPage.click('#authSubmit');await callbackPage.getByText('Chỉ còn một bước nữa!',{exact:true}).waitFor();
+    assert.equal(await callbackPage.locator('#authError').isVisible(),false);
+    await callbackPage.evaluate(()=>localStorage.setItem('gp:local-signout','true'));
+    await callbackPage.goto(new URL('?account=verified&code='+encodeURIComponent('fixture-signup:'+pendingEmail),process.env.TEST_URL).href,{waitUntil:'networkidle'});
+    await callbackPage.getByText('Xác minh email thành công!',{exact:true}).waitFor();
+    assert.equal(await callbackPage.evaluate(()=>localStorage.getItem('gp:local-signout')),null);
+    assert.equal(new URL(callbackPage.url()).search,'');
+    await callbackPage.click('#authNoticeAction');await saved(callbackPage);
+    await callbackPage.reload({waitUntil:'networkidle'});assert.equal(await callbackPage.locator('#authModal').isVisible(),false);
+    await callbackPage.goto(new URL('?account=recovery&code=expired-fixture',process.env.TEST_URL).href,{waitUntil:'networkidle'});
+    await callbackPage.locator('#authError').waitFor({state:'visible'});
+    assert.match(await callbackPage.locator('#authError').textContent(),/hết hạn/);
+    assert.equal(await callbackPage.locator('#authSubmit').textContent(),'Gửi liên kết khôi phục');
+    await callbackContext.close();
+    console.log('  PASS signup email confirmation, persistent success, callback cleanup and expired-link guidance');
     const legacyContext=await browser.newContext(),legacy=await legacyContext.newPage();
     await legacy.goto(process.env.TEST_URL,{waitUntil:'networkidle'});
     const oldProgress=JSON.stringify({mainOrder:[0,1,2],mainIndex:2,stats:{correct:2}});
@@ -132,9 +157,11 @@ async function login(page,email,password='password123') {
       await ctx.addInitScript(theme=>localStorage.setItem('cts:theme',theme),theme);
       await ctx.route('**/assets/config.js',route=>route.fulfill({contentType:'text/javascript',body:'window.APP_CONFIG = {};'}));
       const p=await ctx.newPage();await p.goto(process.env.TEST_URL,{waitUntil:'networkidle'});
-      assert(await p.locator('#dashView').isVisible());assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      assert(await p.locator('#libraryCard').isVisible());assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await p.click(device==='mobile'?'[data-mobile-view="practice"]':'.ws-navItem[data-view="practice"]');await p.click('[data-vsrc="hsk4"]');assert(await p.locator('#authModal').isVisible());
       fs.mkdirSync(path.join(root,'.cache/accounts'),{recursive:true});
+      assert(await p.locator('#authModal').evaluate(modal=>modal.scrollWidth<=modal.clientWidth));
+      await p.locator('#authModal').screenshot({path:path.join(root,`.cache/accounts/auth-${theme}-${device}.png`)});
       await p.screenshot({path:path.join(root,`.cache/accounts/${theme}-${device}.png`),fullPage:true});
       await ctx.close();
     }

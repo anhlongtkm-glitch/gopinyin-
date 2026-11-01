@@ -12,12 +12,9 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  const shot=async name=>{for(const toast of await page.locator('#toastHost .toast').all())if(await toast.isVisible())await toast.click();await page.mouse.move(0,0);await page.evaluate(()=>document.fonts.ready);await page.waitForFunction(()=>[...document.querySelectorAll('.mascot-image')].filter(img=>img.getClientRects().length).every(img=>img.complete));await page.screenshot({path:path.join(out,name+'.png'),fullPage:true});};
  const rect=selector=>page.locator(selector).boundingBox();
  await page.evaluate(()=>window.applyTheme('light'));await view('dash');
- const header=await rect('#topBar'),hero=await rect('.dashHero'),art=await rect('.dashWelcomeArt'),choice=await rect('.dashChoose'),quests=await rect('.dashQuestPanel'),bear=await rect('.dashBearPanel');
- assert(header.width>=1400&&header.height<120,'Header must be horizontal, with no vertical sidebar');
- assert(hero.x<=44&&hero.width>=1340&&hero.height>=330,'Approved full-width hero was not applied');
- assert(art.width>=300&&art.x>hero.x+hero.width/2,'Large bear must sit inside the right half of the hero');
- assert(choice.y>=hero.y+hero.height&&Math.abs(quests.y-bear.y)<2&&bear.x>quests.x+quests.width,'Choice strip and quest/bear columns must match the approved structure');
- await shot('dashboard-light-1440');console.log('  PASS horizontal header, large right-side bear, choice strip and quest/bear columns match approved geometry');
+ const header=await rect('#topBar');assert(header.width>=1400&&header.height<120,'Header stays horizontal');
+ assert.equal(await page.locator('#dashView,#readingsCard').count(),0);
+ await shot('hsk-light-1440');console.log('  PASS horizontal header and HSK entry replace retired overview and readings');
  await view('practice');assert.equal(await page.locator('.practiceGroupCard').count(),6);await page.click('[data-hsk-level="2"]');assert.equal(await page.locator('.practiceGroupCard').count(),6);
  const total=await page.locator('.practiceGroupCard>span:not(.featureEyebrow):not(.groupIcon)').allTextContents();assert.equal(total.reduce((sum,text)=>sum+Number(text.match(/\/\s*(\d+)/)?.[1]||0),0),558,'Six HSK 2 stages must cover every existing sentence');
  await page.click('[data-hsk-level="1"]');await shot('practice-light-1440');
@@ -28,13 +25,12 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  await page.click('#appCard [data-practice-mode=speaking]');await page.locator('#pronCard').waitFor({state:'visible'});await page.evaluate(()=>scrollTo(0,0));await shot('speaking-light-1440');
  assert(await preservedGroup.evaluate(node=>node.isConnected),'Switching study mode must not rebuild the hidden HSK catalog');
  console.log('  PASS HSK topic/stage cards load real content and both study modes use the approved two-column shell');
- await view('readings');await page.click('[data-reading="family"]');await page.evaluate(()=>scrollTo(0,0));await shot('reading-light-1440');
- await page.click('[data-reading-practice="family"]');await page.locator('#appCard').waitFor({state:'visible'});assert.equal(await page.evaluate(()=>window.activeDataset.id),'practice:reading:hsk1:family:v2');
+ await view('topics');assert((await page.locator('#vocabList [data-vsrc]').count())>100);await shot('topics-light-1440');
  await view('games');await shot('games-light-1440');await view('bear');assert.equal(await page.locator('#bearBadges .bearBadge').count(),4);assert.equal(await page.locator('.bearMilestone').count(),4);await shot('bear-light-1440');
- console.log('  PASS reading-to-practice keeps the selected lesson; feature pages and badge/milestone panels have distinct approved structures');
+ console.log('  PASS separate topic catalog; feature pages and badge/milestone panels have distinct approved structures');
  for(const theme of ['light','dark'])for(const width of [360,390,768,1024,1440]){
   await page.setViewportSize({width,height:width<500?844:1000});await page.evaluate(theme=>window.applyTheme(theme),theme);
-  for(const name of ['dash','practice','readings','ai','games','bear']){
+  for(const name of ['hsk','topics','ai','rank','games','bear']){
    await view(name);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${name}/${theme}/${width} overflows`);
    if([390,1440].includes(width))await shot(`${name}-${theme}-${width}`);
   }

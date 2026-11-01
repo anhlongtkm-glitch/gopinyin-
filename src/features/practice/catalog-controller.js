@@ -8,10 +8,12 @@ import { requireAccount, currentUser } from "../auth/service.js";
 import { markNavigation, navigationVersion } from "../../app/routes.js";
 import { onDataChange, learningStorage } from "../../shared/storage/account-data.js";
 import { loadProgress } from "../typing/progress.js";
+import { state as libraryState } from "../library/catalog.js";
 const $ = (id) => document.getElementById(id);
 let level = 1, resumeRequest = 0, initialized = false;
 const groupCache = /* @__PURE__ */ new Map();
 const libraryVisible = () => !$("libraryCard").classList.contains("hidden");
+const matchesGroup = (id, group) => group === 'hsk' ? /^(practice:hsk|vocab:hsk[1-9]$)/.test(id) : (catalog.VOCAB_GROUPS.topic || []).some(source => id === 'vocab:' + source[0]);
 function groups() {
   const source = catalog.HSK_DATA["hsk" + level];
   const cached = groupCache.get(level);
@@ -31,7 +33,7 @@ function buildGroups() {
 }
 function renderGroups() {
   if (!libraryVisible()) return;
-  const active = document.querySelector("[data-vtab].active")?.dataset.vtab === "hsk";
+  const active = libraryState.vocabTab === "hsk";
   $("practiceGroups").hidden = !active;
   $("hskLevelPicker").hidden = !active;
   if (!active) return;
@@ -57,19 +59,20 @@ async function openGroup(group, options = {}) {
 }
 async function refreshResume() {
   if (!libraryVisible()) return;
-  const request = ++resumeRequest, uid = currentUser()?.id;
-  const next = await lessonRepository.continueDataset();
-  if (request !== resumeRequest || uid !== currentUser()?.id || !libraryVisible()) return;
+  const request = ++resumeRequest, uid = currentUser()?.id, group = libraryState.libraryGroup || 'hsk';
+  const next = await lessonRepository.continueDataset(id => matchesGroup(id,group));
+  if (request !== resumeRequest || uid !== currentUser()?.id || group !== (libraryState.libraryGroup || 'hsk') || !libraryVisible()) return;
   const title = $("libraryResumeTitle"), sub = $("libraryResumeSub"), button = $("libraryResumeButton");
-  if (next) {
+  const belongs = next && matchesGroup(next.id,group);
+  if (belongs) {
     title.textContent = next.name;
     sub.textContent = `${next.completed}/${next.total} câu · tiến độ Gõ được giữ riêng`;
     button.textContent = "Học tiếp →";
     button.dataset.resumeId = next.id;
   } else {
-    title.textContent = "Bắt đầu với bộ bạn yêu thích";
-    sub.textContent = "Chọn HSK hoặc chủ đề. Gõ và Nói trong cùng một bộ.";
-    button.textContent = "Luyện HSK 1 →";
+    title.textContent = group === 'hsk' ? 'Sẵn sàng cho chặng học đầu tiên?' : 'Bắt đầu từ điều gần gũi nhất';
+    sub.textContent = group === 'hsk' ? 'Mỗi chặng một ít. Luyện Gõ và Nói theo nhịp của bạn.' : 'Chọn một chủ đề bên dưới. Gõ để nhớ, nói để dùng.';
+    button.textContent = group === 'hsk' ? 'Luyện HSK 1 →' : 'Khám phá chủ đề ↓';
     button.dataset.resumeId = "";
   }
 }
@@ -99,6 +102,7 @@ function initializePracticeCatalog() {
   $("libraryResumeButton").addEventListener("click", () => {
     const id = $("libraryResumeButton").dataset.resumeId;
     if (id) void openDataset(id);
+    else if (libraryState.libraryGroup === 'topic') $("vocabSearch").focus();
     else void openGroup(groups()[0]);
   });
   document.addEventListener("gp:view-changed", () => {

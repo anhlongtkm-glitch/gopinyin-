@@ -1,0 +1,82 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {chromium}=require('playwright-core');
+const {register}=require('./helpers/supabase-fixture.cjs');
+const {aiRows,chooseAiKind,advanceAi}=require('./helpers/ai-fixture.cjs');
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+ try{
+  const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(process.env.TEST_URL,{waitUntil:'networkidle'});await register(page,'AI continuous learner');
+  let requests=[],held,mode='normal';
+  const respond=(route,batch)=>route.fulfill({contentType:'application/json',body:JSON.stringify({text:JSON.stringify(aiRows(batch))})});
+  await page.route('**/__continuous_ai__',async route=>{
+   requests.push(route.request().postDataJSON());
+   if(mode==='hold'){held=route;return;}
+   if(mode==='error')return route.fulfill({status:429,headers:{'Retry-After':'1'},contentType:'application/json',body:'{"error":"quota"}'});
+   return respond(route,requests.length-1);
+  });
+  await page.evaluate(()=>{window.APP_CONFIG.AI_PROXY_URL='/__continuous_ai__';return window.showView('ai');});
+  assert(await page.locator('#aiPane').isVisible());assert(await page.locator('#aiSetsWrap').isVisible());
+  assert.equal(await page.locator('#aiCreateBtn,#aiSavedBtn,#aiSaveLesson,#aiBatch').count(),0);
+  await page.uncheck('#aiSentenceChoice');await page.fill('#aiPrompt','Đồ uống');await page.click('#aiStartBtn');
+  assert.equal(requests.length,0);assert.equal(await page.locator('#aiCreateDialog').isVisible(),false);
+  await chooseAiKind(page,'both');assert.equal(await page.inputValue('#aiKind'),'both');
+  await page.click('#aiStartBtn');await page.locator('#aiCreateDialog').waitFor({state:'visible'});
+  assert.equal(requests.length,0,'No request before the save decision');
+  await page.fill('#aiCreateName','Đồ uống cùng AI');await page.locator('#aiCreateName').press('Enter');
+  await page.locator('#appCard').waitFor({state:'visible'});
+  assert.equal(requests.length,1);assert.match(requests[0].prompt,/đúng 10 mục/);assert.match(requests[0].prompt,/chia ĐỀU/);
+  assert.equal(await page.evaluate(()=>window.rows.length),10);
+  const id=await page.evaluate(()=>window.activeDataset.id);assert.equal(await page.evaluate(()=>window.activeDataset.contentType),'both');
+  console.log('  PASS unified AI screen, independent content choices and one save decision before initial 10 items');
+  mode='hold';
+  for(let i=0;i<4;i++)await advanceAi(page);
+  assert.equal(requests.length,1);
+  await page.evaluate(()=>window.markSentenceCorrect());
+  await page.waitForFunction(()=>window.aiSession.pending===1);for(let i=0;i<100&&!held;i++)await page.waitForTimeout(10);
+  assert(held);assert.equal(requests.length,2);assert.match(requests[1].prompt,/đúng 10 mục/);
+  await page.evaluate(()=>{window.aiMaybeFill();window.aiMaybeFill();});assert.equal(requests.length,2);
+  await page.click('#typingNextBtn');
+  await page.evaluate(()=>{window.composing=true;const input=document.getElementById('pinyinInput');input.value='我';input.setSelectionRange(1,1);});
+  const pending=held;held=null;await respond(pending,1);
+  await page.waitForFunction(()=>window.rows.length===20&&window.aiSession.pending===0);
+  assert.equal(await page.inputValue('#pinyinInput'),'我');assert.equal(await page.locator('#pinyinInput').evaluate(i=>i.selectionStart),1);
+  assert.equal(await page.locator('#aiCreateDialog').isVisible(),false);
+  assert.equal(await page.evaluate(()=>window.index),5);
+  await page.evaluate(()=>{window.composing=false;window.save();});
+  await page.waitForFunction(()=>document.getElementById('accountSyncStatus').textContent==='Đã đồng bộ');
+  await page.evaluate(()=>window.showView('ai'));await page.click('#aiSets [data-aiact="study"]');await page.locator('#appCard').waitFor({state:'visible'});
+  assert.equal(requests.length,2,'Resuming at the same milestone must not generate twice');
+  mode='normal';for(let i=0;i<5;i++)await advanceAi(page);
+  await page.waitForFunction(()=>window.rows.length===30&&window.aiSession.pending===0);
+  assert.equal(requests.length,3);assert.equal(await page.evaluate(()=>window.activeDataset.aiRefillBoundary),10);
+  console.log('  PASS automatic +10 at each five learned items, one pending request, IME preservation and persisted milestones');
+  mode='error';for(let i=0;i<5;i++)await advanceAi(page);
+  await page.waitForFunction(()=>window.aiSession.stopped&&window.aiSession.pending===0);
+  assert.equal(await page.evaluate(()=>window.rows.length),30);assert(await page.locator('#aiRetryBtn').isVisible());
+  await page.evaluate(()=>{window.aiMaybeFill();window.aiMaybeFill();});assert.equal(requests.length,4);
+  mode='normal';await page.evaluate(()=>window.aiSession.retryAt=Date.now()-1);await page.click('#aiRetryBtn');
+  await page.waitForFunction(()=>window.rows.length===40&&window.aiSession.pending===0);assert.equal(requests.length,5);
+  console.log('  PASS quota failure preserves the lesson and manual Retry continues without another save prompt');
+  await page.evaluate(()=>window.showView('ai'));await page.fill('#aiPrompt','Bài tạm');await page.click('#aiStartBtn');await page.locator('#aiCreateDialog').waitFor({state:'visible'});
+  await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.getElementById('aiStartBtn').disabled);assert.equal(requests.length,5);
+  await page.click('#aiStartBtn');await page.click('#aiCreateDialog [value="temporary"]');await page.locator('#appCard').waitFor({state:'visible'});
+  assert.equal(await page.evaluate(()=>window.activeDataset),null);assert.equal(requests.length,6);
+  assert.equal(await page.evaluate(async()=> (await window.dbGetAll()).filter(d=>d.kind==='ai').length),1);
+  await page.evaluate(()=>window.showView('ai'));await page.click('#aiStartBtn');await page.locator('#aiCreateDialog').waitFor({state:'visible'});
+  await page.evaluate(()=>window.showView('hsk'));await page.locator('#aiCreateDialog').waitFor({state:'hidden'});
+  assert.equal(requests.length,6);
+  console.log('  PASS temporary study, cancel and navigation during the save decision spend no unexpected quota');
+  await page.evaluate(()=>window.showView('ai'));
+  for(const toast of await page.locator('#toastHost .toast').all()) if(await toast.isVisible()) await toast.click();
+  fs.mkdirSync('.cache/ai-workflow',{recursive:true});
+  for(const theme of ['light','dark'])for(const width of [360,390,768,1024,1440]){
+   await page.setViewportSize({width,height:1000});await page.evaluate(t=>window.applyTheme(t),theme);
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),theme+' '+width);
+   assert(await page.locator('#aiPane').isVisible());assert(await page.locator('#aiSetsWrap').isVisible());
+   if(width===390||width===1440)await page.screenshot({path:path.resolve('.cache/ai-workflow/'+theme+'-'+width+'.png'),fullPage:true});
+  }
+  assert.deepEqual(errors,[]);console.log('  PASS unified creation and saved lessons fit five viewport widths in both themes without runtime errors');
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

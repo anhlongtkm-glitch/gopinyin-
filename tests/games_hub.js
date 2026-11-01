@@ -120,15 +120,10 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   check('Mục "games" vẫn tô sáng', back.navActive === 'games', back.navActive);
 
   section('5 — Từ bảng điều khiển → sảnh game qua thanh bên');
-  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="dash"]').click());
+  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="practice"]').click());
   await page.waitForTimeout(700);
-  const dash = await page.evaluate(() => {
-    const b = [...document.querySelectorAll('.dashFeature')].find(x => x.dataset.view === 'games');
-    return { exists: !!b, label: b ? (b.textContent || '').replace(/\s+/g, ' ').trim() : '' };
-  });
-  // Approved Plan A includes a separate Game panel beside the extra skills.
-  check('Dashboard có lối vào Game riêng theo bản đã duyệt', dash.exists === true, dash.exists);
-  check('Thanh bên vẫn có đường vào game', await page.locator('.ws-navItem[data-view="games"]').count() === 1);
+  check('HSK catalog has its own navigation entry',await page.locator('.ws-navItem[data-view="practice"]').count() === 1);
+  check('Game hub has a separate navigation entry',await page.locator('.ws-navItem[data-view="games"]').count() === 1);
   await page.evaluate(() => document.querySelector('.ws-navItem[data-view="games"]').click());
   await page.waitForTimeout(700);
   const viaDash = await page.evaluate(() => !document.querySelector('#gamesCard').classList.contains('hidden'));
@@ -188,7 +183,7 @@ function section(t) { console.log('\n══ ' + t + ' ══'); }
   await page.click('#backLibrary');
   await page.waitForTimeout(1000);
   const afterBack = await page.evaluate(() => {
-    const vis = id => !document.querySelector('#' + id).classList.contains('hidden');
+    const vis = id => !!document.querySelector('#' + id) && !document.querySelector('#' + id).classList.contains('hidden');
     return {
       games: vis('gamesCard'), game: vis('gameCard'), lib: vis('libraryCard'),
       ai: vis('aiCard'), dash: vis('dashView'),

@@ -24,7 +24,7 @@ async function bundleActual(entry, fixtures) {
 
 async function loadAuth() {
   return bundleActual(`export * as auth from ${JSON.stringify(path.resolve('src/features/auth/service.js'))}; export * as routes from ${JSON.stringify(path.resolve('src/app/routes.js'))};`, {
-    [path.resolve('src/features/auth/client.js')]: 'export const getAccountClient=()=>globalThis.authNavigationFixture.client,accountRedirect=()=>"http://localhost/";',
+    [path.resolve('src/features/auth/client.js')]: 'export const getAccountClient=()=>globalThis.authNavigationFixture.client,accountRedirect=()=>"http://localhost/",authCallback={},cleanAuthCallback=()=>{};',
     [path.resolve('src/shared/storage/account-data.js')]: 'export const attachAccountData=async id=>globalThis.authNavigationFixture.attached.push(id),detachAccountData=()=>{},synchronizeAccountData=async()=>{},flushAccountData=async()=>{},syncStatus=()=>"saved";'
   });
 }
@@ -184,11 +184,11 @@ const drain = () => new Promise(resolve => setImmediate(resolve));
     for (const retired of ['tones','shadow','shadowVideo','shadowText']) {
       scenario = await routeScenario({ hash: '#/' + retired + '?video=old-selection' });
       await drain();
-      assert.deepEqual(scenario.fixture.calls.map(call => call.view), ['readings']);
+      assert.deepEqual(scenario.fixture.calls.map(call => call.view), ['hsk']);
       assert.equal(scenario.fixture.calls[0].options.route, false);
-      assert.deepEqual(scenario.fixture.writes, [{method:'replaceState',url:'/#/readings'}]);
+      assert.deepEqual(scenario.fixture.writes, [{method:'replaceState',url:'/#/hsk'}]);
     }
-    console.log('  PASS retired learning routes redirect to readings without duplicate history');
+    console.log('  PASS retired learning routes redirect to HSK without duplicate history');
   } finally {
     for (const [key, descriptor] of originalGlobals) {
       if (descriptor) Object.defineProperty(globalThis, key, descriptor);

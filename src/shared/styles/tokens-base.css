@@ -1,12 +1,12 @@
 /* GoPinyin: one palette and rhythm for every learning surface. */
 :root{
   color-scheme:dark;
-  --bg:#070d0b;--bg-2:#0b1410;--card:#101b17;--card-2:#17261f;--card-3:#203329;
-  --glass:rgba(16,27,23,.97);--line:#294135;--line-2:#476a56;
+  --bg:#020403;--bg-2:#060a08;--card:#090f0c;--card-2:#0e1712;--card-3:#16231c;
+  --glass:rgba(6,11,8,.98);--line:#24372c;--line-2:#466652;
   --text:#edf6ed;--text-2:#c4d8c9;--muted:#b7cbbc;--faint:#9bb6a2;
-  --brand-jade:#0ba488;--matcha:#293522;--matcha-text:#c4d5ac;--hero-bg:#13372b;
+  --brand-jade:#0ba488;--matcha:#1a2516;--matcha-text:#c4d5ac;--hero-bg:#0b2018;
   --ink:#24443a;--primary:#42cba7;--primary-2:#88e0c3;--primary-deep:#087d69;
-  --primary-soft:rgba(84,214,163,.12);--accent:#f0b66b;--gold:#f6c66b;--gold-2:#e8ae42;
+  --primary-soft:rgba(84,214,163,.08);--accent:#f0b66b;--gold:#f6c66b;--gold-2:#e8ae42;
   --button-primary-edge:#42cba7;--button-primary:#42cba7;--button-primary-hover:#67d9b9;--button-primary-base:#188369;--button-primary-text:#062d23;
   --brand-grad:linear-gradient(135deg,#087866,#096e5d);--brand-grad-v:linear-gradient(180deg,#087866,#096e5d);
   --brand-grad-2:linear-gradient(135deg,#b36325,#924c1b);--gold-grad:linear-gradient(135deg,#f9d58a,#e8b14e);

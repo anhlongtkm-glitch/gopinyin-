@@ -25,18 +25,18 @@ export const state = {};
 const aiControllerState = state;
 
 export function aiShowSection(section, focusPrompt = false) {
-  const creating = section === 'create';
-  domState.$('aiPane').hidden = !creating;
-  domState.$('aiSetsWrap').hidden = creating;
-  domState.$('aiSavedBtn').setAttribute('aria-pressed', String(!creating));
-  domState.$('aiCreateBtn').setAttribute('aria-pressed', String(creating));
-  if (creating && focusPrompt) domState.$('aiPrompt').focus();
+  // Creation and saved lessons share one screen; retain the shortcut API.
+  domState.$('aiPane').hidden = false;
+  domState.$('aiSetsWrap').hidden = false;
+  if (section === 'create' && focusPrompt) {
+    domState.$('aiPrompt').focus();
+    domState.$('aiPane').scrollIntoView({block:'start',behavior:'auto'});
+  }
 }
 
 export function aiSyncKindUI() {
-  const kind = domState.$('aiKind') && domState.$('aiKind').value || 'sentence';
+  const kind = domState.$('aiKind')?.value || '';
   const ui = aiControllerState.AI_KIND_UI[kind] || aiControllerState.AI_KIND_UI.sentence;
-  const unit = aiUnitOf(kind);
   const lab = domState.$('aiPromptLabelText'),
     sub = domState.$('aiPromptSub'),
     ta = domState.$('aiPrompt');
@@ -45,14 +45,7 @@ export function aiSyncKindUI() {
   if (ta) ta.placeholder = ui.ph;
   const button = domState.$('aiStartBtn');
   if (button && !button.disabled) button.textContent = kind === 'word' ? 'Tạo từ vựng và học' : kind === 'both' ? 'Tạo bài và học' : 'Tạo câu và học';
-  const batch = domState.$('aiBatch');
-  if (batch) {
-    /* Nhãn số lượng đổi theo đơn vị — giữ nguyên value (3/5/10) */
-    [...batch.options].forEach(o => {
-      const n = String(o.value);
-      o.textContent = n + ' ' + unit;
-    });
-  }
+  domState.$('aiKindHint').textContent = kind ? 'Chọn cả hai để luyện câu xen kẽ từ vựng.' : 'Chọn ít nhất Câu hoặc Từ vựng để bắt đầu.';
 }
 
 /* ★ Cập nhật hàng "Lấy API key" theo nhà cung cấp đang chọn:
@@ -73,6 +66,7 @@ export function aiProviderRefresh() {
   const proxy = !!aiProxyUrl();
   const setup = domState.$('aiProviderSetup');
   if (setup) setup.hidden = proxy;
+  document.querySelector('.aiDetails').hidden = proxy;
   if (sel) {
     sel.disabled = proxy;
     if (proxy) sel.value = aiProvidersState.AI_DEFAULT_PROVIDER;
@@ -84,13 +78,12 @@ export function aiProviderRefresh() {
 
 export function initializeAiController() {
   initializeAiEditor();
-  domState.$('aiSavedBtn').onclick = () => aiShowSection('saved');
-  domState.$('aiCreateBtn').onclick = () => aiShowSection('create');
   publishLegacy('aiShowSection', aiShowSection);
-  domState.$('aiSaveLesson').onchange = event => {
-    domState.$('aiNameField').hidden = !event.target.checked;
-    domState.$('aiTemporaryHint').hidden = event.target.checked;
-  };
+  document.querySelectorAll('[data-ai-kind]').forEach(input => input.addEventListener('change', () => {
+    const sentence = domState.$('aiSentenceChoice').checked, word = domState.$('aiWordChoice').checked;
+    domState.$('aiKind').value = sentence && word ? 'both' : sentence ? 'sentence' : word ? 'word' : '';
+    aiSyncKindUI();
+  }));
   // ★ Kho từ vựng: chuyển tab nguồn (Kho câu giao tiếp / Bộ câu của tôi)
   // ★ Mở bộ câu: bấm nút "Học tiếp" trong Thư viện / Bộ câu của bạn
   // ★ AI sinh câu: viết prompt → học ngay / đổi nhà cung cấp / lưu key

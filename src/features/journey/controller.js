@@ -49,7 +49,7 @@ export function renderJourney() {
   const milestones = [[5,'Mũ học tập'],[10,'Ba lô khám phá'],[15,'Ghim ngôi sao'],[20,'Nhà thám hiểm']];
   $('bearMilestones').innerHTML=milestones.map(([n,title])=>`<div class="bearMilestone"><span>Lv.${n}</span><b>${title}</b><small>${level.level>=n?'Đã mở khóa':'Chưa mở'}</small></div>`).join('');
   const events=days().flatMap(d=>Object.keys(d.events||{}).map(key=>{try{return JSON.parse(key)[0];}catch{return '';}}));
-  const badgeSpecs=[['Khởi đầu',events.length>0,'Hoàn thành một hoạt động'],['Nhớ mặt chữ',events.includes('typing'),'Gõ đúng một câu'],['Đọc trọn',events.includes('reading'),'Hoàn thành một bài khóa'],['Bền bỉ',earned.length>0,'Học bốn ngày trong một tuần']];
+  const badgeSpecs=[['Khởi đầu',events.length>0,'Hoàn thành một hoạt động'],['Nhớ mặt chữ',events.includes('typing'),'Gõ đúng một câu'],['Khám phá',events.includes('game') || events.includes('reading'),'Hoàn thành một lượt game'],['Bền bỉ',earned.length>0,'Học bốn ngày trong một tuần']];
   const badgePaths=['M5 17C2 8 12 3 20 4c0 8-4 16-13 14m-2 2L17 7','M3 5h18v14H3zm4 4h2m2 0h2m2 0h2m-9 5h8','M4 4h7a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4zm10 3a3 3 0 0 1 3-3h4v15h-7','M7 3h10v6a5 5 0 0 1-10 0zm0 2H3v3a4 4 0 0 0 4 4m10-7h4v3a4 4 0 0 1-4 4m-5 2v7m-4 0h8'];
   $('bearBadges').innerHTML=badgeSpecs.map(([title,unlocked,hint],i)=>`<div class="bearBadge ${unlocked?'unlocked':''}"><span class="badgeEmblem" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="${badgePaths[i]}"/></svg></span><b>${title}</b><small>${unlocked?'Đã đạt':hint}</small></div>`).join('');
 }
@@ -58,6 +58,7 @@ function stopReadingSpeech() {
   journeySpeech = false;
 }
 function renderReadings() {
+  if (!$('readingList')) return;
   const lessons = readings.filter(r => r.level === readingLevel);
   $('readingList').innerHTML = lessons.map(r => `<button type="button" class="journeyLesson" data-reading="${safe(r.id)}"><span class="featureEyebrow">HSK ${r.level} · ${safe(r.topic)}</span><b>${safe(r.title)}</b><span>${r.lines.length} lượt thoại · ${r.questions.length} câu kiểm tra</span><small>Bắt đầu đọc →</small></button>`).join('');
   $('readingCatalogCount').textContent = `${lessons.length} bài · ${lessons.reduce((sum,r) => sum+r.lines.length,0)} lượt thoại · Có sẵn để đọc khi không có mạng`;
@@ -78,6 +79,7 @@ function openReading(id) {
   $('readingHeading').focus({preventScroll:true});
 }
 function closeReading({focus = false} = {}) {
+  if (!$('readingCatalog')) return;
   const id = activeReading?.id;
   stopReadingSpeech();
   activeReading = null;

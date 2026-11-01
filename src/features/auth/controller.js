@@ -18,16 +18,38 @@ export const state = { authMode: 'login' };
 const $ = id => document.getElementById(id);
 let avatarChange, previewUrl, migrationPromise = Promise.resolve(), conflictDone;
 const errorText = (id, text) => { $(id).textContent = text || ''; $(id).hidden = !text; };
+function showAuthNotice(title, text, action, onAction) {
+  $('authNoticeTitle').textContent = title; $('authNoticeText').textContent = text;
+  $('authNotice').hidden = false;
+  if (action) {
+    $('authForm').hidden = true; document.querySelector('.authTabs').hidden = true;
+    $('authForgotBtn').hidden = true; $('authBackBtn').hidden = true;
+    $('authNoticeAction').textContent = action; $('authNoticeAction').hidden = false;
+    $('authNoticeAction').onclick = onAction;
+  }
+  $('authNotice').focus();
+}
 export function setAuthMode(mode) {
+  if ($('authSubmit').disabled) return;
   state.authMode = mode;
   const register = mode === 'register', recover = mode === 'recovery', forgot = mode === 'forgot';
-  document.querySelectorAll('.authTab').forEach(t => { const active = t.dataset.authtab === mode; t.classList.toggle('active', active); t.setAttribute('aria-selected', String(active)); });
+  document.querySelectorAll('.authTab').forEach(t => { const active = t.dataset.authtab === mode; t.classList.toggle('active', active); t.setAttribute('aria-pressed', String(active)); });
   $('authNameField').hidden = !register;
   $('authEmail').closest('label').hidden = recover;
   $('authPass').closest('label').hidden = forgot;
+  $('authForm').hidden = false; $('authNotice').hidden = true; $('authNoticeAction').hidden = true;
+  document.querySelector('.authTabs').hidden = recover || forgot;
+  $('authForgotBtn').hidden = mode !== 'login'; $('authBackBtn').hidden = !forgot;
+  $('authName').required = register; $('authName').disabled = !register;
+  $('authEmail').disabled = recover; $('authPass').disabled = forgot;
+  $('authConfirmField').hidden = !recover; $('authConfirm').disabled = !recover; $('authConfirm').required = recover;
+  $('authPassHint').hidden = !(register || recover);
+  $('authPass').value = ''; $('authConfirm').value = ''; $('authPass').type = 'password';
+  $('authShowPassword').textContent = 'Hiện'; $('authShowPassword').setAttribute('aria-pressed', 'false'); $('authShowPassword').setAttribute('aria-label', 'Hiện mật khẩu');
   $('authSubmit').textContent = register ? 'Tạo tài khoản' : recover ? 'Lưu mật khẩu mới' : forgot ? 'Gửi liên kết khôi phục' : 'Đăng nhập';
   $('authTitle').textContent = register ? 'Tạo tài khoản GoPinyin' : recover ? 'Đặt lại mật khẩu' : forgot ? 'Quên mật khẩu' : 'Đăng nhập GoPinyin';
   $('authSubtitle').textContent = getAccountClient() ? 'Đăng nhập để học, chơi và đồng bộ tiến độ trên các thiết bị.' : 'Đăng nhập chưa khả dụng: web chưa được cấu hình dịch vụ tài khoản.';
+  if (getAccountClient()) $('authSubtitle').textContent = register ? 'Bắt đầu hành trình tiếng Trung của bạn, miễn phí.' : recover ? 'Liên kết đã được xác nhận. Hãy tạo mật khẩu mới để bảo vệ tài khoản.' : forgot ? 'Nhập email tài khoản. Chúng mình sẽ gửi liên kết đặt lại mật khẩu.' : 'Chào mừng bạn trở lại. Tiếp tục hành trình tiếng Trung nhé!';
   $('authPass').autocomplete = register || recover ? 'new-password' : 'current-password';
   $('authPass').minLength = register || recover ? 8 : 0;
   errorText('authError', '');
@@ -101,30 +123,42 @@ function openProfile() {
 export function initializeAuthController() {
   document.querySelectorAll('.authTab').forEach(t => t.onclick = () => setAuthMode(t.dataset.authtab));
   $('authForgotBtn').onclick = () => setAuthMode('forgot');
+  $('authBackBtn').onclick = () => setAuthMode('login');
+  $('authShowPassword').onclick = () => {
+    const visible = $('authPass').type === 'password'; $('authPass').type = visible ? 'text' : 'password';
+    $('authShowPassword').textContent = visible ? 'Ẩn' : 'Hiện';
+    $('authShowPassword').setAttribute('aria-label', visible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+    $('authShowPassword').setAttribute('aria-pressed', String(visible));
+  };
   $('authForm').onsubmit = async event => {
     event.preventDefault();
     const btn = $('authSubmit'); if (btn.disabled) return;
-    btn.disabled = true; errorText('authError','');
+    if (!$('authForm').reportValidity()) return;
+    const submitLabel = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Đang xử lý…'; $('authForm').setAttribute('aria-busy','true'); errorText('authError','');
     try {
       const mode = state.authMode;
       if (mode === 'forgot') {
         if (!$('authEmail').value.trim()) throw new Error('Nhập email để nhận liên kết.');
-        await requestPasswordReset($('authEmail').value); toast('Nếu email có tài khoản, liên kết khôi phục sẽ được gửi.', 'ok'); return;
+        await requestPasswordReset($('authEmail').value);
+        showAuthNotice('Kiểm tra hộp thư của bạn', 'Nếu email ' + $('authEmail').value.trim() + ' đã có tài khoản, bạn sẽ nhận được liên kết đặt lại mật khẩu. Kiểm tra cả mục Thư rác. Mở liên kết trên trình duyệt này để tiếp tục.', 'Quay lại đăng nhập', () => setAuthMode('login')); return;
       }
       if (mode === 'recovery') {
-        await resetPassword($('authPass').value); closeModal('authModal', true); toast('Đã đặt lại mật khẩu.', 'ok'); return;
+        if ($('authPass').value !== $('authConfirm').value) throw new Error('Hai mật khẩu chưa khớp. Vui lòng nhập lại.');
+        await resetPassword($('authPass').value); $('authPass').value = ''; $('authConfirm').value = '';
+        showAuthNotice('Đã đổi mật khẩu thành công', 'Mật khẩu mới đã được lưu. Lần đăng nhập tiếp theo, hãy sử dụng mật khẩu mới này.', 'Tiếp tục học', async () => { closeModal('authModal', true); await resumePendingAction(); }); return;
       }
       const result = mode === 'register' ? await doRegister($('authName').value, $('authEmail').value, $('authPass').value) : await doLogin($('authEmail').value, $('authPass').value);
       if (!result.ok) throw new Error(result.msg);
-      if (result.verification) { errorText('authError','Đã gửi yêu cầu đăng ký. Kiểm tra email để xác minh rồi đăng nhập.'); setAuthMode('login'); errorText('authError','Kiểm tra email để xác minh tài khoản rồi đăng nhập.'); return; }
+      if (result.verification) { $('authPass').value = ''; showAuthNotice('Chỉ còn một bước nữa!', 'Email xác minh đã được gửi đến ' + $('authEmail').value.trim() + '. Mở thư và bấm xác nhận để hoàn tất đăng ký. Kiểm tra cả mục Thư rác và mở liên kết trên trình duyệt này.', 'Quay lại đăng nhập', () => setAuthMode('login')); return; }
       closeModal('authModal', true); $('authPass').value = ''; updateAccount();
       await migrationPromise;
       await resumePendingAction();
       toast('Đăng nhập thành công.', 'ok');
     } catch (e) { errorText('authError', e.message); }
-    finally { btn.disabled = false; }
+    finally { btn.disabled = false; btn.textContent = submitLabel; $('authForm').removeAttribute('aria-busy'); }
   };
-  $('wsLogoutBtn').onclick = async () => { stopActivities(); await doLogout(); closeModal('profileModal'); };
+  $('wsLogoutBtn').onclick = async () => { stopActivities(); await doLogout(); setAuthMode('login'); closeModal('profileModal'); };
   $('wsProfileBtn').onclick = openProfile;
   $('wsAvatar').onclick = openProfile;
   $('wsAvatar').onkeydown = e => { if (['Enter',' '].includes(e.key)) { e.preventDefault(); openProfile(); } };
@@ -155,6 +189,14 @@ export function initializeAuthController() {
   }));
   window.addEventListener('gp:login-required', () => { setAuthMode('login'); openModal('authModal'); });
   window.addEventListener('gp:password-recovery', () => { setAuthMode('recovery'); openModal('authModal'); });
+  window.addEventListener('gp:auth-callback', ({ detail }) => {
+    setAuthMode(detail.recovery ? 'forgot' : 'login'); openModal('authModal');
+    if (detail.kind === 'verified') showAuthNotice('Xác minh email thành công!', 'Tài khoản của bạn đã được xác nhận. Chào mừng bạn đến với GoPinyin!', 'Bắt đầu học', async () => { closeModal('authModal', true); await resumePendingAction(); });
+    else {
+      errorText('authError', 'Liên kết không hợp lệ, đã hết hạn hoặc được mở trên trình duyệt khác. ' + (detail.recovery ? 'Nhập email bên dưới để nhận liên kết mới.' : 'Hãy thử đăng nhập nếu bạn đã xác minh; hoặc mở lại thư trên trình duyệt đã đăng ký.'));
+      $('authEmail').focus();
+    }
+  });
   window.addEventListener('gp:account-error', e => toast(e.detail, 'warn', 5500));
   window.addEventListener('gp:account', updateAccount);
   window.addEventListener('gp:account-ready', () => { loadWeakSpeed(); refreshDash(); renderVocab(); migrationPromise = maybeImport(); $('accountAccessNotice').hidden = true; });

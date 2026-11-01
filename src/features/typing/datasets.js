@@ -39,7 +39,8 @@ export async function openDataset(id, options = {}) {
   if (!ds) return false;
   /* Ghi nhớ đang mở từ màn nào để nút "← ..." quay lại đúng chỗ */
   const aiVisible = !!(domState.$('aiCard') && !domState.$('aiCard').classList.contains('hidden'));
-  await showView('library', { route: false, navigation });
+  const parent = /^(practice:hsk|vocab:hsk[1-9]$)/.test(id) ? 'hsk' : (dataCatalogState.VOCAB_GROUPS.topic || []).some(source => id === 'vocab:' + source[0]) ? 'topics' : 'library';
+  await showView(parent, { route: false, navigation });
   if (navigation !== navigationVersion() || currentUser()?.id !== accountId) return;
   typingSessionState.studyOrigin = aiVisible ? 'ai' : 'library';
   aiEndSession(); // rời phiên AI (không lưu gì) nếu đang học câu do AI tạo

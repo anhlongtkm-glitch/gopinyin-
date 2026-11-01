@@ -1,34 +1,19 @@
-<section id="rankCard" class="card hidden rankView">
-        <div class="rankHero">
-          <div class="rankHeroCopy">
-            <span class="rankHeroEyebrow"><span class="rankLiveDot" aria-hidden="true"></span>Bảng xếp hạng cộng đồng</span>
-            <h2>Học đều đặn. Vươn lên từng ngày.</h2>
-            <p>Mỗi câu gõ đúng đưa bạn tiến gần hơn tới vị trí tiếp theo. Chọn ngày hoặc tuần để theo dõi thành tích.</p>
-            <div class="rankHeroBadges"><span>Chỉ tính câu đúng</span><span>Cập nhật trực tuyến</span></div>
-          </div>
-          <div data-mascot="trophy" data-mascot-size="card" aria-hidden="true"></div>
-        </div>
-        <div class="rankToolbar">
-          <div><h3>Thành tích luyện gõ</h3><p>Thi đua lành mạnh, cùng nhau tiến bộ.</p></div>
-          <div class="rankTabs" role="tablist" aria-label="Khoảng thời gian xếp hạng luyện gõ">
-            <button class="rankTab studyRankTab active" type="button" role="tab" data-rank="day" aria-selected="true">Hôm nay</button>
-            <button class="rankTab studyRankTab" type="button" role="tab" data-rank="week" aria-selected="false">Tuần này</button>
-          </div>
-        </div>
-        <div id="studyRankStatus" class="rankStatus" role="status" aria-live="polite" hidden></div>
-        <div class="gaLbScroll">
-          <div class="rankPodium" id="studyRankPodium"></div>
-          <div class="rankTable" id="studyRankTable">
-            <div class="rankTableHead" aria-hidden="true">
-              <span>#</span><span>Người học</span><span>Câu luyện</span>
-            </div>
-            <div class="rankList" id="studyRankList" role="list"></div>
-          </div>
-          <div class="rankMe hidden" id="studyRankMe"></div>
-          <div class="rankFoot">
-            <span class="rankFootDot" aria-hidden="true"></span>
-            <span id="studyRankScopeNote"></span>
-          </div>
-          <p class="rankPrivacyNote">Tên hiển thị và ảnh đại diện của bạn sẽ được công khai trên bảng xếp hạng.</p>
-        </div>
-      </section>
+<section id="rankCard" class="card hidden rankView" aria-labelledby="rankTitle">
+  <header class="rankHero">
+    <div class="rankHeroCopy"><span class="featureEyebrow">CỘNG ĐỒNG GOPINYIN</span><h2 id="rankTitle">Mỗi câu đúng.<br />Một bước vươn lên.</h2><p>Thi đua một chút, tiến bộ thật nhiều. Tìm nhịp học của bạn và cùng nhau đi xa hơn.</p><div class="rankSeason"><span id="rankPeriodLabel">Tuần này</span><span class="rankSeasonDot" aria-hidden="true">·</span><span id="rankRemaining"></span></div></div>
+    <div class="rankHeroArt"><span data-mascot="trophy" data-mascot-size="hero" aria-hidden="true"></span><span class="rankArtCaption">Vững nhịp học. Vững vị trí.</span></div>
+  </header>
+  <div class="rankToolbar"><div><span class="featureEyebrow">BẢNG THÀNH TÍCH</span><h3>Những người học bền bỉ</h3></div><div class="rankToolbarActions"><div class="rankTabs" role="group" aria-label="Khoảng thời gian xếp hạng"><button class="rankTab studyRankTab active" type="button" data-rank="week" aria-pressed="true">Tuần này</button><button class="rankTab studyRankTab" type="button" data-rank="day" aria-pressed="false">Hôm nay</button></div><button id="rankRefresh" class="btn secondary" type="button" aria-label="Cập nhật bảng xếp hạng">Cập nhật</button></div></div>
+  <div id="studyRankStatus" class="rankStatus" role="status" aria-live="polite" hidden></div>
+  <div class="rankLayout">
+    <div class="rankMain"><div class="rankSectionLabel"><h3>Gương mặt dẫn đầu</h3><span>Top 3 người học</span></div><div class="rankPodium" id="studyRankPodium"></div>
+      <div class="rankListToolbar"><h3>Cùng nhau tiến bộ <span id="rankParticipantCount"></span></h3><button type="button" id="rankNearMe" class="btn ghost" aria-pressed="false" disabled>Gần vị trí của tôi</button></div>
+      <div class="rankTable" id="studyRankTable"><div class="rankTableHead" aria-hidden="true"><span>Hạng</span><span>Người học</span><span>Câu đúng</span></div><div class="rankList" id="studyRankList" role="list" aria-label="Xếp hạng người học"></div></div>
+      <div class="rankFoot"><span id="studyRankScopeNote"></span></div>
+    </div>
+    <aside class="rankSidebar" aria-label="Thành tích của bạn"><section id="studyRankMe" class="rankPersonal" aria-live="polite"></section>
+      <details class="rankRules"><summary>Cách tính xếp hạng</summary><ol><li>Mỗi câu gõ đúng cộng 1 vào bảng luyện gõ. Điểm game và lượt nói được theo dõi riêng.</li><li>Cùng số câu đúng, cùng hạng. Bảng hiển thị tối đa 100 người học.</li><li>Tuần bắt đầu vào thứ Hai. Khoảng thời gian tính theo giờ trên thiết bị.</li></ol><p>Tiến độ học cũ vẫn được giữ lại, không tự cộng toàn bộ lịch sử vào ngày hoặc tuần hiện tại.</p></details>
+      <p class="rankPrivacyNote">Tên hiển thị và ảnh đại diện xuất hiện công khai khi bạn có thành tích trên bảng.</p>
+    </aside>
+  </div>
+</section>

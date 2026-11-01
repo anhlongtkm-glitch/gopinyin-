@@ -2,20 +2,21 @@
   <div class="modalBackdrop" data-close="auth"></div>
   <div class="modalCard authCard">
     <button class="modalClose" type="button" data-close="auth" aria-label="Đóng">✕</button>
+    <div class="authBrand"><img src="assets/logo-icon.png" alt="" width="28" height="28" /><span>GoPinyin</span><small>Học mỗi ngày, tiến xa hơn</small></div>
     <div class="authHead">
       <div class="authMascot" data-mascot="welcome" data-mascot-size="card" aria-hidden="true"></div>
-      <img class="authLogo" src="assets/logo-icon.png" alt="GoPinyin" width="64" height="64" decoding="async" />
       <h2 id="authTitle">Đăng nhập GoPinyin</h2>
       <p id="authSubtitle">Đăng nhập tài khoản trên trình duyệt này.</p>
     </div>
-    <div class="authTabs" role="tablist">
-      <button class="authTab active" type="button" data-authtab="login" role="tab" aria-selected="true">Đăng nhập</button>
-      <button class="authTab" type="button" data-authtab="register" role="tab" aria-selected="false">Đăng ký</button>
+    <div class="authTabs" aria-label="Tài khoản">
+      <button class="authTab active" type="button" data-authtab="login" aria-pressed="true">Đăng nhập</button>
+      <button class="authTab" type="button" data-authtab="register" aria-pressed="false">Đăng ký</button>
     </div>
+    <div id="authNotice" class="authNotice" role="status" tabindex="-1" hidden><span class="authNoticeIcon" aria-hidden="true">✓</span><div><h3 id="authNoticeTitle"></h3><p id="authNoticeText"></p></div></div>
     <form id="authForm" class="authForm" novalidate>
       <label class="authField" id="authNameField" hidden>
         <span>Tên hiển thị</span>
-        <input id="authName" type="text" autocomplete="nickname" placeholder="Bạn tên gì?" />
+        <input id="authName" type="text" autocomplete="nickname" placeholder="Bạn tên gì?" maxlength="50" />
       </label>
       <label class="authField">
         <span>Email</span>
@@ -23,12 +24,19 @@
       </label>
       <label class="authField">
         <span>Mật khẩu</span>
-        <input id="authPass" type="password" autocomplete="current-password" placeholder="Mật khẩu của bạn" required />
+        <span class="authPassword"><input id="authPass" type="password" autocomplete="current-password" placeholder="Mật khẩu của bạn" required /><button id="authShowPassword" type="button" aria-label="Hiện mật khẩu" aria-pressed="false">Hiện</button></span>
+        <small id="authPassHint" hidden>Dùng ít nhất 8 ký tự cho mật khẩu của bạn.</small>
+      </label>
+      <label class="authField" id="authConfirmField" hidden>
+        <span>Nhập lại mật khẩu mới</span>
+        <input id="authConfirm" type="password" autocomplete="new-password" placeholder="Nhập lại để xác nhận" />
       </label>
       <div class="authError" id="authError" role="alert" hidden></div>
       <button class="authSubmit btn primary full" id="authSubmit" type="submit">Đăng nhập</button>
     </form>
+    <button id="authNoticeAction" class="btn primary full" type="button" hidden>Tiếp tục</button>
     <button class="authGuest" id="authForgotBtn" type="button">Quên mật khẩu?</button>
-    <p class="authNote">Học và chơi miễn phí sau khi đăng nhập. Tài khoản cũ trên trình duyệt cần đăng ký lại.</p>
+    <button class="authGuest" id="authBackBtn" type="button" hidden>Quay lại đăng nhập</button>
+    <p class="authNote">Một tài khoản, trọn hành trình.<br />Lưu tiến độ và tiếp tục học trên mọi thiết bị.</p>
   </div>
 </div>

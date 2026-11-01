@@ -95,7 +95,7 @@ const check = (n, ok, d) => { if (ok) { pass++; console.log('  PASS  ' + n + (d 
   check('Mở lại bộ đã học → khoá khung hình + đúng bộ', st4.fit && st4.val === 'id:vocab:hsk2', st4);
 
   /* chuyển sang mục khác bằng thanh bên → phải mở khoá */
-  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="dash"]').click());
+  await page.evaluate(() => document.querySelector('.ws-navItem[data-view="practice"]').click());
   await page.waitForTimeout(600);
   const st5 = await page.evaluate(() => document.body.classList.contains('studyFit'));
   check('Sang Bảng điều khiển → mở khoá cuộn', st5 === false);

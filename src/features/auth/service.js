@@ -1,4 +1,4 @@
-﻿import { getAccountClient, accountRedirect } from './client.js';
+import { getAccountClient, accountRedirect, authCallback, cleanAuthCallback } from './client.js';
 import { attachAccountData, detachAccountData, synchronizeAccountData, flushAccountData, syncStatus } from '../../shared/storage/account-data.js';
 import { navigationVersion } from '../../app/routes.js';
 
@@ -77,7 +77,7 @@ export async function doRegister(name, email, password) {
     name = String(name).trim();
     if (!name || [...name].length > 50) throw new Error('Tên cần từ 1–50 ký tự.');
     if (password.length < 8) throw new Error('Mật khẩu cần ít nhất 8 ký tự.');
-    const { data, error } = await connection().auth.signUp({ email: String(email).trim(), password, options: { data: { display_name: name }, emailRedirectTo: accountRedirect() } });
+    const { data, error } = await connection().auth.signUp({ email: String(email).trim(), password, options: { data: { display_name: name }, emailRedirectTo: accountRedirect() + '?account=verified' } });
     if (error) throw error;
     if (data.session && data.user.email_confirmed_at) { localStorage.removeItem('gp:local-signout'); await activate(data.user); }
     return { ok: true, verification: !state.ready };
@@ -108,7 +108,7 @@ export async function accessToken() {
   return data.session.access_token;
 }
 export function clearAccount() {
-  epoch++; activeId = null; state.user = null; state.profile = null; state.ready = false;
+  epoch++; activeId = null; state.user = null; state.profile = null; state.ready = false; state.recovery = false;
   detachAccountData(); emit('gp:account-cleared'); emit('gp:account');
 }
 export async function doLogout() {
@@ -128,19 +128,38 @@ export async function refreshProfile() {
 }
 export function initializeAuthService() {
   const c = getAccountClient();
+  let callbackPending = !!(authCallback.credentials || authCallback.error || ['recovery', 'verified', 'signup'].includes(authCallback.kind));
+  const callbackNotice = detail => window.dispatchEvent(new CustomEvent('gp:auth-callback', { detail }));
+  const callbackFailure = () => {
+    callbackPending = false; cleanAuthCallback();
+    callbackNotice({ kind: 'error', recovery: authCallback.kind === 'recovery' });
+  };
+  if (!c && callbackPending) setTimeout(callbackFailure, 0);
   if (c) c.auth.onAuthStateChange((event, session) => {
     // Supabase holds an auth lock during this callback: schedule subsequent SDK calls.
     setTimeout(async () => {
       try {
-        // Opening a recovery link is an explicit sign-in action after logout.
-        if (event === 'PASSWORD_RECOVERY' && session) localStorage.removeItem('gp:local-signout');
+        if (callbackPending) {
+          const { error } = await c.auth.initialize();
+          // A stored session alone must never validate a failed / unconsumed email link.
+          if (error || (authCallback.pkce && new URL(location.href).searchParams.has('code'))) { callbackFailure(); return; }
+        }
+        if (callbackPending && (authCallback.error || !session)) { callbackFailure(); return; }
+        // Email callbacks explicitly restore a session after local logout.
+        if ((event === 'PASSWORD_RECOVERY' || callbackPending) && session) localStorage.removeItem('gp:local-signout');
         if (session && localStorage.getItem('gp:local-signout')) return;
         if (!session) { if (state.user) clearAccount(); return; }
-        if (event === 'PASSWORD_RECOVERY') { state.recovery = true; emit('gp:password-recovery'); }
+
         const { data, error } = await c.auth.getUser();
-        if (error || !data.user?.email_confirmed_at) { clearAccount(); return; }
+        if (error || !data.user?.email_confirmed_at) { if (callbackPending) callbackFailure(); clearAccount(); return; }
+        if (event === 'PASSWORD_RECOVERY' || (callbackPending && authCallback.credentials && authCallback.kind === 'recovery')) {
+          state.recovery = true; emit('gp:password-recovery'); callbackPending = false; cleanAuthCallback();
+        } else if (callbackPending) {
+          if (!authCallback.credentials) { callbackFailure(); return; }
+          callbackPending = false; cleanAuthCallback(); callbackNotice({ kind: 'verified' });
+        }
         if (state.user?.id !== data.user.id || !state.ready) await activate(data.user);
-      } catch (error) { state.ready = false; window.dispatchEvent(new CustomEvent('gp:account-error', { detail: error.message })); }
+      } catch (error) { if (callbackPending) callbackFailure(); state.ready = false; window.dispatchEvent(new CustomEvent('gp:account-error', { detail: error.message })); }
     }, 0);
   });
   window.addEventListener('offline', () => emit('gp:access-paused'));

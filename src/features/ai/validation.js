@@ -106,7 +106,7 @@ export function parseAiSentences(text) {
 
 // Return the first usable batch so the learner can start without a fill-up
 // request. Only an entirely unusable response gets one more attempt.
-export async function aiCollect(provider, key, userText, target, level, seen, onProgress, kind, active = () => true) {
+export async function aiCollect(provider, key, userText, target, level, seen, onProgress, kind, active = () => true, fillTarget = false) {
   const CHUNK = 10;
   const maxTries = 2;
   let out = [],
@@ -142,7 +142,7 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
           if (accepted.length >= target - out.length) break;
         }
         out = out.concat(accepted);
-        break;
+        if (!fillTarget) break;
       }
     } catch (e) {
       if (!active()) break;
@@ -154,6 +154,10 @@ export async function aiCollect(provider, key, userText, target, level, seen, on
     }
   }
   if (out.length > target) out = out.slice(0, target); // giữ đúng số câu đã chọn
+  if (fillTarget && out.length < target && !failure) {
+    stopped = 'AI mới tạo được ' + out.length + '/' + target + ' mục. Bạn có thể học phần đã có và bấm Thử lại để tiếp tục.';
+    failure = new Error(stopped);
+  }
   return {
     items: out,
     error: failure,

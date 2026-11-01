@@ -23,7 +23,10 @@ export function openModal(id) {
   m.hidden = false;
   document.body.style.overflow = 'hidden';
   audioEffectsState.Sfx.pop();
-  setTimeout(() => m.querySelector('input:not([hidden]),button')?.focus(), 0);
+  setTimeout(() => {
+    if (m.hidden) return;
+    [...m.querySelectorAll('input,button')].find(el => !el.disabled && el.getClientRects().length)?.focus();
+  }, 0);
 
 }
 

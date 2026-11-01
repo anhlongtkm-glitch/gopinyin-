@@ -1,187 +1,86 @@
-/* ═══════════════════════════════════════════════════════════════
-   BẢNG XẾP HẠNG — số câu đúng + điểm game (ngày / tuần)
-   ═══════════════════════════════════════════════════════════════ */
-.rankView{display:flex;flex-direction:column;gap:20px}
-.rankHero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:210px;padding:32px 38px;overflow:hidden;border:1px solid var(--line);border-radius:28px;background:radial-gradient(ellipse at 86% 12%,rgba(31,200,162,.17),transparent 42%),linear-gradient(125deg,var(--card),var(--card-2));box-shadow:0 16px 42px rgba(11,60,48,.07)}
-.rankHero::before{position:absolute;inset:auto 0 0;height:4px;background:linear-gradient(90deg,var(--primary),#f6c453 72%,transparent);content:""}
-.rankHeroCopy{position:relative;z-index:1;max-width:760px}
-.rankHeroEyebrow{display:flex;align-items:center;gap:9px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
-.rankLiveDot{width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
-.rankHero h2{margin:14px 0 9px;font-family:var(--font-display);font-size:clamp(28px,4vw,42px);line-height:1.12;letter-spacing:-.04em}
-.rankHero p{max-width:62ch;margin:0;color:var(--muted);font-size:14px;line-height:1.7}
-.rankHero [data-mascot]{flex:none;width:132px;height:132px}
-.rankHeroBadges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
-.rankHeroBadges span{padding:7px 11px;border:1px solid var(--line);border-radius:var(--r-pill);background:var(--card);color:var(--text-2);font-size:11px;font-weight:750}
-.rankToolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.rankToolbar h3{margin:0;font-size:19px;font-weight:850;letter-spacing:-.02em}
-.rankToolbar p{margin:4px 0 0;color:var(--muted);font-size:12px}
-.rankStatus{padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card-2);color:var(--text-2);font-size:13px;line-height:1.5}
-.rankStatus[hidden]{display:none}
-.rankStatus.isLoading{border-color:rgba(31,200,162,.28);background:var(--primary-soft)}
-.rankStatus.isUnavailable,.rankStatus.isError{border-color:rgba(235,166,64,.38);background:rgba(235,166,64,.09)}
-.rankPrivacyNote{margin:0;color:var(--faint);font-size:11px;line-height:1.5}
-
-/* ★ Panel BXH bên trong Game: trượt từ phải, không che toàn bộ sân chơi */
-.gaLbPanel{
-  position:absolute;top:0;right:0;bottom:0;width:min(420px,100%);
-  display:flex;flex-direction:column;gap:10px;padding:14px;
-  background:linear-gradient(180deg,rgba(28,28,42,.96),rgba(18,18,30,.97));
-  border-left:1px solid var(--line);
-  box-shadow:-18px 0 36px rgba(0,0,0,.45);
-  backdrop-filter:blur(10px);
-  z-index:25;
-  animation:lbSlideIn .28s var(--ease) both;
-  overflow:hidden;
-}
-@keyframes lbSlideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
-.gaLbPanel.hidden{display:none}
-.gaLbHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.gaLbHead h3{margin:0;font-family:var(--font-display);font-size:clamp(16px,2vw,18px);letter-spacing:-.01em}
-.gaLbHead .gaIconBtn{width:44px;height:44px;font-size:16px}
-.gaLbNote{color:var(--muted);font-size:11.5px;line-height:1.45}
-.gaLbNote b{color:var(--text-2)}
-.gaLbScroll{overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:4px;flex:1 1 auto}
-.gaLbScroll .rankTabs{width:100%;justify-content:space-between}
-.gaLbScroll .rankTab{flex:1;padding:7px 10px;font-size:12px}
-/* GaLbPanel mở rộng → không còn podium 3 cột lớn */
-.gaLbPanel .rankPodium{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.gaLbPanel .rankPod{padding:12px 8px;gap:4px}
-.gaLbPanel .rankPod.pod1{padding-top:14px;padding-bottom:14px}
-.gaLbPanel .rankPodMedal{font-size:18px}
-.gaLbPanel .rankPod.pod1 .rankPodMedal{font-size:22px}
-.gaLbPanel .rankAv{width:28px;height:28px;font-size:12px}
-.gaLbPanel .rankAv.avBig{width:36px;height:36px;font-size:14px}
-.gaLbPanel .rankPodName{font-size:12px}
-.gaLbPanel .rankPodStats{font-size:10.5px}
-.gaLbPanel .rankPodStats b{font-size:11.5px}
-.gaLbPanel .rankTableHead,.gaLbPanel .rankRow{grid-template-columns:30px minmax(0,1fr) 62px 70px;padding:8px 10px;gap:6px}
-.gaLbPanel .rankTableHead{font-size:9.5px;padding:7px 10px}
-.gaLbPanel .rankRow{padding:9px 10px}
-.gaLbPanel .rankAv{width:24px;height:24px;font-size:11px}
-.gaLbPanel .rankWho{gap:8px}
-.gaLbPanel .rankName{font-size:12px}
-.gaLbPanel .rankCorrect b,.gaLbPanel .rankScore b{font-size:12.5px}
-.gaLbPanel .rankFoot{font-size:10.5px}
-@media (max-width:760px){
-  .rankHero{min-height:0;padding:24px 20px;border-radius:22px}
-  .rankHero [data-mascot]{width:76px;height:76px;align-self:flex-start}
-  .rankHero h2{font-size:28px}
-  .rankHero p{font-size:13px}
-  .rankHeroBadges{margin-top:14px}
-  .rankToolbar{align-items:flex-start}
-  .rankToolbar .rankTabs{width:100%}
-  .rankToolbar .rankTab{flex:1}
-  .gaLbPanel{width:100%;border-left:0}
-}
-.gaIconBtn.on{background:linear-gradient(135deg,rgba(31,200,162,.22),rgba(31,200,162,.14));color:#fff;border-color:rgba(31,200,162,.55)}
-.rankHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.rankHead h2{margin:0 0 6px;font-family:var(--font-display);font-size:clamp(20px,2.4vw,26px);letter-spacing:-.01em}
-.rankHeadText .small{max-width:56ch;line-height:1.55}
-.rankHeadText .small b{color:var(--text-2)}
-.rankTabs{display:inline-flex;gap:8px;padding:4px;border-radius:var(--r-md);background:var(--card-2);border:1px solid var(--line)}
-.rankTab{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:800;min-height:44px;
-  padding:10px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;
-  transition:color var(--d) var(--ease),background var(--d),box-shadow var(--d),transform var(--d-fast)}
-.rankTab:hover{color:var(--text-2)}
-.rankTab:active{background:var(--primary-soft)}
-.rankTab.active{background:var(--button-primary);color:var(--button-primary-text);box-shadow:none}
-
-/* ── Bục vinh danh top 3 ── */
-.rankPodium{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:end}
-.rankPod{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
-  padding:16px 14px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--card-2);
-  overflow:hidden;animation:rankRise .5s var(--ease) both}
-.rankPod::after{content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(200px 90px at 50% 0%,rgba(31,200,162,.16),transparent 70%)}
-.rankPod.pod1{border-color:rgba(251,191,36,.45);background:linear-gradient(180deg,rgba(251,191,36,.16),var(--card-2) 62%);
-  box-shadow:0 16px 36px rgba(245,158,11,.18);padding-top:22px;padding-bottom:20px}
-.rankPod.pod1::after{background:radial-gradient(220px 100px at 50% 0%,rgba(251,191,36,.22),transparent 72%)}
-.rankPod.pod2{border-color:rgba(148,163,184,.34)}
-.rankPod.pod3{border-color:rgba(217,119,6,.32)}
-.rankPod.isMe{box-shadow:0 0 0 2px rgba(31,200,162,.55) inset,0 12px 28px rgba(11,164,136,.18)}
-.rankPodMedal{font-size:24px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
-.rankPod.pod1 .rankPodMedal{font-size:30px}
-.rankPodName{font-weight:800;font-size:13.5px;display:flex;align-items:center;gap:6px;justify-content:center;
-  flex-wrap:wrap;max-width:100%;word-break:break-word}
-.rankPodStats{font-size:11.5px;color:var(--muted);line-height:1.4}
-.rankPodStats b{color:var(--text);font-size:12.5px}
-.rankPodDot{margin:0 5px;opacity:.55}
-@keyframes rankRise{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
-
-/* ── Avatar + nhãn "Bạn" ── */
-.rankAv{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:14px;color:#fff;background:var(--brand-grad);flex:0 0 auto;
-  box-shadow:0 4px 12px rgba(11,164,136,.3)}
-.rankAv.avBig{width:46px;height:46px;font-size:19px}
-.rankPod.pod1 .rankAv{background:var(--gold-grad);color:#2a1500;box-shadow:0 6px 16px rgba(245,158,11,.35)}
-.rankYouTag{font-size:9px;font-weight:900;letter-spacing:.04em;padding:2px 7px;border-radius:var(--r-pill);
-  background:var(--primary-soft);color:var(--primary-2);border:1px solid rgba(31,200,162,.35);white-space:nowrap}
-
-/* ── Bảng danh sách ── */
-.rankTable{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--card-2)}
-.rankTableHead,.rankRow{display:grid;grid-template-columns:52px minmax(0,1fr) 104px 104px;align-items:center;gap:8px}
-.rankTableHead{padding:10px 16px;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--faint);background:var(--card-3)}
-.rankTableHead span:not(:nth-child(2)){text-align:right}
-.rankList{display:flex;flex-direction:column}
-.rankRow{padding:11px 16px;border-top:1px solid var(--line);transition:background var(--d)}
-.rankRow:hover{background:rgba(31,200,162,.07)}
-.rankRow.isMe{background:rgba(31,200,162,.11)}
-.rankNo{font-weight:900;font-size:12.5px;color:var(--faint);text-align:center}
-.rankRow.isMe .rankNo{color:var(--primary-2)}
-.rankWho{display:flex;align-items:center;gap:10px;min-width:0}
-.rankName{font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px;min-width:0}
-.rankNameTxt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rankYouTag{flex:0 0 auto}
-.rankCorrect,.rankScore{text-align:right;display:flex;flex-direction:column;line-height:1.15}
-.rankCorrect b,.rankScore b{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}
-.rankScore b{color:var(--gold)}
-.rankCorrect i,.rankScore i{font-style:normal;font-size:9.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase}
-.rankMe .rankMeRow{margin-top:8px;border:1px dashed rgba(31,200,162,.5);border-radius:var(--r-md);
-  background:rgba(31,200,162,.08);border-top:1px dashed rgba(31,200,162,.5)}
-
-/* ── Trạng thái rỗng + ghi chú ── */
-.rankEmpty{display:flex;align-items:center;gap:14px;padding:26px 18px;border:1px dashed var(--line-2);
-  border-radius:var(--r-lg);background:var(--card-2);color:var(--muted)}
-.rankEmptyIcon{font-size:30px;line-height:1}
-.rankEmpty b{display:block;color:var(--text);font-size:14px;margin-bottom:3px}
-.rankEmpty span{font-size:12px;line-height:1.5}
-.rankFoot{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--faint);line-height:1.5}
-.rankFootDot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft);flex:0 0 auto}
-
-@media (max-width:760px){
-  .rankPodium,.rankPodium.p1,.rankPodium.p2{grid-template-columns:1fr;gap:8px}
-  .rankPod.pod1{order:-1}
-  .rankPod{padding:12px 10px;gap:4px}
-  .rankPod.pod1{padding:14px 10px}
-  .rankPodMedal{font-size:18px}
-  .rankPod.pod1 .rankPodMedal{font-size:20px}
-  .rankAv.avBig{width:38px;height:38px;font-size:16px}
-  .rankPodName{font-size:12.5px}
-  .rankPodStats{font-size:11px}
-  .rankPodStats b{font-size:11.5px}
-  .rankTableHead,.rankRow{grid-template-columns:22px minmax(0,1fr) 46px 52px;gap:4px;padding:9px 10px}
-  .rankRow .rankYouTag{display:none}
-  .rankTableHead{font-size:9px;padding:8px 10px}
-  .rankAv{width:26px;height:26px;font-size:11.5px}
-  .rankWho{gap:7px}
-  .rankName{font-size:12px;gap:4px}
-  .rankCorrect b,.rankScore b{font-size:12.5px}
-  .rankCorrect i,.rankScore i{display:none}
-  .rankYouTag{font-size:8px;padding:1px 5px}
-  .rankHead{gap:10px}
-  .rankTabs{width:100%;justify-content:space-between}
-  .rankTab{flex:1;padding:8px 10px;font-size:14px}
-  .rankFoot{font-size:10.5px;align-items:flex-start}
-  .rankFootDot{margin-top:5px}
-}
-.rankPodium.isEmpty{display:block}
-/* Ít người trên bảng → canh giữa bục thay vì dồn sang trái */
+/* Weekly community board. All surfaces use the shared light/dark palette. */
+.rankView{display:flex;flex-direction:column;gap:32px}
+.rankHero{display:flex;align-items:center;justify-content:space-between;gap:32px;padding:36px 40px;border:1px solid var(--line);border-radius:24px;background:var(--card-2)}
+.rankHeroCopy{max-width:620px;min-width:0}
+.rankHero h2{font-family:var(--font-display);font-size:clamp(32px,4vw,48px);line-height:1.15;letter-spacing:-.04em;margin:16px 0}
+.rankHero p{max-width:52ch;color:var(--muted);font-size:15px;line-height:1.8;margin:0}
+.rankHeroArt{display:flex;align-items:center;flex-direction:column;gap:8px;flex:none}
+.rankHeroArt [data-mascot]{width:160px;height:160px}
+.rankArtCaption{font-size:12px;color:var(--muted)}
+.rankSeason{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:24px;color:var(--primary);font-size:13px;font-weight:650}
+.rankSeasonDot{color:var(--faint)}
+.rankToolbar,.rankToolbarActions,.rankSectionLabel,.rankListToolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.rankToolbar{flex-wrap:wrap}
+.rankToolbar h3{font-size:23px;margin:4px 0 0;letter-spacing:-.025em}
+.rankToolbarActions{justify-content:flex-end;flex-wrap:wrap}
+.rankTabs{display:flex;gap:4px;padding:4px;border-radius:14px;background:var(--card-2);border:1px solid var(--line)}
+.rankTab{min-height:44px;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:750;color:var(--muted)}
+.rankTab.active{background:var(--button-primary);color:var(--button-primary-text)}
+.rankTab:hover:not(.active){background:var(--card-3);color:var(--text)}
+.rankView button:focus-visible,.rankRules summary:focus-visible{outline:2px solid var(--primary);outline-offset:4px}
+.rankLayout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start}
+.rankMain,.rankSidebar{min-width:0}
+.rankSidebar{display:grid;gap:20px}
+.rankSectionLabel{margin-bottom:20px}
+.rankSectionLabel h3,.rankListToolbar h3{margin:0;font-size:17px}
+.rankSectionLabel>span,.rankListToolbar h3>span{font-size:12px;color:var(--muted);font-weight:400}
+.rankPodium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:12px}
+.rankPod{min-width:0;min-height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:24px 12px;border:1px solid var(--line);border-radius:20px;background:var(--card-2);text-align:center}
+.rankPod.pod1{min-height:254px;background:var(--primary-soft);border-color:var(--primary)}
+.rankPod.pod2{border-top:3px solid var(--line-2)}
+.rankPod.pod3{border-top:3px solid var(--accent)}
+.rankPodMedal{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.pod1 .rankPodMedal{color:var(--primary)}
+.rankAv{width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--primary-soft);border:1px solid var(--line);color:var(--primary);font-size:15px;font-weight:800;flex:none;overflow:hidden}
+.rankAv img{width:100%;height:100%;object-fit:cover}
+.rankAv.avBig{width:56px;height:56px;font-size:22px;background:var(--card);border:2px solid var(--line-2)}
+.pod1 .rankAv.avBig{width:68px;height:68px;border-color:var(--primary)}
+.rankPodName{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4;min-height:2.8em;font-size:14px;font-weight:750;max-width:100%;overflow-wrap:anywhere}
+.rankPodStats{display:flex;flex-direction:column;gap:2px}
+.rankPodStats b{font-size:26px;font-family:var(--font-display);font-variant-numeric:tabular-nums;color:var(--text);line-height:1.2}
+.rankPodStats span{font-size:12px;color:var(--muted)}
 .rankPodium.p1{grid-template-columns:minmax(0,320px);justify-content:center}
-.rankPodium.p2{grid-template-columns:repeat(2,minmax(0,300px));justify-content:center}
-@media (max-width:760px){
-  .rankPodium.p1,.rankPodium.p2{grid-template-columns:1fr}
-}
-
-
-#rankCard .featureIntro{margin-bottom:0}.rankView .rankTabs{align-self:flex-start}.rankView .rankTab{min-height:44px;font-size:14px}.rankView .rankTableHead{font-size:12px;color:var(--muted)}.rankView .rankName{font-size:14px}.rankView .rankFoot{font-size:13px;color:var(--muted)}.rankView .rankPodStats{font-size:13px}.rankView .rankPodStats b{font-size:14px}.rankView .rankPodName{font-size:14px}
+.rankPodium.p2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.rankPodium.isEmpty{display:block}
+.rankEmpty{display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:12px;min-height:240px;padding:32px;border:1px dashed var(--line-2);border-radius:20px;background:var(--card-2)}
+.rankEmptySymbol{display:grid;place-items:center;width:52px;height:52px;border:1px solid var(--line);border-radius:16px;background:var(--primary-soft);color:var(--primary);font-size:28px}
+.rankEmpty b{font-size:19px;line-height:1.5}
+.rankEmpty p{max-width:40ch;margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+.rankListToolbar{margin:28px 0 14px;flex-wrap:wrap}
+.rankListToolbar .btn{font-size:13px;padding:8px 12px;min-height:44px}
+.rankTable{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
+.rankTableHead,.rankRow{display:grid;grid-template-columns:44px minmax(0,1fr) 86px;align-items:center;gap:12px;padding:14px 18px}
+.rankTableHead{font-size:12px;font-weight:700;color:var(--muted);background:var(--card-2)}
+.rankTableHead span:last-child{text-align:right}
+.rankRow{min-height:76px;border-top:1px solid var(--line)}
+.rankRow:hover{background:var(--card-2)}
+.rankRow.isMe{background:var(--primary-soft);box-shadow:inset 3px 0 var(--primary)}
+.rankNo{font-size:14px;font-weight:750;color:var(--muted);font-variant-numeric:tabular-nums}
+.rankWho{display:flex;align-items:center;gap:12px;min-width:0}
+.rankName{display:flex;align-items:center;gap:8px;min-width:0;font-size:14px;font-weight:650}
+.rankNameTxt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rankYouTag{display:inline-flex;padding:2px 6px;border-radius:6px;background:var(--card);color:var(--primary);border:1px solid var(--line);font-size:11px;line-height:1.5;font-weight:750;flex:none}
+.rankCorrect{text-align:right;display:flex;flex-direction:column;gap:4px;font-variant-numeric:tabular-nums}
+.rankCorrect b{font-size:18px;line-height:1.2}
+.rankCorrect i{font-size:11px;font-style:normal;color:var(--muted)}
+.rankPersonal{padding:24px;border:1px solid var(--line-2);border-radius:20px;background:var(--card-2)}
+.rankPersonalPlace{font-size:64px;line-height:1.2;font-family:var(--font-display);font-weight:800;letter-spacing:-.05em;color:var(--primary);margin:16px 0}
+.rankPersonal h3{font-size:20px;line-height:1.4;margin:0 0 12px;letter-spacing:-.02em}
+.rankPersonal p{font-size:14px;color:var(--muted);line-height:1.8;margin:0 0 24px}
+.rankGoalHeading{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:10px}
+.rankGoalHeading span{color:var(--muted)}
+.rankPersonal progress{width:100%;height:8px;accent-color:var(--primary);display:block}
+.rankPersonal small{display:block;color:var(--muted);font-size:12px;line-height:1.7;margin:10px 0 24px}
+.rankPersonal .btn{min-height:48px;font-size:14px}
+.rankRules{border:1px solid var(--line);border-radius:20px;padding:20px;background:var(--card)}
+.rankRules summary{font-size:14px;font-weight:750;cursor:pointer;min-height:44px;align-content:center}
+.rankRules ol{padding-left:18px;margin:12px 0 0;font-size:13px;line-height:1.8;color:var(--muted)}
+.rankRules li+li{margin-top:12px}
+.rankRules p,.rankPrivacyNote,.rankFoot{color:var(--muted);font-size:12px;line-height:1.8;margin:16px 0 0}
+.rankPrivacyNote{padding:0 8px;margin:0}
+.rankStatus{padding:14px 18px;border:1px solid var(--line);border-radius:14px;background:var(--card-2);font-size:14px;color:var(--text-2)}
+.rankStatus.isUnavailable{border-color:var(--warn);background:var(--warn-soft)}
+.rankView [hidden]{display:none!important}
+@media(max-width:1100px){.rankLayout{grid-template-columns:minmax(0,1fr) 260px;gap:20px}.rankHero{padding:28px}.rankPersonal{padding:20px}}
+@media(max-width:760px){.rankView{gap:24px}.rankHero{gap:16px;padding:24px}.rankHero h2{font-size:32px}.rankHeroArt [data-mascot]{width:96px;height:96px}.rankArtCaption{display:none}.rankHero p{font-size:14px}.rankLayout{grid-template-columns:minmax(0,1fr)}.rankSidebar{grid-row:1;grid-template-columns:1fr}.rankPersonal{display:grid;grid-template-columns:1fr auto;gap:0 16px}.rankPersonal>.featureEyebrow{grid-column:1}.rankPersonalPlace{grid-column:2;grid-row:1/4;font-size:56px;margin:0}.rankPersonal h3{font-size:19px;margin:10px 0}.rankPersonal p{grid-column:1/-1;margin-bottom:16px}.rankPersonal>.rankGoalHeading,.rankPersonal>progress,.rankPersonal>small,.rankPersonal>.btn{grid-column:1/-1}.rankRules{padding:12px 20px}.rankSidebar .rankPrivacyNote{font-size:12px}.rankToolbarActions{width:100%;justify-content:space-between}.rankToolbar h3{font-size:22px}.rankPod{min-height:195px;padding:20px 8px;gap:12px}.rankPod.pod1{min-height:220px}.rankPodStats b{font-size:23px}.rankSectionLabel{gap:8px}.rankSectionLabel h3{font-size:16px}.rankSectionLabel>span{font-size:11px}}
+@media(max-width:480px){.rankHero{padding:20px;gap:12px;align-items:flex-start}.rankHero h2{font-size:28px}.rankHeroArt [data-mascot]{width:64px;height:64px}.rankSeason{font-size:12px;gap:6px;margin-top:16px}.rankHero p{font-size:13px}.rankTab{padding:10px 14px}.rankPodium{gap:8px}.rankPod{border-radius:14px;min-height:180px;padding:16px 6px;gap:10px}.rankPod.pod1{min-height:204px}.rankPodName{font-size:12px;gap:4px}.rankPodMedal{font-size:10px}.rankAv.avBig{width:42px;height:42px;font-size:18px}.pod1 .rankAv.avBig{width:50px;height:50px}.rankPodStats b{font-size:21px}.rankPodStats span{font-size:11px}.rankTableHead,.rankRow{grid-template-columns:28px minmax(0,1fr) 60px;padding:12px;gap:8px}.rankWho{gap:8px}.rankAv{width:32px;height:32px}.rankName{font-size:13px;gap:4px}.rankCorrect b{font-size:16px}.rankYouTag{font-size:10px;padding:1px 4px}.rankCorrect i{font-size:10px}}

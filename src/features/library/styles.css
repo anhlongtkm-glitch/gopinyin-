@@ -1,4 +1,8 @@
 /* Lesson catalog: direct selection with progress visible on every card. */
+.libraryControls{display:flex;margin-bottom:24px}
+.libraryControls .librarySearch{width:100%;max-width:560px}
+.libraryControls [hidden],#libraryCard [hidden]{display:none!important}
+@media(max-width:540px){.libraryResume{display:grid!important;grid-template-columns:64px minmax(0,1fr);gap:16px!important;padding:20px!important}.libraryResume>[data-mascot]{width:64px!important;height:64px!important}.libraryResume>.btn{grid-column:1/-1;width:100%;margin:0!important}.libraryHead{flex-wrap:wrap!important}.libraryHead>div:first-child{flex-basis:100%}.libraryHeadActions{margin-left:0!important}}
 .libraryHead{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .libraryHead>div:first-child{flex:1;min-width:180px}
 .libraryHeadActions{display:flex;gap:8px;flex-wrap:wrap;flex-basis:100%;padding-top:4px}

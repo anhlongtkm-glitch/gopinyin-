@@ -216,6 +216,29 @@ export function setLibTab(tab) {
   /* ★ Thư viện chỉ còn pane kho câu có sẵn (HSK / chủ đề) */
   if (tab === 'vocab') renderVocab();
 }
+const groupQueries = new Map();
+export function libraryGroup() { return libraryCatalogState.libraryGroup || 'hsk'; }
+export function setLibraryGroup(group) {
+  group = group === 'topic' ? 'topic' : 'hsk';
+  const previous = libraryGroup();
+  groupQueries.set(previous, libraryCatalogState.vocabQuery || '');
+  libraryCatalogState.libraryGroup = group;
+  libraryCatalogState.vocabTab = group;
+  libraryCatalogState.vocabQuery = groupQueries.get(group) || '';
+  const topics = group === 'topic';
+  domState.$('libraryCard').dataset.libraryGroup = group;
+  domState.$('vocabSearch').value = libraryCatalogState.vocabQuery;
+  const searchLabel = topics ? 'Tìm chủ đề bạn muốn học…' : 'Tìm cấp HSK hoặc chặng học…';
+  domState.$('vocabSearch').placeholder = searchLabel;
+  domState.$('vocabSearch').setAttribute('aria-label', searchLabel);
+  domState.$('libraryEyebrow').textContent = topics ? 'TIẾNG TRUNG TRONG CUỘC SỐNG' : 'LỘ TRÌNH HSK 1–9';
+  domState.$('libraryTitle').textContent = topics ? 'Học điều bạn thích. Nhớ điều bạn cần.' : 'Từng chặng nhỏ. Tiến bộ mỗi ngày.';
+  domState.$('libraryDescription').textContent = topics ? 'Gia đình, công việc, du lịch… Chọn một chủ đề và đưa tiếng Trung vào cuộc sống của bạn.' : 'Chọn cấp HSK của bạn, luyện Gõ và Nói theo từng chặng. Tiến độ luôn được giữ lại.';
+  domState.$('libraryCollectionTitle').textContent = topics ? 'Khám phá các chủ đề' : 'Trọn bộ HSK 1–9';
+  domState.$('libraryCollectionCaption').textContent = topics ? 'Mỗi chủ đề có tiến độ Gõ và Nói riêng' : 'Học cả cấp hoặc luyện từng chặng ở trên';
+  document.querySelector('.practiceExtra').hidden = topics;
+  document.querySelectorAll('.modeBtn[data-vtab]').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+}
 // ★ Hiện cảnh báo khi trình duyệt chặn lưu trữ
 
 // ★ Hiện cảnh báo khi trình duyệt chặn lưu trữ

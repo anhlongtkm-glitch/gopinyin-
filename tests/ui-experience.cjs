@@ -88,7 +88,7 @@ async function captureStudy(page, screen) {
     assert(initialAssets.size > 0, 'Visible dashboard mascot should load');
     const initialBytes = [...initialAssets.values()].reduce((sum, bytes) => sum + bytes, 0);
     assert(initialBytes <= 300 * 1024, 'Mobile initial mascot transfer exceeds 300KB: ' + initialBytes);
-    await page.waitForFunction(() => [...document.querySelectorAll('#dashView .mascot-image')].some(image => image.complete && image.naturalWidth > 0));
+    await page.waitForFunction(() => [...document.querySelectorAll('#libraryCard .mascot-image')].some(image => image.complete && image.naturalWidth > 0));
     assert(await page.locator('.mobile-nav').isVisible());
     assert.equal(await page.locator('.mobile-nav [data-mobile-view]').count(), 4);
     assert.equal(await page.locator('#mobileMoreBtn').getAttribute('aria-expanded'), 'false');
@@ -100,7 +100,7 @@ async function captureStudy(page, screen) {
     await page.click('#topBar [data-view="rank"]');
     await page.locator('#rankCard').waitFor({ state: 'visible' });
     assert(await page.locator('#topBar [data-view="rank"]').evaluate(element => element.classList.contains('active')));
-    assert.equal(await page.locator('#rankCard h2').textContent(), 'Học đều đặn. Vươn lên từng ngày.');
+    assert.equal(await page.locator('#rankCard h2').textContent(), 'Mỗi câu đúng.Một bước vươn lên.');
     await page.evaluate(() => window.showView('dash'));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.click('.mobile-nav [data-mobile-view="practice"]');
@@ -112,8 +112,8 @@ async function captureStudy(page, screen) {
     await page.click('#appBackBtn');
     await page.locator('#libraryCard').waitFor({ state: 'visible' });
     assert.equal(await page.locator('#vocabSearch').inputValue(), 'HSK');
-    assert.equal(await page.locator('[data-vtab].active').getAttribute('data-vtab'), 'hsk');
-    await putLesson(page, 'ui-experience');
+    assert.equal(await page.locator('#libraryCard').getAttribute('data-library-group'), 'hsk');
+    await putLesson(page, 'practice:hsk1-ui-experience');
     await page.waitForFunction(() => document.activeElement === document.getElementById('pinyinInput'));
     await page.waitForTimeout(60);
     const inputBounds = await controlViewport(page, '#pinyinInput');
@@ -194,16 +194,16 @@ async function captureStudy(page, screen) {
     console.log('  PASS visible Next advances exactly once after a correct answer under rapid activation');
 
     const savedNext = await page.evaluate(() => window.currentRow().id);
-    await page.click('.mobile-nav [data-mobile-view="dash"]');
-    await page.waitForFunction(() => document.getElementById('dashContinueBtn').dataset.datasetId === 'ui-experience');
-    await page.click('#dashContinueBtn');
+    await page.click('.mobile-nav [data-mobile-view="practice"]');
+    await page.waitForFunction(() => document.getElementById('libraryResumeButton').dataset.resumeId === 'practice:hsk1-ui-experience');
+    await page.click('#libraryResumeButton');
     await page.locator('#appCard').waitFor({ state: 'visible' });
-    assert.equal(await page.evaluate(() => window.activeDataset.id), 'ui-experience');
+    assert.equal(await page.evaluate(() => window.activeDataset.id), 'practice:hsk1-ui-experience');
     assert.equal(await page.evaluate(() => window.currentRow().id), savedNext);
-    console.log('  PASS Dashboard Continue resumes the exact next saved question in one action');
+    console.log('  PASS HSK Continue resumes the exact next saved question in one action');
 
     // Launching a lesson and opening a dialog in the same task catches its delayed autofocus.
-    await page.evaluate(async () => { await window.openDataset('ui-experience'); document.getElementById('mobileMoreBtn').click(); });
+    await page.evaluate(async () => { await window.openDataset('practice:hsk1-ui-experience'); document.getElementById('mobileMoreBtn').click(); });
     await page.locator('#mobileMoreModal').waitFor({ state: 'visible' });
     await page.waitForTimeout(250);
     assert(await page.evaluate(() => document.getElementById('mobileMoreModal').contains(document.activeElement)));
@@ -216,8 +216,8 @@ async function captureStudy(page, screen) {
     assert.equal(await page.evaluate(() => window.stats.correct), 1);
     console.log('  PASS new lesson focus cannot steal an overlay and final-item Next opens completion');
 
-    await page.click('.mobile-nav [data-mobile-view="dash"]');
-    await page.locator('#dashView').waitFor({ state: 'visible' });
+    await page.click('.mobile-nav [data-mobile-view="practice"]');
+    await page.locator('#libraryCard').waitFor({ state: 'visible' });
     await page.click('#mobileMoreBtn');
     await page.click('#mobileMoreModal [data-more-view="ai"]');
     await page.locator('#aiCard').waitFor({ state: 'visible' });
@@ -225,7 +225,7 @@ async function captureStudy(page, screen) {
     await page.click('.mobile-nav [data-mobile-view="rank"]');
     await page.locator('#rankCard').waitFor({ state: 'visible' });
     assert.equal(await page.locator('.mobile-nav [data-mobile-view="rank"]').getAttribute('aria-current'), 'page');
-    assert.equal(await page.locator('#rankCard h2').textContent(), 'Học đều đặn. Vươn lên từng ngày.');
+    assert.equal(await page.locator('#rankCard h2').textContent(), 'Mỗi câu đúng.Một bước vươn lên.');
     await page.click('#mobileMoreBtn');
     await page.click('#mobileMoreModal [data-more-view="games"]');
     await page.locator('#gamesCard').waitFor({ state: 'visible' });
@@ -286,7 +286,7 @@ async function captureStudy(page, screen) {
     for (const theme of ['light', 'dark']) for (const width of [360, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: width <= 390 ? 844 : 900 });
       await page.evaluate(theme => window.applyTheme(theme), theme);
-      for (const view of ['dash', 'library', 'pron', 'ai', 'rank', 'games']) {
+      for (const view of ['hsk', 'topics', 'pron', 'ai', 'rank', 'games']) {
         await page.evaluate(view => window.showView(view), view);
         await page.waitForTimeout(60);
         const result = await page.evaluate(() => ({ width: innerWidth, scrollWidth: document.documentElement.scrollWidth, headerPosition: getComputedStyle(document.getElementById('topBar')).position }));

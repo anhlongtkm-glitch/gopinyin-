@@ -28,6 +28,7 @@ async function startSupabaseFixture() {
       const user={id,email:body.email,role:'authenticated',aud:'authenticated',created_at:new Date().toISOString(),email_confirmed_at:verified?new Date().toISOString():null,user_metadata:body.data||{},app_metadata:{provider:'email'}};
       const a={user,password:body.password,profile:{id,display_name:body.data?.display_name||'Learner',avatar_path:null}};
       users.set(body.email,a);
+      if(!verified&&body.code_challenge)recoveryCodes.set('fixture-signup:'+body.email,{account:a,challenge:body.code_challenge});
       return json(200,verified?session(a):user);
     }
     if(url.pathname==='/auth/v1/token') {
@@ -36,6 +37,7 @@ async function startSupabaseFixture() {
         const challenge=crypto.createHash('sha256').update(body.code_verifier||'').digest('base64url');
         if(!pending||pending.challenge!==challenge)return json(400,{message:'Invalid or expired recovery code',error_code:'flow_state_expired'});
         recoveryCodes.delete(body.auth_code);
+        pending.account.user.email_confirmed_at ||= new Date().toISOString();
         return json(200,session(pending.account));
       }
       const a=url.searchParams.get('grant_type')==='refresh_token'?refresh.get(body.refresh_token):users.get(body.email);

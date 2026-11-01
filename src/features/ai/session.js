@@ -40,6 +40,8 @@ import { escapeHtml } from "../../shared/utils.js";
 
 import { dataOwner, writeRecords } from '../../shared/storage/account-data.js';
 import { reviseAiLesson } from './revision.js';
+import { AI_INITIAL_COUNT, AI_REFILL_COUNT, AI_REFILL_EVERY, completedAiItems, aiRefillDue } from './policy.js';
+import { requestAiSaveChoice, cancelAiSaveChoice } from './creation.js';
 export const state = {};
 
 const aiSessionState = state;
@@ -87,6 +89,7 @@ export function aiShowGen(msg, cls, retry) {
     session.stopped = false;
     session.error = null;
     session.empty = 0;
+    session.retryRequested = true;
     aiShowGen('');
     aiMaybeFill();
   };
@@ -110,7 +113,8 @@ export function aiResumeSavedSet() {
   const connection = aiConnection(dataset.provider);
   aiSessionState.aiSession = {
     ...connection, prompt: dataset.prompt, level: dataset.level || '',
-    batch: Math.max(1, Math.min(20, Number(dataset.batch) || 5)), kind: aiCurrentKind(),
+    batch: AI_REFILL_COUNT, kind: aiCurrentKind(),
+    refillBoundary: dataset.generationPolicy === 'ten-every-five-v1' ? Math.min(Number(dataset.aiRefillBoundary)||0, Math.floor(completedAiItems(typingSessionState)/AI_REFILL_EVERY)*AI_REFILL_EVERY) : Math.floor(completedAiItems(typingSessionState) / AI_REFILL_EVERY) * AI_REFILL_EVERY,
     seen: new Set(typingSessionState.rows.map(row => row.zh)), pending: 0, stopped: false, empty: 0,
     generated: typingSessionState.rows.length, live: true, rows: typingSessionState.rows,
     navigation: navigationVersion(), accountId: currentUser().id
@@ -145,7 +149,7 @@ function resumeAiGeneration() {
 /* ★ Thêm câu AI vào hàng chờ học.
    Bộ ĐÃ LƯU (kind==='ai') → ghi luôn vào database để lần sau học tiếp vẫn đủ câu.
    Bộ học tạm (chưa lưu) → chỉ nằm trong bộ nhớ, rời đi là hết. */
-export function aiAppendRows(items) {
+export function aiAppendRows(items, refillBoundary = aiSessionState.aiSession?.refillBoundary || 0) {
   const start = typingSessionState.rows.length;
   const idPrefix = 'ai-' + newAiId() + '-';
   const additions = items.map((it, i) => ({
@@ -161,7 +165,7 @@ export function aiAppendRows(items) {
     const progress = aiProgressSnapshot(saved.id);
     progress.mainOrder = [...progress.mainOrder, ...additions.map((_, i) => start + i)];
     writeRecords([
-      { kind: 'dataset', id: saved.id, payload: { ...saved, rows: [...typingSessionState.rows, ...additions], rowCount: start + additions.length, updatedAt } },
+      { kind: 'dataset', id: saved.id, payload: { ...saved, rows: [...typingSessionState.rows, ...additions], rowCount: start + additions.length, updatedAt, generationPolicy:'ten-every-five-v1', aiRefillBoundary:refillBoundary } },
       { kind: 'kv', id: progressKey(saved.id), payload: JSON.stringify(progress) }
     ]);
   }
@@ -176,6 +180,7 @@ export function aiAppendRows(items) {
     saved.rows = typingSessionState.rows;
     saved.updatedAt = updatedAt;
     saved.rowCount = typingSessionState.rows.length;
+    saved.generationPolicy = 'ten-every-five-v1'; saved.aiRefillBoundary = refillBoundary;
   }
 }
 
@@ -250,7 +255,8 @@ export async function aiUpdateSavedRequest(id, prompt, level) {
     const connection = aiConnection(ds.provider);
     const session = oldSession || { ...connection, pending: 0, epoch: 0 };
     Object.assign(session, {
-      prompt, level, kind: ds.contentType || 'sentence', batch: ds.batch || 5,
+      prompt, level, kind: ds.contentType || 'sentence', batch: AI_REFILL_COUNT,
+      refillBoundary: Math.floor(completedAiItems(t)/AI_REFILL_EVERY)*AI_REFILL_EVERY, retryRequested: true,
       seen: new Set(result.dataset.rows.map(row => row.zh)), rows: t.rows,
       stopped: false, error: null, retryAt: 0, empty: 0, live: true,
       generated: t.rows.length, accountId, navigation, paused: true
@@ -338,10 +344,12 @@ export function aiRefreshAfterAppend(wasWaiting) {
 export async function aiMaybeFill() {
   const s = aiSessionState.aiSession;
   if (!s || !aiTypingVisible(s) || s.paused || s.stopped || s.pending || typingSessionState.mode !== 'all') return;
-  // Start one item earlier for the default batch, while bounding the reserve
-  // for larger saved batches. pending still permits only one request at a time.
-  const reserve = Math.max(3, Math.min(6, Math.ceil(s.batch / 2)));
-  if (typingSessionState.order.length - typingSessionState.index > reserve) return;
+  // Each five learned items earns one ten-item refill; only one request runs.
+  const exhausted = typingSessionState.index >= typingSessionState.order.length;
+  const due = aiRefillDue(typingSessionState, s.refillBoundary || 0);
+  if (!exhausted && !due && !s.retryRequested) return;
+  const boundary = (s.refillBoundary || 0) + (due ? AI_REFILL_EVERY : 0);
+  s.retryRequested = false;
   s.pending++;
   setMascot('aiMascot', 'thinking');
   const unit = aiUnitOf(s.kind);
@@ -354,13 +362,16 @@ export async function aiMaybeFill() {
   if (wasWaiting) aiShowGen('<span class="aiSpinner">AI đang viết ' + unit + ' tiếp theo…</span> (đã có <b>' + typingSessionState.rows.length + '</b> ' + unit + ')');
   if (wasWaiting && !domState.$('completeArea')?.classList.contains('hidden')) render();
   try {
-    const res = await aiCollect(s.provider, s.key, s.prompt, s.batch, s.level, s.seen, null, s.kind, active);
+    const seen = new Set(s.seen);
+    const res = await aiCollect(s.provider, s.key, s.prompt, AI_REFILL_COUNT, s.level, seen, null, s.kind, active, true);
     if (!active()) return;
     // The learner can finish the remaining items while this request is in flight.
     // Capture the waiting state before appending changes the queue length.
     const waitingAtAppend = typingSessionState.index >= typingSessionState.order.length;
     if (res.items.length) {
-      aiAppendRows(res.items);
+      aiAppendRows(res.items, boundary);
+      s.seen = seen;
+      s.refillBoundary = boundary;
       s.empty = 0;
     }
     if (res.error || !res.items.length) {
@@ -384,6 +395,7 @@ export async function aiMaybeFill() {
   if (s.stopped && typingSessionState.index >= typingSessionState.order.length) render();
   setMascot('aiMascot', s.stopped ? 'encourage' : 'ready');
   if (s.stopped) aiShowSessionError(); else aiShowGen('');
+  if (!s.stopped && aiRefillDue(typingSessionState, s.refillBoundary || 0)) void aiMaybeFill();
 }
 /* ★ Bắt đầu học: viết prompt → AI viết đợt đầu → học ngay */
 
@@ -405,10 +417,10 @@ export async function aiStartStudy() {
     return;
   }
   const level = domState.$('aiLevel').value;
-  const batch = Math.max(1, Math.min(20, Number(domState.$('aiBatch').value) || 5));
-  const kind = aiClientState.AI_KINDS[domState.$('aiKind') && domState.$('aiKind').value] ? domState.$('aiKind').value : 'sentence';
-  const wantSave = domState.$('aiSaveLesson').checked;
-  const lessonName = (domState.$('aiLessonName').value.trim() || prompt.replace(/\s+/g, ' ')).slice(0, 80);
+  const batch = AI_REFILL_COUNT;
+  const kind = domState.$('aiKind').value;
+  if (!aiClientState.AI_KINDS[kind]) { toast('Chọn Câu hoặc Từ vựng để bắt đầu.', 'warn'); domState.$('aiSentenceChoice').focus(); return; }
+  let wantSave, lessonName;
   const unit = aiUnitOf(kind);
   const btn = domState.$('aiStartBtn');
   /* ★ CHƯA có API key → mở sẵn "Tuỳ chọn nâng cao", focus ô key, chỉ đúng nút lấy key
@@ -451,7 +463,11 @@ export async function aiStartStudy() {
   const session = aiSessionState.aiSession;
   const active = () => session === aiSessionState.aiSession && session.live && navigation === navigationVersion() && currentUser()?.id === accountId;
   try {
-    const res = await aiCollect(provider, key, prompt, batch, level, session.seen, null, kind, active);
+    const choice = await requestAiSaveChoice(prompt.replace(/\s+/g, ' ').slice(0,80));
+    if (!active() || !choice) { if (active()) aiSessionState.aiSession = null; return; }
+    wantSave = choice.save; lessonName = choice.name;
+    session.refillBoundary = 0;
+    const res = await aiCollect(provider, key, prompt, AI_INITIAL_COUNT, level, session.seen, null, kind, active, true);
     if (!active()) return;
     if (!res.items.length) throw new Error(res.stopped || 'AI chưa trả về ' + unit + ' nào cho chủ đề này.');
     if (res.error) { session.stopped = true; session.error = res.error; session.retryAt = res.error.retryAt || 0; }
@@ -460,7 +476,7 @@ export async function aiStartStudy() {
     let ds = wantSave ? {
       id: 'ai:' + newAiId(), name: lessonName,
       sourceName: 'Học bằng AI', kind: 'ai', contentType: kind,
-      prompt, level, provider, batch, rows: [],
+      prompt, level, provider, batch, rows: [], generationPolicy:'ten-every-five-v1', aiRefillBoundary:0,
       createdAt: Date.now(), updatedAt: Date.now()
     } : null;
     if (ds) {
@@ -517,7 +533,7 @@ export async function aiStartStudy() {
         if (typeof legacy.renderAiSets === 'function') legacy.renderAiSets();
       } catch (e) {}
     } else {
-      toast('Đã có ' + res.items.length + ' ' + unit + ' — AI sẽ tự viết thêm khi bạn học gần hết.', 'ok', 5500);
+      toast('Đã có ' + res.items.length + ' ' + unit + ' — cứ học thêm 5 mục, AI sẽ tạo thêm 10 mục.', 'ok', 5500);
     }
     domState.$('libraryCard').classList.add('hidden');
     domState.$('aiCard')?.classList.add('hidden');
@@ -567,6 +583,7 @@ export async function aiStartStudy() {
 
 /* ★ Kết thúc phiên AI — không có gì để lưu */
 export function aiEndSession() {
+  cancelAiSaveChoice();
   aiRequestId++;
   const session = aiSessionState.aiSession;
   if (session) {
@@ -590,6 +607,7 @@ export function aiSessionLive() {
    unit dùng cho mọi nhãn đếm ("5 câu" / "5 từ" / "5 mục"). */
 
 export function initializeAiSession() {
+  document.addEventListener('gp:activity', event => { if (event.detail?.kind === 'typing') void aiMaybeFill(); });
   document.addEventListener('gp:typing-opened', aiResumeSavedSet);
   document.addEventListener('gp:view-leaving', pauseAiGeneration);
   document.addEventListener('gp:view-changed', event => { if (event.detail === 'study') resumeAiGeneration(); });

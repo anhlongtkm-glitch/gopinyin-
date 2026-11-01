@@ -43,8 +43,8 @@ export function initializeLessonBridge() {
     dbGet: id => dbGet(id),
     /* tiến độ luyện gõ của 1 bộ — để màn Luyện phát âm biết bộ nào đã học */
     loadProgress: id => loadProgress(id),
-    continueDataset: async () => {
-      const sets = await dbList();
+    continueDataset: async (matches = () => true) => {
+      const sets = (await dbList()).filter(ds => matches(ds.id));
       const candidates = sets.map(ds => ({
         ds,
         progress: loadProgress(ds.id)

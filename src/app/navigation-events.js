@@ -19,7 +19,7 @@ export function initializeAppNavigationEvents() {
     b.title = label;
     b.addEventListener('click', () => showView(b.dataset.view));
   });
-  accountStorageState.$('dashContinueBtn').addEventListener('click', async () => {
+  accountStorageState.$('dashContinueBtn')?.addEventListener('click', async () => {
     const button = accountStorageState.$('dashContinueBtn');
     const id = button.dataset.datasetId;
     if (!id) {

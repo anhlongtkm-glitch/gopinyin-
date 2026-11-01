@@ -100,6 +100,7 @@ export async function refreshDashContinue() {
 }
 
 export function refreshDash() {
+  if (!accountStorageState.$('dashView')) return;
   /* Only the active account's records contribute, never shared legacy storage. */
   let learned = 0,
     correct = 0,
@@ -234,7 +235,7 @@ export function initializeDashboardController() {
   dashboardControllerState.countFrames = new WeakMap();
   const count = Object.entries(dataCatalogState.HSK_DATA || {}).filter(([key]) => /^hsk[1-9]$/.test(key)).reduce((sum, [, rows]) => sum + rows.filter(row => row && row[0] && row[2]).length, 0);
   document.querySelectorAll('[data-catalog-sentences]').forEach(el => { el.textContent = count.toLocaleString('vi-VN'); });
-  setInterval(() => { if (!accountStorageState.$('dashView').classList.contains('hidden')) refreshReviewPlan(); }, 60000);
+  setInterval(() => { if (accountStorageState.$('dashView') && !accountStorageState.$('dashView').classList.contains('hidden')) refreshReviewPlan(); }, 60000);
   for (const id of ['dashReviewBtn', 'dashWeakBtn']) {
     accountStorageState.$(id)?.addEventListener('click', async event => {
       const button = event.currentTarget;

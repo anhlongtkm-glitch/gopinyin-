@@ -7,5 +7,5 @@ export function initializeAppShellStartup() {
     const open = document.querySelectorAll('.modal:not([hidden])');
     if (open.length) closeModal(open[open.length - 1].id);
   });
-  document.querySelector('.ws-sideBrand')?.addEventListener('click', () => showView('dash'));
+  document.querySelector('.ws-sideBrand')?.addEventListener('click', () => showView('hsk'));
 }

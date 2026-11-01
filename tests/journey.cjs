@@ -12,7 +12,7 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  assert.equal(day.xp,20); assert.deepEqual(day.claimed,['typing']);
  assert.strictEqual(applyActivity(day,'typing','sentence0').day,day);
  for(let i=0;i<3;i++)day=applyActivity(day,'game','stage'+i).day;
- assert.equal(day.gameXp,20);assert.equal(day.xp,40);
+ assert.equal(day.gameXp,20);assert.equal(day.xp,45);
  assert.equal(bearLevel(99).level,1);assert.deepEqual(bearLevel(100),{level:2,current:0,needed:125});assert.equal(bearLevel(225).level,3);assert.equal(bearLevel(999999).level,20);
  assert.equal(localDay(new Date(2026,0,2,0,1)), '2026-01-02');
  const history=[1,2,3,4].map(d=>({date:`2026-06-0${d}`,events:{a:true}}));
@@ -24,19 +24,13 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
  const page=await context.newPage(),errors=[]; page.on('pageerror',e=>errors.push(e.message));
  await page.goto(process.env.TEST_URL,{waitUntil:'networkidle'});await register(page,'Journey learner');
- await page.evaluate(()=>window.showView('readings'));
- assert.equal(await page.locator('[data-reading]').count(),6);
- await page.click('[data-reading="hello"]');
- const {readings}=await import('data:text/javascript;base64,'+Buffer.from(fs.readFileSync(path.join(__dirname,'../src/features/journey/content.js'),'utf8')).toString('base64'));
- const answers=readings.find(r=>r.id==='hello').questions.map(q=>q[2]);
- for(let i=0;i<3;i++)await page.check(`[name=q${i}][value="${i===2?(answers[i]+1)%3:answers[i]}"]`);
- await page.click('#readingQuiz button[type=submit]');assert.match(await page.textContent('#readingResult'),/2\/3/);
- await page.click('#readingQuiz button[type=submit]');
- await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/25 XP/);
- console.log('  PASS original reading grades comprehension and grants completion plus quest XP once');
+ await page.evaluate(()=>{document.dispatchEvent(new CustomEvent('gp:activity',{detail:{kind:'game',id:'journey-game-check'}}));document.dispatchEvent(new CustomEvent('gp:activity',{detail:{kind:'game',id:'journey-game-check'}}));});
+ await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/15 XP/);
+ assert.equal(await page.locator('.journeyQuest[data-view="readings"]').count(),0);
+ console.log('  PASS completed game grants activity and exploration quest XP once');
  assert.equal(await page.locator('#tonesCard,#shadowCard,#shadowTextCard,#shadowVideoCard').count(),0);
- for(const retired of ['tones','shadow','shadowVideo','shadowText']){await page.evaluate(view=>window.showView(view),retired);assert(await page.locator('#readingsCard').isVisible());}
- await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/25 XP/);
+ for(const retired of ['tones','shadow','shadowVideo','shadowText']){await page.evaluate(view=>window.showView(view),retired);assert(await page.locator('#libraryCard').isVisible());}
+ await page.evaluate(()=>window.showView('bear'));assert.match(await page.textContent('#bearProgress'),/15 XP/);
  console.log('  PASS retired features redirect safely and do not change earned XP');
  await page.click('.bearPreferences summary');await page.selectOption('#journeyEffects','off');assert.equal(await page.evaluate(()=>document.documentElement.dataset.effects),'off');
  await page.evaluate(async()=>{await window.dbPut({id:'journey-draft',name:'Nháp Gõ / Nói',rows:[{id:0,zh:'你好。',py:'nǐ hǎo',vi:'Xin chào.'}],createdAt:Date.now(),updatedAt:Date.now()});await window.openDataset('journey-draft');window.autoSound=false;window.readOnType=false;});
@@ -52,7 +46,7 @@ const {register}=require('./helpers/supabase-fixture.cjs');
  console.log('  PASS legacy pronunciation sources also switch into the matching typing dataset and sentence');
  for(const theme of ['light','dark'])for(const [width,height]of [[360,740],[390,844],[768,1024],[1024,768],[1440,1000],[844,390]]){
   await page.setViewportSize({width,height});await page.evaluate(theme=>{document.documentElement.dataset.theme=theme;},theme);
-  for(const view of ['dash','practice','readings','ai','bear']){
+  for(const view of ['hsk','topics','ai','bear']){
    await page.evaluate(view=>window.showView(view),view);await page.waitForTimeout(100);
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);assert.equal(overflow,false,`${view} ${theme} ${width} overflows`);
   }

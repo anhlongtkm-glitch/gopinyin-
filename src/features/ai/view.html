@@ -1,14 +1,7 @@
 <section id="aiCard" class="card hidden aiView">
-    <div class="aiSections" role="group" aria-label="Học bằng AI">
-      <button id="aiSavedBtn" class="aiSectionBtn" type="button" aria-pressed="true" aria-controls="aiSetsWrap">Bộ AI đã lưu</button>
-      <button id="aiCreateBtn" class="aiSectionBtn" type="button" aria-pressed="false" aria-controls="aiPane">Tạo mới</button>
-    </div>
-    <div id="aiSetsWrap" class="aiSetsWrap" aria-label="Bộ AI đã lưu">
-      <label class="aiField" for="aiSetSearch">Tìm bộ đã lưu<input id="aiSetSearch" type="search" placeholder="Tên hoặc chủ đề"></label>
-      <div id="aiSets" class="libraryGrid aiSetsGrid"></div>
-      <p class="aiStatus" data-ai-save-status role="status"></p>
-    </div>
-    <div id="aiPane" hidden aria-label="Tạo mới">
+    <header class="aiPageHeader"><div><span class="featureEyebrow">BÀI HỌC CỦA RIÊNG BẠN</span><h2>Muốn học gì, viết ra nhé.</h2><p>Chọn nội dung, kể một chút về chủ đề. AI sẽ chuẩn bị bài để bạn bắt đầu ngay.</p></div><span data-mascot="thinking" data-mascot-size="card" aria-hidden="true"></span></header>
+    <div class="aiWorkspace">
+    <section id="aiPane" class="aiCreatePanel" aria-labelledby="aiCreateHeading"><div class="aiPanelHeading"><span class="featureEyebrow">TẠO BÀI HỌC</span><h3 id="aiCreateHeading">Một chủ đề. Nhiều cách luyện.</h3></div>
       <div class="aiBox">
         <label class="aiLabel" for="aiPrompt">
           <span id="aiPromptLabelText">Bạn muốn học câu tiếng Trung về chủ đề gì?</span>
@@ -16,13 +9,8 @@
         </label>
         <textarea id="aiPrompt" class="aiPrompt" rows="3" placeholder="Ví dụ: hội thoại khi đi mua đồ ở chợ, nói thẳng, dùng được ngày mai"></textarea>
         <div class="aiControls">
-          <label class="aiField">Học gì
-            <select id="aiKind" class="select">
-              <option value="sentence" selected>Câu</option>
-              <option value="word">Từ vựng</option>
-              <option value="both">Câu và từ</option>
-            </select>
-          </label>
+          <fieldset class="aiKindChoices"><legend>Học gì?</legend><div class="aiKindOptions"><label><input id="aiSentenceChoice" type="checkbox" data-ai-kind="sentence" checked><span><b>Câu</b><small>Giao tiếp trong tình huống</small></span></label><label><input id="aiWordChoice" type="checkbox" data-ai-kind="word"><span><b>Từ vựng</b><small>Từ và cụm từ cần nhớ</small></span></label></div><p id="aiKindHint">Chọn cả hai để luyện câu xen kẽ từ vựng.</p></fieldset>
+          <input id="aiKind" type="hidden" value="sentence">
           <label class="aiField">Trình độ
             <select id="aiLevel" class="select">
               <option value="">Không giới hạn</option>
@@ -41,19 +29,9 @@
         <div class="aiControls">
           <button id="aiStartBtn" class="btn primary" type="button">Tạo câu và học</button>
         </div>
+        <p class="aiFlowHint">Bắt đầu với <b>10 mục</b>. Cứ học thêm 5 mục, AI tự tạo thêm <b>10 mục mới</b>. Bạn sẽ chọn lưu bài hoặc học tạm khi bắt đầu.</p>
         <details class="aiDetails">
           <summary>Tuỳ chọn thêm</summary>
-          <div class="aiSaveOptions">
-          <label class="aiSaveToggle"><input id="aiSaveLesson" type="checkbox" checked> Lưu bài để học tiếp</label>
-          <label id="aiNameField" class="aiField" for="aiLessonName">Tên bài <span class="small">Không bắt buộc, bỏ trống để dùng tên chủ đề</span><input id="aiLessonName" maxlength="80" placeholder="Ví dụ: Tiếng Trung đi du lịch"></label>
-          <p id="aiTemporaryHint" class="small" hidden>Học tạm — rời bài sẽ mất nội dung.</p>
-        </div>
-          <label class="aiField">Số mục mỗi đợt tạo
-            <select id="aiBatch" class="select" aria-describedby="aiBatchHint">
-              <option value="3">3 câu</option><option value="5" selected>5 câu</option><option value="10">10 câu</option>
-            </select>
-          </label>
-          <p id="aiBatchHint" class="small">AI tự tạo thêm khi gần hết. Đây không phải tổng độ dài bài.</p>
           <div id="aiProviderSetup" class="aiControls" hidden>
             <label class="aiField">Nhà cung cấp AI
               <select id="aiProvider" class="select">
@@ -72,8 +50,9 @@
         </details>
         <div id="aiStatus" class="aiStatus" role="status" aria-live="polite"></div>
       </div>
+    </section>
+    <section id="aiSetsWrap" class="aiSavedPanel" aria-labelledby="aiSavedHeading"><div class="aiPanelHeading"><span class="featureEyebrow">HỌC TIẾP ĐÚNG CHỖ</span><h3 id="aiSavedHeading">Bộ AI của bạn <span id="aiSetCount"></span></h3><p>Những chủ đề đã lưu, luôn sẵn để quay lại.</p></div><label class="aiField" for="aiSetSearch">Tìm bộ đã lưu<input id="aiSetSearch" type="search" placeholder="Tên hoặc chủ đề"></label><div id="aiSets" class="libraryGrid aiSetsGrid"></div><p class="aiStatus" data-ai-save-status role="status"></p></section>
     </div>
-
   </section>
 <dialog id="aiEditDialog" class="aiEditDialog" aria-labelledby="aiEditTitle" aria-describedby="aiEditNotice">
   <form id="aiEditForm" novalidate>
@@ -85,4 +64,8 @@
     <p id="aiEditError" class="aiEditError" role="alert"></p>
     <div class="aiEditActions"><button id="aiEditCancel" type="button" class="btn secondary">Hủy</button><button id="aiEditSave" type="submit" class="btn primary">Lưu và học tiếp</button></div>
   </form>
+</dialog>
+
+<dialog id="aiCreateDialog" class="aiEditDialog aiCreateDialog" aria-labelledby="aiCreateDialogTitle" aria-describedby="aiCreateDialogText">
+  <form method="dialog"><div class="aiEditHead"><h2 id="aiCreateDialogTitle">Lưu bài để học tiếp?</h2><button id="aiCreateClose" type="button" class="miniBtn" aria-label="Đóng">Đóng</button></div><p id="aiCreateDialogText" class="small">Lưu bài để giữ nội dung và tiến độ trên tài khoản. Bạn cũng có thể học tạm trong lần này.</p><label class="aiField" for="aiCreateName">Tên bài học<input id="aiCreateName" type="text" maxlength="80" autocomplete="off"></label><div class="aiEditActions"><button type="submit" value="temporary" class="btn secondary">Học tạm</button><button type="submit" value="save" class="btn primary">Lưu và học</button></div></form>
 </dialog>

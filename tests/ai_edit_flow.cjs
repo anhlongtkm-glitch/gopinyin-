@@ -2,18 +2,15 @@
 const assert = require('node:assert/strict');
 const {chromium} = require('playwright-core');
 const {register} = require('./helpers/supabase-fixture.cjs');
-const initial = [
-  ['茶叶','chá yè','lá trà'],['红茶','hóng chá','trà đen'],['绿茶','lǜ chá','trà xanh'],
-  ['白茶','bái chá','trà trắng'],['茶水','chá shuǐ','nước trà']
-].map(([zh,py,vi])=>({zh,py,vi}));
-const extra = [['苹果','píng guǒ','táo'],['西瓜','xī guā','dưa hấu'],['香蕉','xiāng jiāo','chuối'],['葡萄','pú tao','nho'],['草莓','cǎo méi','dâu tây']].map(([zh,py,vi])=>({zh,py,vi}));
+const {aiRows,chooseAiKind,autoAiChoice}=require('./helpers/ai-fixture.cjs');
+const initial=aiRows(0),extra=aiRows(1);
 const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
 (async()=>{
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
   try {
     const page=await browser.newPage(),errors=[],requests=[];
     page.on('pageerror',error=>errors.push(error.message));
-    await page.goto(process.env.TEST_URL,{waitUntil:'networkidle'}); await register(page,'AI request editor');
+    await page.goto(process.env.TEST_URL,{waitUntil:'networkidle'}); await register(page,'AI request editor'); await autoAiChoice(page);
     let response=initial, hold=false, held=[];
     const respond=(route,items,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(status===200?{text:JSON.stringify(items)}:{error:'quota'})});
     await page.route('**/api/ai',route=>{
@@ -22,7 +19,7 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
       return respond(route,response);
     });
     await page.evaluate(()=>{window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
-    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind','word'); if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','Trà ban đầu');
+    await chooseAiKind(page,'word'); await page.fill('#aiPrompt','Trà ban đầu');
     await page.click('#aiStartBtn'); await page.locator('#appCard').waitFor({state:'visible'});
     const id=await page.evaluate(()=>window.activeDataset.id);
     await page.evaluate(()=>{window.autoSound=false;window.readOnType=false;});
@@ -57,11 +54,11 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
     await page.waitForFunction(()=>window.aiSession.pending===0);
     assert.equal(await page.inputValue('#pinyinInput'),'红');
     assert.equal(await page.evaluate(()=>window.rows[window.order[2]].zh),extra[0].zh);
-    assert.equal(await page.evaluate(()=>new Set(window.rows.map(row=>row.id)).size),7);
+    assert.equal(await page.evaluate(()=>new Set(window.rows.map(row=>row.id)).size),12);
     console.log('  PASS editing shuffled lessons preserves current input, IDs and statistics; new content follows immediately');
 
     // Start an old prefetch, then edit while it is in flight.
-    await page.evaluate(()=>{window.index=4;window.mainIndex=4;window.render();window.save();});
+    await page.evaluate(()=>{window.index=5;window.mainIndex=5;window.render();window.save();});
     while(!held.length)await delay(10);
     const old=held.shift(), count=requests.length;
     await page.click('#aiStudyEdit'); await page.fill('#aiEditPrompt','Yêu cầu mới nhất'); await page.click('#aiEditSave');
@@ -75,7 +72,7 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
     await page.waitForFunction(()=>window.aiSession.stopped&&window.aiSession.pending===0);
     assert(await page.locator('#aiRetryBtn').isVisible());
     assert.equal(await page.evaluate(()=>window.activeDataset.prompt),'Yêu cầu mới nhất');
-    assert.equal(await page.evaluate(()=>window.rows.length),5);
+    assert.equal(await page.evaluate(()=>window.rows.length),6);
     console.log('  PASS stale generation is discarded, one pending slot is retained and quota failure keeps the revised lesson');
 
     // Local storage failure must roll back BOTH records and runtime.
@@ -131,7 +128,7 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
       const ds=window.activeDataset;
       ds.rows=items.map((item,i)=>({...item,id:'boundary-'+i,wv:[]}));
       await window.dbPut(ds);
-      window.rows=ds.rows;window.order=[0,1,2,3,4];window.mainOrder=[...window.order];
+      window.rows=ds.rows;window.order=items.map((_,i)=>i);window.mainOrder=[...window.order];
       window.index=0;window.mainIndex=0;window.mode='all';window.wrongIds=new Set();window.reviewById={};window.awaitingEnter=false;
       window.save();await window.openDataset(ds.id);
     },initial);
@@ -160,7 +157,7 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
     assert.deepEqual(await page.evaluate(()=>window.rows.map(row=>row.id)),exhausted);
     await respond(exhaustedOld,[initial[1]]);
     while(!held.length)await delay(10);
-    await respond(held.shift(),initial.slice(1));await page.waitForFunction(()=>window.aiSession.pending===0);
+    await respond(held.shift(),initial.slice(1).concat(aiRows(2)[0]));await page.waitForFunction(()=>window.aiSession.pending===0);
     assert.equal(await page.evaluate(()=>window.currentRow().zh),initial[1].zh);
     assert.equal(await page.locator('#pinyinInput').evaluate(el=>el.readOnly),false);
     console.log('  PASS exhausted lessons keep all learned content and resume directly with the new request');
@@ -186,12 +183,12 @@ const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
         await page.keyboard.press('Escape');
         await page.evaluate(()=>window.scrollTo(0,0));
         await page.screenshot({path:'.cache/test-run/ai-home-'+width+'-'+theme+'.png',fullPage:true});
-        await page.click('#aiCreateBtn');
-        assert(await page.locator('#aiSetsWrap').isHidden());
+
+        assert(await page.locator('#aiSetsWrap').isVisible());
         assert(await page.locator('#aiPrompt').isVisible());
         assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
         await page.screenshot({path:'.cache/test-run/ai-create-'+width+'-'+theme+'.png',fullPage:true});
-        await page.click('#aiSavedBtn');
+
       }
     }
     assert.deepEqual(errors,[]);

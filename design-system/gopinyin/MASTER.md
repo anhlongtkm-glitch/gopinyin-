@@ -11,7 +11,7 @@ Tham khảo cách Duolingo xây dựng nhân vật có biểu cảm theo ngữ c
 | Thành phần | Quy chuẩn |
 | --- | --- |
 | Nền sáng | `#F4F9F5`, thẻ `#FFFFFF`, nền phụ `#F5FAF6` |
-| Nền tối | `#0C1E19`, thẻ `#142D26`, nền phụ `#19382F` |
+| Nền tối | Đen sâu `#020403`, thẻ `#090F0C`, nền phụ `#0E1712`; giữ chữ và điểm nhấn xanh đủ tương phản |
 | Nút chính | `#087866`, chữ trắng, đế `#045347` |
 | Chữ sáng | Chính `#203C31`, phụ `#425E50` |
 | Chữ tối | Chính `#F0FBF5`, phụ `#C2DDD0` |
@@ -57,7 +57,8 @@ Nguồn, prompt tái tạo và danh sách đầy đủ được ghi tại [MASCO
 
 ## Bố cục và điều hướng
 
-- Desktop dùng sidebar có nhãn. Từ 860px trở xuống dùng Tổng quan, Luyện gõ, Phát âm, Thêm.
+- Desktop dùng thanh điều hướng ngang có nhãn. Từ 860px trở xuống dùng HSK, Chủ đề, Game, Xếp hạng, Thêm.
+- HSK là màn mở đầu. HSK và Chủ đề có URL, tìm kiếm, vị trí cuộn và bài học tiếp riêng. Tổng quan và Bài khóa đã được bỏ theo yêu cầu 01/11/2026; liên kết cũ chuyển về HSK.
 - Thêm mở hộp chọn AI, Game, Xếp hạng và tài khoản; giữ focus trong hộp, Escape/nền ngoài đóng và trả focus. Đóng khi đổi route hoặc trở lại desktop.
 - Mở Thêm giữ nguyên bài đang học. Tạm dừng game nếu cần; đóng bảng chỉ tiếp tục khi chính bảng đã gây ra lần tạm dừng đó.
 - Chừa safe area và khoảng trống cho thanh dưới; thu thanh khi bàn phím ảo mở. Input và hành động học luôn được tiếp cận.
@@ -66,6 +67,22 @@ Nguồn, prompt tái tạo và danh sách đầy đủ được ghi tại [MASCO
 - Mobile đặt ba thống kê chính ở đầu thẻ. Ba thống kê chi tiết nằm trong Tùy chọn sau phần nội dung và nhóm hành động, dành vùng nhìn đầu tiên cho câu học và input/micro.
 - Khi render hoặc mở bàn phím ảo, giữ input/micro hoàn toàn trong vùng nhìn giữa tiêu đề ghim và thanh điều hướng. Các tác vụ focus/cuộn có trễ phải kiểm tra màn, câu và hộp thoại hiện tại trước khi thực hiện.
 - Quay lại thư viện giữ nhóm bài, từ khóa và vị trí cuộn. Mở/đóng bảng phụ giữ nội dung nhập và thiết lập hiện tại.
+
+## Bảng xếp hạng
+
+- Mặc định theo tuần; chuyển Hôm nay khi cần. Hiển thị khoảng ngày, thời gian còn lại và thời điểm tải dữ liệu.
+- Chỉ dùng số câu gõ đúng từ API hiện có; cùng số câu đúng có cùng hạng. Không cộng tự động toàn bộ lịch sử học vào kỳ mới.
+- Top 3 là điểm nhấn; bảng danh sách và thẻ vị trí cá nhân giúp người học biết mình ở đâu, còn bao nhiêu câu để vượt nhóm phía trên.
+- Mốc cá nhân: 20 câu/ngày hoặc 100 câu/tuần. Đây là mốc khích lệ trong giao diện, không tạo phần thưởng hoặc ghi thêm điểm.
+- Bộ lọc Gần vị trí của tôi chỉ dùng top 100 đã tải. Người ngoài top 100 không được gán hạng hoặc điểm 0 giả.
+- Dữ liệu lưu trước đó phải có nhãn khi lỗi tải. Luật xếp hạng thu gọn được; mobile hiển thị thành tích cá nhân trước bảng.
+
+## Học bằng AI
+
+- Form tạo bài và bộ đã lưu cùng một màn: desktop hai cột, mobile xếp dọc. Không chia tab Tạo mới/Bộ AI đã lưu.
+- Câu và Từ vựng là checkbox có nhãn và mô tả, chọn cả hai để học xen kẽ.
+- Chính sách cố định: 10 mục đầu; cứ học thêm 5 mục tự tạo thêm 10 mục. Chỉ hỏi Lưu và học/Học tạm khi bắt đầu bài mới.
+- Không đặt tùy chọn lưu bài hoặc kích thước đợt tạo trong form chính. Hộp hỏi lưu bài cho sửa tên, Escape/Đóng hủy mà không dùng lượt AI.
 
 ## Kiểm chứng
 

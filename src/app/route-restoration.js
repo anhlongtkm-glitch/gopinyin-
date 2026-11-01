@@ -7,11 +7,11 @@ import { state as authState } from '../features/auth/service.js';
 export function initializeRouteRestoration() {
   const restoreRoute = async () => {
     const route = readRoute();
-    if (!route) { if (!location.hash) await showView('dash', { route: false }); return; }
+    if (!route) { if (!location.hash) await showView('hsk', { route: false }); return; }
     const navigation = markNavigation();
-    if (['tones','shadow','shadowVideo','shadowText'].includes(route.view)) {
-      await showView('readings', {route:false,navigation});
-      if (navigation === navigationVersion()) writeRoute('readings', '', true);
+    if (['dash','readings','tones','shadow','shadowVideo','shadowText'].includes(route.view)) {
+      await showView('hsk', {route:false,navigation});
+      if (navigation === navigationVersion()) writeRoute('hsk', '', true);
     } else if (route.view === 'study' && route.dataset) {
       const opened = await openDataset(route.dataset, { route: false, review: route.review, navigation, practiceMode:route.mode });
       if (opened === false && navigation === navigationVersion()) {

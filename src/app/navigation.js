@@ -9,7 +9,7 @@ import { currentUser, requireAccount } from "../features/auth/service.js";
 
 import { refreshDash } from "../features/dashboard/controller.js";
 
-import { setLibTab } from "../features/library/catalog.js";
+import { setLibTab, setLibraryGroup, libraryGroup } from "../features/library/catalog.js";
 
 
 import { state as accountStorageState } from "../shared/account-storage.js";
@@ -27,7 +27,7 @@ export function enterWorkspace() {
   renderUserChip();
   accountStorageState.$('workspace').classList.remove('hidden');
   window.scrollTo(0, 0);
-  showView('dash', { route: false });
+  showView('hsk', { route: false });
   audioEffectsState.Sfx.whoosh();
 }
 
@@ -51,9 +51,8 @@ export function renderUserChip() {
 }
 
 export async function showView(v, options = {}) {
-  if (['tones','shadow','shadowVideo','shadowText'].includes(v)) v = 'readings';
-  const practice = v === 'practice';
-  if (practice) v = 'library';
+  const group = v === 'topics' ? 'topic' : ['hsk','practice','dash','readings','tones','shadow','shadowVideo','shadowText'].includes(v) ? 'hsk' : null;
+  if (group) v = 'library';
   const navigation = options.navigation ?? markNavigation();
   if (navigation !== navigationVersion()) return false;
   if (!options.preserveStudy) aiEndSession();
@@ -61,10 +60,11 @@ export async function showView(v, options = {}) {
   if (navigation !== navigationVersion()) return false;
   /* ★ Chốt an toàn: tên view lạ → về Bảng điều khiển. Nếu không, mọi section
      đều bị ẩn và người dùng chỉ thấy một khung trắng. */
-  if (!appNavigationState.VIEW_META[v]) v = 'dash';
+  if (!appNavigationState.VIEW_META[v]) v = 'library';
   document.dispatchEvent(new CustomEvent('gp:view-leaving',{detail:v}));
   if (appNavigationState.currentView === 'library') rememberLibraryPosition();
   if (appNavigationState.currentView === 'pron') rememberLibraryPosition('pronLibCard');
+  if (v === 'library' && group) setLibraryGroup(group);
 
   /* rời màn luyện phát âm → TẮT MIC ngay (không ghi âm ngoài ý muốn) */
   if ((appNavigationState.currentView === 'pron' || appNavigationState.currentView === 'pronStudy') && v !== 'pronStudy' && legacy.__pron) {
@@ -86,7 +86,6 @@ export async function showView(v, options = {}) {
   /* rời khỏi màn học → mở khoá cuộn trang (khung .studyShell chỉ khoá khi
      đang thật sự ở trong màn luyện gõ / luyện phát âm). */
   document.body.classList.remove('studyFit');
-  accountStorageState.$('dashView').classList.toggle('hidden', v !== 'dash');
   accountStorageState.$('libraryCard').classList.toggle('hidden', v !== 'library');
   accountStorageState.$('rankCard').classList.toggle('hidden', v !== 'rank');
   accountStorageState.$('aiCard').classList.toggle('hidden', v !== 'ai');
@@ -141,19 +140,19 @@ export async function showView(v, options = {}) {
   if (navigation !== navigationVersion()) return false;
   if (v === 'pronStudy') accountStorageState.$('pronCard')?.classList.remove('hidden');
   accountStorageState.$('backLibrary').classList.toggle('hidden', v !== 'game');
-  const meta = appNavigationState.VIEW_META[v] || appNavigationState.VIEW_META.dash;
+  const meta = v === 'library' ? (libraryGroup() === 'topic' ? ['Học theo chủ đề','Tiếng Trung trong cuộc sống'] : ['Học theo HSK','Từng chặng nhỏ, tiến bộ mỗi ngày']) : appNavigationState.VIEW_META[v] || appNavigationState.VIEW_META.library;
   accountStorageState.$('wsViewTitle').textContent = meta[0];
   accountStorageState.$('wsViewSub').textContent = meta[1];
   /* "pronStudy" là màn con của mục "pron"; "game" là màn con của mục "games"
      → vẫn tô sáng đúng mục cha trên thanh bên khi đang ở màn con. */
-  const navKey = ['pronStudy','pron','library'].includes(v) ? 'practice' : v === 'game' ? 'games' : v;
+  const navKey = ['pronStudy','pron','library'].includes(v) ? (libraryGroup() === 'topic' ? 'topics' : 'practice') : v === 'game' ? 'games' : v;
   accountStorageState.$$('.ws-navItem').forEach(b => b.classList.toggle('active', b.dataset.view === navKey));
   if (v === 'game' && legacy.__game && legacy.__game.openGame) legacy.__game.openGame();
   if (v === 'dash') refreshDash();
   /* ★ phát lại hiệu ứng xuất hiện mỗi lần chuyển mục */
   if (v !== 'game') replayFx(viewEl(v));
   audioEffectsState.Sfx.page();
-  if (options.route !== false) writeRoute(practice ? 'practice' : v === 'pronStudy' ? 'pron' : v);
+  if (options.route !== false) writeRoute(v === 'library' ? (libraryGroup() === 'topic' ? 'topics' : 'hsk') : v === 'pronStudy' ? 'pron' : v);
   if (v === 'library') restoreLibraryPosition();
   else if (v !== 'pron' && !options.preserveStudy) window.scrollTo({top:0,behavior:'instant'});
   document.dispatchEvent(new CustomEvent('gp:view-changed', { detail: v }));
@@ -192,7 +191,7 @@ export function initializeAppNavigation() {
     games: ['Game từ vựng', 'Chọn một trò chơi từ vựng để vừa chơi vừa nhớ chữ Hán'],
     game: ['Panda Du Hành', 'Gõ chữ, chinh phục thiên hà — khám phá từ vựng theo chủ đề']
   };
-  appNavigationState.currentView = 'dash';
+  appNavigationState.currentView = 'library';
   publishLegacy("enterWorkspace", enterWorkspace);
   /* ★ expose cho app-core gọi (vd nút Quay lại trong appCard khi đang học bộ câu cá nhân) */
   publishLegacy("showView", showView);

@@ -47,6 +47,7 @@ export async function renderAiSets() {
   let sets = await dbList();
   if (version !== renderVersion || owner !== dataOwner()) return;
   sets = sets.filter(ds => ds && ds.kind === 'ai');
+  domState.$('aiSetCount').textContent = sets.length ? '· ' + sets.length : '';
   sets.sort((a, b) => (loadProgress(b.id)?.lastStudiedAt || 0) - (loadProgress(a.id)?.lastStudiedAt || 0) || (b.createdAt || 0) - (a.createdAt || 0));
   aiSyncSaveStatus();
   const filtered = sets.filter(ds => (ds.name + ' ' + ds.prompt).toLocaleLowerCase('vi').includes(query));

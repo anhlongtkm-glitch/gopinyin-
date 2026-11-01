@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright-core');
 const {register}=require('./helpers/supabase-fixture.cjs');
+const {aiRows,chooseAiKind,autoAiChoice}=require('./helpers/ai-fixture.cjs');
 const generated=[
   {zh:'批量',py:'pī liàng',vi:'theo lô, hàng loạt'},
   {zh:'纸箱',py:'zhǐ xiāng',vi:'thùng carton'},
@@ -13,6 +14,7 @@ const generated=[
   const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
   try{
     const page=await browser.newPage(),errors=[],requests=[],accountRequests=[];
+    generated.push(...aiRows(0).slice(0,5));
     let responseItems=generated, responseStatus=200;
     page.on('pageerror',error=>errors.push(error.message));
     page.on('request',request=>{
@@ -21,7 +23,7 @@ const generated=[
     // An old saved opt-in must not revive the removed API verification step.
     await page.addInitScript(()=>localStorage.setItem('gp:aiVerify','1'));
     await page.goto(process.env.TEST_URL,{waitUntil:'networkidle'});
-    await register(page,'AI single generation');
+    await register(page,'AI single generation'); await autoAiChoice(page);
     await page.route('**/api/ai',async route=>{
       const body=route.request().postDataJSON();requests.push(body);
       assert.match(route.request().headers().authorization,/^Bearer /,'Proxy requests must still carry an account token');
@@ -29,16 +31,16 @@ const generated=[
       await route.fulfill({status:responseStatus,contentType:'application/json',body:JSON.stringify({text:JSON.stringify(responseItems),error:responseStatus===401?'expired session':undefined})});
     });
     await page.evaluate(()=>{window.APP_CONFIG.AI_PROXY_URL='/api/ai';return window.showView('ai');});
-    await page.click('#aiCreateBtn'); await page.click('.aiDetails summary');
+
     assert.equal(await page.locator('#aiVerify').count(),0);
     assert(!/Soát lại nghĩa/.test(await page.locator('#aiCard').textContent()));
     assert.equal(await page.evaluate(()=>typeof window.aiVerifyMeanings),'undefined');
     console.log('  PASS meaning verification controls and API helpers are removed even with an old opt-in preference');
 
-    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.selectOption('#aiKind','word');
-    if (await page.locator('#aiPane').isHidden()) await page.click('#aiCreateBtn'); await page.fill('#aiPrompt','từ vựng ngành bao bì');
+    await chooseAiKind(page,'word');
+    await page.fill('#aiPrompt','từ vựng ngành bao bì');
     accountRequests.length=0;
-    await page.locator('.aiDetails').evaluate(el => el.open = true); await page.uncheck('#aiSaveLesson');
+    await autoAiChoice(page,false);
     await page.click('#aiStartBtn');
     await page.locator('#appCard').waitFor({state:'visible'});
     assert.equal(requests.length,1,'A complete batch must open study directly after one generation request');

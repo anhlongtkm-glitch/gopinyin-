@@ -46,7 +46,7 @@ const { register } = require('./helpers/supabase-fixture.cjs');
       return { ...window.__localMetrics, domContentLoadedMs: navigation.domContentLoadedEventEnd, loadMs: navigation.loadEventEnd };
     });
     await page.evaluate(() => window.showView('library'));
-    await page.click('[data-vtab="topic"].modeBtn');
+    await page.evaluate(() => window.showView('topics'));
     await page.locator(`[data-vsrc="${info.source}"]`).click(); await page.locator('#appCard').waitFor({ state: 'visible' });
     assert.equal(await page.evaluate(() => window.rows.length), header.rowCount);
     assert.equal(requests.filter(url => url.includes('/vocab-pack.js')).length, 1);

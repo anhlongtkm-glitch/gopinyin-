@@ -9,9 +9,8 @@
       </span>
     </div>
     <nav class="ws-nav" aria-label="Điều hướng chính">
-      <button class="ws-navItem active" type="button" data-view="dash"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="ws-navLabel">Tổng quan</span></button>
-      <button class="ws-navItem" type="button" data-view="practice"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9.5 14h5"/></svg></span><span class="ws-navLabel">Luyện tập</span></button>
-      <button class="ws-navItem" type="button" data-view="readings"><span class="ws-navIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4zm10 3a3 3 0 0 1 3-3h4v15h-3a4 4 0 0 0-4 2"/></svg></span><span class="ws-navLabel">Bài khóa</span></button>
+      <button class="ws-navItem active" type="button" data-view="practice"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9.5 14h5"/></svg></span><span class="ws-navLabel">Học theo HSK</span></button>
+      <button class="ws-navItem" type="button" data-view="topics"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span><span class="ws-navLabel">Học theo chủ đề</span></button>
       <button class="ws-navItem" type="button" data-view="games"><span class="ws-navIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><line x1="7" y1="12" x2="7" y2="12"/><line x1="11" y1="12" x2="11" y2="12"/><line x1="15" y1="12" x2="15" y2="12"/><path d="M6 10.5v3M4.5 12h3"/></svg></span><span class="ws-navLabel">Game từ vựng</span></button>
       <button class="ws-navItem" type="button" data-view="rank"><span class="ws-navIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8m-4-4v4M7 3h10v5a5 5 0 0 1-10 0Zm0 2H3v2a4 4 0 0 0 4 4m10-6h4v2a4 4 0 0 1-4 4"/></svg></span><span class="ws-navLabel">Bảng xếp hạng</span></button>
       <button class="ws-navItem" type="button" data-view="bear"><span class="ws-navIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7a3 3 0 1 1 4-3m6 0a3 3 0 1 1 4 3M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0m4 0h.01M16 12h.01M10 16h4"/></svg></span><span class="ws-navLabel">Gấu của bạn</span></button>
@@ -32,7 +31,7 @@
         <button id="themeToggle" class="btn secondary iconBtn" type="button" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng tối" aria-pressed="false">🌙</button>
         <button type="button" id="backLibrary" class="btn secondary backBtn hidden">← Game từ vựng</button>
       </div>
-<div class="studyVisuallyHidden"><span id="wsViewTitle">Tổng quan</span><span id="wsViewSub">Học cùng gấu xanh</span></div>
+<div class="studyVisuallyHidden"><span id="wsViewTitle">Học theo HSK</span><span id="wsViewSub">Học cùng gấu xanh</span></div>
   </header>
 
   <!-- Nội dung chính -->
@@ -40,7 +39,6 @@
 
     <div id="accountAccessNotice" class="accessNotice" role="status" hidden><span data-mascot="connection" data-mascot-size="inline" aria-hidden="true"></span><span id="accountAccessText"></span><button class="btn" type="button" id="accountRetry">Kết nối lại</button></div>
     <!-- ═══ Bảng điều khiển (mới) ═══ -->
-    <!-- @include features/dashboard/view.html -->
 
       <!-- @include features/library/view.html -->
 
@@ -60,7 +58,6 @@
       <!-- @include features/ranking/view.html -->
 
       <!-- @include features/journey/view.html -->
-
 
       <!-- @include features/games/view.html -->
 

@@ -1,4 +1,28 @@
 /* ═══ AI box & Dịch box ═══ */
+.aiPageHeader{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:32px}
+.aiPageHeader h2{font-family:var(--font-display);font-size:clamp(28px,3vw,38px);line-height:1.25;margin:12px 0;letter-spacing:-.035em}
+.aiPageHeader p,.aiPanelHeading p{margin:0;color:var(--muted);font-size:14px;line-height:1.8}
+.aiPageHeader [data-mascot]{width:96px;height:96px;flex:none}
+.aiWorkspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:28px;align-items:start}
+.aiCreatePanel,.aiSavedPanel{min-width:0;padding:28px;border:1px solid var(--line);border-radius:24px;background:var(--card)}
+.aiPanelHeading{margin-bottom:24px}
+.aiPanelHeading h3{font-size:22px;line-height:1.4;letter-spacing:-.02em;margin:8px 0}
+.aiPanelHeading h3>span{font-size:15px;font-weight:500;color:var(--muted)}
+.aiKindChoices{min-width:0;border:0;padding:0;margin:0;flex:1 1 100%}
+.aiKindChoices legend{font-size:14px;font-weight:750;padding:0;margin-bottom:10px}
+.aiKindOptions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.aiKindOptions label{display:flex;align-items:center;gap:10px;padding:14px;min-height:76px;border:1px solid var(--line-2);border-radius:14px;background:var(--card-2);cursor:pointer}
+.aiKindOptions label:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
+.aiKindOptions input{accent-color:var(--primary);width:20px;height:20px;flex:none;cursor:pointer}
+.aiKindOptions span{min-width:0}.aiKindOptions b{display:block;font-size:15px}.aiKindOptions small{display:block;font-size:12px;line-height:1.5;color:var(--muted);margin-top:4px}
+.aiKindChoices p{font-size:12px;color:var(--muted);line-height:1.6;margin:10px 0 0}
+.aiFlowHint{font-size:13px;color:var(--muted);line-height:1.8;margin:0;padding:14px 16px;background:var(--card-2);border-radius:12px}
+.aiSavedPanel .libraryGrid.aiSetsGrid{grid-template-columns:minmax(0,1fr)}
+.aiView .aiWorkspace .aiBox{max-width:none}
+.aiCreatePanel{scroll-margin-top:110px}
+.aiCreateDialog input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--card-2);color:var(--text);font:inherit;min-height:48px}
+@media(max-width:960px){.aiWorkspace{grid-template-columns:minmax(0,1fr);gap:24px}.aiSavedPanel .libraryGrid.aiSetsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.aiCreatePanel,.aiSavedPanel{padding:20px}.aiPageHeader{gap:12px;margin-bottom:24px}.aiPageHeader [data-mascot]{width:64px;height:64px}.aiPageHeader h2{font-size:28px}.aiKindOptions{gap:8px}.aiKindOptions label{padding:12px 10px}.aiKindOptions small{font-size:11px}.aiSavedPanel .libraryGrid.aiSetsGrid{grid-template-columns:minmax(0,1fr)}}
 .aiBox{display:flex;flex-direction:column;gap:20px;max-width:860px}
 .aiLabel{font-size:14px;font-weight:800}
 .aiLabel small{display:block;color:var(--muted);font-weight:600;font-size:14px;margin-top:2px}
