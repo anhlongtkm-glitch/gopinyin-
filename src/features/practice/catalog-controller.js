@@ -1,4 +1,3 @@
-import { escapeHtml as safe } from "../../shared/utils.js";
 import { readings } from "../journey/content.js";
 import { state as catalog } from "../../data/catalog.js";
 import { dbPut } from "../../shared/storage/lesson-repository.js";
@@ -7,47 +6,11 @@ import { lessonRepository } from "../../shared/lesson-bridge.js";
 import { requireAccount, currentUser } from "../auth/service.js";
 import { markNavigation, navigationVersion } from "../../app/routes.js";
 import { onDataChange, learningStorage } from "../../shared/storage/account-data.js";
-import { loadProgress } from "../typing/progress.js";
-import { state as libraryState } from "../library/catalog.js";
+import { openVocabSource, state as libraryState } from "../library/catalog.js";
 const $ = (id) => document.getElementById(id);
-let level = 1, resumeRequest = 0, initialized = false;
-const groupCache = /* @__PURE__ */ new Map();
+let resumeRequest = 0, initialized = false;
 const libraryVisible = () => !$("libraryCard").classList.contains("hidden");
 const matchesGroup = (id, group) => group === 'hsk' ? /^(practice:hsk|vocab:hsk[1-9]$)/.test(id) : (catalog.VOCAB_GROUPS.topic || []).some(source => id === 'vocab:' + source[0]);
-function groups() {
-  const source = catalog.HSK_DATA["hsk" + level];
-  const cached = groupCache.get(level);
-  if (cached?.source === source) return cached.groups;
-  const result = buildGroups();
-  groupCache.set(level, { source, groups: result });
-  return result;
-}
-function visibleGroups() {
-  const query = $("vocabSearch").value.trim().toLocaleLowerCase("vi");
-  return groups().filter((g) => (g.title + " " + g.topic).toLocaleLowerCase("vi").includes(query));
-}
-function buildGroups() {
-  const rows = (catalog.HSK_DATA["hsk" + level] || []).filter((r) => r && r[0] && r[2]);
-  const size = Math.ceil(rows.length / 6);
-  return Array.from({ length: 6 }, (_, i) => ({ level, id: `hsk${level}-part:${i + 1}`, title: `Chặng ${String(i + 1).padStart(2, "0")}`, topic: `Câu ${i * size + 1}–${Math.min(rows.length, (i + 1) * size)}`, rows: rows.slice(i * size, (i + 1) * size).map(([zh, py, vi], id) => ({ id, zh, py, vi })) })).filter((g) => g.rows.length);
-}
-function renderGroups() {
-  if (!libraryVisible()) return;
-  const active = libraryState.vocabTab === "hsk";
-  $("practiceGroups").hidden = !active;
-  $("hskLevelPicker").hidden = !active;
-  if (!active) return;
-  $("practiceGroupsTitle").textContent = `HSK ${level} · Các chặng luyện tập`;
-  $("practiceGroupsCaption").textContent = `Đủ ${groups().reduce((sum, group) => sum + group.rows.length, 0)} câu · Chia chặng từ bộ câu HSK hiện có`;
-  $("practiceGroupList").innerHTML = visibleGroups().map((g, i) => {
-    const completed = Math.min(g.rows.length, Number(loadProgress("practice:" + g.id)?.mainIndex) || 0);
-    return `<button type="button" class="practiceGroupCard" data-practice-group="${i}"><span class="groupIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h7a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4zm10 3a3 3 0 0 1 3-3h4v15h-3a4 4 0 0 0-4 2"/></svg></span><span class="featureEyebrow">HSK ${level} · ${safe(g.topic)}</span><b>${safe(g.title)}</b><span>${completed} / ${g.rows.length} câu · Gõ / Nói</span><progress max="${g.rows.length}" value="${completed}" aria-label="Tiến độ Gõ"></progress><small>Bắt đầu luyện <span aria-hidden="true">→</span></small></button>`;
-  }).join("");
-  document.querySelectorAll("[data-hsk-level]").forEach((b) => {
-    b.classList.toggle("selected", Number(b.dataset.hskLevel) === level);
-    b.setAttribute("aria-pressed", String(Number(b.dataset.hskLevel) === level));
-  });
-}
 async function openGroup(group, options = {}) {
   const navigation = markNavigation();
   if (!await requireAccount(() => openGroup(group, options)) || navigation !== navigationVersion()) return;
@@ -70,8 +33,8 @@ async function refreshResume() {
     button.textContent = "Học tiếp →";
     button.dataset.resumeId = next.id;
   } else {
-    title.textContent = group === 'hsk' ? 'Sẵn sàng cho chặng học đầu tiên?' : 'Bắt đầu từ điều gần gũi nhất';
-    sub.textContent = group === 'hsk' ? 'Mỗi chặng một ít. Luyện Gõ và Nói theo nhịp của bạn.' : 'Chọn một chủ đề bên dưới. Gõ để nhớ, nói để dùng.';
+    title.textContent = group === 'hsk' ? 'Sẵn sàng luyện HSK?' : 'Bắt đầu từ điều gần gũi nhất';
+    sub.textContent = group === 'hsk' ? 'Chọn một cấp HSK. Luyện Gõ và Nói theo nhịp của bạn.' : 'Chọn một chủ đề bên dưới. Gõ để nhớ, nói để dùng.';
     button.textContent = group === 'hsk' ? 'Luyện HSK 1 →' : 'Khám phá chủ đề ↓';
     button.dataset.resumeId = "";
   }
@@ -84,29 +47,13 @@ function initializePracticeCatalog() {
     const r = readings.find((x) => x.id === e.detail);
     if (r) void openGroup({ level: r.level, id: `reading:hsk${r.level}:${r.id}:v${r.revision}`, title: r.title, rows: r.lines.map(([zh, py, vi], id) => ({ id, zh, py, vi })) }, { forceTyping: true });
   });
-  $("hskLevelPicker").innerHTML = Array.from({ length: 9 }, (_, i) => `<button type="button" data-hsk-level="${i + 1}" aria-pressed="${i === 0}">HSK ${i + 1}</button>`).join("");
-  document.addEventListener("click", (e) => {
-    const pill = e.target.closest("[data-hsk-level]");
-    if (pill) {
-      level = Number(pill.dataset.hskLevel);
-      renderGroups();
-    }
-    const card = e.target.closest("[data-practice-group]");
-    if (card) {
-      const group = visibleGroups()[Number(card.dataset.practiceGroup)];
-      if (group) void openGroup(group);
-    }
-    if (e.target.closest("[data-vtab]")) queueMicrotask(renderGroups);
-  });
-  $("vocabSearch").addEventListener("input", renderGroups);
   $("libraryResumeButton").addEventListener("click", () => {
     const id = $("libraryResumeButton").dataset.resumeId;
     if (id) void openDataset(id);
     else if (libraryState.libraryGroup === 'topic') $("vocabSearch").focus();
-    else void openGroup(groups()[0]);
+    else void openVocabSource("hsk1");
   });
   document.addEventListener("gp:view-changed", () => {
-    renderGroups();
     if (!root.classList.contains("hidden")) void refreshResume().catch(() => {
     });
   });
@@ -114,7 +61,6 @@ function initializePracticeCatalog() {
     void refreshResume().catch(() => {
     });
   });
-  renderGroups();
   void refreshResume().catch(() => {
   });
 }

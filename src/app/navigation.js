@@ -140,7 +140,7 @@ export async function showView(v, options = {}) {
   if (navigation !== navigationVersion()) return false;
   if (v === 'pronStudy') accountStorageState.$('pronCard')?.classList.remove('hidden');
   accountStorageState.$('backLibrary').classList.toggle('hidden', v !== 'game');
-  const meta = v === 'library' ? (libraryGroup() === 'topic' ? ['Học theo chủ đề','Tiếng Trung trong cuộc sống'] : ['Học theo HSK','Từng chặng nhỏ, tiến bộ mỗi ngày']) : appNavigationState.VIEW_META[v] || appNavigationState.VIEW_META.library;
+  const meta = v === 'library' ? (libraryGroup() === 'topic' ? ['Học theo chủ đề','Tiếng Trung trong cuộc sống'] : ['Học theo HSK','Luyện tập và theo dõi tiến độ']) : appNavigationState.VIEW_META[v] || appNavigationState.VIEW_META.library;
   accountStorageState.$('wsViewTitle').textContent = meta[0];
   accountStorageState.$('wsViewSub').textContent = meta[1];
   /* "pronStudy" là màn con của mục "pron"; "game" là màn con của mục "games"
